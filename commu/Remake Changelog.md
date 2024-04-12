@@ -49,3 +49,7 @@
 6. Fixed a Lamp Post
 
 7. Fixed wrong blocks in S2004
+
+# 1.4.0
+1. Released Hardcore version
+   - Note: Hardcore is only avalible in the Minecraft Preview 1.21+
