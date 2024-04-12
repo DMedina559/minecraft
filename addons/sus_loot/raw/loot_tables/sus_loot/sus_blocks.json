@@ -1,0 +1,102 @@
+{
+  "pools": [
+    {
+      "rolls": {
+        "min": 1,
+        "max": 1
+      },
+      "entries": [
+        {
+            "type": "loot_table",
+            "name": "loot_tables/sus_loot/pot_sherds.json",
+            "weight": 5
+          },
+        {
+          "type": "item",
+          "name": "minecraft:brick",
+          "weight": 5
+        },
+        {
+            "type": "item",
+            "name": "minecraft:stick",
+            "weight": 5
+        },
+        {
+            "type": "loot_table",
+            "name": "loot_tables/sus_loot/ore.json",
+            "weight": 4
+        },
+        {
+            "type": "loot_table",
+            "name": "loot_tables/sus_loot/pot_sherds.json",
+            "weight": 4
+          },
+        {
+            "type": "item",
+            "name": "minecraft:bone",
+            "weight": 3
+        },
+        {
+          "type": "item",
+          "name": "minecraft:skull",
+          "weight": 2
+        },
+        {
+          "type": "item",
+          "name": "minecraft:torchflower_seeds",
+          "weight": 2
+        },
+        {
+          "type": "item",
+          "name": "minecraft:pitcher_pod",
+          "weight": 2
+        },
+        {
+          "type": "item",
+          "name": "minecraft:sniffer_egg",
+          "weight": 1
+        },
+        {
+            "type": "loot_table",
+            "name": "loot_tables/sus_loot/armor_trims.json",
+            "weight": 1,
+            "conditions": [
+                        {
+                          "condition": "random_chance",
+                          "chance": 0.5
+                        }
+            ]
+        },
+        {
+          "type": "item",
+          "name": "minecraft:map",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "exploration_map",
+              "destination": "shipwreck"
+            }
+          ],
+          "conditions": [
+                        {
+                          "condition": "random_chance",
+                          "chance": 0.3
+                        }
+            ]
+        },
+        {
+            "type": "item",
+            "name": "minecraft:totem_of_undying",
+            "weight": 1,
+            "conditions": [
+                        {
+                          "condition": "random_chance",
+                          "chance": 0.2
+                        }
+            ]
+        }
+      ]
+    }
+  ]
+}
+
