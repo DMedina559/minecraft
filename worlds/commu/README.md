@@ -11,6 +11,6 @@ Come in and explore this charming role-play map, lovingly crafted to capture the
 
 Make Commu Village your own! Apply for one of ten unique jobs at City Hall and earn "Moneyz" to snag your dream house. Decorate it with your favorite blocks, unleash your inner interior designer, and call it home.
 
-Feeling flush? Dive into the bustling economy! Exchange Emeralds and Diamonds at the bank, spend your hard-earned "Moneyz" on delicious food, adorable pets, and more. Want to share the bounty? Team up with friends, explore together, and create memories that will last a lifetime.
+Feeling flush? Dive into the bustling economy! Exchange Emeralds and Diamonds for "Moneyz" at the bank, and spend it on delicious food, adorable pets, and more. Want to share the fun? Team up with friends, explore together, and create memories that will last a lifetime.
 
 Commu Village Remake is more than just a map – it's a living, breathing community waiting to be discovered. So grab your pickaxe, put on your nostalgia goggles, and get ready to experience the classic Minecraft magic like never before!
