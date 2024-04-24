@@ -1,8 +1,10 @@
 # ZVortex11325 Minecraft Projects
 
-Minecraft Projects shared on Planet Minecraft
+Minecraft Projects shared on Planet Minecraft and MCPEDL
 
 https://www.planetminecraft.com/member/zvortex11325
+
+https://mcpedl.com/user/zvortex11325/
 
 # Downloading Content
 To download any content from this respitory click on the desired file you want and click on "Download Raw File"
