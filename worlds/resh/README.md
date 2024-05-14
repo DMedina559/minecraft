@@ -3,7 +3,7 @@ To download any content from this respitory click on the desired file you want a
 
 If on Mobile, after clicking on the desired files tap the 3 dot menu in the top corner and press Download.
 
-# Resh Village: From Humble Beginnings to Bustling AdventureFrom humble beginnings to breathtaking wonder
+# Resh Village: From Humble Beginnings to Bustling Adventure
 
 Resh Village has blossomed alongside my own skills. Years of dedication have transformed this once-rough world into a masterpiece that surpasses anything I could have imagined.
 
