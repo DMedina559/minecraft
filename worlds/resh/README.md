@@ -7,7 +7,9 @@ If on Mobile, after clicking on the desired files tap the 3 dot menu in the top 
 
 Resh Village has blossomed alongside my own skills. Years of dedication have transformed this once-rough world into a masterpiece that surpasses anything I could have imagined.
 
-A World of Diverse Landscapes:Resh Village isn't your average flatland. Here, each district is a unique mini-biome, a pocket world brimming with its own personality. Explore lush forests, scorching deserts, or anything in between!
+A World of Diverse Landscapes:
+
+Resh Village isn't your average flatland. Here, each district is a unique mini-biome, a pocket world brimming with its own personality. Explore lush forests, scorching deserts, or anything in between!
 
  Build Your Dream, Your Way:
 
