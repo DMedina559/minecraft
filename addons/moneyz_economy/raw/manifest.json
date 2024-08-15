@@ -1,0 +1,25 @@
+{
+    "format_version": 2,
+    "header": {
+        "description": "A Moneyz function pack using Scoreboards by ZVortex11325 for use with NPCs. Used in the world MountainSide Villages",
+        "name": "Moneyz Economy",
+        "uuid": "2210b604-aea0-402f-bc6d-4119a28dda2c",
+        "min_engine_version": [ 1, 21, 0 ],
+        "version": [1, 0, 0]
+    },
+    "modules": [
+        {
+            "description": "A Moneyz function pack using Scoreboards by ZVortex11325 for use with NPCs. Used in the world MountainSide Villages",
+            "type": "data",
+            "uuid": "6d7d9981-b589-4c67-aa41-fb843567e602",
+
+            "version": [1, 0, 0]
+        }
+    ],
+    "dependencies": [
+    ]
+}
+
+
+
+

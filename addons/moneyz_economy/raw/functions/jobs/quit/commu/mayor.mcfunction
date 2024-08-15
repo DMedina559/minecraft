@@ -1,0 +1,1 @@
+tag @initiator[tag=commumayor] remove commumayor

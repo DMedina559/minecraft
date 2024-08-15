@@ -1,0 +1,1 @@
+tag @initiator[tag=reshassistant] remove reshassistant
