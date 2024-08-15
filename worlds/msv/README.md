@@ -7,7 +7,7 @@ If on Mobile, after clicking on the desired files tap the 3 dot menu in the top 
 # MountainSide Villages: A Vast World Awaits
 Welcome to MountainSide Villages, a sprawling Minecraft world where adventure beckons around every corner! Explore a breathtaking landscape teeming with diverse communities, each with its own unique charm and history.
 
-## A Legacy of Builds:
+### A Legacy of Builds:
 This world is an ever-evolving testament to my growth as a builder. Nestled against a majestic mountain range are various distinct communities, each reflecting a different stage in my creative journey such as:
 
 DJ Village:  Journey back to my roots in this quaint farming community bordering a vast lake. Built in my earliest days, DJ Village exudes a nostalgic charm with its simple, classic aesthetic.
@@ -16,7 +16,7 @@ Commu Village: Commu has blossomed from its humble beginnings into a stunning ro
 
 Resh Village: Ascend to breathtaking wonder in Resh Village, a masterpiece sculpted through years of dedication.  Explore diverse mini biomes, transformed into vibrant landscapes like cherry groves, mangrove swamps, and enchanting forests. Earn Moneyz and spend in the thriving marketplace to fuel your adventures.
 
-## Beyond the Villages:
+### Beyond the Villages:
 
 MountainSide Villages offers more than just charming communities. Venture beyond and discover:
 
@@ -26,7 +26,7 @@ Tricell Settlement: Need some resources? Head to Tricell Settlement, a small pri
 
 Snowy Mountain Settlement: Brave the elements and explore the snowy mountain community enclosed by protective walls.
 
-## Travel in Style:
+### Travel in Style:
 
 Choose from a variety of travel options to navigate the world effortlessly:
 
@@ -34,6 +34,7 @@ Overworld: Utilize the classic Minecraft methods – explore on foot, explore by
 
 Nether Hub: Traverse the vast world with ease using the convenient Nether Hub, allowing swift travel between settlements & villages.
 
-## Unforgettable Memories:
+### Unforgettable Memories:
 Whether you seek adventure, community, or creative expression, MountainSide Villages offers something for everyone. Team up with friends, embark on exciting quests, explore diverse landscapes, and forge lasting memories in this ever-evolving world. Grab your pickaxe, prepare for an unforgettable adventure, and discover the magic that awaits in MountainSide Villages!
 
+<sub> Note: To use Moneyz in version 1.1.0 and above you need to enable the included Moneyz Economy behavior pack. <sub>
