@@ -12,3 +12,28 @@
 - Fixed inconsistencies in DJ Village
 - Fixed 1.21 Spawn Egg buttons in Commu E400M basement
 
+# 1.1.0
+1. Added Mace with enchantments to AWT Chest in E4005 Basement
+2. Added Wind Charge to E4005 Basement
+3. Added delivery chest to all Residential buildings in Resh and Commu
+4. Changed E400M to E4005
+5. Fixed some blocks around the world
+6. Revamped the Moneyz System (read below)
+### Revamped Moneyz
+Moneyz has been completely revamped. It no longer uses command blocks and now uses NPCs. All Moneyz commands have been completely moved to the included behavior pack ‘Moneyz Economy’. 
+
+The move to NPCs and a Behavior Pack allows for easier maintenance, and fixes having to be in a certain radius of the command blocks. The move to a Behavior pack also allows it to easily be used in other worlds as well.
+
+(You’ll need to activate the ‘Moneyz Economy’ behavior pack first. [This is so you can play with achievements if you decide not play with Moneyz])
+1. Revamped Moneyz values
+   - Moneyz has been completely revalued, and has expanded from just Emeralds and Diamonds. (Learn more about this in the Banks of Commu and Resh)
+2. Added new job: Realtor
+   - The new Realtor job allows players to easily sell and buy houses.
+   - Added New realtor building to Commu and Resh
+3. All salable items in the villages have been repriced and new items have been added to the various shops such as new pets in the Petshops and new foods in the Farmers Markets.
+4. The Hotels in Commu and Resh now uses Moneyz
+5. You’ll now be notified when you get paid by the banks, rent taken from the Realtors, when you can and can’t buy an item
+6. Square Town now uses the Moneyz system through resources.
+   - Added Resources to the Square Town Bank
+7. Added ATMs to the train station where Moneyz is available
+8. Residential buildings can now be purchased and sold with Moneyz in Commu and Resh (Learn more about this in the new Realestate Offices)
