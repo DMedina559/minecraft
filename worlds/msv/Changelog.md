@@ -37,3 +37,6 @@ The move to NPCs and a Behavior Pack allows for easier maintenance, and fixes ha
    - Added Resources to the Square Town Bank
 7. Added ATMs to the train station where Moneyz is available
 8. Residential buildings can now be purchased and sold with Moneyz in Commu and Resh (Learn more about this in the new Realestate Offices)
+
+# 1.1.1
+1. Fixed typos in Moneyz Economy pack
