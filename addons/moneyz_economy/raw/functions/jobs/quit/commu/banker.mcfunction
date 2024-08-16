@@ -1,1 +1,0 @@
-tag @initiator[tag=commubanker] remove commubanker

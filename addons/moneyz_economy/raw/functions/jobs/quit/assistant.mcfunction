@@ -1,0 +1,1 @@
+tag @initiator[tag=assistant] remove assistant

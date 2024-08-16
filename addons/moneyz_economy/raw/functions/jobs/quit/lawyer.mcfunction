@@ -1,0 +1,1 @@
+tag @initiator[tag=lawyer] remove lawyer
