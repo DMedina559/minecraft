@@ -4,10 +4,7 @@ To download any content from this respitory click on the desired file you want a
 If on Mobile, after clicking on the desired files tap the 3 dot menu in the top corner and press Download.
 
 # Moneyz Economy
-This is an addon for Minecraft Bedrock Edition. Moneyz Economy is a function pack that allows you to buy items, apply for jobs and much more. A modified version is also used in the world MountainSide Villages 1.1.0+
+Moneyz Economy is a function pack for Minecraft Bedrock, that allows you to buy items, apply for jobs and much more. A modified version is also used in the world MountainSide Villages 1.1.0+Moneyz Economy allows you to easily add a bustling economy to any of your worlds! Just simply spawn an npc and enter the function command (e.g. function petshop/pets/dog) and now you have a shops person to sell you items, houses, or even give you a job.
 
-This function pack is for use with the NPC mob as every command is executed as @initiatior.
-To use without NPCs use a text editior and replace @initiatior with @p or @s inistead in every file. (Sublime Text editior makes this easy with CTR+Shift+F)
-
-The raw folder contains every function file with all the commands that are executed. 
-Feel free to download and edit these to your liking or use in your world.
+### Why use NPCs and not Chat Commands or Command Blocks?
+I decided to use NPC's for this pack as all commands are ran as @initiator instead of @p or @s. This means all commands are ran as the person interacting with the NPC and not any close player that happens to meet the requirements. (You can easily change this in any text editor.)
