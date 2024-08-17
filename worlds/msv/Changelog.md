@@ -40,3 +40,6 @@ The move to NPCs and a Behavior Pack allows for easier maintenance, and fixes ha
 
 # 1.1.1
 1. Fixed typos in Moneyz Economy pack
+
+# 1.1.2
+1. Fixed more typos in Moneyz Economy pack
