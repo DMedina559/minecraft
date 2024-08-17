@@ -11,4 +11,6 @@ Moneyz Economy allows you to easily add a bustling economy to any of your worlds
 ### Why use NPCs and not Chat Commands or Command Blocks?
 I decided to use NPC's for this pack as all commands are ran as @initiator instead of @p or @s. This means all commands are ran as the person interacting with the NPC and not any close player that happens to meet the requirements. (You can easily change this in any text editor.)
 
-### To get started start your world with cheats and the behavior pack enabled and run (1.2.0+ only)/function setupThis will set up the Moneyz scoreboard and adds all players currently online to the scoreboard with a score of 0Next run /give @p spawn_egg 1 51This will give you an NPC spawn egg to set up your shops.Enter a dialogue for the NPC and in the advanced setting change the command to a button type and enter a function command from the packE.g. function petshop/pets/dogDo this for all your shops and now you have a working economy in your world.
+### To Get Started 
+
+Start your world with cheats and the behavior pack enabled and run (1.2.0+ only)/function setupThis will set up the Moneyz scoreboard and adds all players currently online to the scoreboard with a score of 0Next run /give @p spawn_egg 1 51This will give you an NPC spawn egg to set up your shops.Enter a dialogue for the NPC and in the advanced setting change the command to a button type and enter a function command from the packE.g. function petshop/pets/dogDo this for all your shops and now you have a working economy in your world.
