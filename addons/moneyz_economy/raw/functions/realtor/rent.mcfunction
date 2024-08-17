@@ -38,4 +38,4 @@ execute as @initiator[tag=realtor] run scoreboard players remove @a[tag=d4004,ta
 
 execute as @initiator[tag=realtor] run scoreboard players remove @a[tag=d4005,tag=resident] Moneyz 3700
 
-execute as @initiator[tag=realtor] run tell @a[tag=resident] §aYou payed rent
+execute as @initiator[tag=realtor] run tell @a[tag=resident] §aYou paid rent
