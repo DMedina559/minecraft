@@ -1,1 +1,1 @@
-tag @initiator[tag=pastor] reomve pastor
+tag @initiator[tag=pastor] remove pastor
