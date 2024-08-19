@@ -13,9 +13,9 @@ I decided to use NPC's for this pack as all commands are ran as `@initiator` ins
 
 ### To Get Started 
 
-Start your world with cheats and the behavior pack enabled and run (1.2.0+ only)
+Start your world with cheats and the behavior pack enabled and run 
 
-`/function setup`
+`/function setup` <sup> (1.2.0+ only) </sup>
 
 This will set up the Moneyz scoreboard and adds all players currently online to the scoreboard with a score of 0
 
@@ -25,6 +25,6 @@ This will give you an NPC spawn egg to set up your shops.
 
 Enter a dialogue for the NPC and in the advanced setting change the command to a button type and enter a function command from the pack
 
-E.g. `function petshop/pets/dog`
+E.g. `function farmer/beef`
 
 Do this for all your shops and now you have a working economy in your world.
