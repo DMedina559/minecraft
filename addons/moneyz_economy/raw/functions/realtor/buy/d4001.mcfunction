@@ -1,4 +1,4 @@
-execute as @initiator[scores={Moneyz=..999}] run tell @s §cYou can't buy D4001!
+execute as @initiator[scores={Moneyz=..999}] run tellraw @s {"rawtext": [{"text": "§cYou need 1000 Moneyz for the downpayment\n"}, {"text": "§6You have "}, {"score":{"name": "@s","objective": "Moneyz"}}, {"text": " Moneyz"}]}
 
 execute as @initiator[tag=d4001] run tell @s §cYou already own D4001!
 
