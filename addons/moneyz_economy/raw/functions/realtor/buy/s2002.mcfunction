@@ -6,9 +6,13 @@ execute as @initiator[tag=s2002] run tell @s §cYou already own S2002!
 
 execute as @initiator[scores={Moneyz=500..},tag=!s2002] run tell @s §aYou can buy S2002!
 
-execute as @initiator[scores={Moneyz=500..},tag=!s2002] run scoreboard players remove @s Moneyz 500
+execute as @initiator[scores={Moneyz=500..},tag=!s2002] run tag @s add tmp
 
-execute as @initiator[scores={Moneyz=500..},tag=!s2002] run tag @s add s2002
+execute as @initiator[scores={Moneyz=500..},tag=!s2002,tag=tmp] run scoreboard players remove @s Moneyz 500
+
+execute as @initiator[tag=!s2002,tag=tmp] run tag @s add s2002
+
+execute as @initiator[tag=s2002,tag=tmp] run tag @s remove tmp
 
 execute as @initiator[tag=s2002,tag=!resident] run tag @s add resident
 
