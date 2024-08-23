@@ -1,4 +1,4 @@
-execute as @initiator[tag=!realtor] run tell @s §cYou're not autorized to sell Real Estate!
+execute as @initiator[tag=!realtor] run tell @s §cYou're not authorized to sell Real Estate!
 
 execute as @initiator[tag=realtor] run tell @s §aSelling I3001!
 
