@@ -3,6 +3,8 @@ To download any content from this respitory click on the desired file you want a
 
 If on Mobile, after clicking on the desired files tap the 3 dot menu in the top corner and press Download.
 
+<sub> Note: To use Moneyz in version 1.1.0 and above you need to enable the included Moneyz Economy behavior pack. <sub>
+
 
 # MountainSide Villages: A Vast World Awaits
 Welcome to MountainSide Villages, a sprawling Minecraft world where adventure beckons around every corner! Explore a breathtaking landscape teeming with diverse communities, each with its own unique charm and history.
@@ -36,5 +38,3 @@ Nether Hub: Traverse the vast world with ease using the convenient Nether Hub, a
 
 ### Unforgettable Memories:
 Whether you seek adventure, community, or creative expression, MountainSide Villages offers something for everyone. Team up with friends, embark on exciting quests, explore diverse landscapes, and forge lasting memories in this ever-evolving world. Grab your pickaxe, prepare for an unforgettable adventure, and discover the magic that awaits in MountainSide Villages!
-
-<sub> Note: To use Moneyz in version 1.1.0 and above you need to enable the included Moneyz Economy behavior pack. <sub>
