@@ -1,6 +1,8 @@
+execute as @initiator[scores={Moneyz=..24}] run tell @s §cYou can't buy 5 Fish!
+
 execute as @initiator[scores={Moneyz=..24}] run tellraw @s {"rawtext": [{"text": "§cYou need 25 Moneyz for this purchase\n"}, {"text": "§6You have "}, {"score":{"name": "@s","objective": "Moneyz"}}, {"text": " Moneyz"}]}
 
-execute as @initiator[scores={Moneyz=25..}] run tell @s §aYou can buy a 5 Fish!
+execute as @initiator[scores={Moneyz=25..}] run tell @s §aYou can buy 5 Fish!
 
 execute as @initiator[scores={Moneyz=25..}] run give @s cod 5
 
