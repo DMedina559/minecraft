@@ -13,3 +13,11 @@
    1.1. Run /function setup to set up a Moneyz Scoreboard with the scores in the pause menu
 
 2. Fixed more typos
+
+# 1.3.0
+1. Added Allay to Petshop
+2. Quitting Jobs now responds to the initiator
+3. Failed purchases now respond with how much Moneyz is required to make the purchase and how much the initiator has
+4. Fixed some oversights in the realtor commands related to purchasing houses
+5. Fixed even more typos
+6. Copper moneyz to resource has been fixed
