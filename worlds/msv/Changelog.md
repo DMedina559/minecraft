@@ -44,10 +44,10 @@ The move to NPCs and a Behavior Pack allows for easier maintenance, and fixes ha
 # 1.1.2
 1. Fixed more typos in Moneyz Economy pack
 
-# 1.3.0
+# 1.1.3
 1. Updated Moneyz Economy to 1.0.4
-  1.1. Quitting Jobs now responds to the initiator
-  1.2. Failed purchases now respond with how much Moneyz is required to make the purchase and how much the initiator has
-  1.3. Fixed some oversights in the realtor commands related to purchasing houses
-  1.4. Fixed even more typos
-  1.5. Copper moneyz to resource has been fixed
+  - Quitting Jobs now responds to the initiator
+  - Failed purchases now respond with how much Moneyz is required to make the purchase and how much the initiator has
+  - Fixed some oversights in the realtor commands related to purchasing houses
+  - Fixed even more typos
+  - Copper moneyz to resource has been fixed
