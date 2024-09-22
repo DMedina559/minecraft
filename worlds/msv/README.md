@@ -3,7 +3,7 @@ To download any content from this respitory click on the desired file you want a
 
 If on Mobile, after clicking on the desired files tap the 3 dot menu in the top corner and press Download.
 
-<sub> Note: To use Moneyz in version 1.1.0 and above you need to enable the included Moneyz Economy behavior pack. <sub>
+<sub> Note: To use Moneyz in version 1.1.0 and above you need to enable the included MSV Economy behavior pack. <sub>
 
 
 # MountainSide Villages: A Vast World Awaits
