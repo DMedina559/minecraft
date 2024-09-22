@@ -28,3 +28,8 @@ Enter a dialogue for the NPC and in the advanced setting change the command to a
 E.g. `function farmer/beef`
 
 Do this for all your shops and now you have a working economy in your world.
+
+### Google Sheets Link:
+Below is a link to a table that list all available items and prices
+
+https://docs.google.com/spreadsheets/d/1TG4Ol5z_8U7mEJlSLx4I2LBmPVcJ0Aawu3_o_ac4xvU
