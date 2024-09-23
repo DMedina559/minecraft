@@ -51,3 +51,32 @@ The move to NPCs and a Behavior Pack allows for easier maintenance, and fixes ha
   - Fixed some oversights in the realtor commands related to purchasing houses
   - Fixed even more typos
   - Copper moneyz to resource has been fixed
+
+# 1.2.0
+1. Added Allay to Petshops
+2. Added items to Workshops
+3. Updated Moneyz Economy to 1.4.0
+   - Added Workshop Kits
+      - Every Kit comes with a Colored Shulker Box
+      - Every AWT Kit comes with Fully Maxed Enchantments
+      - Added AWT Kits (Armor Weapon Tools)
+        - Added Netherite AWT Kit
+        - Added Diamond AWT Kit
+        - Added Iron AWT Kit
+        - Added Gold AWT Kit
+        - Added Stone AWT Kit
+        - Added Wood AWT Kit
+      - Added Normal Kits
+        - Added Smithing Templates Kit
+        - Added  Brewing Kit
+        - Added  Banner Kit
+        - Added  Dye Kit
+        - Added  Pottery Sherds Kit
+        - Added  Wood Kit
+   - Added various /function help/ chat commands to help all players with Moneyz
+      - Players can now run /function help/my_balance in chat to check their Moneyz balance
+      - Players can run /function help/{SHOP} to get a list of all Items and Prices
+      - Players can run /function help/jobs/{JOB} to get details about all jobs
+      - Players can run /function help/exchange_rate to view the exchange rate between Moneyz and Resource
+      - Players can run /function help/setup for instructions and recommendations
+   - Fixed Salmon at Farmer’s Market
