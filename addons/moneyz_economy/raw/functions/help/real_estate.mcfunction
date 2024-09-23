@@ -1,4 +1,4 @@
-tellraw @s {"rawtext": [{"text": "§lWhat is Real Estate?\n"},{"text": "§r§eMoneyz Economy §rallows players to rent residential buildings to live in\n"}]}
+tellraw @s {"rawtext": [{"text": "§lWhat is Real Estate?\n"},{"text": "§r§eMoneyz Economy §rallows Players to rent residential buildings to live in\n"}]}
 
 tellraw @s {"rawtext": [{"text": "§lHow do Players rent Real Estate?\n"},{"text":"§rPlayers §emake an appointment with the Realtor §rto show them §eavailable Residential buildings in their budget. §rWhen the Realtor and Player come to an §aagreement §rthey can go to the §eReal Estate office to make a Down Payment. §rAfter this transaction the Player is free in live in the house, and the §eRealtor will take rent every 7 Minecraft Days. §cThis can make your Moneyz balance go below 0 if you don't have enough so budget accordingly!§r\n"}]}
 
