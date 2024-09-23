@@ -29,6 +29,21 @@ E.g. `function farmer/beef`
 
 Do this for all your shops and now you have a working economy in your world.
 
+### Help Commands
+Moneyz Economy 1.4.0+ comes with various `/function help/` commands to help all players setup and use Moneyz easily.
+
+These commands include tips for World Owners/Admins settings up their shops, and allows players to check their Moneyz balance or the available items and prices in any shop right from the chat
+
+Players can run `/function help/my_balance` in chat to check their Moneyz balance
+
+Players can run `/function help/{SHOP}` to get a list of all Items and Prices
+
+Players can run `/function help/jobs/{JOB}` to get details about all jobs
+
+Players can run `/function help/exchange_rate` to view the exchange rate between Moneyz and Resource
+
+Players can run `/function help/setup` for instructions and recommendations
+
 ### Google Sheets Link:
 Below is a link to a table that list all available items and prices
 
