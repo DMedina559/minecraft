@@ -1,0 +1,1 @@
+tellraw @s {"rawtext": [{"text": "§lThese are the available rooms at the Hotel\n"},{"text": "§rRegular Room for 15 Moneyz a Minecraft Night\n"},{"text": "§rDeluxe Room for 50 Moneyz a Night §oIf available\n"}]}

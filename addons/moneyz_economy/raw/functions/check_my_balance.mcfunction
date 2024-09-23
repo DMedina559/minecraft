@@ -1,0 +1,1 @@
+tellraw @s {"rawtext": [{"text": "§eYou have "}, {"score":{"name": "@s","objective": "Moneyz"}}, {"text": " Moneyz"}]}
