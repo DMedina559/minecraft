@@ -1,4 +1,4 @@
-tellraw @s {"rawtext": [{"text": "§lWhat are Jobs?\n"},{"text": "§r§eMoneyz Economy §rincludes various §ejob roles §rfor Players to apply for §eto start earning Moneyz, §rand help §eexpand the Role Play aspect §rof §eeach Minecraft world for every Player.\n"},{"text": "§r§oSee §e/function help/jobs/(job) §r§ofor more informationrmation on each job.\n"}]}
+tellraw @s {"rawtext": [{"text": "§lWhat are Jobs?\n"},{"text": "§r§eMoneyz Economy §rincludes various §ejob roles §rfor Players to apply for §eto start earning Moneyz, §rand help §eexpand the Role Play aspect §rof §eeach Minecraft world for every Player.\n"},{"text": "§r§oSee §e/function help/jobs/(job) §r§ofor more information on each job.\n"}]}
 
 tellraw @s {"rawtext": [{"text": "§lHow do Players Apply for jobs?\n"},{"text": "§rPlayers can §ego to Town Hall or Employment Office §rfor an interview and §eget an Apply tag §rfrom the Apply NPC. They can then go to one of §ethe other NPCs to obtain the desired job.\n"}]}
 
