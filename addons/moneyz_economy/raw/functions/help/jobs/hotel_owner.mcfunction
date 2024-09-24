@@ -4,6 +4,4 @@ tellraw @s {"rawtext": [{"text": "§lHow much does a Hotel Owner job pay?\n"},{"
 
 tellraw @s {"rawtext": [{"text": "§lHow much does a Hotel Owner take Moneyz from Guest?\n"},{"text": "§rThe Hotel should have an §eNPC to allow guest to check in/out §rand a NPC to §eallow the Hotel Owner to charge for a night.\n"}]}
 
-tellraw @s {"rawtext": [{"text": "§lHow much does the Hotel cost?\n"},{"text": "§e15 Moneyz for a Regular Room\n"},{"text": "§e50 Moneyz for a Deluxe Room §rif available\n"}]}
-
-tellraw @s {"rawtext": [{"text": "§r§eWorld Owners/Admins §rshould construct a §lHotel §rfor this job"}]}
+tellraw @s {"rawtext": [{"text": "§lHow much does the Hotel cost?\n"},{"text": "§e15 Moneyz for a Regular Room\n"},{"text": "§e50 Moneyz for a Deluxe Room §rif available.\n"}]}
