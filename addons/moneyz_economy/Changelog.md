@@ -46,3 +46,8 @@
    - Players can run /function help/setup for instructions and recommendations
 3. Fixed Salmon at Farmer’s Market
 
+# 1.4.1
+1. Running /function setup now gives feedback to the player
+2. Improved a lot of the help commands to be more clear and descriptive
+3. Moved recommendations to it's own command: /function help/recommend
+4. removed recommendations from various help commands for a cleaner experience
