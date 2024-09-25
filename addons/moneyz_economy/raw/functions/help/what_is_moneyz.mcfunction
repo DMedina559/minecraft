@@ -12,8 +12,4 @@ tellraw @s {"rawtext": [{"text": "§lHow can Players see what items are availabl
 
 tellraw @s {"rawtext": [{"text": "§lHow can Players learn more about Moneyz?\n"},{"text": "§r§ePlayers can run §eall /function help/ §rcommands in chat to §elearn more about Moneyz.\n"}]}
 
-tellraw @s {"rawtext": [{"text": "§r§lHow do I setup Moneyz in my world?\n"},{"text": "§rYou can set up Moneyz simply by running §e/function setup §rin chat\n"},{"text": "§rThen you can set up NPCs in your shops\n"},{"text": "§rSee §e/function help/setup §rfor more information.\n"}]}
-
-tellraw @s {"rawtext": [{"text": "§lWhat if I don't want to setup my world for Moneyz?\n"},{"text": "§r§eYou caan checkout §eMountainSide Villages by ZVortex11325 §rto play a pre-built world built around Moneyz.\n"}]}
-
-tellraw @s {"rawtext": [{"text": "§lSee "},{"text": "§egithub.com/DMedina559/minecraft"},{"text": " §r§lin your browser\n"}]}
+tellraw @s {"rawtext": [{"text": "§r§lHow do I setup Moneyz in my world?\n"},{"text": "§rYou can set up Moneyz simply by running §e/function setup §rin chat.\n"},{"text": "§rThen you can set up NPCs in your shops.\n"},{"text": "§rSee §e/function help/setup §rfor more information.\n"}]}

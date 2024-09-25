@@ -5,3 +5,7 @@ tellraw @s {"rawtext": [{"text": "§lTip You can follow the autocomplete in chat
 tellraw @s {"rawtext": [{"text": "§lTip You don't need / for NPC commands.\n"}]}
 
 tellraw @s {"rawtext": [{"text": "§lWhat are some recommendations for setting up my shops?\n"},{"text": "§rSee §e/function help/recommend §rfor more information.\n"}]}
+
+tellraw @s {"rawtext": [{"text": "§lWhat if I don't want to setup my world for Moneyz?\n"},{"text": "§r§eYou can checkout §eMountainSide Villages by ZVortex11325 §rto play a pre-built world built around Moneyz.\n"}]}
+
+tellraw @s {"rawtext": [{"text": "§lSee "},{"text": "§egithub.com/DMedina559/minecraft"},{"text": " §r§lin your browser\n"}]}
