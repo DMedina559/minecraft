@@ -1,6 +1,6 @@
 tellraw @s {"rawtext": [{"text": "§l§eThese are the following Help Commands for Moneyz Economy.\n"}]}
 
-tellraw @s {"rawtext": [{"text": "§l§eGeneral Commands\n"},{"text": "§r/function help/what_is_moneyz\n"},{"text": "§r/function help/setup\n"},{"text": "§r/function help/recommend\n"},{"text": "§r/function help/jobs\n"},{"text": "§r/function help/bank\n"},{"text": "§r/function help/real_estate\n"},{"text": "§r/function help/exchange_rate\n"}]}
+tellraw @s {"rawtext": [{"text": "§l§eGeneral Commands\n"},{"text": "§r/function help/what_is_moneyz\n"},{"text": "§r/function help/setup\n"},{"text": "§r/function help/recommend\n"},{"text": "§r/function help/jobs\n"},{"text": "§r/function help/bank\n"},{"text": "§r/function help/real_estate\n"},{"text": "§r/function help/selling\n"},{"text": "§r/function help/exchange_rate\n"}]}
 
 tellraw @s {"rawtext": [{"text": "§l§eCheck Moneyz Balance\n"},{"text": "§r/function help/my_balance\n"}]}
 
