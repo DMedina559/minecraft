@@ -51,3 +51,29 @@
 2. Improved a lot of the help commands to be more clear and descriptive
 3. Moved recommendations to it's own command: /function help/recommend
 4. removed recommendations from various help commands for a cleaner experience
+
+# 1.5.0
+1. Added /function help to list all help commands
+2. Added new Workshop items
+  - Added Conduit
+  - Added Horse Armor
+  - Added End Crystal
+  - Added Ender Pearl
+  - Added Fireworks (Flight 3)
+  - Added Nether Star
+  - Added Shuker Shell
+  - Added Totem of Undying
+  - Added Wind Charge
+3. Added new Farmer's Market items
+  - Added Cake
+  - Added Cookie
+  - Added Pumpkin Pie
+4. Added new Moneyz Trader
+  - Trades most items that can be purchased from NPC shops for the same ammounts/prices
+  - Spawns naturally in the overworld (Please give any feedback on spawning/despawning)
+  - Added /function help/selling
+  - Includes Spawn Egg in creative
+5. Added new recommendations
+6. Setup file now gives Player feedback and gives NPC Spawn Egg to player
+8. Fixed a few typos
+

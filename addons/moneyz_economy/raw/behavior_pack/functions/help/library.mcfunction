@@ -1,1 +1,1 @@
-tellraw @s {"rawtext": [{"text": "§lThese are the available items at the Library\n"},{"text": "§r5 Books for 10 Moneyz\n"},{"text": "§r1 Books and Quill for 25 Moneyz\n"},{"text": "§r5 Lapis for 30 Moneyz\n"},{"text": "§r30 XP Levels for 100 Moneyz\n"}]}
+tellraw @p {"rawtext": [{"text": "§lThese are the available items at the Library\n"},{"text": "§r5 Books for 10 Moneyz\n"},{"text": "§r1 Books and Quill for 25 Moneyz\n"},{"text": "§r5 Lapis for 30 Moneyz\n"},{"text": "§r30 XP Levels for 100 Moneyz\n"}]}
