@@ -99,3 +99,4 @@ The move to NPCs and a Behavior Pack allows for easier maintenance, and fixes ha
   - Added /function help/selling
   - Includes Spawn Egg in creative
 8. Fixed a few typos
+9. Added missing Library Shop in Resh Village
