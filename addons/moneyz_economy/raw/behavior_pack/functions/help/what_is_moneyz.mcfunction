@@ -6,6 +6,8 @@ tellraw @s {"rawtext": [{"text": "§lHow can Players earn Moneyz?\n"},{"text": "
 
 tellraw @s {"rawtext": [{"text": "§lCan Players turn Moneyz back to Resource?\n"},{"text": "§r§eYes!. §rPlayers can see §eATM NPCs  §rto §eexchange Moneyz §rfor Resources. §rSee §e/function help/bank §rfor more information.\n"}]}
 
+tellraw @s {"rawtext": [{"text": "§lCan Players sell items?\n"},{"text": "§r§eYes!. §rPlayers can find §eMoneyz Traders §rthat'll spawn in the world. §rSee §e/function help/selling §rfor more information.\n"}]}
+
 tellraw @s {"rawtext": [{"text": "§lHow can Players check their Moneyz balance?\n"},{"text": "§r§ePlayers can go into the §egame's pause menu §rto see their balance or they can run §e/function help/my_balance §rin chat.\n"}]}
 
 tellraw @s {"rawtext": [{"text": "§lHow can Players see what items are available?\n"},{"text": "§r§ePlayers can run §e/function help/(shop) §rto see all §eitems available and their price.\n"}]}
