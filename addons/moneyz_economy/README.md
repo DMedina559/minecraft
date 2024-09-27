@@ -32,7 +32,7 @@ Interact with the NPC and click on `Edit Dialog`
 
 Enter a dialogue for the NPC then go back and to the `Advanced Settings`
 
-Change the command to a `Button Mode` and enter a function command from the pack
+Change the command to `Button Mode` and enter a function command from the pack
 
 E.g. `function farmer/beef`
 
@@ -41,7 +41,7 @@ You can follow the function commands here: [raw/behavior_pack/functions](raw/beh
 
 ### Help Commands
 Moneyz Economy 1.4.0+ comes with various `/function help/` commands to help players with OP permisions setup and use Moneyz easily.
-Since only OP permision players can run `/function commands`, World Owners/Admins should update to 1.5.0+ to setup NPCs with the help commands in a general area for all players to get help with Moneyz.
+Since only OP permission players can run `/function commands`, World Owners/Admins should update to 1.5.0+ to setup NPCs with the help commands in a general area for all players to get help with Moneyz.
 
 These commands include tips for World Owners/Admins settings up their shops, and allows players to check their Moneyz balance or the available items and prices in any shop.
 

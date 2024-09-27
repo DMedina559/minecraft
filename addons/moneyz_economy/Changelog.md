@@ -69,7 +69,7 @@
   - Added Cookie
   - Added Pumpkin Pie
 4. Added new Moneyz Trader
-  - Trades most items that can be purchased from NPC shops for the same ammounts/prices
+  - Trades most items that can be purchased from NPC shops for the same amounts/prices
   - Spawns naturally in the overworld (Please give any feedback on spawning/despawning)
   - Added /function help/selling
   - Includes Spawn Egg in creative
