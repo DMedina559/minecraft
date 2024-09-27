@@ -89,6 +89,22 @@
             {
               "wants": [
                 {
+                  "item": "minecraft:cake",
+                  "quantity": 1
+                }
+              ],
+              "gives": [
+                {
+                  "item": "minecraft:coal",
+                  "quantity": 3
+                }
+              ],
+              "max_uses": -1,
+              "reward_exp": true
+            },
+            {
+              "wants": [
+                {
                   "item": "minecraft:carrot",
                   "quantity": 10
                 }
@@ -112,6 +128,22 @@
               "gives": [
                 {
                   "item": "minecraft:diamond",
+                  "quantity": 1
+                }
+              ],
+              "max_uses": -1,
+              "reward_exp": true
+            },
+            {
+              "wants": [
+                {
+                  "item": "minecraft:cookie",
+                  "quantity": 5
+                }
+              ],
+              "gives": [
+                {
+                  "item": "minecraft:coal",
                   "quantity": 1
                 }
               ],
@@ -209,6 +241,22 @@
                 {
                   "item": "minecraft:coal",
                   "quantity": 3
+                }
+              ],
+              "max_uses": -1,
+              "reward_exp": true
+            },
+            {
+              "wants": [
+                {
+                  "item": "minecraft:pumpkin_pie",
+                  "quantity": 1
+                }
+              ],
+              "gives": [
+                {
+                  "item": "minecraft:copper_ingot",
+                  "quantity": 1
                 }
               ],
               "max_uses": -1,
