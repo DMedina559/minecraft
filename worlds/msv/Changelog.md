@@ -80,3 +80,22 @@ The move to NPCs and a Behavior Pack allows for easier maintenance, and fixes ha
       - Players can run /function help/exchange_rate to view the exchange rate between Moneyz and Resource
       - Players can run /function help/setup for instructions and recommendations
    - Fixed Salmon at Farmer’s Market
+
+# 1.3.0
+1. Added /function help to list all help commands
+2. Added new Workshop items
+  - Added Conduit
+  - Added Horse Armor
+  - Added End Crystal
+  - Added Ender Pearl
+  - Added Fireworks (Flight 3)
+  - Added Nether Star
+  - Added Shuker Shell
+  - Added Totem of Undying
+  - Added Wind Charge
+4. Added new Moneyz Trader
+  - Trades most items that can be purchased from NPC shops for the same amounts/prices
+  - Spawns naturally in the overworld (Please give any feedback on spawning/despawning)
+  - Added /function help/selling
+  - Includes Spawn Egg in creative
+8. Fixed a few typos
