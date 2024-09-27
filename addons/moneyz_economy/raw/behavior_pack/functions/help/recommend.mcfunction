@@ -2,7 +2,7 @@ tellraw @s {"rawtext": [{"text": "§lWhat are some recommendations for setting u
 
 tellraw @s {"rawtext": [{"text": "§r§eWorld Owners/Admins §rshould construct a §lTown Hall or Employment Office §rto §l§eallow Players to interview, apply for and quit Jobs.\n"}]}
 
-tellraw @s {"rawtext": [{"text": "§r§eWorld Owners/Admins §rshould construct a §lBank Building §rto set up the §l§eBank NPCs for Players to make exchanges, §e§lallow Bankers to pay workers, and to make Resource exchanges for Players.\n"},{"text": "§r§eWorld Owners/Admins §rshould also §lstock the Bank Building §l§ewith Resources for Banks to make Player exchanges.\n"}]}
+tellraw @s {"rawtext": [{"text": "§r§eWorld Owners/Admins §rshould construct a §lBank Building §rto set up the §l§eBank NPCs for Players to make exchanges, §e§lallow Bankers to pay workers, and to make Resource exchanges for Players.\n"},{"text": "§r§eWorld Owners/Admins §rshould also §lstock the Bank Building §l§ewith Resources for Bankers to make Player exchanges.\n"}]}
 
 tellraw @s {"rawtext": [{"text": "§r§eWorld Owners/Admins §rshould construct a §lReal Estate Office §rto set up the Real Estate NPCs §l§eallow Players to manage real estate with NPCs, §rand §e§lallow the Realtor to sell previously rented houses and take rent from renters.\n"},{"text": "§r§eWorld Owners/Admins §rshould also §linclude a 'Citizen Bot' §rso Players can §l§eavoid getting a misleading 'Rent Payed' messages in chat after they sell a house.\n"}]}
 
