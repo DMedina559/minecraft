@@ -792,8 +792,8 @@
               ],
               "gives": [
                 {
-                  "item": "minecraft:gold_ingot",
-                  "quantity": 10
+                  "item": "minecraft:iron_ingot",
+                  "quantity": 5
                 }
               ],
               "max_uses": -1,
@@ -867,23 +867,7 @@
               "wants": [
                 {
                   "item": "minecraft:wind_charge",
-                  "quantity": 5
-                }
-              ],
-              "gives": [
-                {
-                  "item": "minecraft:coal",
-                  "quantity": 1
-                }
-              ],
-              "max_uses": -1,
-              "reward_exp": true
-            },
-            {
-              "wants": [
-                {
-                  "item": "minecraft:firework_rocket",
-                  "quantity": 5
+                  "quantity": 20
                 }
               ],
               "gives": [
