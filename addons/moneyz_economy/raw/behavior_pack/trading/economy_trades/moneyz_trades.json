@@ -414,7 +414,7 @@
           ]
         },
         {
-          "num_to_select":2,
+          "num_to_select":3,
           "trades":[
             {
               "wants": [
@@ -467,7 +467,7 @@
           ]
         },
         {
-          "num_to_select":1,
+          "num_to_select":3,
           "trades":[
             {
               "wants": [

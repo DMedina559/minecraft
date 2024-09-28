@@ -8,54 +8,29 @@
       "is_summonable": true
     },
 
-    "component_groups": {
-      "managed": {
-        "minecraft:managed_wandering_trader": {}
-      },
-      "despawning": {
-        "minecraft:type_family": {
-          "family": [ "wandering_trader", "wandering_trader_despawning", "mob" ]
-        }
-      },
-      "minecraft:scared": {
-        "minecraft:angry": {
-          "duration": 5,
-          "broadcastAnger": true,
-          "broadcastRange": 10,
-          "broadcast_targets": [
-            "llama",
-            "trader_llama"
-          ],
-          "broadcast_filters": { "test": "is_leashed_to", "subject": "other", "value": true },
-          "calm_event": {
-            "event": "minecraft:become_calm",
-            "target": "self"
-          }
-        }
-      }
-    },
-
     "components": {
       "minecraft:type_family": {
-        "family": [ "wandering_trader", "mob" ]
+        "family": [ "mob" ]
       },
       "minecraft:is_hidden_when_invisible": {
-      },
-      "minecraft:timer": {
-        "looping": false,
-        "random_time_choices": [
-          { "weight": 50, "value": 2400 },
-          { "weight": 50, "value": 3600 }
-        ],
-        "time_down_event": {
-          "event": "minecraft:start_despawn",
-          "target": "self"
-        }
       },
       "minecraft:economy_trade_table": {
         "display_name": "entity.wandering_trader.name",
         "table": "trading/economy_trades/moneyz_trades.json",
         "new_screen": true
+      },
+      "minecraft:leashable": {
+        "soft_distance": 4.0,
+        "hard_distance": 6.0,
+        "max_distance": 10.0,
+        "on_leash": {
+            "event": "minecraft:on_leash",
+            "target": "self"
+        },
+        "on_unleash": {
+            "event": "minecraft:on_unleash",
+            "target": "self"
+        }
       },
       "minecraft:breathable": {
         "total_supply": 15,
@@ -93,27 +68,15 @@
       },
       "minecraft:can_climb": {
       },
-      "minecraft:home": {
-        "restriction_radius": 16
-      },
       "minecraft:behavior.float": {
         "priority": 0
       },
       "minecraft:conditional_bandwidth_optimization": {
       },
       "minecraft:despawn": {
-        "remove_child_entities": true,
-        "filters": {
-          "all_of": [
-            {
-              "any_of": [
-                { "test": "is_family", "subject": "self", "value": "wandering_trader_despawning" },
-                { "test": "has_trade_supply", "subject": "self", "value": false }
               ]
-            },
-            { "test": "distance_to_nearest_player", "operator": ">", "value": 24 }
-          ]
-        }
+        "despawn_from_distance": {},
+        "despawn_from_inactivity": true
       },
       "minecraft:damage_sensor": {
         "triggers": [
@@ -275,36 +238,6 @@
         "is_pushable_by_piston": true
       },
       "minecraft:nameable": {
-      }
-    },
-    "events": {
-      "minecraft:scheduled": {
-        "add": {
-          "component_groups": [
-            "managed"
-          ]
-        }
-      },
-      "minecraft:start_despawn": {
-        "add": {
-          "component_groups": [
-            "despawning"
-          ]
-        }
-      },
-      "minecraft:become_scared": {
-        "add": {
-          "component_groups": [
-            "minecraft:scared"
-          ]
-        }
-      },
-      "minecraft:become_calm": {
-        "remove": {
-          "component_groups": [
-            "minecraft:scared"
-          ]
-        }
       }
     }
   }
