@@ -9,16 +9,16 @@
             {
                 "minecraft:spawns_on_surface": {},
                 "minecraft:brightness_filter": {
-                    "min": 10,
-                    "max": 15,
-                    "adjust_for_weather": true
+                  "min": 5,
+                  "max": 15,
+                  "adjust_for_weather": true
                 },
                 "minecraft:weight": {
-                    "default": 4
+                    "default": 2
                 },
                 "minecraft:biome_filter": {
                     "test": "has_biome_tag",
-                    "value": "animal"
+                    "value": "overworld"
                 }
             }
         ]

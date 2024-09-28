@@ -19,7 +19,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -35,7 +35,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -51,7 +51,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -67,7 +67,7 @@
                   "quantity": 2
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -83,7 +83,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -99,7 +99,7 @@
                   "quantity": 3
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -115,7 +115,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -131,7 +131,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -147,7 +147,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -163,7 +163,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -179,7 +179,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -195,7 +195,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -211,7 +211,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -227,7 +227,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -243,7 +243,7 @@
                   "quantity": 3
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -259,7 +259,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -275,7 +275,7 @@
                   "quantity": 3
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -291,7 +291,7 @@
                   "quantity": 3
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             }
           ]
@@ -312,7 +312,7 @@
                   "quantity": 3
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -328,7 +328,7 @@
                   "quantity": 2
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -344,7 +344,7 @@
                   "quantity": 3
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -360,7 +360,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -376,7 +376,7 @@
                   "quantity": 3
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -392,7 +392,7 @@
                   "quantity": 2
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -408,7 +408,7 @@
                   "quantity": 3
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             }
           ]
@@ -429,7 +429,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -445,7 +445,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -461,7 +461,7 @@
                   "quantity": 3
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             }
           ]
@@ -482,7 +482,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -498,7 +498,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -514,7 +514,7 @@
                   "quantity": 4
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -530,7 +530,7 @@
                   "quantity": 4
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -546,7 +546,7 @@
                   "quantity": 6
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -562,7 +562,7 @@
                   "quantity": 6
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -578,7 +578,7 @@
                   "quantity": 6
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -594,7 +594,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -610,7 +610,7 @@
                   "quantity": 3
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -626,7 +626,7 @@
                   "quantity": 8
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             }
           ]
@@ -647,7 +647,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -663,7 +663,7 @@
                   "quantity": 3
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -679,7 +679,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -695,7 +695,7 @@
                   "quantity": 4
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -711,7 +711,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -727,7 +727,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -743,7 +743,7 @@
                   "quantity": 3
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -759,7 +759,7 @@
                   "quantity": 3
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             }
           ]
@@ -780,7 +780,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -796,7 +796,7 @@
                   "quantity": 5
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -812,7 +812,7 @@
                   "quantity": 5
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -828,7 +828,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -844,7 +844,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -860,7 +860,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             },
             {
@@ -876,7 +876,7 @@
                   "quantity": 1
                 }
               ],
-              "max_uses": -1,
+              "max_uses": 3,
               "reward_exp": true
             }
           ]
