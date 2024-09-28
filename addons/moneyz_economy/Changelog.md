@@ -77,3 +77,5 @@
 6. Setup file now gives Player feedback and gives NPC Spawn Egg to player
 8. Fixed a few typos
 
+# 1.5.1
+1. Changed Moneyz Trader spawn rates
