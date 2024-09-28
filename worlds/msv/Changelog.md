@@ -100,3 +100,6 @@ The move to NPCs and a Behavior Pack allows for easier maintenance, and fixes ha
   - Includes Spawn Egg in creative
 8. Fixed a few typos
 9. Added missing Library Shop in Resh Village
+
+# 1.3.1
+1. Changed Moneyz Trader spawn rates
