@@ -37,7 +37,7 @@ Change the command to `Button Mode` and enter a function command from the pack
 E.g. `function farmer/beef`
 
 Do this for all your shops and now you have a working economy in your world.
-You can follow the function commands here: [raw/behavior_pack/functions](raw/behavior_pack/functions)
+You can follow the function commands here: [raw/functions](raw/functions)
 
 ### Help Commands
 Moneyz Economy 1.4.0+ comes with various `/function help/` commands to help players with OP permisions setup and use Moneyz easily.
