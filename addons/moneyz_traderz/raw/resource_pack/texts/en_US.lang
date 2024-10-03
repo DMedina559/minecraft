@@ -1,0 +1,8 @@
+entity.zvortex:farmer_trader.name=Farmer Trader
+item.spawn_egg.entity.zvortex:farmer_trader.name=Spawn Farmer Trader
+
+entity.zvortex:petshop_trader.name=Pet Shop Trader
+item.spawn_egg.entity.zvortex:petshop_trader.name=Spawn Pet Shop Trader
+
+entity.zvortex:petshop_trader.name=WorkShop Trader
+item.spawn_egg.entity.zvortex:workshop_trader.name=Spawn WorkShop Trader

@@ -1,0 +1,29 @@
+{
+    "format_version": 2,
+    "header": {
+        "description": "A Moneyz Trader entity for use with Moneyz Economy by ZVortex11325.",
+        "name": "Moneyz Economy",
+        "uuid": "08ffc317-198c-44a7-b0dd-787672a48b6d",
+        "min_engine_version": [ 1, 21, 0 ],
+        "version": [1, 0, 0]
+    },
+    "modules": [
+        {
+            "description": "A Moneyz Trader entity for use with Moneyz Economy by ZVortex11325.",
+            "type": "data",
+            "uuid": "a8be3c38-4442-493d-b82f-f2f6773b73e3",
+
+            "version": [1, 0, 0]
+        }
+    ],
+    "dependencies": [
+        {
+         "uuid":"cad84bd2-b3ab-438d-80c0-e93e86d9916a",
+          "version":[1,0,0]
+        }
+     ]
+}
+
+
+
+

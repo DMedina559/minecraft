@@ -2,16 +2,16 @@
   "format_version": "1.8.0",
   "minecraft:client_entity": {
     "description": {
-      "identifier": "zvortex:moneyz_trader",
+      "identifier": "zvortex:petshop_trader",
       "spawn_egg": {
-        "base_color": "#c6c97d",
-        "overlay_color": "#895fad"
+        "base_color": "#522330",
+        "overlay_color": "#0e5913"
       },
       "materials": {
         "default": "wandering_trader"
       },
       "textures": {
-        "default": "textures/entity/moneyz_trader"
+        "default": "textures/entity/petshop_trader"
       },
       "geometry": {
         "default": "geometry.villager_v2"

@@ -1,18 +1,18 @@
 {
     "format_version": 2,
     "header": {
-        "description": "Moneyz Economy resource pack by ZVortex11325",
+        "description": "Moneyz Trader resource pack by ZVortex11325",
         "name": "Moneyz Economy",
         "uuid": "cad84bd2-b3ab-438d-80c0-e93e86d9916a",
-        "version": [1, 5, 0],
+        "version": [1, 0, 0],
         "min_engine_version": [ 1, 21, 30 ]
     },
     "modules": [
         {
-            "description": "Moneyz Economy resource pack by ZVortex11325",
+            "description": "Moneyz Trader resource pack by ZVortex11325",
             "type": "resources",
             "uuid": "6fdcf29e-be78-440c-8563-aea96b6e8f72",
-            "version": [1, 5, 0]
+            "version": [1, 0, 0]
         }
     ]
 }

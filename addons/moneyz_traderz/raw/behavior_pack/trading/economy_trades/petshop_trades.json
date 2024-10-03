@@ -1,0 +1,304 @@
+{
+  "tiers": [
+      {
+        "num_to_select":0,
+        "total_exp_required": 0,
+        "trades":[
+          {
+            "wants": [
+              {
+                "item": "minecraft:allay_spawn_egg",
+                "quantity": 1
+              }
+            ],
+            "gives": [
+              {
+                "item": "minecraft:emerald",
+                "quantity": 1
+              }
+            ],
+            "max_uses": 3,
+            "reward_exp": true
+          },
+          {
+            "wants": [
+              {
+                "item": "minecraft:axolotl_spawn_egg",
+                "quantity": 1
+              }
+            ],
+            "gives": [
+              {
+                "item": "minecraft:emerald",
+                "quantity": 1
+              }
+            ],
+            "max_uses": 3,
+            "reward_exp": true
+          },
+          {
+            "wants": [
+              {
+                "item": "minecraft:cat_spawn_egg",
+                "quantity": 1
+              }
+            ],
+            "gives": [
+              {
+                "item": "minecraft:copper_ingot",
+                "quantity": 4
+              }
+            ],
+            "max_uses": 3,
+            "reward_exp": true
+          },
+          {
+            "wants": [
+              {
+                "item": "minecraft:wolf_spawn_egg",
+                "quantity": 1
+              }
+            ],
+            "gives": [
+              {
+                "item": "minecraft:copper_ingot",
+                "quantity": 4
+              }
+            ],
+            "max_uses": 3,
+            "reward_exp": true
+          },
+          {
+            "wants": [
+              {
+                "item": "minecraft:horse_spawn_egg",
+                "quantity": 1
+              }
+            ],
+            "gives": [
+              {
+                "item": "minecraft:copper_ingot",
+                "quantity": 6
+              }
+            ],
+            "max_uses": 3,
+            "reward_exp": true
+          },
+          {
+            "wants": [
+              {
+                "item": "minecraft:donkey_spawn_egg",
+                "quantity": 1
+              }
+            ],
+            "gives": [
+              {
+                "item": "minecraft:copper_ingot",
+                "quantity": 6
+              }
+            ],
+            "max_uses": 3,
+            "reward_exp": true
+          },
+          {
+            "wants": [
+              {
+                "item": "minecraft:mule_spawn_egg",
+                "quantity": 1
+              }
+            ],
+            "gives": [
+              {
+                "item": "minecraft:copper_ingot",
+                "quantity": 6
+              }
+            ],
+            "max_uses": 3,
+            "reward_exp": true
+          },
+          {
+            "wants": [
+              {
+                "item": "minecraft:parrot_spawn_egg",
+                "quantity": 1
+              }
+            ],
+            "gives": [
+              {
+                "item": "minecraft:gold_ingot",
+                "quantity": 1
+              }
+            ],
+            "max_uses": 3,
+            "reward_exp": true
+          },
+          {
+            "wants": [
+              {
+                "item": "minecraft:pig_spawn_egg",
+                "quantity": 1
+              }
+            ],
+            "gives": [
+              {
+                "item": "minecraft:copper_ingot",
+                "quantity": 3
+              }
+            ],
+            "max_uses": 3,
+            "reward_exp": true
+          },
+          {
+            "wants": [
+              {
+                "item": "minecraft:strider_spawn_egg",
+                "quantity": 1
+              }
+            ],
+            "gives": [
+              {
+                "item": "minecraft:copper_ingot",
+                "quantity": 8
+              }
+            ],
+            "max_uses": 3,
+            "reward_exp": true
+          }
+        ]
+      },
+      {
+        "num_to_select":0,
+        "total_exp_required": 0,
+        "trades":[
+          {
+            "wants": [
+              {
+                "item": "minecraft:bone",
+                "quantity": 5
+              }
+            ],
+            "gives": [
+              {
+                "item": "minecraft:gold_ingot",
+                "quantity": 1
+              }
+            ],
+            "max_uses": 3,
+            "reward_exp": true
+          },
+          {
+            "wants": [
+              {
+                "item": "minecraft:carrot_on_a_stick",
+                "quantity": 1
+              }
+            ],
+            "gives": [
+              {
+                "item": "minecraft:copper_ingot",
+                "quantity": 3
+              }
+            ],
+            "max_uses": 3,
+            "reward_exp": true
+          },
+          {
+            "wants": [
+              {
+                "item": "minecraft:cod",
+                "quantity": 5
+              }
+            ],
+            "gives": [
+              {
+                "item": "minecraft:gold_ingot",
+                "quantity": 1
+              }
+            ],
+            "max_uses": 3,
+            "reward_exp": true
+          },
+          {
+            "wants": [
+              {
+                "item": "minecraft:warped_fungus_on_a_stick",
+                "quantity": 1
+              }
+            ],
+            "gives": [
+              {
+                "item": "minecraft:copper_ingot",
+                "quantity": 4
+              }
+            ],
+            "max_uses": 3,
+            "reward_exp": true
+          },
+          {
+            "wants": [
+              {
+                "item": "minecraft:lead",
+                "quantity": 1
+              }
+            ],
+            "gives": [
+              {
+                "item": "minecraft:gold_ingot",
+                "quantity": 1
+              }
+            ],
+            "max_uses": 3,
+            "reward_exp": true
+          },
+          {
+            "wants": [
+              {
+                "item": "minecraft:name_tag",
+                "quantity": 1
+              }
+            ],
+            "gives": [
+              {
+                "item": "minecraft:gold_ingot",
+                "quantity": 1
+              }
+            ],
+            "max_uses": 3,
+            "reward_exp": true
+          },
+          {
+            "wants": [
+              {
+                "item": "minecraft:saddle",
+                "quantity": 1
+              }
+            ],
+            "gives": [
+              {
+                "item": "minecraft:copper_ingot",
+                "quantity": 3
+              }
+            ],
+            "max_uses": 3,
+            "reward_exp": true
+          },
+          {
+            "wants": [
+              {
+                "item": "minecraft:wheat_seeds",
+                "quantity": 1
+              }
+            ],
+            "gives": [
+              {
+                "item": "minecraft:coal",
+                "quantity": 3
+              }
+            ],
+            "max_uses": 3,
+            "reward_exp": true
+          }
+        ]
+      }
+  ]
+}
