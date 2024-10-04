@@ -1,5 +1,5 @@
 {
-	"format_version": "1.14.0",
+	"format_version": "1.21.0",
 	"minecraft:npc_dialogue": {
 		"scenes": [
 			{
@@ -37,13 +37,13 @@
 							"text": "§r§6Moneyz Economy §rincludes various §6job roles §rfor Players to apply for §6to start earning Moneyz, §rand help §6expand the Role Play aspect §rof §6each Minecraft world for every Player.\n"
 						},
 						{
-							"text": "§r§oSee §6/function help/jobs/(job) §r§ofor more information on each job.\n"
+							"text": "§r§oSee §6bellow §r§ofor more information on each job.\n"
 						},
 						{
 							"text": "§r§lHow do Players Apply for jobs?\n"
 						},
 						{
-							"text": "§rPlayers can §6go to Town Hall or Employment Office §rfor an interview and §6get an Apply tag §rfrom the Apply NPC. They can then go to one of §6the other NPCs to obtain the desired job.\n"
+							"text": "§rPlayers can §6go to Town Hall or Employment Office §rfor an interview and §6get an Apply tag §rfrom the NPC. They can then go to one of §6obtain the desired job.\n"
 						},
 						{
 							"text": "§r§lHow do workers get payed?\n"
@@ -55,7 +55,7 @@
 							"text": "§r§lHow do Players Quit jobs?\n"
 						},
 						{
-							"text": "§rPlayers can go to §6Town Hall or Employment Office §rto one of the other §6NPCs to quit their current job.\n"
+							"text": "§rPlayers can go to §6Town Hall or Employment Office §rthe §6NPCs to quit their current job.\n"
 						}
 					]
 				},
@@ -83,6 +83,128 @@
 					{
 						"name": "Pg. 2",
 						"commands": ["/dialogue open @s @initiator jobs_help_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "jobs_help_2",
+				"npc_name": "Jobs",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat are Jobs?\n"
+						},
+						{
+							"text": "§r§6Moneyz Economy §rincludes various §6job roles §rfor Players to apply for §6to start earning Moneyz, §rand help §6expand the Role Play aspect §rof §6each Minecraft world for every Player.\n"
+						},
+						{
+							"text": "§r§oSee §6bellow §r§ofor more information on each job.\n"
+						},
+						{
+							"text": "§r§lHow do Players Apply for jobs?\n"
+						},
+						{
+							"text": "§rPlayers can §6go to Town Hall or Employment Office §rfor an interview and §6get an Apply tag §rfrom the NPC. They can then go to one of §6obtain the desired job.\n"
+						},
+						{
+							"text": "§r§lHow do workers get payed?\n"
+						},
+						{
+							"text": "§rBankers will have a §6NPCs §rthey go to §6every 5 Minecraft days §rto auto §6deposit Moneyz to all online workers.§r\n"
+						},
+						{
+							"text": "§r§lHow do Players Quit jobs?\n"
+						},
+						{
+							"text": "§rPlayers can go to §6Town Hall or Employment Office §rthe §6NPCs to quit their current job.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Farmer",
+						"commands": ["/dialogue open @s @initiator jobs_help_farmer"]
+					},
+					{
+						"name": "Fisher",
+						"commands": ["/dialogue open @s @initiator jobs_help_fisher"]
+					},
+					{
+						"name": "Hotel Owner",
+						"commands": ["/dialogue open @s @initiator jobs_help_hotel"]
+					},
+					{
+						"name": "Judge",
+						"commands": ["/dialogue open @s @initiator jobs_help_judge"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator jobs_help"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator jobs_help_3"]
+					}
+				]
+			},
+			{
+				"scene_tag": "jobs_help_3",
+				"npc_name": "Jobs",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat are Jobs?\n"
+						},
+						{
+							"text": "§r§6Moneyz Economy §rincludes various §6job roles §rfor Players to apply for §6to start earning Moneyz, §rand help §6expand the Role Play aspect §rof §6each Minecraft world for every Player.\n"
+						},
+						{
+							"text": "§r§oSee §6bellow §r§ofor more information on each job.\n"
+						},
+						{
+							"text": "§r§lHow do Players Apply for jobs?\n"
+						},
+						{
+							"text": "§rPlayers can §6go to Town Hall or Employment Office §rfor an interview and §6get an Apply tag §rfrom the NPC. They can then go to one of §6obtain the desired job.\n"
+						},
+						{
+							"text": "§r§lHow do workers get payed?\n"
+						},
+						{
+							"text": "§rBankers will have a §6NPCs §rthey go to §6every 5 Minecraft days §rto auto §6deposit Moneyz to all online workers.§r\n"
+						},
+						{
+							"text": "§r§lHow do Players Quit jobs?\n"
+						},
+						{
+							"text": "§rPlayers can go to §6Town Hall or Employment Office §rthe §6NPCs to quit their current job.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Lawyer",
+						"commands": ["/dialogue open @s @initiator jobs_help_lawyer"]
+					},
+					{
+						"name": "Mayor",
+						"commands": ["/dialogue open @s @initiator jobs_help_mayor"]
+					},
+					{
+						"name": "Pastor",
+						"commands": ["/dialogue open @s @initiator jobs_help_pastor"]
+					},
+					{
+						"name": "Realtor",
+						"commands": ["/dialogue open @s @initiator jobs_help_realtor"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator jobs_help_2"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator jobs"]
 					}
 				]
 			},

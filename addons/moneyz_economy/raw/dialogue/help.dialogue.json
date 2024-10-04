@@ -26,6 +26,336 @@
 				]
 			},
 			{
+				"scene_tag": "help_moneyz",
+				"npc_name": "Moneyz",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat Is Moneyz?\n"
+						},
+						{
+							"text": "§rMoneyz is a §6Scoreboard §rsystem that allows Players to purchase and sell various items from §6NPC Shops.\n"
+						},
+						{
+							"text": "§rYou can earn Moneyz by §6applying for Jobs §ror §6trading in Resources §rlike §bDiamonds §ror §8Coal.\n"
+						},
+						{
+							"text": "§r§lWhat are Resources?\n"
+						},
+						{
+							"text": "§r§6Resources §rare various ores Players can §6mine in a Minecraft world. §rSee §6bellow §r for more information about the Bank.\n"
+						},
+						{
+							"text": "§r§lHow can Players earn Moneyz?\n"
+						},
+						{
+							"text": "§r§6Players earn Moneyz §6by applying for jobs §ror §6exchanging Resources §rfor Moneyz §6at ATM NPCs §rSee §6bellow §rfor more information about the Bank.\n"
+						},
+						{
+							"text": "§r§lCan Players turn Moneyz back to Resource?\n"
+						},
+						{
+							"text": "§r§6Yes!. §rPlayers can see an §6ATM NPCs  §rto §6exchange Moneyz §rfor Resources. §rSee §6bellow §rfor more information about the Bank.\n"
+						},
+						{
+							"text": "§r§lCan Players sell items?\n"
+						},
+						{
+							"text": "§r§6Yes!. §rPlayers can §6to the shop §rof the items they're selling. §rSee §6Help NPC §rfor more information about Shops.\n"
+						},
+						{
+							"text": "§r§lHow can Players see what items are available?\n"
+						},
+						{
+							"text": "§r§6Players can §6see a Help NPC or go to the Shop §rto see all §6items available and their price.\n"
+						},
+						{
+							"text": "§r§lHow can Players learn more about Moneyz?\n"
+						},
+						{
+							"text": "§r§6Players can see §6all helps categories at the Help NPC.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Banks",
+						"commands": ["/dialogue open @s @initiator help_banks"]
+					},
+					{
+						"name": "Real Estate",
+						"commands": ["/dialogue open @s @initiator help_real_estate"]
+					},
+					{
+						"name": "Selling",
+						"commands": ["/dialogue open @s @initiator help_selling"]
+					},
+					{
+						"name": "Setup",
+						"commands": ["/dialogue open @s @initiator help_setup"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator help"]
+					}
+				]
+			},
+			{
+				"scene_tag": "help_banks",
+				"npc_name": "Banks",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat is the Bank for?\n"
+						},
+						{
+							"text": "§r§6Moneyz Economy §rallows Players to §6exchange Resources such as §7Iron §6or §6Copper §6for Moneyz with 'ATM' NPCs.\n"
+						},
+						{
+							"text": "§rA Bank is where Players can make these exchanges.\n"
+						},
+						{
+							"text": "§r§lWhat is an ATM NPC?\n"
+						},
+						{
+							"text": "§rATM NPCs are where Players are able to §6exchange their Resources for Moneyz and vice versa.§r\n"
+						},
+						{
+							"text": "§r§lWhat if a Player wants to exchange more than 1 Resource?\n"
+						},
+						{
+							"text": "§rPlayers are able to §6exchange 1 Resource for Moneyz§r at ATM NPCs, this can be tedious if the Player §6wants to exchange large amounts of Resources. §rTo help this process, §6Bankers can exchange Resources for larger value Resource.\n"
+						},
+						{
+							"text": "§rFor Example if a Player wanted to §6exchange 1 Gold (25 Moneyz) and 1 Diamond (75 Moneyz) §rfor Moneyz, they could §6ask the banker to exchange their 1 Gold Ingot (25 Moneyz) and 1 Emerald (75 Moneyz) for 1 Emerald (100 Moneyz).\n"
+						},
+						{
+							"text": "§rThis allows the Player to §6exchange all their Resources in less transactions §rat the ATM NPCs.\n"
+						},
+						{
+							"text": "§r§oSee §6bellow §r§ofor the exchange rate between Moneyz and Resource.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Exchange Rate",
+						"commands": ["/function help/exchange_rate"]
+					},
+					{
+						"name": "Back",
+						"commands": ["/dialogue open @s @initiator help_moneyz"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator help"]
+					}
+				]
+			},
+			{
+				"scene_tag": "help_real_estate",
+				"npc_name": "Real Estate",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat is Real Estate?\n"
+						},
+						{
+							"text": "§r§6Moneyz Economy §rallows Players to rent §6residential buildings to live in.§r\n"
+						},
+						{
+							"text": "§r§lHow do Players rent Real Estate?\n"
+						},
+						{
+							"text": "§rPlayers §6make an appointment with the Realtor at the Real Estate Ofiice §rto show them §6available Residential buildings in their budget. §rWhen the Realtor and Player come to an §aagreement §rthey can go to the §6Real Estate office to make a Down Payment. §rAfter this transaction the Player is free in live in the house, and the §6Realtor will take rent every 7 Minecraft Days. §cThis can make your Moneyz balance go below 0 if you don't have enough so budget accordingly!§r\n"
+						},
+						{
+							"text": "§r§lHow do Players sell Real Estate?\n"
+						},
+						{
+							"text": "§rPlayers §6make an appointment with the Realtor §rto §6schedule an Inspection of the Property. §rThey will check to make sure the house is not destroyed, or missing any main furniture. §6If the inspection §apasses §6the Realtor will go to the Real Estate office and §arefund §6your deposit. If the inspection §cfails, §6the realtor will informationrm you what changes need to be made to refund your deposit.\n"
+						},
+						{
+							"text": "§rPlayers should also go to the Real Estate office to remove the Citizen Tag to avoid misleading 'Rent Payed' messages in chat after getting their deposit back.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Back",
+						"commands": ["/dialogue open @s @initiator help_moneyz"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator help"]
+					}
+				]
+			},
+			{
+				"scene_tag": "help_selling",
+				"npc_name": "Selling",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lHow can Players sell their items?\n"
+						},
+						{
+							"text": "§r§6Players can sell their items by §6going to the shop §rof the items they want to sell.\n"
+						},
+						{
+							"text": "§r§lWhat are the selling prices?\n"
+						},
+						{
+							"text": "§r§6The selling prices are the same as the items purchased from the shop.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Back",
+						"commands": ["/dialogue open @s @initiator help_moneyz"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator help"]
+					}
+				]
+			},
+			{
+				"scene_tag": "help_setup",
+				"npc_name": "Setup",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lHow do I setup Moneyz?\n"
+						},
+						{
+							"text": "§rYou can easily setup Moneyz by running §6/function setup §r in chat.\n"
+						},
+						{
+							"text": "§rThis will §6set up a Moneyz Scoreboard §rin your world and §6give you an NPC Spawn Egg.\n"
+						},
+						{
+							"text": "§rYou'll use this for §6all your shops and Moneyz realated commands.\n"
+						},
+						{
+							"text": "§rTo setup your shops\n"
+						},
+						{
+							"text": "§rSpawn a NPC and §6enter it's menu.\n"
+						},
+						{
+							"text": "§rFrom here you can §6choose the look and name §ryou want.\n"
+						},
+						{
+							"text": "§rNext go to §6Edit Dialogue §rand §6enter the text you want §rthe NPC to say.\n"
+						},
+						{
+							"text": "§rNext go to §6Advanced Settings §rand change the §6command to a Button type.\n"
+						},
+						{
+							"text": "§rThis is where the Player §6will choose to to Buy or Sell.\n"
+						},
+						{
+							"text": "§rThe commands will follow §6/dialogue open @s @initiator (shop)_(buy|sell)\n"
+						},
+						{
+							"text": "§rFor example §6/dialogue open @s @initiator workshop_sell\n"
+						},
+						{
+							"text": "§rDo this for all your §6Shops §rand now you have a §6working Moneyz Economy for everyone to enjoy!\n"
+						},
+						{
+							"text": "§r§lAlternatively you can run §6/dialogue change @e[family=npc,r=5,c=1] (shop) §r§lin chat next to an NPC to automatically set a preconfigured dialogue and commands.\n"
+						},
+						{
+							"text": "§rFor example §6/dialogue change @e[family=npc,r=5,c=1] petshop\n"
+						},
+						{
+							"text": "§r§lWorld Owners/Admins §6can also update their NPCs §r§lwith this if §6§lupdating from versions previous to 1.6.0\n"
+						},
+						{
+							"text": "§r§lTip You can setup each item individually.\n Just use the /function command instead\n"
+						},
+						{
+							"text": "§rFor example §6/function farmer/apple\n"
+						},
+						{
+							"text": "§r§lTip You can follow the autocomplete in chat to help guied you.\n"
+						},
+						{
+							"text": "§lTip You don't need / for NPC commands.\n"
+						},
+						{
+							"text": "§r§lWhat are some recommendations for setting up my shops?\n"
+						},
+						{
+							"text": "§rSee §6bellow §rfor more information.\n"
+						},
+						{
+							"text": "§r§lWhat if I don't want to setup my world for Moneyz?\n"
+						},
+						{
+							"text": "§r§6You can checkout §6MountainSide Villages by ZVortex11325 §rto play a pre-built world built around Moneyz.\n"
+						},
+						{
+							"text": "§r§lSee "
+						},
+						{
+							"text": "§6github.com/DMedina559/minecraft"
+						},
+						{
+							"text": " §r§lin your browser\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Recommendations",
+						"commands": ["/function help/recommend"]
+					},
+					{
+						"name": "Back",
+						"commands": ["/dialogue open @s @initiator help_moneyz"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator help"]
+					}
+				]
+			},
+			{
+				"scene_tag": "help_shops",
+				"npc_name": "NPC",
+				"text": "You can check what items a shop carries and how much it cost from here.",
+				"buttons": [
+					{
+						"name": "Farmer's Market",
+						"commands": ["/function help/farmers_market"]
+					},
+					{
+						"name": "Hotel",
+						"commands": ["/function help/hotel"]
+					},
+					{
+						"name": "Library",
+						"commands": ["/function help/library"]
+					},
+					{
+						"name": "Pet Shop",
+						"commands": ["/function help/pet_shop"]
+					},
+					{
+						"name": "Workshop",
+						"commands": ["/function help/workshop"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator help"]
+					}
+				]
+			},
+			{
 				"scene_tag": "help_jobs",
 				"npc_name": "Jobs",
 				"text": {
@@ -37,13 +367,13 @@
 							"text": "§r§6Moneyz Economy §rincludes various §6job roles §rfor Players to apply for §6to start earning Moneyz, §rand help §6expand the Role Play aspect §rof §6each Minecraft world for every Player.\n"
 						},
 						{
-							"text": "§r§oSee §6/function help/jobs/(job) §r§ofor more information on each job.\n"
+							"text": "§r§oSee §6bellow §r§ofor more information on each job.\n"
 						},
 						{
 							"text": "§r§lHow do Players Apply for jobs?\n"
 						},
 						{
-							"text": "§rPlayers can §6go to Town Hall or Employment Office §rfor an interview and §6get an Apply tag §rfrom the Apply NPC. They can then go to one of §6the other NPCs to obtain the desired job.\n"
+							"text": "§rPlayers can §6go to Town Hall or Employment Office §rfor an interview and §6get an Apply tag §rfrom the NPC. They can then go to one of §6obtain the desired job.\n"
 						},
 						{
 							"text": "§r§lHow do workers get payed?\n"
@@ -55,7 +385,7 @@
 							"text": "§r§lHow do Players Quit jobs?\n"
 						},
 						{
-							"text": "§rPlayers can go to §6Town Hall or Employment Office §rto one of the other §6NPCs to quit their current job.\n"
+							"text": "§rPlayers can go to §6Town Hall or Employment Office §rthe §6NPCs to quit their current job.\n"
 						}
 					]
 				},
@@ -83,6 +413,128 @@
 					{
 						"name": "Pg. 2",
 						"commands": ["/dialogue open @s @initiator help_jobs_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "help_jobs_2",
+				"npc_name": "Jobs",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat are Jobs?\n"
+						},
+						{
+							"text": "§r§6Moneyz Economy §rincludes various §6job roles §rfor Players to apply for §6to start earning Moneyz, §rand help §6expand the Role Play aspect §rof §6each Minecraft world for every Player.\n"
+						},
+						{
+							"text": "§r§oSee §6bellow §r§ofor more information on each job.\n"
+						},
+						{
+							"text": "§r§lHow do Players Apply for jobs?\n"
+						},
+						{
+							"text": "§rPlayers can §6go to Town Hall or Employment Office §rfor an interview and §6get an Apply tag §rfrom the NPC. They can then go to one of §6obtain the desired job.\n"
+						},
+						{
+							"text": "§r§lHow do workers get payed?\n"
+						},
+						{
+							"text": "§rBankers will have a §6NPCs §rthey go to §6every 5 Minecraft days §rto auto §6deposit Moneyz to all online workers.§r\n"
+						},
+						{
+							"text": "§r§lHow do Players Quit jobs?\n"
+						},
+						{
+							"text": "§rPlayers can go to §6Town Hall or Employment Office §rthe §6NPCs to quit their current job.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Farmer",
+						"commands": ["/dialogue open @s @initiator help_jobs_farmer"]
+					},
+					{
+						"name": "Fisher",
+						"commands": ["/dialogue open @s @initiator help_jobs_fisher"]
+					},
+					{
+						"name": "Hotel Owner",
+						"commands": ["/dialogue open @s @initiator help_jobs_hotel"]
+					},
+					{
+						"name": "Judge",
+						"commands": ["/dialogue open @s @initiator help_jobs_judge"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator help_jobs"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator help_jobs_3"]
+					}
+				]
+			},
+			{
+				"scene_tag": "help_jobs_3",
+				"npc_name": "Jobs",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat are Jobs?\n"
+						},
+						{
+							"text": "§r§6Moneyz Economy §rincludes various §6job roles §rfor Players to apply for §6to start earning Moneyz, §rand help §6expand the Role Play aspect §rof §6each Minecraft world for every Player.\n"
+						},
+						{
+							"text": "§r§oSee §6bellow §r§ofor more information on each job.\n"
+						},
+						{
+							"text": "§r§lHow do Players Apply for jobs?\n"
+						},
+						{
+							"text": "§rPlayers can §6go to Town Hall or Employment Office §rfor an interview and §6get an Apply tag §rfrom the NPC. They can then go to one of §6obtain the desired job.\n"
+						},
+						{
+							"text": "§r§lHow do workers get payed?\n"
+						},
+						{
+							"text": "§rBankers will have a §6NPCs §rthey go to §6every 5 Minecraft days §rto auto §6deposit Moneyz to all online workers.§r\n"
+						},
+						{
+							"text": "§r§lHow do Players Quit jobs?\n"
+						},
+						{
+							"text": "§rPlayers can go to §6Town Hall or Employment Office §rthe §6NPCs to quit their current job.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Lawyer",
+						"commands": ["/dialogue open @s @initiator help_jobs_lawyer"]
+					},
+					{
+						"name": "Mayor",
+						"commands": ["/dialogue open @s @initiator help_jobs_mayor"]
+					},
+					{
+						"name": "Pastor",
+						"commands": ["/dialogue open @s @initiator help_jobs_pastor"]
+					},
+					{
+						"name": "Realtor",
+						"commands": ["/dialogue open @s @initiator help_jobs_realtor"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator help_jobs_2"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator help"]
 					}
 				]
 			},
@@ -535,451 +987,6 @@
 					{
 						"name": "Back",
 						"commands": ["/dialogue open @s @initiator help_jobs"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator help"]
-					}
-				]
-			},
-			{
-				"scene_tag": "help_jobs_2",
-				"npc_name": "Jobs",
-				"text": {
-					"rawtext": [
-						{
-							"text": "§lWhat are Jobs?\n"
-						},
-						{
-							"text": "§r§6Moneyz Economy §rincludes various §6job roles §rfor Players to apply for §6to start earning Moneyz, §rand help §6expand the Role Play aspect §rof §6each Minecraft world for every Player.\n"
-						},
-						{
-							"text": "§r§oSee §6/function help/jobs/(job) §r§ofor more information on each job.\n"
-						},
-						{
-							"text": "§lHow do Players Apply for jobs?\n"
-						},
-						{
-							"text": "§rPlayers can §6go to Town Hall or Employment Office §rfor an interview and §6get an Apply tag §rfrom the Apply NPC. They can then go to one of §6the other NPCs to obtain the desired job.\n"
-						},
-						{
-							"text": "§lHow do workers get payed?\n"
-						},
-						{
-							"text": "§rBankers will have a §6NPCs §rthey go to §6every 5 Minecraft days §rto auto §6deposit Moneyz to all online workers.§r\n"
-						},
-						{
-							"text": "§lHow do Players Quit jobs?\n"
-						},
-						{
-							"text": "§rPlayers can go to §6Town Hall or Employment Office §rto one of the other §6NPCs to quit their current job.\n"
-						}
-					]
-				},
-				"buttons": [
-					{
-						"name": "Farmer",
-						"commands": ["/dialogue open @s @initiator help_jobs_farmer"]
-					},
-					{
-						"name": "Fisher",
-						"commands": ["/dialogue open @s @initiator help_jobs_fisher"]
-					},
-					{
-						"name": "Hotel Owner",
-						"commands": ["/dialogue open @s @initiator help_jobs_hotel"]
-					},
-					{
-						"name": "Judge",
-						"commands": ["/dialogue open @s @initiator help_jobs_judge"]
-					},
-					{
-						"name": "Pg. 1",
-						"commands": ["/dialogue open @s @initiator help_jobs"]
-					},
-					{
-						"name": "Pg. 3",
-						"commands": ["/dialogue open @s @initiator help_jobs_3"]
-					}
-				]
-			},
-			{
-				"scene_tag": "help_jobs_3",
-				"npc_name": "Jobs",
-				"text": {
-					"rawtext": [
-						{
-							"text": "§lWhat are Jobs?\n"
-						},
-						{
-							"text": "§r§6Moneyz Economy §rincludes various §6job roles §rfor Players to apply for §6to start earning Moneyz, §rand help §6expand the Role Play aspect §rof §6each Minecraft world for every Player.\n"
-						},
-						{
-							"text": "§r§oSee §6/function help/jobs/(job) §r§ofor more information on each job.\n"
-						},
-						{
-							"text": "§lHow do Players Apply for jobs?\n"
-						},
-						{
-							"text": "§rPlayers can §6go to Town Hall or Employment Office §rfor an interview and §6get an Apply tag §rfrom the Apply NPC. They can then go to one of §6the other NPCs to obtain the desired job.\n"
-						},
-						{
-							"text": "§lHow do workers get payed?\n"
-						},
-						{
-							"text": "§rBankers will have a §6NPCs §rthey go to §6every 5 Minecraft days §rto auto §6deposit Moneyz to all online workers.§r\n"
-						},
-						{
-							"text": "§lHow do Players Quit jobs?\n"
-						},
-						{
-							"text": "§rPlayers can go to §6Town Hall or Employment Office §rto one of the other §6NPCs to quit their current job.\n"
-						}
-					]
-				},
-				"buttons": [
-					{
-						"name": "Lawyer",
-						"commands": ["/dialogue open @s @initiator help_jobs_lawyer"]
-					},
-					{
-						"name": "Mayor",
-						"commands": ["/dialogue open @s @initiator help_jobs_mayor"]
-					},
-					{
-						"name": "Pastor",
-						"commands": ["/dialogue open @s @initiator help_jobs_pastor"]
-					},
-					{
-						"name": "Realtor",
-						"commands": ["/dialogue open @s @initiator help_jobs_realtor"]
-					},
-					{
-						"name": "Pg. 2",
-						"commands": ["/dialogue open @s @initiator help_jobs_2"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator help"]
-					}
-				]
-			},
-			{
-				"scene_tag": "help_moneyz",
-				"npc_name": "Moneyz",
-				"text": {
-					"rawtext": [
-						{
-							"text": "§lWhat Is Moneyz?\n"
-						},
-						{
-							"text": "§rMoneyz is a §6Scoreboard §rsystem that allows Players to purchase various items from §6NPC Shops.\n"
-						},
-						{
-							"text": "§rYou can earn Moneyz by §6applying for Jobs §ror §6trading in Resources §rlike §bDiamonds §ror §8Coal.\n"
-						},
-						{
-							"text": "§r§lWhat are Resources?\n"
-						},
-						{
-							"text": "§r§6Resources §rare various ores Players can §6mine in a Minecraft world. §rSee §6/function help/exchange_rate §r for more information.\n"
-						},
-						{
-							"text": "§r§lHow can Players earn Moneyz?\n"
-						},
-						{
-							"text": "§r§6Players earn Moneyz §6by applying for jobs §ror §6exchanging Resources §rfor Moneyz §6at ATM NPCs §rSee §6/function help/bank §rfor more information.\n"
-						},
-						{
-							"text": "§r§lCan Players turn Moneyz back to Resource?\n"
-						},
-						{
-							"text": "§r§6Yes!. §rPlayers can see §6ATM NPCs  §rto §6exchange Moneyz §rfor Resources. §rSee §6/function help/bank §rfor more information.\n"
-						},
-						{
-							"text": "§r§lCan Players sell items?\n"
-						},
-						{
-							"text": "§r§6Yes!. §rPlayers can find §6Moneyz Traders §rthat'll spawn in the world. §rSee §6/function help/selling §rfor more information.\n"
-						},
-						{
-							"text": "§r§lHow can Players see what items are available?\n"
-						},
-						{
-							"text": "§r§6Players can run §6/function help/(shop) §rto see all §6items available and their price.\n"
-						},
-						{
-							"text": "§r§lHow can Players learn more about Moneyz?\n"
-						},
-						{
-							"text": "§r§6Players can run §6all /function help/ §rcommands in chat to §6learn more about Moneyz.\n"
-						}
-					]
-				},
-				"buttons": [
-					{
-						"name": "Banks",
-						"commands": ["/dialogue open @s @initiator help_banks"]
-					},
-					{
-						"name": "Real Estate",
-						"commands": ["/dialogue open @s @initiator help_real_estate"]
-					},
-					{
-						"name": "Selling",
-						"commands": ["/dialogue open @s @initiator help_selling"]
-					},
-					{
-						"name": "Setup",
-						"commands": ["/dialogue open @s @initiator help_setup"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator help"]
-					}
-				]
-			},
-			{
-				"scene_tag": "help_banks",
-				"npc_name": "Banks",
-				"text": {
-					"rawtext": [
-						{
-							"text": "§lWhat is the Bank for?\n"
-						},
-						{
-							"text": "§r§6Moneyz Economy §rallows Players to §6exchange Resources such as §7Iron §6or §6Copper §6for Moneyz with 'ATM' NPCs.\n"
-						},
-						{
-							"text": "§rA Bank is where Players can make these exchanges.\n"
-						},
-						{
-							"text": "§r§lWhat is an ATM NPC?\n"
-						},
-						{
-							"text": "§rATM NPCs are where Players are able to §6exchange their Resources for Moneyz and vice versa.§r\n"
-						},
-						{
-							"text": "§r§lWhat if a Player wants to exchange more than 1 Resource?\n"
-						},
-						{
-							"text": "§rPlayers are able to §6exchange 1 Resource for Moneyz§r at ATM NPCs, this can be tedious if the Player §6wants to exchange large amounts of Resources. §rTo help this process, §6Bankers can exchange Resources for larger value Resource.\n"
-						},
-						{
-							"text": "§rFor Example if a Player wanted to §6exchange 1 Gold (25 Moneyz) and 1 Diamond (75 Moneyz) §rfor Moneyz, they could §6ask the banker to exchange their 1 Gold Ingot (25 Moneyz) and 1 Emerald (75 Moneyz) for 1 Emerald (100 Moneyz).\n"
-						},
-						{
-							"text": "§rThis allows the Player to §6exchange all their Resources in less transactions §rat the ATM NPCs.\n"
-						},
-						{
-							"text": "§r§oSee §6/function help/exchange_rate §r§ofor the exchange rate between Moneyz and Resource.\n"
-						}
-					]
-				},
-				"buttons": [
-					{
-						"name": "Exchange Rate",
-						"commands": ["/function help/exchange_rate"]
-					},
-					{
-						"name": "Back",
-						"commands": ["/dialogue open @s @initiator help_moneyz"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator help"]
-					}
-				]
-			},
-			{
-				"scene_tag": "help_real_estate",
-				"npc_name": "Real Estate",
-				"text": {
-					"rawtext": [
-						{
-							"text": "§lWhat is Real Estate?\n"
-						},
-						{
-							"text": "§r§6Moneyz Economy §rallows Players to rent §6residential buildings to live in.§r\n"
-						},
-						{
-							"text": "§r§lHow do Players rent Real Estate?\n"
-						},
-						{
-							"text": "§rPlayers §6make an appointment with the Realtor at the Real Estate Ofiice §rto show them §6available Residential buildings in their budget. §rWhen the Realtor and Player come to an §aagreement §rthey can go to the §6Real Estate office to make a Down Payment. §rAfter this transaction the Player is free in live in the house, and the §6Realtor will take rent every 7 Minecraft Days. §cThis can make your Moneyz balance go below 0 if you don't have enough so budget accordingly!§r\n"
-						},
-						{
-							"text": "§r§lHow do Players sell Real Estate?\n"
-						},
-						{
-							"text": "§rPlayers §6make an appointment with the Realtor §rto §6schedule an Inspection of the Property. §rThey will check to make sure the house is not destroyed, or missing any main furniture. §6If the inspection §apasses §6the Realtor will go to the Real Estate office and §arefund §6your deposit. If the inspection §cfails, §6the realtor will informationrm you what changes need to be made to refund your deposit.\n"
-						},
-						{
-							"text": "§rPlayers should also go to the Real Estate office to remove the Citizen Tag to avoid misleading 'Rent Payed' messages in chat after getting their deposit back.\n"
-						}
-					]
-				},
-				"buttons": [
-					{
-						"name": "Back",
-						"commands": ["/dialogue open @s @initiator help_moneyz"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator help"]
-					}
-				]
-			},
-			{
-				"scene_tag": "help_selling",
-				"npc_name": "Selling",
-				"text": {
-					"rawtext": [
-						{
-							"text": "§lHow can Players sell their items?\n"
-						},
-						{
-							"text": "§r§6Players can sell their items by §6going to the shop §rof the items they want to sell.\n"
-						},
-						{
-							"text": "§r§lWhat are the selling prices?\n"
-						},
-						{
-							"text": "§r§6The selling prices are the same as the items purchased from the shop.\n"
-						}
-					]
-				},
-				"buttons": [
-					{
-						"name": "Back",
-						"commands": ["/dialogue open @s @initiator help_moneyz"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator help"]
-					}
-				]
-			},
-			{
-				"scene_tag": "help_setup",
-				"npc_name": "Setup",
-				"text": {
-					"rawtext": [
-						{
-							"text": "§lHow do I setup Moneyz?\n"
-						},
-						{
-							"text": "§rYou can easily setup Moneyz by running §6/function setup §r in chat.\n"
-						},
-						{
-							"text": "§rThis will §6set up a Moneyz Scoreboard §rin your world.\n"
-						},
-						{
-							"text": "§rNext you can run §6/give @s spawn_egg 1 51\n"
-						},
-						{
-							"text": "§rThis will give you a §6NPC Spawn Egg.\n"
-						},
-						{
-							"text": "§rYou'll use this for §6all your shops and Moneyz realated commands.\n"
-						},
-						{
-							"text": "§rTo setup your shops\n"
-						},
-						{
-							"text": "§rSpawn a NPC and §6enter it's menu.\n"
-						},
-						{
-							"text": "§rFrom here you can §6choose the look and name §ryou want.\n"
-						},
-						{
-							"text": "§rNext go to §6Edit Dialogue §rand §6enter the text you want §rthe NPC to say.\n"
-						},
-						{
-							"text": "§rIt is §6recommdended to also list the items and prices of the items §rthe NPC will offer here.\n"
-						},
-						{
-							"text": "§rNext go to §6Advanced Settings §rand change the §6command to a Button type.\n"
-						},
-						{
-							"text": "§rThis is where you'll §6enter the Moneyz function commands.\n"
-						},
-						{
-							"text": "§rThe commands will follow §6/function (shop)/(item)\n"
-						},
-						{
-							"text": "§rFor example §6function workshop/kit_smithing_templates\n"
-						},
-						{
-							"text": "§rDo this for all your §6Shops/Items §rand now you have a §6working Moneyz Economy for everyone to enjoy!\n"
-						},
-						{
-							"text": "§r§lTip You can follow the autocomplete in chat to help guied you.\n"
-						},
-						{
-							"text": "§lTip You don't need / for NPC commands.\n"
-						},
-						{
-							"text": "§r§lWhat are some recommendations for setting up my shops?\n"
-						},
-						{
-							"text": "§rSee §6/function help/recommend §rfor more information.\n"
-						},
-						{
-							"text": "§r§lWhat if I don't want to setup my world for Moneyz?\n"
-						},
-						{
-							"text": "§r§6You can checkout §6MountainSide Villages by ZVortex11325 §rto play a pre-built world built around Moneyz.\n"
-						},
-						{
-							"text": "§r§lSee "
-						},
-						{
-							"text": "§6github.com/DMedina559/minecraft"
-						},
-						{
-							"text": " §r§lin your browser\n"
-						}
-					]
-				},
-				"buttons": [
-					{
-						"name": "Recommendations"
-					},
-					{
-						"name": "Back",
-						"commands": ["/dialogue open @s @initiator help_moneyz"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator help", "/function help/recommend"]
-					}
-				]
-			},
-			{
-				"scene_tag": "help_shops",
-				"npc_name": "NPC",
-				"text": "You can check what items a shop carries and how much it cost from here.",
-				"buttons": [
-					{
-						"name": "Farmer's Market",
-						"commands": ["/function help/farmers_market"]
-					},
-					{
-						"name": "Hotel",
-						"commands": ["/function help/hotel"]
-					},
-					{
-						"name": "Library",
-						"commands": ["/function help/library"]
-					},
-					{
-						"name": "Pet Shop",
-						"commands": ["/function help/pet_shop"]
-					},
-					{
-						"name": "Workshop",
-						"commands": ["/function help/workshop"]
 					},
 					{
 						"name": "Main Menu",
