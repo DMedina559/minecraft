@@ -5,17 +5,27 @@
 			{
 				"scene_tag": "library",
 				"npc_name": "Library",
-				"text": "Welcome to the Library. What would you like to buy?",
+				"text": {
+					"rawtext": [
+						{
+							"text": "Welcome to the Library. What can I help you with?"
+						}
+					]
+				},
 				"buttons": [
 					{
-						"name": "See Items",
-						"commands": ["/dialogue open @s @initiator library_library"]
+						"name": "Buying",
+						"commands": ["/dialogue open @s @initiator library_buy"]
+					},
+					{
+						"name": "Selling",
+						"commands": ["dialogue open @s @initiator library_sell"]
 					}
 				]
 			},
 			{
-				"scene_tag": "library_library",
-				"npc_name": "NPC",
+				"scene_tag": "library_buy",
+				"npc_name": "Buying",
 				"text": {
 					"rawtext": [
 						{

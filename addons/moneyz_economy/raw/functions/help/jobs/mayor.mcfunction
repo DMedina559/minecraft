@@ -1,3 +1,0 @@
-tellraw @p {"rawtext": [{"text": "§lWhat is a Mayor?\n"},{"text": "§rThe Mayor §eruns the world. §rthey are §erequired to listen and solve the residents concerns, §rthey §eplan events §rfor the population, and §emakes plans to better the world.\n"}]}
-
-tellraw @p {"rawtext": [{"text": "§lHow much does a Mayor job pay?\n"},{"text": "§rThe Mayor job pays §e4,000 Moneyz every 5 Minecraft days §rby the Banker.\n"}]}
