@@ -61,7 +61,7 @@
 							"text": "§r§lCan Players sell items?\n"
 						},
 						{
-							"text": "§r§6Yes!. §rPlayers can §6to the shop §rof the items they're selling. §rSee §6bellow §rfor more information about Shops.\n"
+							"text": "§r§6Yes!. §rPlayers can §6to the shop §rof the items they're selling. §rSee §6bellow §rfor more information about Selling.\n"
 						},
 						{
 							"text": "§r§lHow can Players see what items are available?\n"
@@ -281,7 +281,7 @@
 							"text": "§rFor example §6/function farmer/apple\n"
 						},
 						{
-							"text": "§r§lTip You can follow the autocomplete in chat to help guied you.\n"
+							"text": "§r§lTip You can follow the autocomplete in chat to help guide you.\n"
 						},
 						{
 							"text": "§lTip You don't need / for NPC commands.\n"
