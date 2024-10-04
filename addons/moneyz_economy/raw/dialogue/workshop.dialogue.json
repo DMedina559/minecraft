@@ -28,7 +28,7 @@
 			{
 				"scene_tag": "workshop_awt_kits",
 				"npc_name": "NPC",
-				"text": "§lThese are the available AWT Kits at the Workshop.\n§rAll Kits come with §efull stacks, §ra §e Colored Shulker Box, and §efully maxed Enchantments.\n§r§lArmor Weapon Tool Kits:\n§r1 Netherite Kit for 40,000 Moneyz\n§r1 Diamond Kit for 20,000 Moneyz\n§r1 Iron Kit for 10,000 Moneyz\n§r1 Gold Kit for 5,000 Moneyz\n§r1 Stone Kit for 3,000 Moneyz\n§r1 Wood Kit for 2,000 Moneyz\n§r",
+				"text": "§lThese are the available AWT Kits at the Workshop.\n§rAll Kits come with §6full stacks, §ra §6 Colored Shulker Box, and §6fully maxed Enchantments.\n§r§lArmor Weapon Tool Kits:\n§r1 Netherite Kit for 40,000 Moneyz\n§r1 Diamond Kit for 20,000 Moneyz\n§r1 Iron Kit for 10,000 Moneyz\n§r1 Gold Kit for 5,000 Moneyz\n§r1 Stone Kit for 3,000 Moneyz\n§r1 Wood Kit for 2,000 Moneyz\n§r",
 				"buttons": [
 					{
 						"name": "Netherite",
@@ -59,7 +59,7 @@
 			{
 				"scene_tag": "workshop_awt_kits_2",
 				"npc_name": "NPC",
-				"text": "§lThese are the available AWT Kits at the Workshop.\n§rAll Kits come with §efull stacks, §ra §e Colored Shulker Box, and §efully maxed Enchantments.\n§r§lArmor Weapon Tool Kits:\n§r1 Netherite Kit for 40,000 Moneyz\n§r1 Diamond Kit for 20,000 Moneyz\n§r1 Iron Kit for 10,000 Moneyz\n§r1 Gold Kit for 5,000 Moneyz\n§r1 Stone Kit for 3,000 Moneyz\n§r1 Wood Kit for 2,000 Moneyz\n§r",
+				"text": "§lThese are the available AWT Kits at the Workshop.\n§rAll Kits come with §6full stacks, §ra §6 Colored Shulker Box, and §6fully maxed Enchantments.\n§r§lArmor Weapon Tool Kits:\n§r1 Netherite Kit for 40,000 Moneyz\n§r1 Diamond Kit for 20,000 Moneyz\n§r1 Iron Kit for 10,000 Moneyz\n§r1 Gold Kit for 5,000 Moneyz\n§r1 Stone Kit for 3,000 Moneyz\n§r1 Wood Kit for 2,000 Moneyz\n§r",
 				"buttons": [
 					{
 						"name": "Wood",
@@ -78,7 +78,7 @@
 			{
 				"scene_tag": "workshop_kits",
 				"npc_name": "NPC",
-				"text": "§lThese are the available Regular Kits at the Workshop.\n§rAll Kits come with §efull stacks, §rand a §e Colored Shulker Box\n§r§lRegular Kits:\n§r1 Smithing Templates Kit for 5,000 Moneyz\n§r1 Brewing Kit for 2,000 Moneyz\n§r1 Wood Kit for 1,000 Moneyz\n§r1 Banner Kit for 500 Moneyz\n§r1 Dye Kit for 500 Moneyz\n§r1 Pottery Sherds Kit for 500 Moneyz\n",
+				"text": "§lThese are the available Regular Kits at the Workshop.\n§rAll Kits come with §6full stacks, §rand a §6 Colored Shulker Box\n§r§lRegular Kits:\n§r1 Smithing Templates Kit for 5,000 Moneyz\n§r1 Brewing Kit for 2,000 Moneyz\n§r1 Wood Kit for 1,000 Moneyz\n§r1 Banner Kit for 500 Moneyz\n§r1 Dye Kit for 500 Moneyz\n§r1 Pottery Sherds Kit for 500 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Smiting Templates",
@@ -109,7 +109,7 @@
 			{
 				"scene_tag": "workshop_kits_2",
 				"npc_name": "NPC",
-				"text": "§lThese are the available Regular Kits at the Workshop.\n§rAll Kits come with §efull stacks, §rand a §e Colored Shulker Box\n§r§lRegular Kits:\n§r1 Smithing Templates Kit for 5,000 Moneyz\n§r1 Brewing Kit for 2,000 Moneyz\n§r1 Wood Kit for 1,000 Moneyz\n§r1 Banner Kit for 500 Moneyz\n§r1 Dye Kit for 500 Moneyz\n§r1 Pottery Sherds Kit for 500 Moneyz\n",
+				"text": "§lThese are the available Regular Kits at the Workshop.\n§rAll Kits come with §6full stacks, §rand a §6 Colored Shulker Box\n§r§lRegular Kits:\n§r1 Smithing Templates Kit for 5,000 Moneyz\n§r1 Brewing Kit for 2,000 Moneyz\n§r1 Wood Kit for 1,000 Moneyz\n§r1 Banner Kit for 500 Moneyz\n§r1 Dye Kit for 500 Moneyz\n§r1 Pottery Sherds Kit for 500 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Pottery Sherds",

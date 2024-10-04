@@ -1,0 +1,892 @@
+{
+	"format_version": "1.14.0",
+	"minecraft:npc_dialogue": {
+		"scenes": [
+			{
+				"scene_tag": "jobs",
+				"npc_name": "Jobs",
+				"text": "Welcome to the Employment Office. What can I help you with?\nPlease get an apply tag to apply for a job.",
+				"buttons": [
+					{
+						"name": "Apply Tag",
+						"commands": ["/function jobs/jobtag"]
+					},
+					{
+						"name": "Apply",
+						"commands": ["/dialogue open @s @initiator jobs_apply"]
+					},
+					{
+						"name": "Quit",
+						"commands": ["/dialogue open @s @initiator jobs_quit"]
+					},
+					{
+						"name": "Help",
+						"commands": ["/dialogue open @s @initiator jobs_help"]
+					}
+				]
+			},
+			{
+				"scene_tag": "jobs_help",
+				"npc_name": "Jobs",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat are Jobs?\n"
+						},
+						{
+							"text": "§r§6Moneyz Economy §rincludes various §6job roles §rfor Players to apply for §6to start earning Moneyz, §rand help §6expand the Role Play aspect §rof §6each Minecraft world for every Player.\n"
+						},
+						{
+							"text": "§r§oSee §6/function help/jobs/(job) §r§ofor more information on each job.\n"
+						},
+						{
+							"text": "§r§lHow do Players Apply for jobs?\n"
+						},
+						{
+							"text": "§rPlayers can §6go to Town Hall or Employment Office §rfor an interview and §6get an Apply tag §rfrom the Apply NPC. They can then go to one of §6the other NPCs to obtain the desired job.\n"
+						},
+						{
+							"text": "§r§lHow do workers get payed?\n"
+						},
+						{
+							"text": "§rBankers will have a §6NPCs §rthey go to §6every 5 Minecraft days §rto auto §6deposit Moneyz to all online workers.§r\n"
+						},
+						{
+							"text": "§r§lHow do Players Quit jobs?\n"
+						},
+						{
+							"text": "§rPlayers can go to §6Town Hall or Employment Office §rto one of the other §6NPCs to quit their current job.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Assistant",
+						"commands": ["/dialogue open @s @initiator jobs_help_assistant"]
+					},
+					{
+						"name": "Banker",
+						"commands": ["/dialogue open @s @initiator jobs_help_banker"]
+					},
+					{
+						"name": "Builder",
+						"commands": ["/dialogue open @s @initiator jobs_help_builder"]
+					},
+					{
+						"name": "Cop",
+						"commands": ["/dialogue open @s @initiator jobs_help_cop"]
+					},
+					{
+						"name": "Deliver Person",
+						"commands": ["/dialogue open @s @initiator jobs_help_delivery"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator jobs_help_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "jobs_help_assistant",
+				"npc_name": "Assistant",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat is an Assistant?\n"
+						},
+						{
+							"text": "§rAn Assistant §6helps out the Mayor and Bankers. §rThey will be §6required to help the mayor and bankers §rkeep track of their respective duties.\n"
+						},
+						{
+							"text": "§lHow much does an Assistant job pay?\n"
+						},
+						{
+							"text": "§rThe Assistant job pays §62,000 Moneyz every 5 days §rby the Banker.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Back",
+						"commands": ["/dialogue open @s @initiator jobs_help"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator jobs"]
+					}
+				]
+			},
+			{
+				"scene_tag": "jobs_help_banker",
+				"npc_name": "Banker",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat is a Banker?\n"
+						},
+						{
+							"text": "§rA Banker §6is responsible for exchanging Resources §rfor clients, and §6sending payments to workers.\n"
+						},
+						{
+							"text": "§r§lHow much does a Banker job pay?\n"
+						},
+						{
+							"text": "§rThe Banker job pays §64,000 Moneyz every 5 Minecraft days §rby the Banker.\n"
+						},
+						{
+							"text": "§lWhen does a Banker pay Workers?\n"
+						},
+						{
+							"text": "§rThe Banker §6pays Moneyz to workers §rthrough an NPC §6every 5 days.\n"
+						},
+						{
+							"text": "§lWhat does exchange Resources mean?\n"
+						},
+						{
+							"text": "§rPlayers are able to §6exchange 1 Resource for Moneyz§r at ATM NPCs, this can be tedious if the Player §6wants to exchange large amounts of Resources. §rTo help this process, §6bankers can exchange Resources for larger value Resource.\n"
+						},
+						{
+							"text": "§rFor Example if a Player wanted to §6exchange 2 Gold (25 Moneyz X 2) §rfor Moneyz, they could §6ask the banker to exchange their 2 Gold Ingots (25 X 2 Moneyz) for 1 Iron (50 Moneyz).\n"
+						},
+						{
+							"text": "§rThis allows the Player to §6exchange all their Resources in less transactions §rat the ATM NPCs.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Back",
+						"commands": ["/dialogue open @s @initiator jobs_help"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator jobs"]
+					}
+				]
+			},
+			{
+				"scene_tag": "jobs_help_builder",
+				"npc_name": "Builder",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat is a Builder?\n"
+						},
+						{
+							"text": "§rA Builder §6helps coordinate with the Mayor to expand the world, repair damaged properties, set up event areas §rand they may §6help residents with their redstone projects.\n"
+						},
+						{
+							"text": "§r§lHow much does a Builder job pay?\n"
+						},
+						{
+							"text": "§rThe Builder job pays §62,000 Moneyz every 5 days §rby the Banker.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Back",
+						"commands": ["/dialogue open @s @initiator jobs_help"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator jobs"]
+					}
+				]
+			},
+			{
+				"scene_tag": "jobs_help_cop",
+				"npc_name": "Cop",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat is a Cop?\n"
+						},
+						{
+							"text": "§rA Cop §6will respond to citizen complaints §rand §6conduct investigations on any wrong doing in the world.\n"
+						},
+						{
+							"text": "§r§lHow much does a Cop job pay?\n"
+						},
+						{
+							"text": "§rThe Cop job pays §62,000 Moneyz every 5 days §rby the Banker.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Back",
+						"commands": ["/dialogue open @s @initiator jobs_help"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator jobs"]
+					}
+				]
+			},
+			{
+				"scene_tag": "jobs_help_delivery",
+				"npc_name": "Delivery Person",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat is a Delivery Person?\n"
+						},
+						{
+							"text": "§rA Delivery Person §6delivers items §rin the post office to their requested destination. §6Residents may also request you to deliver items.\n"
+						},
+						{
+							"text": "§r§lHow much does a Delivery Person job pay?\n"
+						},
+						{
+							"text": "§rThe Delivery Person job pays §61,000 Moneyz every 5 days §rby the Banker.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Back",
+						"commands": ["/dialogue open @s @initiator jobs_help"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator jobs"]
+					}
+				]
+			},
+			{
+				"scene_tag": "jobs_help_farmer",
+				"npc_name": "Farmer",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat is a Farmer?\n"
+						},
+						{
+							"text": "§rA Farmer §6farms crops and livestock §rand §6delivers them to the Players. §rThey may §6also have other natural goods on sale for Resources.\n"
+						},
+						{
+							"text": "§r§lHow much does a Farmer job pay?\n"
+						},
+						{
+							"text": "§rThe Farmer job pays §61,000 Moneyz every 5 days §rby the Banker.\n"
+						},
+						{
+							"text": "§lWhat does a Farmer do with their harvest?\n"
+						},
+						{
+							"text": "§rFarmers can §6exchange their goods for Resources §rto Players.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Back",
+						"commands": ["/dialogue open @s @initiator jobs_help"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator jobs"]
+					}
+				]
+			},
+			{
+				"scene_tag": "jobs_help_fisher",
+				"npc_name": "Fisher",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat is a Fisher?\n"
+						},
+						{
+							"text": "§rA Fisher §6goes out into the rivers and oceans to retrive anything of value §rand may §6have various goods from the waters on sale for Resources.\n"
+						},
+						{
+							"text": "§r§lHow much does a Fisher job pay?\n"
+						},
+						{
+							"text": "§rThe Fisher job pays §61,000 Moneyz every 5 days §rby the Banker.\n"
+						},
+						{
+							"text": "§lWhat does a Fisher do with their catch?\n"
+						},
+						{
+							"text": "§rFishers can §6exchange their goods for Resources §rto Players.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Back",
+						"commands": ["/dialogue open @s @initiator jobs_help"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator jobs"]
+					}
+				]
+			},
+			{
+				"scene_tag": "jobs_help_hotel",
+				"npc_name": "Hotel",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat is a Hotel Owner?\n"
+						},
+						{
+							"text": "§rThe Hotel Owner §6runs the hotel and rents out the rooms §rto guest. It's their duty to §6keep track of what goes on with the guest and rooms of the hotel.\n"
+						},
+						{
+							"text": "§r§lHow much does a Hotel Owner job pay?\n"
+						},
+						{
+							"text": "§rThe Hotel Owner job pays §61,000 Moneyz every 5 days §rby the Banker.\n"
+						},
+						{
+							"text": "§lHow much does a Hotel Owner take Moneyz from Guest?\n"
+						},
+						{
+							"text": "§rThe Hotel should have an §6NPC to allow guest to check in/out §rand a NPC to §6allow the Hotel Owner to charge for a night.\n"
+						},
+						{
+							"text": "§r§lHow much does the Hotel cost?\n"
+						},
+						{
+							"text": "§615 Moneyz for a Regular Room\n"
+						},
+						{
+							"text": "§650 Moneyz for a Deluxe Room §rif available.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Back",
+						"commands": ["/dialogue open @s @initiator jobs_help"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator jobs"]
+					}
+				]
+			},
+			{
+				"scene_tag": "jobs_help_judge",
+				"npc_name": "Judge",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat is a Judge?\n"
+						},
+						{
+							"text": "§rA Judge §6is requied to give netrual judgements §rfor world trials §6sending payments to workers. They will work with Lawyers to reach a virdict.\n"
+						},
+						{
+							"text": "§r§lHow much does a Judge job pay?\n"
+						},
+						{
+							"text": "§rThe Judge job pays §64,000 Moneyz every 5 Minecraft days §rby the Judge.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Back",
+						"commands": ["/dialogue open @s @initiator jobs_help"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator jobs"]
+					}
+				]
+			},
+			{
+				"scene_tag": "jobs_help_lawyer",
+				"npc_name": "Lawyer",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat is a Lawyer?\n"
+						},
+						{
+							"text": "§rA Lawyer §6helps their clients in court.\n"
+						},
+						{
+							"text": "§rThey're one part of the worlds Justice System.\n"
+						},
+						{
+							"text": "§r§lHow much does a Lawyer job pay?\n"
+						},
+						{
+							"text": "§rThe Lawyer job pays §63,000 Moneyz every 5 days §rby the Banker.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Back",
+						"commands": ["/dialogue open @s @initiator jobs_help"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator jobs"]
+					}
+				]
+			},
+			{
+				"scene_tag": "jobs_help_mayor",
+				"npc_name": "Mayor",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat is a Mayor?\n"
+						},
+						{
+							"text": "§rThe Mayor §6runs the world. §rthey are §6required to listen and solve the residents concerns, §rthey §6plan events §rfor the population, and §6makes plans to better the world.\n"
+						},
+						{
+							"text": "§r§lHow much does a Mayor job pay?\n"
+						},
+						{
+							"text": "§rThe Mayor job pays §64,000 Moneyz every 5 Minecraft days §rby the Banker.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Back",
+						"commands": ["/dialogue open @s @initiator jobs_help"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator jobs"]
+					}
+				]
+			},
+			{
+				"scene_tag": "jobs_help_pastor",
+				"npc_name": "Pastor",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat is a Pastor?\n"
+						},
+						{
+							"text": "§rA Pastor §6get payed big money to spread fear.\n"
+						},
+						{
+							"text": "§r§lHow much does a Pastor job pay?\n"
+						},
+						{
+							"text": "§rThe Pastor job pays §63,000 Moneyz every 5 days §rby the Banker.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Back",
+						"commands": ["/dialogue open @s @initiator jobs_help"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator jobs"]
+					}
+				]
+			},
+			{
+				"scene_tag": "jobs_help_realtor",
+				"npc_name": "Realtor",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat is a Realtor?\n"
+						},
+						{
+							"text": "§rThe Realtor §6sells residential buildings. §rThey are §6responsible for showing potential renters the available real estate, charging residents their rent, and selling off houses when requested.\n"
+						},
+						{
+							"text": "§r§lHow much does a Realtor job pay?\n"
+						},
+						{
+							"text": "§rThe Realtor job pays §63,000 Moneyz every 5 days §rby the Banker\n"
+						},
+						{
+							"text": "§lWhat does a Realtor do?\n"
+						},
+						{
+							"text": "§rAs a Realtor your job is to §6show your clients available properties §rfor rent in their price range.\n"
+						},
+						{
+							"text": "§rIf a client §6wants to sell their property, §ryou are §6required to do an inspection before you can sell and refund the deposit. §rDurring the inspection §6make sure the property is not damaged and still includes the basic needs for living in.\n"
+						},
+						{
+							"text": "§rIf you fail an inspection you will §6need to tell the client what needs to be done to pass another inspection §rbefore you can sell their house.\n"
+						},
+						{
+							"text": "§rYou will also be §6collecting rent at the real estate office every 7 Minecraft days.\n"
+						},
+						{
+							"text": "§rSee §6/function help/real_estate §rfor more information.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Back",
+						"commands": ["/dialogue open @s @initiator jobs_help"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator jobs"]
+					}
+				]
+			},
+			{
+				"scene_tag": "jobs_help_2",
+				"npc_name": "Jobs",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat are Jobs?\n"
+						},
+						{
+							"text": "§r§6Moneyz Economy §rincludes various §6job roles §rfor Players to apply for §6to start earning Moneyz, §rand help §6expand the Role Play aspect §rof §6each Minecraft world for every Player.\n"
+						},
+						{
+							"text": "§r§oSee §6/function help/jobs/(job) §r§ofor more information on each job.\n"
+						},
+						{
+							"text": "§lHow do Players Apply for jobs?\n"
+						},
+						{
+							"text": "§rPlayers can §6go to Town Hall or Employment Office §rfor an interview and §6get an Apply tag §rfrom the Apply NPC. They can then go to one of §6the other NPCs to obtain the desired job.\n"
+						},
+						{
+							"text": "§lHow do workers get payed?\n"
+						},
+						{
+							"text": "§rBankers will have a §6NPCs §rthey go to §6every 5 Minecraft days §rto auto §6deposit Moneyz to all online workers.§r\n"
+						},
+						{
+							"text": "§lHow do Players Quit jobs?\n"
+						},
+						{
+							"text": "§rPlayers can go to §6Town Hall or Employment Office §rto one of the other §6NPCs to quit their current job.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Farmer",
+						"commands": ["/dialogue open @s @initiator jobs_help_farmer"]
+					},
+					{
+						"name": "Fisher",
+						"commands": ["/dialogue open @s @initiator jobs_help_fisher"]
+					},
+					{
+						"name": "Hotel Owner",
+						"commands": ["/dialogue open @s @initiator jobs_help_hotel"]
+					},
+					{
+						"name": "Judge",
+						"commands": ["/dialogue open @s @initiator jobs_help_judge"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator jobs_help"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator jobs_help_3"]
+					}
+				]
+			},
+			{
+				"scene_tag": "jobs_help_3",
+				"npc_name": "Jobs",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat are Jobs?\n"
+						},
+						{
+							"text": "§r§6Moneyz Economy §rincludes various §6job roles §rfor Players to apply for §6to start earning Moneyz, §rand help §6expand the Role Play aspect §rof §6each Minecraft world for every Player.\n"
+						},
+						{
+							"text": "§r§oSee §6/function help/jobs/(job) §r§ofor more information on each job.\n"
+						},
+						{
+							"text": "§lHow do Players Apply for jobs?\n"
+						},
+						{
+							"text": "§rPlayers can §6go to Town Hall or Employment Office §rfor an interview and §6get an Apply tag §rfrom the Apply NPC. They can then go to one of §6the other NPCs to obtain the desired job.\n"
+						},
+						{
+							"text": "§lHow do workers get payed?\n"
+						},
+						{
+							"text": "§rBankers will have a §6NPCs §rthey go to §6every 5 Minecraft days §rto auto §6deposit Moneyz to all online workers.§r\n"
+						},
+						{
+							"text": "§lHow do Players Quit jobs?\n"
+						},
+						{
+							"text": "§rPlayers can go to §6Town Hall or Employment Office §rto one of the other §6NPCs to quit their current job.\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Lawyer",
+						"commands": ["/dialogue open @s @initiator jobs_help_lawyer"]
+					},
+					{
+						"name": "Mayor",
+						"commands": ["/dialogue open @s @initiator jobs_help_mayor"]
+					},
+					{
+						"name": "Pastor",
+						"commands": ["/dialogue open @s @initiator jobs_help_pastor"]
+					},
+					{
+						"name": "Realtor",
+						"commands": ["/dialogue open @s @initiator jobs_help_realtor"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator jobs_help_2"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator jobs"]
+					}
+				]
+			},
+			{
+				"scene_tag": "jobs_apply",
+				"npc_name": "Apply",
+				"text": {
+					"rawtext": [
+						{
+							"text": "What would you like to apply for?\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Assistant",
+						"commands": ["/function jobs/apply/assistant"]
+					},
+					{
+						"name": "Banker",
+						"commands": ["/function jobs/apply/banker"]
+					},
+					{
+						"name": "Builder",
+						"commands": ["/function jobs/apply/builder"]
+					},
+					{
+						"name": "Cop",
+						"commands": ["/function jobs/apply/cop"]
+					},
+					{
+						"name": "Deliver Person",
+						"commands": ["/function jobs/apply/delivery"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator jobs_apply_2"]
+					}
+				]
+			},
+            {
+				"scene_tag": "jobs_apply_2",
+				"npc_name": "Apply",
+				"text": {
+					"rawtext": [
+						{
+							"text": "What would you like to apply for?\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Farmer",
+						"commands": ["/function jobs/apply/farmer"]
+					},
+					{
+						"name": "Fisher",
+						"commands": ["/function jobs/apply/fisher"]
+					},
+					{
+						"name": "Hotel Owner",
+						"commands": ["/function jobs/apply/hotelowner"]
+					},
+					{
+						"name": "Judge",
+						"commands": ["/function jobs/apply/judge"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator jobs_apply"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator jobs_apply_3"]
+					}
+				]
+			},
+            {
+				"scene_tag": "jobs_apply_3",
+				"npc_name": "Apply",
+				"text": {
+					"rawtext": [
+						{
+							"text": "What would you like to apply for?\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Lawyer",
+						"commands": ["/function jobs/apply/lawyer"]
+					},
+					{
+						"name": "Mayor",
+						"commands": ["/function jobs/apply/mayor"]
+					},
+					{
+						"name": "Pastor",
+						"commands": ["/function jobs/apply/pastor"]
+					},
+					{
+						"name": "Realtor",
+						"commands": ["/function jobs/apply/realtor"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator jobs_apply_2"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator jobs"]
+					}
+				]
+			},
+			{
+				"scene_tag": "jobs_quit",
+				"npc_name": "Jobs",
+				"text": {
+					"rawtext": [
+						{
+							"text": "What job are you quitting?\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Assistant",
+						"commands": ["/function jobs/quit/assistant"]
+					},
+					{
+						"name": "Banker",
+						"commands": ["/function jobs/quit/banker"]
+					},
+					{
+						"name": "Builder",
+						"commands": ["/function jobs/quit/builder"]
+					},
+					{
+						"name": "Cop",
+						"commands": ["/function jobs/quit/cop"]
+					},
+					{
+						"name": "Deliver Person",
+						"commands": ["/function jobs/quit/delivery"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator jobs_quit_2"]
+					}
+				]
+			},
+            {
+				"scene_tag": "jobs_quit_2",
+				"npc_name": "Jobs",
+				"text": {
+					"rawtext": [
+						{
+							"text": "What job are you quitting?\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Farmer",
+						"commands": ["/function jobs/quit/farmer"]
+					},
+					{
+						"name": "Fisher",
+						"commands": ["/function jobs/quit/fisher"]
+					},
+					{
+						"name": "Hotel Owner",
+						"commands": ["/function jobs/quit/hotelowner"]
+					},
+					{
+						"name": "Judge",
+						"commands": ["/function jobs/quit/judge"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator jobs_quit"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator jobs_quit_3"]
+					}
+				]
+			},
+            {
+				"scene_tag": "jobs_quit_3",
+				"npc_name": "Jobs",
+				"text": {
+					"rawtext": [
+						{
+							"text": "What job are you quitting?\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Lawyer",
+						"commands": ["/function jobs/quit/lawyer"]
+					},
+					{
+						"name": "Mayor",
+						"commands": ["/function jobs/quit/mayor"]
+					},
+					{
+						"name": "Pastor",
+						"commands": ["/function jobs/quit/pastor"]
+					},
+					{
+						"name": "Realtor",
+						"commands": ["/function jobs/quit/realtor"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator jobs_quit_2"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator jobs"]
+					}
+				]
+			}
+
+		]
+	}
+}
