@@ -1,0 +1,61 @@
+{
+	"format_version": "1.21.0",
+	"minecraft:npc_dialogue": {
+		"scenes": [
+			{
+				"scene_tag": "universal",
+				"npc_name": "Universal",
+				"text": "These are the available Options.\n\nShops to shop.\nJobs to apply for and quit jobs.\nBank for ATM.\nReal Estate for properties.\nHelp for help.\n",
+				"buttons": [
+					{
+						"name": "Shops",
+						"commands": ["/dialogue open @s @initiator universal_shops"]
+					},
+					{
+						"name": "Jobs",
+						"commands": ["/dialogue open @s @initiator jobs"]
+					},
+					{
+						"name": "Bank",
+						"commands": ["/dialogue open @s @initiator banker"]
+					},
+					{
+						"name": "Real Estate",
+						"commands": ["/dialogue open @s @initiator realtor"]
+					},
+					{
+						"name": "Help",
+						"commands": ["/dialogue open @s @initiator help"]
+					}
+				]
+			},
+			{
+				"scene_tag": "universal_shops",
+				"npc_name": "Shopping",
+				"text": "Where do you want to shop?.\n",
+				"buttons": [
+					{
+						"name": "Farmer's Market",
+						"commands": ["/dialogue open @s @initiator farmers_market"]
+					},
+					{
+						"name": "Hotel",
+						"commands": ["/dialogue open @s @initiator hotel"]
+					},
+					{
+						"name": "Library",
+						"commands": ["/dialogue open @s @initiator library"]
+					},
+					{
+						"name": "Pet Shop",
+						"commands": ["/dialogue open @s @initiator petshop"]
+					},
+					{
+						"name": "Workshop",
+						"commands": ["/dialogue open @s @initiator Workshop"]
+					}
+				]
+			}
+		]
+	}
+}
