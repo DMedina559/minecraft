@@ -1,4 +1,4 @@
-tell @initiator[hasitem={item=writable_book,quantity=..1}] §cYou can't sell a Book and Quill!
+tell @initiator[hasitem={item=writable_book,quantity=..0}] §cYou can't sell a Book and Quill!
 
 tell @initiator[hasitem={item=writable_book,quantity=1..}] §aYou can sell a Book and Quill!
 

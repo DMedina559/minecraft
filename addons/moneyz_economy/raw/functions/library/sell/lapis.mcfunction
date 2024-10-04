@@ -1,4 +1,4 @@
-tell @initiator[hasitem={item=lapis_lazuli,quantity=..5}] §cYou can't sell 5 Lapis Lazuli!
+tell @initiator[hasitem={item=lapis_lazuli,quantity=..4}] §cYou can't sell 5 Lapis Lazuli!
 
 tell @initiator[hasitem={item=lapis_lazuli,quantity=5..}] §aYou can sell 5 Lapis Lazuli!
 

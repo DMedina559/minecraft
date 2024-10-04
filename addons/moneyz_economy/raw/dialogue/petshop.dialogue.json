@@ -5,24 +5,39 @@
 			{
 				"scene_tag": "petshop",
 				"npc_name": "Pet Shop",
-				"text": "Welcome to the Pet Shop. What would you like to buy?",
+				"text": "Welcome to the Pet Shop. What can I help you with?",
 				"buttons": [
 					{
-						"name": "Pets",
-						"commands": ["/dialogue open @s @initiator petshop_pets"]
+						"name": "Buying",
+						"commands": ["/dialogue open @s @initiator petshop_buy"]
 					},
 					{
-						"name": "Supplies",
-						"commands": ["/dialogue open @s @initiator petshop_supplies"]
-					},
-					{
-						"name": "Horses",
-						"commands": ["/dialogue open @s @initiator petshop_horse"]
+						"name": "Selling",
+						"commands": ["dialogue open @s @initiator petshop_sell"]
 					}
 				]
 			},
 			{
-				"scene_tag": "petshop_pets",
+				"scene_tag": "petshop_buy",
+				"npc_name": "Buying",
+				"text": "Welcome to the Pet Shop. What would you like to buy?",
+				"buttons": [
+					{
+						"name": "Pets",
+						"commands": ["/dialogue open @s @initiator petshop_buy_pets"]
+					},
+					{
+						"name": "Supplies",
+						"commands": ["/dialogue open @s @initiator petshop_buy_supplies"]
+					},
+					{
+						"name": "Horses",
+						"commands": ["/dialogue open @s @initiator petshop_buy_horse"]
+					}
+				]
+			},
+			{
+				"scene_tag": "petshop_buy_pets",
 				"npc_name": "Pets",
 				"text": "§lThese are the available Pets at the Pet Shop\n§r1 Allay for 100 Moneyz\n§r1 Axolotl for 100 Moneyz\n§r1 Cat for 40 Moneyz\n§r1 Dog for 40 Moneyz\n§r1 Horse, Donkey, or Mule for 60 Moneyz\n§r1 Parrot for 25 Moneyz\n§r1 Pig for 30 Moneyz\n§r1 Strider for 80 Moneyz\n",
 				"buttons": [
@@ -48,12 +63,12 @@
 					},
 					{
 						"name": "Pg. 2",
-						"commands": ["/dialogue open @s @initiator petshop_pets_2"]
+						"commands": ["/dialogue open @s @initiator petshop_buy_pets_2"]
 					}
 				]
 			},
 			{
-				"scene_tag": "petshop_pets_2",
+				"scene_tag": "petshop_buy_pets_2",
 				"npc_name": "Pets",
 				"text": "§lThese are the available Pets at the Pet Shop\n§r1 Allay for 100 Moneyz\n§r1 Axolotl for 100 Moneyz\n§r1 Cat for 40 Moneyz\n§r1 Dog for 40 Moneyz\n§r1 Horse, Donkey, or Mule for 60 Moneyz\n§r1 Parrot for 25 Moneyz\n§r1 Pig for 30 Moneyz\n§r1 Strider for 80 Moneyz\n",
 				"buttons": [
@@ -67,7 +82,7 @@
 					},
 					{
 						"name": "Pg. 1",
-						"commands": ["/dialogue open @s @initiator petshop_pets"]
+						"commands": ["/dialogue open @s @initiator petshop_buy_pets"]
 					},
 					{
 						"name": "Main Menu",
@@ -76,7 +91,7 @@
 				]
 			},
 			{
-				"scene_tag": "petshop_horse",
+				"scene_tag": "petshop_buy_horse",
 				"npc_name": "Horses",
 				"text": "§lThese are the available Horses at the Pet Shop\n§r1 Horse for 60 Moneyz\n§r1 Donkey for 60 Moneyz\n§r1 Mule for 60 Moneyz\n",
 				"buttons": [
@@ -99,7 +114,7 @@
 				]
 			},
 			{
-				"scene_tag": "petshop_supplies",
+				"scene_tag": "petshop_buy_supplies",
 				"npc_name": "Supplies",
 				"text": "§lThese are the available Items at the Pet Shop\n§r5 Bones for 25 Moneyz\n§r1 Carrot on a Stick for 30 Moneyz\n§r5 Fish for 25 Moneyz\n§r1 Fish on a Stick for 40 Moneyz\n§r1 Lead for 25 Moneyz\n§r1 Nametag for 25 Moneyz\n§r1 Saddle for 30 Moneyz\n§r5 Seeds for 15 Moneyz\n§r1 XP Level for 30 Moneyz\n",
 				"buttons": [
@@ -125,12 +140,12 @@
 					},
 					{
 						"name": "Pg. 2",
-						"commands": ["/dialogue open @s @initiator petshop_supplies_2"]
+						"commands": ["/dialogue open @s @initiator petshop_buy_supplies_2"]
 					}
 				]
 			},
 			{
-				"scene_tag": "petshop_supplies_2",
+				"scene_tag": "petshop_buy_supplies_2",
 				"npc_name": "Supplies",
 				"text": "§lThese are the available Items at the Pet Shop\n§r5 Bones for 25 Moneyz\n§r1 Carrot on a Stick for 30 Moneyz\n§r5 Fish for 25 Moneyz\n§r1 Fish on a Stick for 40 Moneyz\n§r1 Lead for 25 Moneyz\n§r1 Nametag for 25 Moneyz\n§r1 Saddle for 30 Moneyz\n§r5 Seeds for 15 Moneyz\n§r1 XP Level for 30 Moneyz\n",
 				"buttons": [
@@ -152,7 +167,165 @@
 					},
 					{
 						"name": "Pg. 1",
-						"commands": ["/dialogue open @s @initiator petshop_supplies"]
+						"commands": ["/dialogue open @s @initiator petshop_buy_supplies"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator petshop"]
+					}
+				]
+			},
+						{
+				"scene_tag": "petshop_sell",
+				"npc_name": "Selling",
+				"text": "What would you like to sell?",
+				"buttons": [
+					{
+						"name": "Pets",
+						"commands": ["/dialogue open @s @initiator petshop_sell_pets"]
+					},
+					{
+						"name": "Supplies",
+						"commands": ["/dialogue open @s @initiator petshop_sell_supplies"]
+					},
+					{
+						"name": "Horses",
+						"commands": ["/dialogue open @s @initiator petshop_sell_horse"]
+					}
+				]
+			},
+			{
+				"scene_tag": "petshop_sell_pets",
+				"npc_name": "Pets",
+				"text": "§lThese are the Pets I'll buy from you.\n§r1 Allay for 100 Moneyz\n§r1 Axolotl for 100 Moneyz\n§r1 Cat for 40 Moneyz\n§r1 Dog for 40 Moneyz\n§r1 Horse, Donkey, or Mule for 60 Moneyz\n§r1 Parrot for 25 Moneyz\n§r1 Pig for 30 Moneyz\n§r1 Strider for 80 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Allay",
+						"commands": ["/function petshop/sell/pets/allay"]
+					},
+					{
+						"name": "Axolotl",
+						"commands": ["/function petshop/sell/pets/axolotl"]
+					},
+					{
+						"name": "Cat",
+						"commands": ["/function petshop/sell/pets/cat"]
+					},
+					{
+						"name": "Dog",
+						"commands": ["/function petshop/sell/pets/dog"]
+					},
+					{
+						"name": "Parrot",
+						"commands": ["/function petshop/sell/pets/parrot"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator petshop_sell_pets_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "petshop_sell_pets_2",
+				"npc_name": "Pets",
+				"text": "§lThese are the Pets I'll buy from you.\n§r1 Allay for 100 Moneyz\n§r1 Axolotl for 100 Moneyz\n§r1 Cat for 40 Moneyz\n§r1 Dog for 40 Moneyz\n§r1 Horse, Donkey, or Mule for 60 Moneyz\n§r1 Parrot for 25 Moneyz\n§r1 Pig for 30 Moneyz\n§r1 Strider for 80 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Pig",
+						"commands": ["/function petshop/sell/pets/pig"]
+					},
+					{
+						"name": "Strider",
+						"commands": ["/function petshop/sell/pets/strider"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator petshop_sell_pets"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator petshop"]
+					}
+				]
+			},
+			{
+				"scene_tag": "petshop_sell_horse",
+				"npc_name": "Horses",
+				"text": "§lThese are the Horses I'll buy from you.\n§r1 Horse for 60 Moneyz\n§r1 Donkey for 60 Moneyz\n§r1 Mule for 60 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Horse",
+						"commands": ["/function petshop/sell/pets/horse"]
+					},
+					{
+						"name": "Donkey",
+						"commands": ["/function petshop/sell/pets/donkey"]
+					},
+					{
+						"name": "Mule",
+						"commands": ["/function petshop/sell/pets/mule"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator petshop"]
+					}
+				]
+			},
+			{
+				"scene_tag": "petshop_sell_supplies",
+				"npc_name": "Supplies",
+				"text": "§lThese are the Items I'll buy from you.\n§r5 Bones for 25 Moneyz\n§r1 Carrot on a Stick for 30 Moneyz\n§r5 Fish for 25 Moneyz\n§r1 Fish on a Stick for 40 Moneyz\n§r1 Lead for 25 Moneyz\n§r1 Nametag for 25 Moneyz\n§r1 Saddle for 30 Moneyz\n§r5 Seeds for 15 Moneyz\n§r1 XP Level for 30 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Bones",
+						"commands": ["/function petshop/sell/supplies/bone"]
+					},
+					{
+						"name": "Carrot on Stick",
+						"commands": ["/function petshop/sell/supplies/carrotstick"]
+					},
+					{
+						"name": "Fish",
+						"commands": ["/function petshop/sell/supplies/fish"]
+					},
+					{
+						"name": "Fungus on a Stick",
+						"commands": ["/function petshop/sell/supplies/fungusstick"]
+					},
+					{
+						"name": "Lead",
+						"commands": ["/function petshop/sell/supplies/lead"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator petshop_sell_supplies_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "petshop_sell_supplies_2",
+				"npc_name": "Supplies",
+				"text": "§lThese are the Items I'll buy from you.\n§r5 Bones for 25 Moneyz\n§r1 Carrot on a Stick for 30 Moneyz\n§r5 Fish for 25 Moneyz\n§r1 Fish on a Stick for 40 Moneyz\n§r1 Lead for 25 Moneyz\n§r1 Nametag for 25 Moneyz\n§r1 Saddle for 30 Moneyz\n§r5 Seeds for 15 Moneyz\n§r1 XP Level for 30 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Name Tag",
+						"commands": ["/function petshop/sell/supplies/nametag"]
+					},
+					{
+						"name": "Saddle",
+						"commands": ["/function petshop/sell/supplies/saddle"]
+					},
+					{
+						"name": "Seeds",
+						"commands": ["/function petshop/sell/supplies/seed"]
+					},
+					{
+						"name": "XP Level",
+						"commands": ["/function petshop/sell/supplies/xp"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator petshop_sell_supplies"]
 					},
 					{
 						"name": "Main Menu",
