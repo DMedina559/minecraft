@@ -4,29 +4,44 @@
 		"scenes": [
 			{
 				"scene_tag": "workshop",
-				"npc_name": "NPC",
-				"text": "Welcome to the Workshop. What would you like to buy?",
+				"npc_name": "Workshop",
+				"text": "Welcome to the Work Shop. What would can I help you with?",
 				"buttons": [
 					{
-						"name": "AWT Kits",
-						"commands": ["/dialogue open @s @initiator workshop_awt_kits"]
+						"name": "Buy",
+						"commands": ["/dialogue open @s @initiator workshop_buy"]
 					},
 					{
-						"name": "Regular Kits",
-						"commands": ["/dialogue open @s @initiator workshop_kits"]
-					},
-					{
-						"name": "Misc Items",
-						"commands": ["/dialogue open @s @initiator workshop_misc"]
-					},
-					{
-						"name": "Horse Armor",
-						"commands": ["/dialogue open @s @initiator workshop_horse_armor"]
+						"name": "Sell",
+						"commands": ["/dialogue open @s @initiator workshop_sell"]
 					}
 				]
 			},
 			{
-				"scene_tag": "workshop_awt_kits",
+				"scene_tag": "workshop_buy",
+				"npc_name": "NPC",
+				"text": "What would you like to buy?",
+				"buttons": [
+					{
+						"name": "AWT Kits",
+						"commands": ["/dialogue open @s @initiator workshop_buy_awt_kits"]
+					},
+					{
+						"name": "Regular Kits",
+						"commands": ["/dialogue open @s @initiator workshop_buy_kits"]
+					},
+					{
+						"name": "Misc Items",
+						"commands": ["/dialogue open @s @initiator workshop_buy_misc"]
+					},
+					{
+						"name": "Horse Armor",
+						"commands": ["/dialogue open @s @initiator workshop_buy_horse_armor"]
+					}
+				]
+			},
+			{
+				"scene_tag": "workshop_buy_awt_kits",
 				"npc_name": "NPC",
 				"text": "§lThese are the available AWT Kits at the Workshop.\n§rAll Kits come with §6full stacks, §ra §6 Colored Shulker Box, and §6fully maxed Enchantments.\n§r§lArmor Weapon Tool Kits:\n§r1 Netherite Kit for 40,000 Moneyz\n§r1 Diamond Kit for 20,000 Moneyz\n§r1 Iron Kit for 10,000 Moneyz\n§r1 Gold Kit for 5,000 Moneyz\n§r1 Stone Kit for 3,000 Moneyz\n§r1 Wood Kit for 2,000 Moneyz\n§r",
 				"buttons": [
@@ -52,12 +67,12 @@
 					},
 					{
 						"name": "Pg. 2",
-						"commands": ["/dialogue open @s @initiator workshop_awt_kits_2"]
+						"commands": ["/dialogue open @s @initiator workshop_buy_awt_kits_2"]
 					}
 				]
 			},
 			{
-				"scene_tag": "workshop_awt_kits_2",
+				"scene_tag": "workshop_buy_awt_kits_2",
 				"npc_name": "NPC",
 				"text": "§lThese are the available AWT Kits at the Workshop.\n§rAll Kits come with §6full stacks, §ra §6 Colored Shulker Box, and §6fully maxed Enchantments.\n§r§lArmor Weapon Tool Kits:\n§r1 Netherite Kit for 40,000 Moneyz\n§r1 Diamond Kit for 20,000 Moneyz\n§r1 Iron Kit for 10,000 Moneyz\n§r1 Gold Kit for 5,000 Moneyz\n§r1 Stone Kit for 3,000 Moneyz\n§r1 Wood Kit for 2,000 Moneyz\n§r",
 				"buttons": [
@@ -67,7 +82,7 @@
 					},
 					{
 						"name": "Pg. 1",
-						"commands": ["/dialogue open @s @initiator workshop_awt_kits"]
+						"commands": ["/dialogue open @s @initiator workshop_buy_awt_kits"]
 					},
 					{
 						"name": "Main Menu",
@@ -76,7 +91,7 @@
 				]
 			},
 			{
-				"scene_tag": "workshop_kits",
+				"scene_tag": "workshop_buy_kits",
 				"npc_name": "NPC",
 				"text": "§lThese are the available Regular Kits at the Workshop.\n§rAll Kits come with §6full stacks, §rand a §6 Colored Shulker Box\n§r§lRegular Kits:\n§r1 Smithing Templates Kit for 5,000 Moneyz\n§r1 Brewing Kit for 2,000 Moneyz\n§r1 Wood Kit for 1,000 Moneyz\n§r1 Banner Kit for 500 Moneyz\n§r1 Dye Kit for 500 Moneyz\n§r1 Pottery Sherds Kit for 500 Moneyz\n",
 				"buttons": [
@@ -102,12 +117,12 @@
 					},
 					{
 						"name": "Pg. 2",
-						"commands": ["/dialogue open @s @initiator workshop_kits_2"]
+						"commands": ["/dialogue open @s @initiator workshop_buy_kits_2"]
 					}
 				]
 			},
 			{
-				"scene_tag": "workshop_kits_2",
+				"scene_tag": "workshop_buy_kits_2",
 				"npc_name": "NPC",
 				"text": "§lThese are the available Regular Kits at the Workshop.\n§rAll Kits come with §6full stacks, §rand a §6 Colored Shulker Box\n§r§lRegular Kits:\n§r1 Smithing Templates Kit for 5,000 Moneyz\n§r1 Brewing Kit for 2,000 Moneyz\n§r1 Wood Kit for 1,000 Moneyz\n§r1 Banner Kit for 500 Moneyz\n§r1 Dye Kit for 500 Moneyz\n§r1 Pottery Sherds Kit for 500 Moneyz\n",
 				"buttons": [
@@ -117,7 +132,7 @@
 					},
 					{
 						"name": "Pg. 1",
-						"commands": ["/dialogue open @s @initiator workshop_kits"]
+						"commands": ["/dialogue open @s @initiator workshop_buy_kits"]
 					},
 					{
 						"name": "Main Menu",
@@ -126,7 +141,7 @@
 				]
 			},
 			{
-				"scene_tag": "workshop_misc",
+				"scene_tag": "workshop_buy_misc",
 				"npc_name": "NPC",
 				"text": "§lThese are the available Items at the Workshop.\n§r§lMisc Items:\n§r1 Totem of Undying for 1,500 Moneyz\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r64 Wind Charges for 25 Moneyz\n§r64 Fireworks (Flight 3) for 25 Moneyz\n",
 				"buttons": [
@@ -152,12 +167,12 @@
 					},
 					{
 						"name": "Pg. 2",
-						"commands": ["/dialogue open @s @initiator workshop_misc_2"]
+						"commands": ["/dialogue open @s @initiator workshop_buy_misc_2"]
 					}
 				]
 			},
 			{
-				"scene_tag": "workshop_misc_2",
+				"scene_tag": "workshop_buy_misc_2",
 				"npc_name": "NPC",
 				"text": "§lThese are the available Items at the Workshop.\n§r§lMisc Items:\n§r1 Totem of Undying for 1,500 Moneyz\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r64 Wind Charges for 25 Moneyz\n§r64 Fireworks (Flight 3) for 25 Moneyz\n",
 				"buttons": [
@@ -175,7 +190,7 @@
 					},
 					{
 						"name": "Pg. 1",
-						"commands": ["/dialogue open @s @initiator workshop_misc"]
+						"commands": ["/dialogue open @s @initiator workshop_buy_misc"]
 					},
 					{
 						"name": "Main Menu",
@@ -184,7 +199,7 @@
 				]
 			},
 			{
-				"scene_tag": "workshop_horse_armor",
+				"scene_tag": "workshop_buy_horse_armor",
 				"npc_name": "NPC",
 				"text": "§lThese are the available Horse Armors at the Workshop.\n§r§lHorse Armor:\n§rDiamond Horse Armor for 250 Moneyz\n§rIron Horse Armor for 150 Moneyz\n§rGold Horse Armor for 100 Moneyz\n§rLeather Horse Armor for 50 Moneyz\n",
 				"buttons": [
@@ -203,6 +218,106 @@
 					{
 						"name": "Leather",
 						"commands": ["/function workshop/horse_leather"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator workshop", "/dialogue open @s @initiator workshop"]
+					}
+				]
+			},,
+			{
+				"scene_tag": "workshop_sell",
+				"npc_name": "NPC",
+				"text": "What would you like to sell?",
+				"buttons": [
+					{
+						"name": "Misc Items",
+						"commands": ["/dialogue open @s @initiator workshop_sell_misc"]
+					},
+					{
+						"name": "Horse Armor",
+						"commands": ["/dialogue open @s @initiator workshop_sell_horse_armor"]
+					}
+				]
+			},
+			{
+				"scene_tag": "workshop_sell_misc",
+				"npc_name": "NPC",
+				"text": "§lThese are the Items I'll buy from you.\n§r§lMisc Items:\n§r1 Totem of Undying for 1,500 Moneyz\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r64 Wind Charges for 25 Moneyz\n§r64 Fireworks (Flight 3) for 25 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Totem",
+						"commands": ["/function workshop/sell/totem"]
+					},
+					{
+						"name": "End Crystal",
+						"commands": ["/function workshop/sell/end_crystal"]
+					},
+					{
+						"name": "Nether Star",
+						"commands": ["/function workshop/sell/nether_star"]
+					},
+					{
+						"name": "Ender Pearls",
+						"commands": ["/function workshop/sell/ender_pearl"]
+					},
+					{
+						"name": "Shulker Shells",
+						"commands": ["/function workshop/sell/shulker_shell"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator workshop_sell_misc_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "workshop_sell_misc_2",
+				"npc_name": "NPC",
+				"text": "§lThese are the available Items at the Workshop.\n§r§lMisc Items:\n§r1 Totem of Undying for 1,500 Moneyz\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r64 Wind Charges for 25 Moneyz\n§r64 Fireworks (Flight 3) for 25 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Conduit",
+						"commands": ["/function workshop/sell/conduit"]
+					},
+					{
+						"name": "Wind Charges",
+						"commands": ["/function workshop/sell/wind_charge"]
+					},
+					{
+						"name": "Fireworks",
+						"commands": ["/function workshop/sell/firework"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator workshop_sell_misc"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator workshop", "/dialogue open @s @initiator workshop"]
+					}
+				]
+			},
+			{
+				"scene_tag": "workshop_sell_horse_armor",
+				"npc_name": "NPC",
+				"text": "§lThese are the available Horse Armors at the Workshop.\n§r§lHorse Armor:\n§rDiamond Horse Armor for 250 Moneyz\n§rIron Horse Armor for 150 Moneyz\n§rGold Horse Armor for 100 Moneyz\n§rLeather Horse Armor for 50 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Diamond",
+						"commands": ["/function workshop/sell/horse_diamond"]
+					},
+					{
+						"name": "Iron",
+						"commands": ["/function workshop/sell/horse_iron"]
+					},
+					{
+						"name": "Gold",
+						"commands": ["/function workshop/sell/horse_gold"]
+					},
+					{
+						"name": "Leather",
+						"commands": ["/function workshop/sell/horse_leather"]
 					},
 					{
 						"name": "Main Menu",
