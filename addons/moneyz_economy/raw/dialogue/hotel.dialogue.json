@@ -1,0 +1,60 @@
+{
+	"format_version": "1.14.0",
+	"minecraft:npc_dialogue": {
+		"scenes": [
+			{
+				"scene_tag": "hotel",
+				"npc_name": "Hotel",
+				"text": "Welcome to the Hotel, what can I help you with?",
+				"buttons": [
+					{
+						"name": "Guest",
+						"commands": ["/dialogue open @s @initiator hotel_guest"]
+					},
+					{
+						"name": "Owner",
+						"commands": ["/dialogue open @s @initiator hotel_owner"]
+					}
+				]
+			},
+			{
+				"scene_tag": "hotel_guest",
+				"npc_name": "Guest",
+				"text": "I can help you check in and out after you speak to the Hotel Owner.\nDon't forget to checkout after your stay or you'll continue to be charged!\n\nRegular Room 15 Moneyz for 1 Night\nDeluxe Room 50 Moneyz for 1 Night",
+				"buttons": [
+					{
+						"name": "Regular",
+						"commands": ["/function hotel/hotel"]
+					},
+					{
+						"name": "Deluxe",
+						"commands": ["/function hotel/hoteldeluxe"]
+					},
+					{
+						"name": "Checkout",
+						"commands": ["/function hotel/checkout"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator hotel"]
+					}
+				]
+			},
+			{
+				"scene_tag": "hotel_owner",
+				"npc_name": "Owner",
+				"text": "Charge Guest?",
+				"buttons": [
+					{
+						"name": "Charge",
+						"commands": ["/function hotel/night"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator hotel"]
+					}
+				]
+			}
+		]
+	}
+}

@@ -1,0 +1,47 @@
+{
+	"format_version": "1.21.0",
+	"minecraft:npc_dialogue": {
+		"scenes": [
+			{
+				"scene_tag": "library",
+				"npc_name": "Library",
+				"text": "Welcome to the Library. What would you like to buy?",
+				"buttons": [
+					{
+						"name": "See Items",
+						"commands": ["/dialogue open @s @initiator library_library"]
+					}
+				]
+			},
+			{
+				"scene_tag": "library_library",
+				"npc_name": "NPC",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lThese are the available items at the Library\n§r5 Books for 10 Moneyz\n§r1 Books and Quill for 25 Moneyz\n§r5 Lapis for 30 Moneyz\n§r30 XP Levels for 100 Moneyz\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Books",
+						"commands": ["/function library/book"]
+					},
+					{
+						"name": "Book&Quill",
+						"commands": ["/function library/bookquill"]
+					},
+					{
+						"name": "Lapis",
+						"commands": ["/function library/lapis"]
+					},
+					{
+						"name": "XP Level",
+						"commands": ["/function library/xp"]
+					}
+				]
+			}
+		]
+	}
+}

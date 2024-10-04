@@ -1,0 +1,122 @@
+{
+	"format_version": "1.14.0",
+	"minecraft:npc_dialogue": {
+		"scenes": [
+			{
+				"scene_tag": "atm",
+				"npc_name": "ATM",
+				"text": "I can help you make Moneyz exchanges.",
+				"buttons": [
+					{
+						"name": "Resource to Moneyz",
+						"commands": ["/dialogue open @s @initiator atm_resource_to_moneyz"]
+					},
+					{
+						"name": "Moneyz to Resource",
+						"commands": ["/dialogue open @s @initiator atm_moneyz_to_resource"]
+					}
+				]
+			},
+			{
+				"scene_tag": "atm_resource_to_moneyz",
+				"npc_name": "Resource to Moneyz",
+				"text": "Convert 1 of your resources to Moneyz. Please see the Banker for Coal exchange.\n\n1 Netherite = 1,000 Moneyz\n1 Emerald = 100 Moneyz\n1 Diamond = 75 Moneyz\n1 Iron = 50 Moneyz\n1 Gold = 25 Moneyz\n1 Copper = 10 Moneyz\n1 Coal = 5 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Copper",
+						"commands": ["/function bank/resourcetomoneyz/copper"]
+					},
+					{
+						"name": "Gold",
+						"commands": ["/function bank/resourcetomoneyz/gold"]
+					},
+					{
+						"name": "Iron",
+						"commands": ["/function bank/resourcetomoneyz/iron"]
+					},
+					{
+						"name": "Diamond",
+						"commands": ["/function bank/resourcetomoneyz/diamond"]
+					},
+					{
+						"name": "Emerald",
+						"commands": ["/function bank/resourcetomoneyz/emerald"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator atm_resource_to_moneyz_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "atm_resource_to_moneyz_2",
+				"npc_name": "Resource to Moneyz",
+				"text": "Convert 1 of your resources to Moneyz. Please see the Banker for Coal exchange.\n\n1 Netherite = 1,000 Moneyz\n1 Emerald = 100 Moneyz\n1 Diamond = 75 Moneyz\n1 Iron = 50 Moneyz\n1 Gold = 25 Moneyz\n1 Copper = 10 Moneyz\n1 Coal = 5 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Netherite",
+						"commands": ["/function bank/resourcetomoneyz/netherite"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator atm_resource_to_moneyz"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator atm"]
+					}
+				]
+			},
+			{
+				"scene_tag": "atm_moneyz_to_resource",
+				"npc_name": "Moneyz to Resource",
+				"text": "Convert your Moneyz to 1 resource of your choosing. Please go to the Bank for Netherite exchange.\n\n1 Netherite = 1,000 Moneyz\n1 Emerald = 100 Moneyz\n1 Diamond = 75 Moneyz\n1 Iron = 50 Moneyz\n1 Gold = 25 Moneyz\n1 Copper = 10 Moneyz\n1 Coal = 5 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Copper",
+						"commands": ["/function bank/moneyztoresource/copper"]
+					},
+					{
+						"name": "Gold",
+						"commands": ["/function bank/moneyztoresource/gold"]
+					},
+					{
+						"name": "Iron",
+						"commands": ["/function bank/moneyztoresource/iron"]
+					},
+					{
+						"name": "Diamond",
+						"commands": ["/function bank/moneyztoresource/diamond"]
+					},
+					{
+						"name": "Emerald",
+						"commands": ["/function bank/moneyztoresource/emerald"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator atm_moneyz_to_resource_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "atm_moneyz_to_resource_2",
+				"npc_name": "Moneyz to Resource",
+				"text": "Convert your Moneyz to 1 resource of your choosing. Please go to the Bank for Netherite exchange.\n\n1 Netherite = 1,000 Moneyz\n1 Emerald = 100 Moneyz\n1 Diamond = 75 Moneyz\n1 Iron = 50 Moneyz\n1 Gold = 25 Moneyz\n1 Copper = 10 Moneyz\n1 Coal = 5 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Netherite",
+						"commands": ["/function bank/moneyztoresource/netherite"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator atm_moneyz_to_resource"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator atm"]
+					}
+				]
+			}
+		]
+	}
+}
