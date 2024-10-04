@@ -5,13 +5,7 @@
 			{
 				"scene_tag": "library",
 				"npc_name": "Library",
-				"text": {
-					"rawtext": [
-						{
-							"text": "Welcome to the Library. What can I help you with?"
-						}
-					]
-				},
+				"text": "Welcome to the Library. What can I help you with?",
 				"buttons": [
 					{
 						"name": "Buying",
@@ -49,6 +43,43 @@
 					{
 						"name": "XP Level",
 						"commands": ["/function library/xp"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator library"]
+					}
+				]
+			},
+			{
+				"scene_tag": "library_sell",
+				"npc_name": "Selling",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lThese are the items I'll buy from you.\n§r5 Books for 10 Moneyz\n§r1 Books and Quill for 25 Moneyz\n§r5 Lapis for 30 Moneyz\n§r30 XP Levels for 100 Moneyz\n"
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Books",
+						"commands": ["/function library/sell/book"]
+					},
+					{
+						"name": "Book&Quill",
+						"commands": ["/function library/sell/bookquill"]
+					},
+					{
+						"name": "Lapis",
+						"commands": ["/function library/sell/lapis"]
+					},
+					{
+						"name": "XP Level",
+						"commands": ["/function library/sell/xp"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator library"]
 					}
 				]
 			}
