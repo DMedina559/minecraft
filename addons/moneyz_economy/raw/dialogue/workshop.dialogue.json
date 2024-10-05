@@ -224,7 +224,7 @@
 						"commands": ["/dialogue open @s @initiator workshop", "/dialogue open @s @initiator workshop"]
 					}
 				]
-			},,
+			},
 			{
 				"scene_tag": "workshop_sell",
 				"npc_name": "NPC",

@@ -79,3 +79,34 @@
 
 # 1.5.1
 1. Changed Moneyz Trader spawn rates
+
+# 1.6.0
+1. Removed Moneyz Trader
+2. Added Dialogue commands
+  - Setup NPCs with `dialogue open @s @initiator {shop}_{buy|sell}`
+      - For example `dialogue open @s @initiator petshop_sell`
+    - Alternatively you can run `/dialogue change @e[family=npc,r=5,c=1] {dialogue}` in chat while standing next to an NPC to setup a pre-configured dialogue and command buttons
+      - For example `/dialogue change @e[family=npc,r=5,c=1] atm`
+      - World Owners/Admins can also update their existing NPCs with this commands
+  - This will be the preferred way to setup your NPCs moving forward
+  - Allows new items to be added to shops without having to manually add it
+  - Allows 1 NPC for all items in a shop instead of multiple
+  - Available dialogues `dialogue open @s @initiator {dialogue}`:
+    - `atm`: ATM for Moneyz exchange
+    - `banker`: Worker Pay and ATM Services 
+    - `farmers_market` Farmer's Market, supports `{farmer_buy|sell}`
+    - `help`: Help Commands
+    - `hotel`: Hotel Services
+    - `jobs`: Employment Services
+    - `library`: Library Shop, supports `{library_buy|sell}`
+    - `petshop`: Pet store, supports `{petshop_buy|sell}`
+    - `realtor`: Real Estate Management
+    - `universal`: All Dialogues
+    - `workshop`: Workshop, supports `{workshop_buy|sell}`
+  - Shops can still be setup manually with the usual `/function {shop}/` commands
+3. Selling items is now done through the shop NPCs
+  - `/function {shop}/sell/{item}`
+  - `dialogue open @s @initiator {shop}_sell`
+4. Moved most help commands to `dialogue open @s @initiator help`
+  - It is recommended to setup an NPC with this command and read through the menus, and to allow players to get help with Moneyz in general
+5. Updated Help documentation for new dialogue commands

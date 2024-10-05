@@ -287,6 +287,12 @@
 							"text": "§lTip You don't need / for NPC commands.\n"
 						},
 						{
+							"text": "§lWhat are the available dialogues?\n"
+						},
+						{
+							"text": "§rThese are the available dialogues:\natm\nbanker\nfarmers_market\nfarmer_buy\nfarmer_sell\nhelp\nhotel\njobs\nlibrary\npetshop\npetshpo_buy\npetshop_sell\nrealtor\nuniversal\nworkshop\nworkshop_buy\nworkshop_sell\n"
+						},
+						{
 							"text": "§r§lWhat are some recommendations for setting up my shops?\n"
 						},
 						{

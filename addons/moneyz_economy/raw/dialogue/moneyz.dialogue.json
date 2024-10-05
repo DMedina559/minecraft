@@ -52,7 +52,7 @@
 					},
 					{
 						"name": "Workshop",
-						"commands": ["/dialogue open @s @initiator Workshop"]
+						"commands": ["/dialogue open @s @initiator workshop"]
 					}
 				]
 			}
