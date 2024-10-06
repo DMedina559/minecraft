@@ -35,7 +35,7 @@ Enter text you want the NPC to say, then go back and to the `Advanced Settings`
 Change the command to `Button Mode` and enter a dialogue or function command from the pack
 
 E.g. `dialogue open @s @initiator petshop_buy` or `function farmer/beef`
-It is recommended to use the `dialogue` commands as this will allow NPC shops to automatically update with new items. `function` commamds should only be used for manually selecting items to be sold/purchased. See bellow for available dialogues.
+It is recommended to use the `dialogue` commands as this will allow NPC shops to automatically update with new items. `function` commands should only be used for manually selecting items to be sold/purchased. See bellow for available dialogues.
 
 Do this for all your shops and now you have a working economy in your world.
 You can follow the function commands here: [raw/functions](raw/functions)
@@ -44,15 +44,25 @@ Alternatively you can run `/dialogue change @e[family=npc,r=5,c=1] {dialogue}` i
 
 ### Available dialogues `dialogue open @s @initiator {dialogue}`: 
 `atm`: ATM for Moneyz exchange
+
 `banker`: Worker Pay and ATM Services 
+
 `farmers_market` Farmer's Market, supports `{farmer_buy|sell}`
+
 `help`: Help Commands
+
 `hotel`: Hotel Services
+
 `jobs`: Employment Services
+
 `library`: Library Shop, supports `{library_buy|sell}`
+
 `petshop`: Pet store, supports `{petshop_buy|sell}`
+
 `realtor`: Real Estate Management
+
 `universal`: All Dialogues
+
 `workshop`: Workshop, supports `{workshop_buy|sell}`
 
 ### Help Commands
@@ -64,7 +74,7 @@ To setup a Help NPC run `/dialogue change @e[family=npc,r=5,c=1] help` in chat w
 These commands include tips for World Owners/Admins settings up their shops, and allows players to check their Moneyz balance or the available items and prices in any shop.
 
 ## Dialogue VS Function
-It is recommended to use the `dialogue` commands as this will allow NPC shops to automatically update with new items. `function` commamds should only be used for manually selecting items to be sold/purchased.
+It is recommended to use the `dialogue` commands as this will allow NPC shops to automatically update with new items. `function` commands should only be used for manually selecting items to be sold/purchased.
 
 Dialogue commands allow NPCs to update with new items as they release. World Owners/Admins no longer need to enter each individual function command as they're already preconfigured with the dialogue command. 
 

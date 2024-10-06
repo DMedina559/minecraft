@@ -4,7 +4,7 @@ execute as @initiator[scores={Moneyz=..99}] run tellraw @s {"rawtext": [{"text":
 
 execute as @initiator[scores={Moneyz=100..}] run tell @s §aYou can buy Gold Horse Armor!
 
-execute as @initiator[scores={Moneyz=100..}] run give @s gold_horse_armor
+execute as @initiator[scores={Moneyz=100..}] run give @s golden_horse_armor
 
 execute as @initiator[scores={Moneyz=100..}] run tell @s §aPurchased Gold Horse Armor!
 

@@ -1,0 +1,21 @@
+{
+    "format_version": "1.21.30",
+    "minecraft:item": {
+        "description": {
+            "identifier": "zvortex:moneyz_menu",
+            "menu_category": {
+                "category": "items"
+            }
+        },
+        "components": {
+            "minecraft:max_stack_size": 1,
+            "minecraft:icon": "nether_star",
+            "minecraft:glint": true,
+            "minecraft:rarity": "epic",
+            "minecraft:interact_button": "Open Shop",
+            "minecraft:display_name": {
+                "value": "Moneyz Menu"
+            }
+        }
+    }
+}

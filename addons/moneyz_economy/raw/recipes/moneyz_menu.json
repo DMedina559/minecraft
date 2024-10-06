@@ -1,0 +1,59 @@
+{
+  "format_version": "1.21",
+  "minecraft:recipe_shapeless": {
+    "description": {
+    "identifier": "zvortex:moneyz_menu"
+    },
+    "tags": [ "crafting_table" ],
+    "unlock": [
+      {
+        "item": "minecraft:netherite_ingot"
+      },
+      {
+        "item": "minecraft:emerald"
+      },
+      {
+        "item": "minecraft:diamond"
+      },
+      {
+        "item": "minecraft:iron_ingot"
+      },
+      {
+        "item": "minecraft:gold_ingot"
+      },
+      {
+        "item": "minecraft:copper_ingot"
+      },
+      {
+        "item": "minecraft:coal"
+      }
+    ],
+    "ingredients": [
+      {
+        "item": "minecraft:netherite_ingot"
+      },
+      {
+        "item": "minecraft:emerald"
+      },
+      {
+        "item": "minecraft:diamond"
+      },
+      {
+        "item": "minecraft:iron_ingot"
+      },
+      {
+        "item": "minecraft:gold_ingot"
+      },
+      {
+        "item": "minecraft:copper_ingot"
+      },
+      {
+        "item": "minecraft:coal"
+      }
+    ],
+    "result": {
+      "item": "zvortex:moneyz_menu",
+      "count": 1
+    }
+  }
+}
