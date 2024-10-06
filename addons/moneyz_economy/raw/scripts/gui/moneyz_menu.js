@@ -88,8 +88,8 @@ world.beforeEvents.itemUse.subscribe(data => {
                     return;
                 } try {
                     player.runCommandAsync(`scoreboard players remove @s Moneyz ${textField}`)
-                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aSent §l${selectedPlayer.nameTag} §r§2$${textField} Moneyz"}]}`)
-                    selectedPlayer.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§l${player.nameTag} §r§aSent You §2$${textField} Moneyz"}]}`);
+                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aSent §l${selectedPlayer.nameTag} §r§2${textField} Moneyz"}]}`)
+                    selectedPlayer.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§l${player.nameTag} §r§aSent You §2${textField} Moneyz"}]}`);
                     selectedPlayer.runCommandAsync(`scoreboard players add @s Moneyz ${textField}`)
                 } catch {
                     player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cNumbers Only!"}]}`)
