@@ -2,7 +2,7 @@
     "format_version": 2,
     "header": {
         "description": "A Moneyz Trader entity for use with Moneyz Economy by ZVortex11325.",
-        "name": "Moneyz Economy",
+        "name": "Moneyz Trader BP",
         "uuid": "08ffc317-198c-44a7-b0dd-787672a48b6d",
         "min_engine_version": [ 1, 21, 0 ],
         "version": [1, 0, 0]
