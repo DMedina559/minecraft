@@ -104,3 +104,6 @@ If you're updating from a previous version and want to use the new `dialogue` co
 Below is a link to a table that list all available items and prices
 
 https://docs.google.com/spreadsheets/d/1TG4Ol5z_8U7mEJlSLx4I2LBmPVcJ0Aawu3_o_ac4xvU
+
+### Shout out to SoullessReaperYT for their YouTube video on custom menus and providing a GUI template:
+https://www.youtube.com/watch?v=6sjZkGPCF5A
