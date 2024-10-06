@@ -13,7 +13,7 @@ I decided to use NPC's for this pack as all commands are ran as `@initiator` ins
 
 ### To Get Started 
 
-Moneyz 1.6.0+ makes it easy to start using Moneyz in your world.
+Moneyz Economy 1.6.0+ makes it easy to start using Moneyz in your world.
 
 Just start your world with cheats and the behavior pack enabled and run these chat commands.
 
@@ -64,6 +64,24 @@ Alternatively you can run `/dialogue change @e[family=npc,r=5,c=1] {dialogue}` i
 `universal`: All Dialogues
 
 `workshop`: Workshop, supports `{workshop_buy|sell}`
+
+### Moneyz Menu
+Moneyz Economy 1.6.1+ adds a custom Moneyz Menu that allows Players to access various NPC shops by using the Moneyz Menu item. The Moneyz Menu item is craftable in the Crafting Table by putting 1 of each Resource in the grid, no shape required.
+
+The Moneyz Menus allows Players direct access to:
+- Shops
+  - Farmer's Market
+  - Library
+  - Pet Shop
+  - Workshop
+- ATM Services
+- Send Moneyz
+- Help
+- Credits
+
+### Send Moneyz to other Players!
+Moneyz Economy 1.6.1+ allows Players to send Moneyz directly to other Players straight from the Moneyz Menu.
+Just select a Player from the dropdown menu and enter an amount to send.
 
 ### Help Commands
 Moneyz Economy 1.6.0+ comes with various help documentation to help all players setup and use Moneyz easily.

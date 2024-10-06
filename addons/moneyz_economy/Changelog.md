@@ -110,3 +110,23 @@
 4. Moved most help commands to `dialogue open @s @initiator help`
   - It is recommended to setup an NPC with this command and read through the menus, and to allow players to get help with Moneyz in general
 5. Updated Help documentation for new dialogue commands
+
+# 1.6.1
+1. Added Moneyz Menu using the Scripting API
+  - Adds ability to send Moneyz to other Players
+  - Allows access to:
+    - Shops
+      - Farmer's Market
+      - Library
+      - Pet Shop
+      - Workshop
+    - ATM Services
+    - Send Moneyz
+    - Help
+    - Credits
+2. Added New Custom Item: Moneyz Menu
+  - Allows Players to access the Moneyz Menu
+  - Craftable in Crafting Table by combining 1 of each Resource
+3. Fixed Selling Ender Pearls
+4. Fixed Buying and Selling Gold Horse Armor
+5. Fixed Various Typos and Grammar
