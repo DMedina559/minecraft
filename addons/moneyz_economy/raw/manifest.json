@@ -4,7 +4,7 @@
         "description": "A Moneyz function pack using Scoreboards by ZVortex11325.",
         "name": "Moneyz Economy",
         "uuid": "97f0bff3-9af2-4a12-a869-a4090a90c734",
-        "min_engine_version": [ 1, 21, 0 ],
+        "min_engine_version": [ 1, 21, 30 ],
         "version": [1, 6, 1]
     },
     "modules": [
