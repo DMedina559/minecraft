@@ -4,7 +4,7 @@
 		"scenes": [
 			{
 				"scene_tag": "banker",
-				"npc_name": "NPC",
+				"npc_name": "Banker",
 				"text": "I can help you with these services.",
 				"buttons": [
 					{
@@ -23,7 +23,7 @@
 			},
 			{
 				"scene_tag": "banker_resource_to_moneyz",
-				"npc_name": "NPC",
+				"npc_name": "Resource to Moneyz",
 				"text": "Convert 1 of your resources to Moneyz. Please see the Banker for Coal exchange.\n\n1 Netherite = 1,000 Moneyz\n1 Emerald = 100 Moneyz\n1 Diamond = 75 Moneyz\n1 Iron = 50 Moneyz\n1 Gold = 25 Moneyz\n1 Copper = 10 Moneyz\n1 Coal = 5 Moneyz\n",
 				"buttons": [
 					{
@@ -54,7 +54,7 @@
 			},
 			{
 				"scene_tag": "banker_resource_to_moneyz_2",
-				"npc_name": "NPC",
+				"npc_name": "Resource to Moneyz",
 				"text": "Convert 1 of your resources to Moneyz. Please see the Banker for Coal exchange.\n\n1 Netherite = 1,000 Moneyz\n1 Emerald = 100 Moneyz\n1 Diamond = 75 Moneyz\n1 Iron = 50 Moneyz\n1 Gold = 25 Moneyz\n1 Copper = 10 Moneyz\n1 Coal = 5 Moneyz\n",
 				"buttons": [
 					{
@@ -73,7 +73,7 @@
 			},
 			{
 				"scene_tag": "banker_moneyz_to_resource",
-				"npc_name": "NPC",
+				"npc_name": "Moneyz to Resource",
 				"text": "I can convert your Moneyz to 1 resource of your choosing. Please go to the Bank for Netherite exchange.\n\n1 Netherite = 1,000 Moneyz\n1 Emerald = 100 Moneyz\n1 Diamond = 75 Moneyz\n1 Iron = 50 Moneyz\n1 Gold = 25 Moneyz\n1 Copper = 10 Moneyz\n1 Coal = 5 Moneyz\n",
 				"buttons": [
 					{
@@ -104,7 +104,7 @@
 			},
 			{
 				"scene_tag": "banker_moneyz_to_resource_2",
-				"npc_name": "NPC",
+				"npc_name": "Moneyz to Resource",
 				"text": "I can convert your Moneyz to 1 resource of your choosing. Please go to the Bank for Netherite exchange.\n\n1 Netherite = 1,000 Moneyz\n1 Emerald = 100 Moneyz\n1 Diamond = 75 Moneyz\n1 Iron = 50 Moneyz\n1 Gold = 25 Moneyz\n1 Copper = 10 Moneyz\n1 Coal = 5 Moneyz\n",
 				"buttons": [
 					{
