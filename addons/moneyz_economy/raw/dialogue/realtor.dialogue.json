@@ -55,7 +55,7 @@
 			{
 				"scene_tag": "realtor_buy_wood",
 				"npc_name": "Wood",
-				"text": "I can help you buy a house in Wood District. but firt talk the your realtor for a walkthrough.\n\nYou will make a deposit today and your rent will be taken every 7 Minecraft days. Your deposit will be returned when you sell your house in good condition. Talk to your Realtor for more info\n\nW1001 = Deposit: 250 Moneyz - Rent: 700 Moneyz\nW1002 = Deposit: 250 Moneyz - Rent: 700 Moneyz\nW1003 = Deposit: 250 Moneyz - Rent: 700 Moneyz",
+				"text": "I can help you buy a house in Wood District. but firt talk the your realtor for a walkthrough.\n\nYou will make a deposit today and your rent will be taken every 7 Minecraft days. Your deposit will be returned when you sell your house in good condition. Talk to your Realtor for more info\n\nWood District Deposit: 250 Moneyz - Rent: 700 Moneyz",
 				"buttons": [
 					{
 						"name": "W1001",
@@ -74,6 +74,103 @@
 						"commands": ["/function realtor/buy/w1004"]
 					},
 					{
+						"name": "W1005",
+						"commands": ["/function realtor/buy/w1005"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator realtor_buy_wood_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_buy_wood_2",
+				"npc_name": "Wood",
+				"text": "I can help you buy a house in Wood District. but firt talk the your realtor for a walkthrough.\n\nYou will make a deposit today and your rent will be taken every 7 Minecraft days. Your deposit will be returned when you sell your house in good condition. Talk to your Realtor for more info\n\nWood District Deposit: 250 Moneyz - Rent: 700 Moneyz",
+				"buttons": [
+					{
+						"name": "W1006",
+						"commands": ["/function realtor/buy/w1006"]
+					},
+					{
+						"name": "W1007",
+						"commands": ["/function realtor/buy/w1007"]
+					},
+					{
+						"name": "W1008",
+						"commands": ["/function realtor/buy/w1008"]
+					},
+					{
+						"name": "W1009",
+						"commands": ["/function realtor/buy/w1009"]
+					},
+					{
+						"name": "W1010",
+						"commands": ["/function realtor/buy/w1010"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator realtor_buy_wood_3"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_buy_wood_3",
+				"npc_name": "Wood",
+				"text": "I can help you buy a house in Wood District. but firt talk the your realtor for a walkthrough.\n\nYou will make a deposit today and your rent will be taken every 7 Minecraft days. Your deposit will be returned when you sell your house in good condition. Talk to your Realtor for more info\n\nWood District Deposit: 250 Moneyz - Rent: 700 Moneyz",
+				"buttons": [
+					{
+						"name": "W1011",
+						"commands": ["/function realtor/buy/w1011"]
+					},
+					{
+						"name": "W1012",
+						"commands": ["/function realtor/buy/w1012"]
+					},
+					{
+						"name": "W1013",
+						"commands": ["/function realtor/buy/w1013"]
+					},
+					{
+						"name": "W1014",
+						"commands": ["/function realtor/buy/w1014"]
+					},
+					{
+						"name": "W1015",
+						"commands": ["/function realtor/buy/w1015"]
+					},
+					{
+						"name": "Pg. 4",
+						"commands": ["/dialogue open @s @initiator realtor_buy_wood_4"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_buy_wood_4",
+				"npc_name": "Wood",
+				"text": "I can help you buy a house in Wood District. but firt talk the your realtor for a walkthrough.\n\nYou will make a deposit today and your rent will be taken every 7 Minecraft days. Your deposit will be returned when you sell your house in good condition. Talk to your Realtor for more info\n\nWood District Deposit: 250 Moneyz - Rent: 700 Moneyz",
+				"buttons": [
+					{
+						"name": "W1016",
+						"commands": ["/function realtor/buy/w1016"]
+					},
+					{
+						"name": "W1017",
+						"commands": ["/function realtor/buy/w1017"]
+					},
+					{
+						"name": "W1018",
+						"commands": ["/function realtor/buy/w1018"]
+					},
+					{
+						"name": "W1019",
+						"commands": ["/function realtor/buy/w1019"]
+					},
+					{
+						"name": "W1020",
+						"commands": ["/function realtor/buy/w1020"]
+					},
+					{
 						"name": "Main Menu",
 						"commands": ["/dialogue open @s @initiator realtor"]
 					}
@@ -82,7 +179,7 @@
 			{
 				"scene_tag": "realtor_buy_stone",
 				"npc_name": "Stone",
-				"text": "I can help you buy a house in Stone District. but firt talk the your realtor for a walkthrough.\n\nYou will make a deposit today and your rent will be taken every 7 Minecraft days. Your deposit will be returned when you sell your house in good condition. Talk to your Realtor for more info.\n\nS2001 = Deposit: 500 Moneyz - Rent: 1700 Moneyz\nS2002 = Deposit: 500 Moneyz - Rent: 1700 Moneyz\nS2003 = Deposit: 500 Moneyz - Rent: 1700 Moneyz\nS2004 = Deposit: 500 Moneyz - Rent: 1700 Moneyz",
+				"text": "I can help you buy a house in Stone District. but firt talk the your realtor for a walkthrough.\n\nYou will make a deposit today and your rent will be taken every 7 Minecraft days. Your deposit will be returned when you sell your house in good condition. Talk to your Realtor for more info\n\nStone District Deposit: 500 Moneyz - Rent: 1700 Moneyz",
 				"buttons": [
 					{
 						"name": "S2001",
@@ -105,6 +202,99 @@
 						"commands": ["/function realtor/buy/s2005"]
 					},
 					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator realtor_buy_stone_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_buy_stone_2",
+				"npc_name": "Stone",
+				"text": "I can help you buy a house in Stone District. but firt talk the your realtor for a walkthrough.\n\nYou will make a deposit today and your rent will be taken every 7 Minecraft days. Your deposit will be returned when you sell your house in good condition. Talk to your Realtor for more info\n\nStone District Deposit: 500 Moneyz - Rent: 1700 Moneyz",
+				"buttons": [
+					{
+						"name": "S2006",
+						"commands": ["/function realtor/buy/s2006"]
+					},
+					{
+						"name": "S2007",
+						"commands": ["/function realtor/buy/s2007"]
+					},
+					{
+						"name": "S2008",
+						"commands": ["/function realtor/buy/s2008"]
+					},
+					{
+						"name": "S2009",
+						"commands": ["/function realtor/buy/s2009"]
+					},
+					{
+						"name": "S2010",
+						"commands": ["/function realtor/buy/s2010"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator realtor_buy_stone_3"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_buy_stone_3",
+				"npc_name": "Stone",
+				"text": "I can help you buy a house in Stone District. but firt talk the your realtor for a walkthrough.\n\nYou will make a deposit today and your rent will be taken every 7 Minecraft days. Your deposit will be returned when you sell your house in good condition. Talk to your Realtor for more info\n\nStone District Deposit: 500 Moneyz - Rent: 1700 Moneyz",
+				"buttons": [
+					{
+						"name": "S2011",
+						"commands": ["/function realtor/buy/s2011"]
+					},
+					{
+						"name": "S2012",
+						"commands": ["/function realtor/buy/s2012"]
+					},
+					{
+						"name": "S2013",
+						"commands": ["/function realtor/buy/s2013"]
+					},
+					{
+						"name": "S2014",
+						"commands": ["/function realtor/buy/s2014"]
+					},
+					{
+						"name": "S2015",
+						"commands": ["/function realtor/buy/s2015"]
+					},
+					{
+						"name": "Pg. 4",
+						"commands": ["/dialogue open @s @initiator realtor_buy_stone_4"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_buy_stone_4",
+				"npc_name": "Stone",
+				"text": "I can help you buy a house in Stone District. but firt talk the your realtor for a walkthrough.\n\nYou will make a deposit today and your rent will be taken every 7 Minecraft days. Your deposit will be returned when you sell your house in good condition. Talk to your Realtor for more info\n\nStone District Deposit: 500 Moneyz - Rent: 1700 Moneyz",
+				"buttons": [
+					{
+						"name": "S2016",
+						"commands": ["/function realtor/buy/s2016"]
+					},
+					{
+						"name": "S2017",
+						"commands": ["/function realtor/buy/s2017"]
+					},
+					{
+						"name": "S2018",
+						"commands": ["/function realtor/buy/s2018"]
+					},
+					{
+						"name": "S2019",
+						"commands": ["/function realtor/buy/s2019"]
+					},
+					{
+						"name": "S2020",
+						"commands": ["/function realtor/buy/s2020"]
+					},
+					{
 						"name": "Main Menu",
 						"commands": ["/dialogue open @s @initiator realtor"]
 					}
@@ -113,7 +303,7 @@
 			{
 				"scene_tag": "realtor_buy_iron",
 				"npc_name": "Iron",
-				"text": "I can help you buy a house in the Iron District. but firt talk the your realtor for a walkthrough.\n\nYou will make a deposit today and your rent will be taken every 7 Minecraft days. Your deposit will be returned when you sell your house in good condition. Talk to your Realtor for more info.\n\nI3001 = Deposit: 750 Moneyz - Rent: 2700 Moneyz\nI3002 = Deposit: 750 Moneyz - Rent: 2700 Moneyz\nI3003 = Deposit: 750 Moneyz - Rent: 2700 Moneyz\nI3004 = Deposit: 750 Moneyz - Rent: 2700 Money\nI3005 = Deposit: 750 Moneyz - Rent: 2700 Moneyz",
+				"text": "I can help you buy a house in Iron District. but firt talk the your realtor for a walkthrough.\n\nYou will make a deposit today and your rent will be taken every 7 Minecraft days. Your deposit will be returned when you sell your house in good condition. Talk to your Realtor for more info\n\nIron District Deposit: 750 Moneyz - Rent: 2700 Moneyz",
 				"buttons": [
 					{
 						"name": "I3001",
@@ -136,6 +326,99 @@
 						"commands": ["/function realtor/buy/i3005"]
 					},
 					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator realtor_buy_iron_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_buy_iron_2",
+				"npc_name": "Iron",
+				"text": "I can help you buy a house in Iron District. but firt talk the your realtor for a walkthrough.\n\nYou will make a deposit today and your rent will be taken every 7 Minecraft days. Your deposit will be returned when you sell your house in good condition. Talk to your Realtor for more info\n\nIron District Deposit: 750 Moneyz - Rent: 2700 Moneyz",
+				"buttons": [
+					{
+						"name": "I3006",
+						"commands": ["/function realtor/buy/i3006"]
+					},
+					{
+						"name": "I3007",
+						"commands": ["/function realtor/buy/i3007"]
+					},
+					{
+						"name": "I3008",
+						"commands": ["/function realtor/buy/i3008"]
+					},
+					{
+						"name": "I3009",
+						"commands": ["/function realtor/buy/i3009"]
+					},
+					{
+						"name": "I3010",
+						"commands": ["/function realtor/buy/i3010"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator realtor_buy_iron_3"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_buy_iron_3",
+				"npc_name": "Iron",
+				"text": "I can help you buy a house in Iron District. but firt talk the your realtor for a walkthrough.\n\nYou will make a deposit today and your rent will be taken every 7 Minecraft days. Your deposit will be returned when you sell your house in good condition. Talk to your Realtor for more info\n\nIron District Deposit: 750 Moneyz - Rent: 2700 Moneyz",
+				"buttons": [
+					{
+						"name": "I3011",
+						"commands": ["/function realtor/buy/i3011"]
+					},
+					{
+						"name": "I3012",
+						"commands": ["/function realtor/buy/i3012"]
+					},
+					{
+						"name": "I3013",
+						"commands": ["/function realtor/buy/i3013"]
+					},
+					{
+						"name": "I3014",
+						"commands": ["/function realtor/buy/i3014"]
+					},
+					{
+						"name": "I3015",
+						"commands": ["/function realtor/buy/i3015"]
+					},
+					{
+						"name": "Pg. 4",
+						"commands": ["/dialogue open @s @initiator realtor_buy_iron_4"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_buy_iron_4",
+				"npc_name": "Iron",
+				"text": "I can help you buy a house in Iron District. but firt talk the your realtor for a walkthrough.\n\nYou will make a deposit today and your rent will be taken every 7 Minecraft days. Your deposit will be returned when you sell your house in good condition. Talk to your Realtor for more info\n\nIron District Deposit: 750 Moneyz - Rent: 2700 Moneyz",
+				"buttons": [
+					{
+						"name": "I3016",
+						"commands": ["/function realtor/buy/i3016"]
+					},
+					{
+						"name": "I3027",
+						"commands": ["/function realtor/buy/i3027"]
+					},
+					{
+						"name": "I3018",
+						"commands": ["/function realtor/buy/i3018"]
+					},
+					{
+						"name": "I3019",
+						"commands": ["/function realtor/buy/i3019"]
+					},
+					{
+						"name": "I3020",
+						"commands": ["/function realtor/buy/i3020"]
+					},
+					{
 						"name": "Main Menu",
 						"commands": ["/dialogue open @s @initiator realtor"]
 					}
@@ -144,7 +427,7 @@
 			{
 				"scene_tag": "realtor_buy_diamond",
 				"npc_name": "Diamond",
-				"text": "I can help you buy a house in the Diamond District. but firt talk the your relator for a walkthrough.\n\nYou will make a deposit today and your rent will be taken every 7 Minecraft days. Your deposit will be returned when you sell your house in good condition. Talk to your Realtor for more info.\n\nD4001 = Deposit: 1000 Moneyz - Rent: 3700 Moneyz\nD4002 = Deposit: 1000 Moneyz - Rent: 3700 Moneyz\nD4003 = Deposit: 1000 Moneyz - Rent: 3700 Moneyz\nD4004 = Deposit: 1000 Moneyz - Rent: 3700 Money\nD4005 = Deposit: 1000 Moneyz - Rent: 3700 Moneyz",
+				"text": "I can help you buy a house in Diamond District. but firt talk the your realtor for a walkthrough.\n\nYou will make a deposit today and your rent will be taken every 7 Minecraft days. Your deposit will be returned when you sell your house in good condition. Talk to your Realtor for more info\n\nDiamond District Deposit: 1000 Moneyz - Rent: 3700 Moneyz",
 				"buttons": [
 					{
 						"name": "D4001",
@@ -165,6 +448,99 @@
 					{
 						"name": "D4005",
 						"commands": ["/function realtor/buy/d4005"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator realtor_buy_diamond_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_buy_diamond_2",
+				"npc_name": "Diamond",
+				"text": "I can help you buy a house in Diamond District. but firt talk the your realtor for a walkthrough.\n\nYou will make a deposit today and your rent will be taken every 7 Minecraft days. Your deposit will be returned when you sell your house in good condition. Talk to your Realtor for more info\n\nDiamond District Deposit: 1000 Moneyz - Rent: 3700 Moneyz",
+				"buttons": [
+					{
+						"name": "D4006",
+						"commands": ["/function realtor/buy/d4006"]
+					},
+					{
+						"name": "D4007",
+						"commands": ["/function realtor/buy/d4007"]
+					},
+					{
+						"name": "D4008",
+						"commands": ["/function realtor/buy/d4008"]
+					},
+					{
+						"name": "D4009",
+						"commands": ["/function realtor/buy/d4009"]
+					},
+					{
+						"name": "D4010",
+						"commands": ["/function realtor/buy/d4010"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator realtor_buy_diamond_3"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_buy_diamond_3",
+				"npc_name": "Diamond",
+				"text": "I can help you buy a house in Diamond District. but firt talk the your realtor for a walkthrough.\n\nYou will make a deposit today and your rent will be taken every 7 Minecraft days. Your deposit will be returned when you sell your house in good condition. Talk to your Realtor for more info\n\nDiamond District Deposit: 1000 Moneyz - Rent: 3700 Moneyz",
+				"buttons": [
+					{
+						"name": "D4011",
+						"commands": ["/function realtor/buy/d4011"]
+					},
+					{
+						"name": "D4012",
+						"commands": ["/function realtor/buy/d4012"]
+					},
+					{
+						"name": "D4013",
+						"commands": ["/function realtor/buy/d4013"]
+					},
+					{
+						"name": "D4014",
+						"commands": ["/function realtor/buy/d4014"]
+					},
+					{
+						"name": "D4015",
+						"commands": ["/function realtor/buy/d4015"]
+					},
+					{
+						"name": "Pg. 4",
+						"commands": ["/dialogue open @s @initiator realtor_buy_diamond_4"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_buy_diamond_4",
+				"npc_name": "Diamond",
+				"text": "I can help you buy a house in Diamond District. but firt talk the your realtor for a walkthrough.\n\nYou will make a deposit today and your rent will be taken every 7 Minecraft days. Your deposit will be returned when you sell your house in good condition. Talk to your Realtor for more info\n\nDiamond District Deposit: 1000 Moneyz - Rent: 3700 Moneyz",
+				"buttons": [
+					{
+						"name": "D4016",
+						"commands": ["/function realtor/buy/d4016"]
+					},
+					{
+						"name": "D4037",
+						"commands": ["/function realtor/buy/d4037"]
+					},
+					{
+						"name": "D4018",
+						"commands": ["/function realtor/buy/d4018"]
+					},
+					{
+						"name": "D4019",
+						"commands": ["/function realtor/buy/d4019"]
+					},
+					{
+						"name": "D4020",
+						"commands": ["/function realtor/buy/d4020"]
 					},
 					{
 						"name": "Main Menu",
@@ -227,6 +603,130 @@
 				]
 			},
 			{
+				"scene_tag": "realtor_sell_wood",
+				"npc_name": "Wood",
+				"text": "The realtor will talk to me when your property in the Wood District has passed inspection.\n\nAfter the Realtor completes an inspection of your property, they will sell your property and refund your deposit. If inspection fails you'll be reqired to take fix what your realtor details before you can request another inspection.",
+				"buttons": [
+					{
+						"name": "W1001",
+						"commands": ["/function realtor/sell/w1001"]
+					},
+					{
+						"name": "W1002",
+						"commands": ["/function realtor/sell/w1002"]
+					},
+					{
+						"name": "W1003",
+						"commands": ["/function realtor/sell/w1003"]
+					},
+					{
+						"name": "W1004",
+						"commands": ["/function realtor/sell/w1004"]
+					},
+					{
+						"name": "W1005",
+						"commands": ["/function realtor/sell/w1005"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator realtor_sell_wood_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_sell_wood_2",
+				"npc_name": "Wood",
+				"text": "The realtor will talk to me when your property in the Wood District has passed inspection.\n\nAfter the Realtor completes an inspection of your property, they will sell your property and refund your deposit. If inspection fails you'll be reqired to take fix what your realtor details before you can request another inspection.",
+				"buttons": [
+					{
+						"name": "W1006",
+						"commands": ["/function realtor/sell/w1006"]
+					},
+					{
+						"name": "W1007",
+						"commands": ["/function realtor/sell/w1007"]
+					},
+					{
+						"name": "W1008",
+						"commands": ["/function realtor/sell/w1008"]
+					},
+					{
+						"name": "W1009",
+						"commands": ["/function realtor/sell/w1009"]
+					},
+					{
+						"name": "W1010",
+						"commands": ["/function realtor/sell/w1010"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator realtor_sell_wood_3"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_sell_wood_3",
+				"npc_name": "Wood",
+				"text": "The realtor will talk to me when your property in the Wood District has passed inspection.\n\nAfter the Realtor completes an inspection of your property, they will sell your property and refund your deposit. If inspection fails you'll be reqired to take fix what your realtor details before you can request another inspection.",
+				"buttons": [
+					{
+						"name": "W1011",
+						"commands": ["/function realtor/sell/w1011"]
+					},
+					{
+						"name": "W1012",
+						"commands": ["/function realtor/sell/w1012"]
+					},
+					{
+						"name": "W1013",
+						"commands": ["/function realtor/sell/w1013"]
+					},
+					{
+						"name": "W1014",
+						"commands": ["/function realtor/sell/w1014"]
+					},
+					{
+						"name": "W1015",
+						"commands": ["/function realtor/sell/w1015"]
+					},
+					{
+						"name": "Pg. 4",
+						"commands": ["/dialogue open @s @initiator realtor_sell_wood_4"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_sell_wood_4",
+				"npc_name": "Wood",
+				"text": "The realtor will talk to me when your property in the Wood District has passed inspection.\n\nAfter the Realtor completes an inspection of your property, they will sell your property and refund your deposit. If inspection fails you'll be reqired to take fix what your realtor details before you can request another inspection.",
+				"buttons": [
+					{
+						"name": "W1016",
+						"commands": ["/function realtor/sell/w1016"]
+					},
+					{
+						"name": "W1017",
+						"commands": ["/function realtor/sell/w1017"]
+					},
+					{
+						"name": "W1018",
+						"commands": ["/function realtor/sell/w1018"]
+					},
+					{
+						"name": "W1019",
+						"commands": ["/function realtor/sell/w1019"]
+					},
+					{
+						"name": "W1020",
+						"commands": ["/function realtor/sell/w1020"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator realtor"]
+					}
+				]
+			},
+			{
 				"scene_tag": "realtor_sell_stone",
 				"npc_name": "Stone",
 				"text": "The realtor will talk to me when your property in the Stone District has passed inspection.\n\nAfter the Realtor completes an inspection of your property, they will sell your property and refund your deposit. If inspection fails you'll be reqired to take fix what your realtor details before you can request another inspection.",
@@ -252,6 +752,99 @@
 						"commands": ["/function realtor/sell/s2005"]
 					},
 					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator realtor_sell_stone_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_sell_stone_2",
+				"npc_name": "Stone",
+				"text": "The realtor will talk to me when your property in the Stone District has passed inspection.\n\nAfter the Realtor completes an inspection of your property, they will sell your property and refund your deposit. If inspection fails you'll be reqired to take fix what your realtor details before you can request another inspection.",
+				"buttons": [
+					{
+						"name": "S2006",
+						"commands": ["/function realtor/sell/s2006"]
+					},
+					{
+						"name": "S2007",
+						"commands": ["/function realtor/sell/s2007"]
+					},
+					{
+						"name": "S2008",
+						"commands": ["/function realtor/sell/s2008"]
+					},
+					{
+						"name": "S2009",
+						"commands": ["/function realtor/sell/s2009"]
+					},
+					{
+						"name": "S2010",
+						"commands": ["/function realtor/sell/s2010"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator realtor_sell_stone_3"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_sell_stone_3",
+				"npc_name": "Stone",
+				"text": "The realtor will talk to me when your property in the Stone District has passed inspection.\n\nAfter the Realtor completes an inspection of your property, they will sell your property and refund your deposit. If inspection fails you'll be reqired to take fix what your realtor details before you can request another inspection.",
+				"buttons": [
+					{
+						"name": "S2011",
+						"commands": ["/function realtor/sell/s2011"]
+					},
+					{
+						"name": "S2012",
+						"commands": ["/function realtor/sell/s2012"]
+					},
+					{
+						"name": "S2013",
+						"commands": ["/function realtor/sell/s2013"]
+					},
+					{
+						"name": "S2014",
+						"commands": ["/function realtor/sell/s2014"]
+					},
+					{
+						"name": "S2015",
+						"commands": ["/function realtor/sell/s2015"]
+					},
+					{
+						"name": "Pg. 4",
+						"commands": ["/dialogue open @s @initiator realtor_sell_stone_4"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_sell_stone_4",
+				"npc_name": "Stone",
+				"text": "The realtor will talk to me when your property in the Stone District has passed inspection.\n\nAfter the Realtor completes an inspection of your property, they will sell your property and refund your deposit. If inspection fails you'll be reqired to take fix what your realtor details before you can request another inspection.",
+				"buttons": [
+					{
+						"name": "S2016",
+						"commands": ["/function realtor/sell/s2016"]
+					},
+					{
+						"name": "S2017",
+						"commands": ["/function realtor/sell/s2017"]
+					},
+					{
+						"name": "S2018",
+						"commands": ["/function realtor/sell/s2018"]
+					},
+					{
+						"name": "S2019",
+						"commands": ["/function realtor/sell/s2019"]
+					},
+					{
+						"name": "S2020",
+						"commands": ["/function realtor/sell/s2020"]
+					},
+					{
 						"name": "Main Menu",
 						"commands": ["/dialogue open @s @initiator realtor"]
 					}
@@ -260,7 +853,7 @@
 			{
 				"scene_tag": "realtor_sell_iron",
 				"npc_name": "Iron",
-				"text": "The realtor will talk to me when your property in the Iron District has passed inspection.\n\nAfter the Relator completes an inspection of your property, they will sell your property and refund your deposit. If inspection fails you'll be reqired to take fix what your realtor details before you can request another inspection.",
+				"text": "The realtor will talk to me when your property in the Iron District has passed inspection.\n\nAfter the Realtor completes an inspection of your property, they will sell your property and refund your deposit. If inspection fails you'll be reqired to take fix what your realtor details before you can request another inspection.",
 				"buttons": [
 					{
 						"name": "I3001",
@@ -283,6 +876,99 @@
 						"commands": ["/function realtor/sell/i3005"]
 					},
 					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator realtor_sell_iron_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_sell_iron_2",
+				"npc_name": "Iron",
+				"text": "The realtor will talk to me when your property in the Iron District has passed inspection.\n\nAfter the Realtor completes an inspection of your property, they will sell your property and refund your deposit. If inspection fails you'll be reqired to take fix what your realtor details before you can request another inspection.",
+				"buttons": [
+					{
+						"name": "I3006",
+						"commands": ["/function realtor/sell/i3006"]
+					},
+					{
+						"name": "I3007",
+						"commands": ["/function realtor/sell/i3007"]
+					},
+					{
+						"name": "I3008",
+						"commands": ["/function realtor/sell/i3008"]
+					},
+					{
+						"name": "I3009",
+						"commands": ["/function realtor/sell/i3009"]
+					},
+					{
+						"name": "I3010",
+						"commands": ["/function realtor/sell/i3010"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator realtor_sell_iron_3"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_sell_iron_3",
+				"npc_name": "Iron",
+				"text": "The realtor will talk to me when your property in the Iron District has passed inspection.\n\nAfter the Realtor completes an inspection of your property, they will sell your property and refund your deposit. If inspection fails you'll be reqired to take fix what your realtor details before you can request another inspection.",
+				"buttons": [
+					{
+						"name": "I3011",
+						"commands": ["/function realtor/sell/i3011"]
+					},
+					{
+						"name": "I3012",
+						"commands": ["/function realtor/sell/i3012"]
+					},
+					{
+						"name": "I3013",
+						"commands": ["/function realtor/sell/i3013"]
+					},
+					{
+						"name": "I3014",
+						"commands": ["/function realtor/sell/i3014"]
+					},
+					{
+						"name": "I3015",
+						"commands": ["/function realtor/sell/i3015"]
+					},
+					{
+						"name": "Pg. 4",
+						"commands": ["/dialogue open @s @initiator realtor_sell_iron_4"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_sell_iron_4",
+				"npc_name": "Iron",
+				"text": "The realtor will talk to me when your property in the Iron District has passed inspection.\n\nAfter the Realtor completes an inspection of your property, they will sell your property and refund your deposit. If inspection fails you'll be reqired to take fix what your realtor details before you can request another inspection.",
+				"buttons": [
+					{
+						"name": "I3016",
+						"commands": ["/function realtor/sell/i3016"]
+					},
+					{
+						"name": "I3017",
+						"commands": ["/function realtor/sell/i3017"]
+					},
+					{
+						"name": "I3018",
+						"commands": ["/function realtor/sell/i3018"]
+					},
+					{
+						"name": "I3019",
+						"commands": ["/function realtor/sell/i3019"]
+					},
+					{
+						"name": "I3020",
+						"commands": ["/function realtor/sell/i3020"]
+					},
+					{
 						"name": "Main Menu",
 						"commands": ["/dialogue open @s @initiator realtor"]
 					}
@@ -295,7 +981,7 @@
 				"buttons": [
 					{
 						"name": "D4001",
-						"commands": ["/function realtor/buy/d4001"]
+						"commands": ["/function realtor/sell/d4001"]
 					},
 					{
 						"name": "D4002",
@@ -312,6 +998,99 @@
 					{
 						"name": "D4005",
 						"commands": ["/function realtor/sell/d4005"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator realtor_sell_diamond_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_sell_diamond_2",
+				"npc_name": "Diamond",
+				"text": "The realtor will talk to me when your property in the Diamond District has passed inspection.\n\nAfter the Realtor completes an inspection of your property, they will sell your property and refund your deposit. If inspection fails you'll be reqired to take fix what your realtor details before you can request another inspection.",
+				"buttons": [
+					{
+						"name": "D4006",
+						"commands": ["/function realtor/sell/d4006"]
+					},
+					{
+						"name": "D4007",
+						"commands": ["/function realtor/sell/d4007"]
+					},
+					{
+						"name": "D4008",
+						"commands": ["/function realtor/sell/d4008"]
+					},
+					{
+						"name": "D4009",
+						"commands": ["/function realtor/sell/d4009"]
+					},
+					{
+						"name": "D4010",
+						"commands": ["/function realtor/sell/d4010"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator realtor_sell_diamond_3"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_sell_diamond_3",
+				"npc_name": "Diamond",
+				"text": "The realtor will talk to me when your property in the Diamond District has passed inspection.\n\nAfter the Realtor completes an inspection of your property, they will sell your property and refund your deposit. If inspection fails you'll be reqired to take fix what your realtor details before you can request another inspection.",
+				"buttons": [
+					{
+						"name": "D4011",
+						"commands": ["/function realtor/sell/d4011"]
+					},
+					{
+						"name": "D4012",
+						"commands": ["/function realtor/sell/d4012"]
+					},
+					{
+						"name": "D4013",
+						"commands": ["/function realtor/sell/d4013"]
+					},
+					{
+						"name": "D4014",
+						"commands": ["/function realtor/sell/d4014"]
+					},
+					{
+						"name": "D4015",
+						"commands": ["/function realtor/sell/d4015"]
+					},
+					{
+						"name": "Pg. 4",
+						"commands": ["/dialogue open @s @initiator realtor_sell_diamond_4"]
+					}
+				]
+			},
+			{
+				"scene_tag": "realtor_sell_diamond_4",
+				"npc_name": "Diamond",
+				"text": "The realtor will talk to me when your property in the Diamond District has passed inspection.\n\nAfter the Realtor completes an inspection of your property, they will sell your property and refund your deposit. If inspection fails you'll be reqired to take fix what your realtor details before you can request another inspection.",
+				"buttons": [
+					{
+						"name": "D4016",
+						"commands": ["/function realtor/sell/d4016"]
+					},
+					{
+						"name": "D4017",
+						"commands": ["/function realtor/sell/d4017"]
+					},
+					{
+						"name": "D4018",
+						"commands": ["/function realtor/sell/d4018"]
+					},
+					{
+						"name": "D4019",
+						"commands": ["/function realtor/sell/d4019"]
+					},
+					{
+						"name": "D4020",
+						"commands": ["/function realtor/sell/d4020"]
 					},
 					{
 						"name": "Main Menu",

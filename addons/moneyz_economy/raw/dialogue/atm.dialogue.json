@@ -20,7 +20,7 @@
 			{
 				"scene_tag": "atm_resource_to_moneyz",
 				"npc_name": "Resource to Moneyz",
-				"text": "Convert 1 of your resources to Moneyz. Please see the Banker for Coal exchange.\n\n1 Netherite = 1,000 Moneyz\n1 Emerald = 100 Moneyz\n1 Diamond = 75 Moneyz\n1 Iron = 50 Moneyz\n1 Gold = 25 Moneyz\n1 Copper = 10 Moneyz\n1 Coal = 5 Moneyz\n",
+				"text": "Convert 1 of your resources to Moneyz.\n\n1 Netherite = 1,000 Moneyz\n1 Emerald = 100 Moneyz\n1 Diamond = 75 Moneyz\n1 Iron = 50 Moneyz\n1 Gold = 25 Moneyz\n1 Copper = 10 Moneyz\n1 Coal = 5 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Copper",
@@ -51,7 +51,7 @@
 			{
 				"scene_tag": "atm_resource_to_moneyz_2",
 				"npc_name": "Resource to Moneyz",
-				"text": "Convert 1 of your resources to Moneyz. Please see the Banker for Coal exchange.\n\n1 Netherite = 1,000 Moneyz\n1 Emerald = 100 Moneyz\n1 Diamond = 75 Moneyz\n1 Iron = 50 Moneyz\n1 Gold = 25 Moneyz\n1 Copper = 10 Moneyz\n1 Coal = 5 Moneyz\n",
+				"text": "Convert 1 of your resources to Moneyz.\n\n1 Netherite = 1,000 Moneyz\n1 Emerald = 100 Moneyz\n1 Diamond = 75 Moneyz\n1 Iron = 50 Moneyz\n1 Gold = 25 Moneyz\n1 Copper = 10 Moneyz\n1 Coal = 5 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Netherite",
@@ -70,7 +70,7 @@
 			{
 				"scene_tag": "atm_moneyz_to_resource",
 				"npc_name": "Moneyz to Resource",
-				"text": "Convert your Moneyz to 1 resource of your choosing. Please go to the Bank for Netherite exchange.\n\n1 Netherite = 1,000 Moneyz\n1 Emerald = 100 Moneyz\n1 Diamond = 75 Moneyz\n1 Iron = 50 Moneyz\n1 Gold = 25 Moneyz\n1 Copper = 10 Moneyz\n1 Coal = 5 Moneyz\n",
+				"text": "Convert your Moneyz to 1 resource of your choosing.\n\n1 Netherite = 1,000 Moneyz\n1 Emerald = 100 Moneyz\n1 Diamond = 75 Moneyz\n1 Iron = 50 Moneyz\n1 Gold = 25 Moneyz\n1 Copper = 10 Moneyz\n1 Coal = 5 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Copper",
@@ -101,7 +101,7 @@
 			{
 				"scene_tag": "atm_moneyz_to_resource_2",
 				"npc_name": "Moneyz to Resource",
-				"text": "Convert your Moneyz to 1 resource of your choosing. Please go to the Bank for Netherite exchange.\n\n1 Netherite = 1,000 Moneyz\n1 Emerald = 100 Moneyz\n1 Diamond = 75 Moneyz\n1 Iron = 50 Moneyz\n1 Gold = 25 Moneyz\n1 Copper = 10 Moneyz\n1 Coal = 5 Moneyz\n",
+				"text": "Convert your Moneyz to 1 resource of your choosing.\n\n1 Netherite = 1,000 Moneyz\n1 Emerald = 100 Moneyz\n1 Diamond = 75 Moneyz\n1 Iron = 50 Moneyz\n1 Gold = 25 Moneyz\n1 Copper = 10 Moneyz\n1 Coal = 5 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Netherite",
