@@ -18,6 +18,12 @@ tell @s §aAdded all Online Players to Moneyz Scoreboard
 
 tell @s §aMoneyz Scoreboard setup.
 
+tell @s §eAdding Self as Moneyz Admin.
+
+tag @s add moneyzAdmin
+
+tell @s §aAdded Self as Moneyz Admin.
+
 give @s spawn_egg 1 51
 
 tell @s §rYou can now build your §eNPC Shops.
