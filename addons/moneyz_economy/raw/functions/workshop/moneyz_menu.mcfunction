@@ -8,4 +8,4 @@ execute as @initiator[scores={Moneyz=1292..}] run give @s zvortex:moneyz_menu
 
 execute as @initiator[scores={Moneyz=1292..}] run tell @s §aPurchased a Moneyz Menu!
 
-execute as @initiator[scores={Moneyz=1292..}] run scoreboard players remove @s Moneyz 
+execute as @initiator[scores={Moneyz=1292..}] run scoreboard players remove @s Moneyz 1292

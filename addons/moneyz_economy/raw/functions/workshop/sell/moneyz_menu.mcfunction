@@ -6,4 +6,4 @@ scoreboard players add @initiator[hasitem={item=zvortex:moneyz_menu,quantity=1..
 
 tell @initiator[hasitem={item=zvortex:moneyz_menu,quantity=1..}] §aSold a Moneyz Menu!
 
-clear @initiator[hasitem={item=zvortex:moneyz_menu,quantity=1..}] zvortex:moneyz_menu
+clear @initiator[hasitem={item=zvortex:moneyz_menu,quantity=1..}] zvortex:moneyz_menu 0 1
