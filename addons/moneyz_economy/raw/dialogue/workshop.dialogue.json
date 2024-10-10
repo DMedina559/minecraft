@@ -143,7 +143,7 @@
 			{
 				"scene_tag": "workshop_buy_misc",
 				"npc_name": "Misc",
-				"text": "§lThese are the available Items at the Workshop.\n§r§lMisc Items:\n§r1 Totem of Undying for 1,500 Moneyz\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r64 Wind Charges for 25 Moneyz\n§r64 Fireworks (Flight 3) for 25 Moneyz\n",
+				"text": "§lThese are the available Items at the Workshop.\n§r§lMisc Items:\n§r1 Totem of Undying for 1,500 Moneyz\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r10 Wind Charges for 25 Moneyz\n§r10 Fireworks (Flight 3) for 25 Moneyz\n§r1 Moneyz Menu for 1292 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Totem",
@@ -174,7 +174,7 @@
 			{
 				"scene_tag": "workshop_buy_misc_2",
 				"npc_name": "Misc",
-				"text": "§lThese are the available Items at the Workshop.\n§r§lMisc Items:\n§r1 Totem of Undying for 1,500 Moneyz\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r64 Wind Charges for 25 Moneyz\n§r64 Fireworks (Flight 3) for 25 Moneyz\n",
+				"text": "§lThese are the available Items at the Workshop.\n§r§lMisc Items:\n§r1 Totem of Undying for 1,500 Moneyz\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r10 Wind Charges for 25 Moneyz\n§r10 Fireworks (Flight 3) for 25 Moneyz\n§r1 Moneyz Menu for 1292 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Conduit",
@@ -187,6 +187,10 @@
 					{
 						"name": "Fireworks",
 						"commands": ["/function workshop/firework"]
+					},
+					{
+						"name": "Moneyz Menu",
+						"commands": ["/function workshop/moneyz_menu"]
 					},
 					{
 						"name": "Pg. 1",
@@ -243,7 +247,7 @@
 			{
 				"scene_tag": "workshop_sell_misc",
 				"npc_name": "Misc",
-				"text": "§lThese are the Items I'll buy from you.\n§r§lMisc Items:\n§r1 Totem of Undying for 1,500 Moneyz\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r64 Wind Charges for 25 Moneyz\n§r64 Fireworks (Flight 3) for 25 Moneyz\n",
+				"text": "§lThese are the Items I'll buy from you.\n§r§lMisc Items:\n§r1 Totem of Undying for 1,500 Moneyz\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r10 Wind Charges for 25 Moneyz\n§r10 Fireworks (Flight 3) for 25 Moneyz\n§r1 Moneyz Menu for 1292 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Totem",
@@ -274,7 +278,7 @@
 			{
 				"scene_tag": "workshop_sell_misc_2",
 				"npc_name": "Misc",
-				"text": "§lThese are the available Items at the Workshop.\n§r§lMisc Items:\n§r1 Totem of Undying for 1,500 Moneyz\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r64 Wind Charges for 25 Moneyz\n§r64 Fireworks (Flight 3) for 25 Moneyz\n",
+				"text": "§lThese are the available Items at the Workshop.\n§r§lMisc Items:\n§r1 Totem of Undying for 1,500 Moneyz\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r10 Wind Charges for 25 Moneyz\n§r10 Fireworks (Flight 3) for 25 Moneyz\n§r1 Moneyz Menu for 1292 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Conduit",
@@ -287,6 +291,10 @@
 					{
 						"name": "Fireworks",
 						"commands": ["/function workshop/sell/firework"]
+					},
+					{
+						"name": "Moneyz Menu",
+						"commands": ["/function workshop/sell/moneyz_menu"]
 					},
 					{
 						"name": "Pg. 1",
