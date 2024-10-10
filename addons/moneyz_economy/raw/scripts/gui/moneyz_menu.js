@@ -7,32 +7,54 @@ world.beforeEvents.itemUse.subscribe(data => {
     if (data.itemStack.typeId == "zvortex:moneyz_menu") system.run(() => main(player))
 
     function main() {
-        const form = new ActionFormData()
-            form.title(title)
-            form.body(`§l§o§fWelcome §g${player.nameTag}§f!\n§fMoneyz Balance: §g${getScore('Moneyz', player.nameTag)}`)
-            if (player.hasTag('moneyzMenu')) {
-               form.button('§d§lShops\n§r§7[ Click to Shop ]');
-            }
-            if (player.hasTag('moneyzMenu')) {
-               form.button(`§d§lATM\n§r§7[ Click to Exchange ]`);
-            }
-            form.button(`§d§lSend Moneyz\n§r§7[ Click to Send Moneyz ]`)
-            form.button(`§d§lHelp\n§r§7[ Click for Help ]`)
-            form.button(`§d§lCredits\n§r§7[ Click to View ]`)
-            form.button(`§4§lExit Menu`)
+        const form = new ActionFormData();
+        form.title(title);
+        form.body(`§l§o§fWelcome §g${player.nameTag}§f!\n§fMoneyz Balance: §g${getScore('Moneyz', player.nameTag)}`);
 
-        form.show(player).then(r => {
-            if (r.selection == 0) shops(player)
-            if (r.selection == 1) {
-                    player.runCommandAsync("dialogue open @s @s atm")
-                }
-            if (r.selection == 2) moneyzTransfer(player)
-            if (r.selection == 3) {
-                    player.runCommandAsync("dialogue open @s @s help")
-                }
-            if (r.selection == 4) Credits(player)
-        })
+        // Button array to track added buttons
+        const buttons = [];
+        const actions = [];
+
+        // Add buttons based on tags
+        if (player.hasTag('moneyzShop')) {
+            buttons.push('§d§lShops\n§r§7[ Click to Shop ]');
+            actions.push(() => shops(player));
+        }
+        if (player.hasTag('moneyzATM')) {
+            buttons.push('§d§lATM\n§r§7[ Click to Exchange ]');
+            actions.push(() => player.runCommandAsync("dialogue open @s @s atm"));
+        }
+        if (player.hasTag('moneyzSend')) {
+            buttons.push('§d§lSend Moneyz\n§r§7[ Click to Send Moneyz ]');
+            actions.push(() => moneyzTransfer(player));
+        }
+        
+        buttons.push('§d§lHelp\n§r§7[ Click for Help ]');
+        actions.push(() => player.runCommandAsync("dialogue open @s @s help"));
+
+        buttons.push('§d§lCredits\n§r§7[ Click to View ]');
+        actions.push(() => Credits(player));
+
+        // Always add the admin button if the player has the moneyzAdmin tag
+        if (player.hasTag('moneyzAdmin')) {
+            buttons.push('§d§lMoneyz Admin\n§r§7[ Click to Manage ]');
+            actions.push(() => moneyzAdmin(player));
+        }
+        
+        buttons.push('§4§lExit Menu');
+        actions.push(() => { /* exit action, no specific function needed */ });
+
+        // Add buttons to the form
+        buttons.forEach(button => form.button(button));
+
+        form.show(player).then(({ selection }) => {
+            // Check if the selection is valid and execute the corresponding action
+            if (selection >= 0 && selection < actions.length) {
+                actions[selection]();
+            }
+        });
     }
+
 
     function shops() {
         new ActionFormData()
@@ -105,6 +127,132 @@ world.beforeEvents.itemUse.subscribe(data => {
                 console.error(e, e.stack)
             });
     }
+
+    function moneyzAdmin() {
+        const form = new ActionFormData()
+            form.title(title)
+            form.body(`§l§o§fMoneyz Admin Menu`)
+            form.button(`§d§lManage Tags\n§r§7[ Click to Manage ]`)
+            form.button(`§d§lManage Balances\n§r§7[ Click to Manage ]`)
+            form.button(`§4§lBack`)
+
+        form.show(player).then(r => {
+            if (r.selection == 0) tagManage(player)
+            if (r.selection == 1) balanceManage(player)
+            if (r.selection == 2) main(player)
+        })
+    }
+
+    function balanceManage(player) {
+        const players = [...world.getPlayers()].map(p => {
+            return p.nameTag; // Store the player names directly
+        });
+
+        new ActionFormData()
+            .title(title)
+            .body(`§l§oPlayers Moneyz Balances:\n${players.map(p => `§f${p}: §g${getScore('Moneyz', p)}`).join('\n')}`)
+            .button('§d§lManage Player Balances\n§r§7[ Click to Manage ]')
+            .button('§4§lBack')
+            .show(player).then(r => {
+                if (r.selection === 0) {
+                    // Proceed to balance management
+                    new ModalFormData()
+                        .title(title)
+                        .dropdown('§o§fChoose a Player to Manage', players)
+                        .textField('§fEnter the Amount to Adjust:\n', '§oNumbers Only')
+                        .show(player)
+                        .then(({ formValues: [dropdown, textField] }) => {
+                            const selectedPlayer = players[dropdown]; // Get the selected player's name
+                            const amount = parseInt(textField);
+
+                            // Validate input: allow 0, disallow negative numbers
+                            if (isNaN(amount) || amount < 0) {
+                                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid number!"}]}`);
+                                return;
+                            }
+
+                            // Manage the selected player's balance
+                            new ActionFormData()
+                                .title(title)
+                                .body(`§l§oManage ${selectedPlayer}'s Moneyz`)
+                                .button('§d§lAdd Moneyz')
+                                .button('§d§lSet Moneyz')
+                                .button('§d§lRemove Moneyz')
+                                .button('§4§lCancel')
+                                .show(player).then(({ selection }) => {
+                                    if (selection === 0) {
+                                        player.runCommandAsync(`scoreboard players add ${selectedPlayer} Moneyz ${amount}`);
+                                        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aAdded §l${amount} §r§ato ${selectedPlayer}'s Moneyz."}]}`);
+                                    } else if (selection === 1) {
+                                        player.runCommandAsync(`scoreboard players set ${selectedPlayer} Moneyz ${amount}`);
+                                        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aSet ${selectedPlayer}'s Moneyz to §l${amount}."}]}`);
+                                    } else if (selection === 2) {
+                                        player.runCommandAsync(`scoreboard players remove ${selectedPlayer} Moneyz ${amount}`);
+                                        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aRemoved §l${amount} §r§afrom ${selectedPlayer}'s Moneyz."}]}`);
+                                    }
+                                });
+                        });
+                } else {
+                    main(player); // Go back to the main menu
+                }
+            });
+    }
+
+    function tagManage(player) {
+        const players = [...world.getPlayers()];
+        const playerTagsList = players.map(p => `${p.nameTag}: §g${p.getTags().join(', ') || 'No Tags'}`).join('\n');
+
+        new ActionFormData()
+            .title(title)
+            .body(`§l§oPlayers Tags:\n${playerTagsList}`)
+            .button('§d§lAdd Tag\n§r§7[ Click to Add ]')
+            .button('§d§lRemove Tag\n§r§7[ Click to Remove ]')
+            .button('§4§lBack')
+            .show(player).then(r => {
+                if (r.selection === 0) {
+                    // Add tag flow
+                    new ModalFormData()
+                        .title(title)
+                        .dropdown('§o§fChoose a Player to Add Tag', players.map(p => p.nameTag))
+                        .textField('§fEnter Tag to Add:', '§oTag')
+                        .show(player)
+                        .then(({ formValues: [dropdown, textField] }) => {
+                            const selectedPlayer = players[dropdown];
+                            if (textField.trim() === "") {
+                                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid tag!"}]}`);
+                                return;
+                            }
+                            selectedPlayer.addTag(textField);
+                            player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aAdded tag §l${textField} §r§ato ${selectedPlayer.nameTag}."}]}`);
+                            tagManage(player); // Refresh the tag list
+                        });
+                } else if (r.selection === 1) {
+                    // Remove tag flow
+                    new ModalFormData()
+                        .title(title)
+                        .dropdown('§o§fChoose a Player to Remove Tag', players.map(p => p.nameTag))
+                        .textField('§fEnter Tag to Remove:', '§oTag')
+                        .show(player)
+                        .then(({ formValues: [dropdown, textField] }) => {
+                            const selectedPlayer = players[dropdown];
+                            if (textField.trim() === "") {
+                                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid tag!"}]}`);
+                                return;
+                            }
+                            if (selectedPlayer.hasTag(textField)) {
+                                selectedPlayer.removeTag(textField);
+                                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aRemoved tag §l${textField} §r§afrom ${selectedPlayer.nameTag}."}]}`);
+                            } else {
+                                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§c${selectedPlayer.nameTag} does not have the tag §l${textField}."}]}`);
+                            }
+                            tagManage(player); // Refresh the tag list
+                        });
+                } else {
+                    moneyzAdmin(player); // Go back to the admin menu
+                }
+            });
+    }
+
 
 
     function Credits() {
