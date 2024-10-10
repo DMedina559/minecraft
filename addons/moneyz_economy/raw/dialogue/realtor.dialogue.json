@@ -549,33 +549,6 @@
 				]
 			},
 			{
-				"scene_tag": "realtor_sell_wood",
-				"npc_name": "Wood",
-				"text": "The realtor will talk to me when your property in the Wood District has passed inspection.\n\nAfter the Realtor completes an inspection of your property, they will sell your property and refund your deposit. If inspection fails you'll be reqired to take fix what your realtor details before you can request another inspection.",
-				"buttons": [
-					{
-						"name": "W1001",
-						"commands": ["/function realtor/sell/w1001"]
-					},
-					{
-						"name": "W1002",
-						"commands": ["/function realtor/sell/w1002"]
-					},
-					{
-						"name": "W1003",
-						"commands": ["/function realtor/sell/w1003"]
-					},
-					{
-						"name": "W1004",
-						"commands": ["/function realtor/sell/w1004"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator realtor"]
-					}
-				]
-			},
-			{
 				"scene_tag": "realtor_sell",
 				"npc_name": "Sell",
 				"text": "Which district would you like to sell from?",

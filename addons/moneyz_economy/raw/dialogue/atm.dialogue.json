@@ -23,24 +23,24 @@
 				"text": "Convert 1 of your resources to Moneyz.\n\n1 Netherite = 1,000 Moneyz\n1 Emerald = 100 Moneyz\n1 Diamond = 75 Moneyz\n1 Iron = 50 Moneyz\n1 Gold = 25 Moneyz\n1 Copper = 10 Moneyz\n1 Coal = 5 Moneyz\n",
 				"buttons": [
 					{
+						"name": "Coal",
+						"commands": ["/dialogue open @s @initiator atm_resource_to_moneyz","/function bank/resourcetomoneyz/coal"]
+					},
+					{
 						"name": "Copper",
-						"commands": ["/function bank/resourcetomoneyz/copper"]
+						"commands": ["/dialogue open @s @initiator atm_resource_to_moneyz","/function bank/resourcetomoneyz/copper"]
 					},
 					{
 						"name": "Gold",
-						"commands": ["/function bank/resourcetomoneyz/gold"]
+						"commands": ["/dialogue open @s @initiator atm_resource_to_moneyz","/function bank/resourcetomoneyz/gold"]
 					},
 					{
 						"name": "Iron",
-						"commands": ["/function bank/resourcetomoneyz/iron"]
+						"commands": ["/dialogue open @s @initiator atm_resource_to_moneyz","/function bank/resourcetomoneyz/iron"]
 					},
 					{
 						"name": "Diamond",
-						"commands": ["/function bank/resourcetomoneyz/diamond"]
-					},
-					{
-						"name": "Emerald",
-						"commands": ["/function bank/resourcetomoneyz/emerald"]
+						"commands": ["/dialogue open @s @initiator atm_resource_to_moneyz","/function bank/resourcetomoneyz/diamond"]
 					},
 					{
 						"name": "Pg. 2",
@@ -54,8 +54,12 @@
 				"text": "Convert 1 of your resources to Moneyz.\n\n1 Netherite = 1,000 Moneyz\n1 Emerald = 100 Moneyz\n1 Diamond = 75 Moneyz\n1 Iron = 50 Moneyz\n1 Gold = 25 Moneyz\n1 Copper = 10 Moneyz\n1 Coal = 5 Moneyz\n",
 				"buttons": [
 					{
+						"name": "Emerald",
+						"commands": ["/dialogue open @s @initiator atm_resource_to_moneyz_2","/function bank/resourcetomoneyz/emerald"]
+					},
+					{
 						"name": "Netherite",
-						"commands": ["/function bank/resourcetomoneyz/netherite"]
+						"commands": ["/dialogue open @s @initiator atm_resource_to_moneyz_2","/function bank/resourcetomoneyz/netherite"]
 					},
 					{
 						"name": "Pg. 1",
@@ -73,24 +77,24 @@
 				"text": "Convert your Moneyz to 1 resource of your choosing.\n\n1 Netherite = 1,000 Moneyz\n1 Emerald = 100 Moneyz\n1 Diamond = 75 Moneyz\n1 Iron = 50 Moneyz\n1 Gold = 25 Moneyz\n1 Copper = 10 Moneyz\n1 Coal = 5 Moneyz\n",
 				"buttons": [
 					{
+						"name": "Coal",
+						"commands": ["/dialogue open @s @initiator atm_moneyz_to_resource","/function bank/moneyztoresource/coal"]
+					},
+					{
 						"name": "Copper",
-						"commands": ["/function bank/moneyztoresource/copper"]
+						"commands": ["/dialogue open @s @initiator atm_moneyz_to_resource","/function bank/moneyztoresource/copper"]
 					},
 					{
 						"name": "Gold",
-						"commands": ["/function bank/moneyztoresource/gold"]
+						"commands": ["/dialogue open @s @initiator atm_moneyz_to_resource","/function bank/moneyztoresource/gold"]
 					},
 					{
 						"name": "Iron",
-						"commands": ["/function bank/moneyztoresource/iron"]
+						"commands": ["/dialogue open @s @initiator atm_moneyz_to_resource","/function bank/moneyztoresource/iron"]
 					},
 					{
 						"name": "Diamond",
-						"commands": ["/function bank/moneyztoresource/diamond"]
-					},
-					{
-						"name": "Emerald",
-						"commands": ["/function bank/moneyztoresource/emerald"]
+						"commands": ["/dialogue open @s @initiator atm_moneyz_to_resource","/function bank/moneyztoresource/diamond"]
 					},
 					{
 						"name": "Pg. 2",
@@ -104,8 +108,12 @@
 				"text": "Convert your Moneyz to 1 resource of your choosing.\n\n1 Netherite = 1,000 Moneyz\n1 Emerald = 100 Moneyz\n1 Diamond = 75 Moneyz\n1 Iron = 50 Moneyz\n1 Gold = 25 Moneyz\n1 Copper = 10 Moneyz\n1 Coal = 5 Moneyz\n",
 				"buttons": [
 					{
+						"name": "Emerald",
+						"commands": ["/dialogue open @s @initiator atm_moneyz_to_resource_2","/function bank/moneyztoresource/emerald"]
+					},
+					{
 						"name": "Netherite",
-						"commands": ["/function bank/moneyztoresource/netherite"]
+						"commands": ["/dialogue open @s @initiator atm_moneyz_to_resource_2","/function bank/moneyztoresource/netherite"]
 					},
 					{
 						"name": "Pg. 1",

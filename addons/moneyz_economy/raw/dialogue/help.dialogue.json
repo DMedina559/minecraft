@@ -8,20 +8,20 @@
 				"text": "These are the available Help topics.\n\nCheck Balance to see how much Moneyz you have.\nJobs to get help with jobs.\nMoneyz for Moneyz Mechanics.\nShops for shop detail.\n",
 				"buttons": [
 					{
+						"name": "General",
+						"commands": ["/dialogue open @s @initiator help_moneyz"]
+					},
+					{
+						"name": "Shops",
+						"commands": ["/dialogue open @s @initiator help_shops"]
+					},
+					{
 						"name": "Check Balance",
 						"commands": ["/function help/my_balance"]
 					},
 					{
 						"name": "Jobs",
 						"commands": ["/dialogue open @s @initiator help_jobs"]
-					},
-					{
-						"name": "Moneyz",
-						"commands": ["/dialogue open @s @initiator help_moneyz"]
-					},
-					{
-						"name": "Shops",
-						"commands": ["/dialogue open @s @initiator help_shops"]
 					}
 				]
 			},
@@ -55,19 +55,25 @@
 							"text": "§r§lCan Players turn Moneyz back to Resource?\n"
 						},
 						{
-							"text": "§r§6Yes!. §rPlayers can see an §6ATM NPCs  §rto §6exchange Moneyz §rfor Resources. §rSee §6below §rfor more information about the Bank.\n"
+							"text": "§r§6Yes!. §rPlayers can see an §6ATM NPC §rto §6exchange Moneyz §rfor Resources. §rSee §6below §rfor more information about the Bank.\n"
 						},
 						{
 							"text": "§r§lCan Players sell items?\n"
 						},
 						{
-							"text": "§r§6Yes!. §rPlayers can §6go to the shop §rof the items they're selling. §rSee §6below §rfor more information about Selling.\n"
+							"text": "§r§6Yes! §rPlayers can §6go to the shop §rof the items they're selling. §rSee §6below §rfor more information about Selling.\n"
 						},
 						{
 							"text": "§r§lHow can Players see what items are available?\n"
 						},
 						{
 							"text": "§r§6Players can §6see a Help NPC or go to the Shop §rto see all §6items available and their price.\n"
+						},
+						{
+							"text": "§r§lCan Players send Moneyz to other Players?\n"
+						},
+						{
+							"text": "§r§6Yes! §rPlayers can send Moneyz §6through the Moneyz Menu. §rJust §6select a friend from the list and enter an amount to send\n §rSee §6below §rfor more information about the Moneyz Menu.\n"
 						},
 						{
 							"text": "§r§lHow can Players learn more about Moneyz?\n"
@@ -93,6 +99,46 @@
 					{
 						"name": "Setup",
 						"commands": ["/dialogue open @s @initiator help_setup"]
+					},
+					{
+						"name": "Moneyz Menu",
+						"commands": ["/dialogue open @s @initiator help_moneyz_menu"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator help"]
+					}
+				]
+			},
+			{
+				"scene_tag": "help_moneyz_menu",
+				"npc_name": "Moneyz Menu",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§lWhat Is the Moneyz Menu?\n"
+						},
+						{
+							"text": "§rThe Moneyz Menu is a §6menu Player can access that allows §6direct Moneyz management from the Players inventory.\n§rPlayers can:\nBuy\nSell\nSend Moneyz\nExchange Resources\nView Help"
+						},
+						{
+							"text": "§r§lHow do Players access the Moneyz Menu?\n"
+						},
+						{
+							"text": "§rPlayers can access the Moneyz Menu by §6crafting a Moneyz Menu item.\n§rPlayers can §6combine 1 of each resource in the crafting table §rto craft a Moneyz Menu item or purchase one from the Workshop."
+						},
+						{
+							"text": "§r§lWhy can't I access Shops or ATMs from the Moneyz Menu?\n"
+						},
+						{
+							"text": "§rTo access Shops and ATMs through the Moneyz Menu §6Players must first obtain a moneyzMenu tag.\n§rIt is up to the World Owner/Admin to §6provide a way to obtain a moneyzMenu tag."
+						}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Back",
+						"commands": ["/dialogue open @s @initiator help_moneyz"]
 					},
 					{
 						"name": "Main Menu",
@@ -266,10 +312,10 @@
 							"text": "§rDo this for all your §6Shops §rand now you have a §6working Moneyz Economy for everyone to enjoy!\n"
 						},
 						{
-							"text": "§r§lAlternatively you can run §6/dialogue change @e[family=npc,r=5,c=1] (shop) §r§lin chat next to an NPC to automatically set a preconfigured dialogue and commands.\n"
+							"text": "§r§lAlternatively you can run §6/dialogue change @e[type=npc,r=5,c=1] (shop) §r§lin chat next to an NPC to automatically set a preconfigured dialogue and commands.\n"
 						},
 						{
-							"text": "§rFor example §6/dialogue change @e[family=npc,r=5,c=1] petshop\n"
+							"text": "§rFor example §6/dialogue change @e[type=npc,r=5,c=1] petshop\n"
 						},
 						{
 							"text": "§r§lWorld Owners/Admins §6can also update their NPCs §r§lwith this if §6§lupdating from versions previous to 1.6.0\n"
@@ -318,8 +364,77 @@
 				"buttons": [
 					{
 						"name": "Recommendations",
-						"commands": ["/function help/recommend"]
+						"commands": ["/dialogue open @s @initiator help_recommend"]
 					},
+					{
+						"name": "Back",
+						"commands": ["/dialogue open @s @initiator help_moneyz"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator help"]
+					}
+				]
+			},
+			{
+				"scene_tag": "help_recommend",
+				"npc_name": "Recommendations",
+				"text": {
+					"rawtext": [
+						{
+						"text": "§lWhat are some recommendations for setting up my shops?\n"
+					    },
+						{
+						"text": "§rBelow are all the recommendations made for World Owners/Admins setting up Moneyz in their world.\n"
+					    },
+						{
+						"text": "§r§6World Owners/Admins §rshould build §lHelp NPCs §rin a general area to §l§6allow Players to get help wit Moneyz.\n"
+					    },
+						{
+						"text": "§r§6World Owners/Admins §rshould setup §lNPCs §l§6with the /dialogue command §rso they don't have to §l§6setup each individual item §rand they'll §l§6automatically update with new items when available.\n"
+					    },
+					    {
+						"text": "§r§6World Owners/Admins §rshould setup §la NPC or command block §rwith the §l§6tag add @p moneyzMenu §rcommand so Players can §6access Shops and ATM services with the Moneyz Menu.\n"
+					    },
+						{
+						"text": "§r§6World Owners/Admins §rshould construct a §lTown Hall or Employment Office §rto §l§6allow Players to interview, apply for and quit Jobs.\n"
+					    },
+						{
+						"text": "§r§6World Owners/Admins §rshould construct a §lBank Building §rto set up the §l§6Bank NPCs for Players to make exchanges, §6§lallow Bankers to pay workers, and to make Resource exchanges for Players §r§lif not setting up NPCs with /dialogue.\n"
+					    },
+						{
+						"text": "§r§6World Owners/Admins §rshould also §lstock the Bank Building §l§6with Resources for Bankers to make Player exchanges.\n"
+					    },
+						{
+						"text": "§r§6World Owners/Admins §rshould construct a §lReal Estate Office §rto set up the Real Estate NPCs §l§6allow Players to manage real estate with an NPC, §rand §6§lallow the Realtor to sell previously rented houses and take rent from renters.\n"
+					    },
+						{
+						"text": "§r§6World Owners/Admins §rshould also §linclude a 'Citizen Bot' §rso Players can §l§6avoid getting a misleading 'Rent Payed' messages in chat after they sell a house §r§lif not setting up NPCs with /dialogue.\n"
+					    },
+						{
+						"text": "§r§6World Owners/Admins §rshould address their §lResidential Buildings §rto §l§6follow the addresses provided in the pack (i.e W1001).\n"
+					    },
+						{
+						"text": "§r§6World Owners/Admins §rshould construct Workshop NPCs with §l1 Block Air Space on all 4 sides.\n"
+					    },
+						{
+						"text": "§r§6World Owners/Admins §rshould §lmake Builders OP §rto §l§6allow Builders to build NPC shops.\n"
+					    },
+						{
+						"text": "§r§6World Owners/Admins §rshould §lconstruct a Jail §rto §l§6allow Cops a place of operations.\n"
+					    },
+						{
+						"text": "§r§6World Owners/Admins §rshould construct a §lPostal Office §rto §l§6allow Players to easily set items in a chest to the desired address, and allow resident to pick up their items personally.\n"
+					    },
+						{
+						"text": "§r§6World Owners/Admins §rshould construct a §lCommunity Center §rto §l§6allow Players a place to sell their goods to other Players, allow a Court system, allow the Mayor a place to plan events for the community, and to allow a place for Pastors to spread as much fear as possible.\n"
+					    },
+						{
+						"text": "§r§6World Owners/Admins §rshould construct a §lHotel §rfor the Hotel Owner job.\n"
+					    }
+					]
+				},
+				"buttons": [
 					{
 						"name": "Back",
 						"commands": ["/dialogue open @s @initiator help_moneyz"]

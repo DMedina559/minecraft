@@ -12,7 +12,7 @@
             "minecraft:icon": "nether_star",
             "minecraft:glint": true,
             "minecraft:rarity": "epic",
-            "minecraft:interact_button": "Open Shop",
+            "minecraft:interact_button": "Open Menu",
             "minecraft:display_name": {
                 "value": "Moneyz Menu"
             }
