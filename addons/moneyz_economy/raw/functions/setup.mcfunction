@@ -4,12 +4,6 @@ scoreboard objectives add Moneyz dummy Moneyz
 
 tell @s §aAdded Moneyz Scoreboard Objective
 
-tell @s §eSetting Moneyz Scoreboard display to Pause Menu
-
-scoreboard objectives setdisplay list Moneyz
-
-tell @s §aSet Moneyz Scoreboard display to Pause Menu
-
 tell @s §eAdding all Online Players to Moneyz Scoreboard
 
 scoreboard players add @a Moneyz 0
