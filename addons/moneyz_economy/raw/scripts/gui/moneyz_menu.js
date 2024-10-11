@@ -63,11 +63,11 @@ world.beforeEvents.itemUse.subscribe(data => {
         new ActionFormData()
             .title(title)
             .body(`§fMoneyz Balance: §g${getScore('Moneyz', player.nameTag)}`)
-            .button("§o§dFarmer's Market\n§7[ Click to Shop ]")
-            .button("§o§dLibrary\n§7[ Click to Shop ]")
-            .button("§o§dPet Shop\n§7[ Click to Shop ]")
-            .button("§o§dWorkshop\n§7[ Click to Shop ]")
-            .button(`§l§cBack`)
+            .button("§d§lFarmer's Market\n§r§7[ Click to Shop ]")
+            .button("§d§lLibrary\n§r§7[ Click to Shop ]")
+            .button("§d§lPet Shop\n§r§7[ Click to Shop ]")
+            .button("§d§lWorkshop\n§r§7[ Click to Shop ]")
+            .button(`§4§lBack`)
             .show(player).then(r => {
                 if (r.selection == 0) {
                     player.runCommandAsync("dialogue open @s @s farmers_market")
@@ -125,7 +125,7 @@ world.beforeEvents.itemUse.subscribe(data => {
             .body(`§l§o§fMoneyz Admin Menu`)
             .button(`§d§lManage Tags\n§r§7[ Click to Manage ]`)
             .button(`§d§lManage Balances\n§r§7[ Click to Manage ]`)
-            .button(`§d§lToggle Auto Tags\n§r§7[ Click to Toggle ]`)
+            .button(`§d§lManage Auto Tags\n§r§7[ Click to Manage ]`)
             .button(`§4§lBack`);
 
         form.show(player).then(r => {
@@ -268,7 +268,7 @@ world.beforeEvents.itemUse.subscribe(data => {
         new ActionFormData()
             .title(title)
             .body(`§l§o§6                Credits\n\n§5Creator:\n§dZVortex11325`)
-            .button(`§l§cBack`)
+            .button(`§4§lBack`)
             .show(player).then(r => {
                 if (r.selection == 0) main(player)
             })
