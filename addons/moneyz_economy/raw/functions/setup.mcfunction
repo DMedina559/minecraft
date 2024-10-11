@@ -28,6 +28,11 @@ give @s spawn_egg 1 51
 
 tell @s §rYou can now build your §eNPC Shops.
 
+scoreboard objectives add moneyzAutoTag dummy
+scoreboard players add moneyzShop moneyzAutoTag 0
+scoreboard players add moneyzATM moneyzAutoTag 0
+scoreboard players add moneyzSend moneyzAutoTag 0
+
 give @s zvortex:moneyz_menu
 
 tellraw @s {"rawtext": [{"text": "§6It's recommended to use the Moneyz Menu to read through the help documentation.\n"}]}

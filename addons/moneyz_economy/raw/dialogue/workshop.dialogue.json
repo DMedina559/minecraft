@@ -86,7 +86,7 @@
 					},
 					{
 						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator workshop", "/dialogue open @s @initiator workshop"]
+						"commands": ["/dialogue open @s @initiator workshop"]
 					}
 				]
 			},
@@ -136,7 +136,7 @@
 					},
 					{
 						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator workshop", "/dialogue open @s @initiator workshop"]
+						"commands": ["/dialogue open @s @initiator workshop"]
 					}
 				]
 			},
@@ -198,7 +198,7 @@
 					},
 					{
 						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator workshop", "/dialogue open @s @initiator workshop"]
+						"commands": ["/dialogue open @s @initiator workshop"]
 					}
 				]
 			},
@@ -225,7 +225,7 @@
 					},
 					{
 						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator workshop", "/dialogue open @s @initiator workshop"]
+						"commands": ["/dialogue open @s @initiator workshop"]
 					}
 				]
 			},
@@ -302,7 +302,7 @@
 					},
 					{
 						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator workshop", "/dialogue open @s @initiator workshop"]
+						"commands": ["/dialogue open @s @initiator workshop"]
 					}
 				]
 			},
@@ -329,7 +329,7 @@
 					},
 					{
 						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator workshop", "/dialogue open @s @initiator workshop"]
+						"commands": ["/dialogue open @s @initiator workshop"]
 					}
 				]
 			}

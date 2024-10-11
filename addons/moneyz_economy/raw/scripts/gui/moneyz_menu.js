@@ -1,6 +1,18 @@
 import { world, system } from "@minecraft/server"
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
 
+const getScore = (objective, target, useZero = true) => {
+    try {
+        const obj = world.scoreboard.getObjective(objective);
+        if (typeof target == 'string') {
+            return obj.getScore(obj.getParticipants().find(v => v.displayName === target));
+        }
+        return obj.getScore(target.scoreboard);
+    } catch {
+        return useZero ? 0 : NaN;
+    }
+}
+
 world.beforeEvents.itemUse.subscribe(data => {
     let player = data.source
     let title = "§l§1Moneyz Menu"
@@ -72,18 +84,6 @@ world.beforeEvents.itemUse.subscribe(data => {
                 if (r.selection == 4) main(player)
             })
     }
-    
-    const getScore = (objective, target, useZero = true) => {
-        try {
-            const obj = world.scoreboard.getObjective(objective);
-            if (typeof target == 'string') {
-                return obj.getScore(obj.getParticipants().find(v => v.displayName == target));
-            }
-            return obj.getScore(target.scoreboard);
-        } catch {
-            return useZero ? 0 : NaN;
-        }
-    }
 
     const moneyzTransfer = (player) => {
         const players = [...world.getPlayers()];
@@ -121,17 +121,43 @@ world.beforeEvents.itemUse.subscribe(data => {
 
     function moneyzAdmin() {
         const form = new ActionFormData()
-            form.title(title)
-            form.body(`§l§o§fMoneyz Admin Menu`)
-            form.button(`§d§lManage Tags\n§r§7[ Click to Manage ]`)
-            form.button(`§d§lManage Balances\n§r§7[ Click to Manage ]`)
-            form.button(`§4§lBack`)
+            .title(title)
+            .body(`§l§o§fMoneyz Admin Menu`)
+            .button(`§d§lManage Tags\n§r§7[ Click to Manage ]`)
+            .button(`§d§lManage Balances\n§r§7[ Click to Manage ]`)
+            .button(`§d§lToggle Auto Tags\n§r§7[ Click to Toggle ]`)
+            .button(`§4§lBack`);
 
         form.show(player).then(r => {
-            if (r.selection == 0) tagManage(player)
-            if (r.selection == 1) balanceManage(player)
-            if (r.selection == 2) main(player)
-        })
+            if (r.selection === 0) tagManage(player);
+            if (r.selection === 1) balanceManage(player);
+            if (r.selection === 2) toggleAutoTags(player);
+            if (r.selection === 3) main(player);
+        });
+    }
+
+    function toggleAutoTags(player) {
+        const options = ['moneyzShop', 'moneyzATM', 'moneyzSend'];
+        const scores = options.map(tag => `${tag}: ${getScore('moneyzAutoTag', tag)}`);
+
+        new ActionFormData()
+            .title(title)
+            .body(`§l§oToggle Auto Tags:\n${scores.join('\n')}`)
+            .button('§d§lToggle moneyzShop')
+            .button('§d§lToggle moneyzATM')
+            .button('§d§lToggle moneyzSend')
+            .button('§4§lBack')
+            .show(player).then(({ selection }) => {
+                if (selection >= 0 && selection < options.length) {
+                    const selectedTag = options[selection];
+                    const currentScore = getScore('moneyzAutoTag', selectedTag);
+                    const newScore = currentScore === 0 ? 1 : 0; // Toggle between 0 and 1
+                    player.runCommandAsync(`scoreboard players set ${selectedTag} moneyzAutoTag ${newScore}`);
+                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aToggled ${selectedTag} to ${newScore === 1 ? 'On' : 'Off'}."}]}`);
+                } else {
+                    moneyzAdmin(player);
+                }
+            });
     }
 
     function balanceManage(player) {
@@ -238,8 +264,6 @@ world.beforeEvents.itemUse.subscribe(data => {
             });
     }
 
-
-
     function Credits() {
         new ActionFormData()
             .title(title)
@@ -250,5 +274,6 @@ world.beforeEvents.itemUse.subscribe(data => {
             })
     }
 
-
 })
+
+console.warn('Moneyz Menu loaded')

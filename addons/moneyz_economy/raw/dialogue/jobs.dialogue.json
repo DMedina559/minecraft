@@ -9,7 +9,7 @@
 				"buttons": [
 					{
 						"name": "Apply Tag",
-						"commands": ["/function jobs/jobtag"]
+						"commands": ["/dialogue open @s @initiator jobs","/function jobs/jobtag"]
 					},
 					{
 						"name": "Apply",
