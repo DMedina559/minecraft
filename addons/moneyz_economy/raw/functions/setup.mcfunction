@@ -28,4 +28,6 @@ give @s spawn_egg 1 51
 
 tell @s §rYou can now build your §eNPC Shops.
 
-tellraw @p {"rawtext": [{"text": "§6It's recommended to set up a NPC with §e/dialogue open @s @initiator help§6, and read through the menus.\n"}]}
+give @s zvortex:moneyz_menu
+
+tellraw @s {"rawtext": [{"text": "§6It's recommended to use the Moneyz Menu to read through the help documentation.\n"}]}
