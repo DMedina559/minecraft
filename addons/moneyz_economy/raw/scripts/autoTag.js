@@ -15,26 +15,22 @@ const getScore = (objective, target, useZero = true) => {
 world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
     if (!initialSpawn) return;
     applyAutoTags(player);
-    system.runTimeout(() => {
-        if (world.getPlayers().some(p => p.nameTag === player.nameTag)) {
-            console.log(`Applying auto tags for ${player.nameTag}`);
-            applyAutoTags(player);
-        } else {
-            console.error(`${player.nameTag} is no longer valid.`);
-        }
-    }, 600);
+    console.log(`Applying auto tags for ${player.nameTag}`);
 });
 
 function applyAutoTags(player) {
     if (getScore('moneyzAutoTag', 'moneyzShop') > 0) {
         player.runCommandAsync(`tag ${player.nameTag} add moneyzShop`);
+        console.log(`Applying moneyzShop tag for ${player.nameTag}`);
     }
     if (getScore('moneyzAutoTag', 'moneyzATM') > 0) {
         player.runCommandAsync(`tag ${player.nameTag} add moneyzATM`);
+        console.log(`Applying moneyzATM tag for ${player.nameTag}`);
     }
     if (getScore('moneyzAutoTag', 'moneyzSend') > 0) {
         player.runCommandAsync(`tag ${player.nameTag} add moneyzSend`);
+        console.log(`Applying moneyzSend tag for ${player.nameTag}`);
     }
 }
 
-console.warn('autoTag loaded')
+console.log('autoTag loaded')

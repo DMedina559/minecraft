@@ -19,6 +19,7 @@ world.beforeEvents.itemUse.subscribe(data => {
     if (data.itemStack.typeId == "zvortex:moneyz_menu") system.run(() => main(player))
 
     function main() {
+        console.log(`${player.nameTag} entered Moneyz Menu`)
         const form = new ActionFormData();
         form.title(title);
         form.body(`§l§o§fWelcome §g${player.nameTag}§f!\n§fMoneyz Balance: §g${getScore('Moneyz', player.nameTag)}`);
@@ -97,21 +98,26 @@ world.beforeEvents.itemUse.subscribe(data => {
 
                 if (selectedPlayer === player) {
                     player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cYou Can't Send Moneyz to Yourself"}]}`)
+                    console.log(`${player.nameTag}  tried sending Moneyz to self`)
                     return
                 } if (textField.includes("-")) {
                     player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cNumbers Only!"}]}`)
+                    console.log(`${player.nameTag}  entered invalid numbers`)
                     return
                 }
                 if (getScore('Moneyz', player.nameTag) < textField) {
                     player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cYou Don't Have Enough Moneyz"}]}`);
+                    console.log(`${player.nameTag}  didnt have enough Moneyz to send`)
                     return;
                 } try {
                     player.runCommandAsync(`scoreboard players remove @s Moneyz ${textField}`)
                     player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aSent §l${selectedPlayer.nameTag} §r§2${textField} Moneyz"}]}`)
                     selectedPlayer.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§l${player.nameTag} §r§aSent You §2${textField} Moneyz"}]}`);
                     selectedPlayer.runCommandAsync(`scoreboard players add @s Moneyz ${textField}`)
+                    console.log(`${player.nameTag} sent ${textField} Moneyz to ${selectedPlayer.nameTag}`)
                 } catch {
                     player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cNumbers Only!"}]}`)
+                    console.log(`${player.nameTag}  entered invalid numbers`)
                     return
                 }
             }).catch((e) => {
@@ -154,6 +160,7 @@ world.beforeEvents.itemUse.subscribe(data => {
                     const newScore = currentScore === 0 ? 1 : 0; // Toggle between 0 and 1
                     player.runCommandAsync(`scoreboard players set ${selectedTag} moneyzAutoTag ${newScore}`);
                     player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aToggled ${selectedTag} to ${newScore === 1 ? 'On' : 'Off'}."}]}`);
+                    console.log(`Admin toggled ${selectedTag}`)
                 } else {
                     moneyzAdmin(player);
                 }
@@ -182,6 +189,7 @@ world.beforeEvents.itemUse.subscribe(data => {
                             const amount = parseInt(textField);
                             if (isNaN(amount) || amount < 0) {
                                 player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid number!"}]}`);
+                                console.log(`Admin entered an invalid Number`)
                                 return;
                             }
                             new ActionFormData()
@@ -195,12 +203,15 @@ world.beforeEvents.itemUse.subscribe(data => {
                                     if (selection === 0) {
                                         player.runCommandAsync(`scoreboard players add ${selectedPlayer} Moneyz ${amount}`);
                                         player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aAdded §l${amount} §r§ato ${selectedPlayer}'s Moneyz."}]}`);
+                                        console.log(`Admin added ${amount} Moneyz to ${selectedPlayer} balance`)
                                     } else if (selection === 1) {
                                         player.runCommandAsync(`scoreboard players set ${selectedPlayer} Moneyz ${amount}`);
                                         player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aSet ${selectedPlayer}'s Moneyz to §l${amount}."}]}`);
+                                        console.log(`Admin set ${selectedPlayer} balance to ${amount} Moneyz`)
                                     } else if (selection === 2) {
                                         player.runCommandAsync(`scoreboard players remove ${selectedPlayer} Moneyz ${amount}`);
                                         player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aRemoved §l${amount} §r§afrom ${selectedPlayer}'s Moneyz."}]}`);
+                                        console.log(`Admin removed ${amount} Moneyz from ${selectedPlayer} balance`)
                                     }
                                 });
                         });
@@ -222,7 +233,6 @@ world.beforeEvents.itemUse.subscribe(data => {
             .button('§4§lBack')
             .show(player).then(r => {
                 if (r.selection === 0) {
-                    // Add tag flow
                     new ModalFormData()
                         .title(title)
                         .dropdown('§o§fChoose a Player to Add Tag', players.map(p => p.nameTag))
@@ -232,10 +242,12 @@ world.beforeEvents.itemUse.subscribe(data => {
                             const selectedPlayer = players[dropdown];
                             if (textField.trim() === "") {
                                 player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid tag!"}]}`);
+                                console.log(`Admin entered an invalid tag`)
                                 return;
                             }
                             selectedPlayer.addTag(textField);
                             player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aAdded tag §l${textField} §r§ato ${selectedPlayer.nameTag}."}]}`);
+                            console.log(`Admin added ${textField} tag to ${selectedPlayer.nameTag}`)
                             tagManage(player);
                         });
                 } else if (r.selection === 1) {
@@ -248,13 +260,16 @@ world.beforeEvents.itemUse.subscribe(data => {
                             const selectedPlayer = players[dropdown];
                             if (textField.trim() === "") {
                                 player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid tag!"}]}`);
+                                console.log(`Admin entered an invalid tag`)
                                 return;
                             }
                             if (selectedPlayer.hasTag(textField)) {
                                 selectedPlayer.removeTag(textField);
                                 player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aRemoved tag §l${textField} §r§afrom ${selectedPlayer.nameTag}."}]}`);
+                                console.log(`Admin removed ${textField} tag to ${selectedPlayer.nameTag}`)
                             } else {
                                 player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§c${selectedPlayer.nameTag} does not have the tag §l${textField}."}]}`);
+                                console.log(`Admin tried to remove a tag that didnt exist from ${selectedPlayer.nameTag}`)
                             }
                             tagManage(player);
                         });
