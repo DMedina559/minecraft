@@ -1,18 +1,6 @@
 import { world, system } from "@minecraft/server"
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
 
-const getScore = (objective, target, useZero = true) => {
-    try {
-        const obj = world.scoreboard.getObjective(objective);
-        if (typeof target === 'string') {
-            return obj.getScore(obj.getParticipants().find(v => v.displayName === target));
-        }
-        return obj.getScore(target.scoreboard);
-    } catch {
-        return useZero ? 0 : NaN;
-    }
-};
-
 world.beforeEvents.itemUse.subscribe(data => {
     let player = data.source
     let title = "§l§1Moneyz Menu"
@@ -85,6 +73,18 @@ world.beforeEvents.itemUse.subscribe(data => {
                 if (r.selection == 4) main(player)
             })
     }
+
+    const getScore = (objective, target, useZero = true) => {
+        try {
+            const obj = world.scoreboard.getObjective(objective);
+            if (typeof target === 'string') {
+                return obj.getScore(obj.getParticipants().find(v => v.displayName === target));
+            }
+            return obj.getScore(target.scoreboard);
+        } catch {
+            return useZero ? 0 : NaN;
+        }
+    };
 
     const moneyzTransfer = (player) => {
         const players = [...world.getPlayers()];
@@ -291,4 +291,4 @@ world.beforeEvents.itemUse.subscribe(data => {
 
 })
 
-console.warn('Moneyz Menu loaded')
+console.warn('moneyz_menu.js loaded')

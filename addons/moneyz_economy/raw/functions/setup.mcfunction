@@ -37,4 +37,4 @@ tell @s §rATM and Send enabled for Moneyz Menu.
 
 give @s zvortex:moneyz_menu
 
-tellraw @s {"rawtext": [{"text": "§6It's recommended to use the Moneyz Menu to read through the help documentation.\n"}]}
+tellraw @s {"rawtext": [{"text": "§6It's recommended to use the Moneyz Menu to read through the Help documentation.\n"}]}

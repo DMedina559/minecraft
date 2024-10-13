@@ -43,4 +43,4 @@ const ensurePlayerHasMoneyzScore = (player) => {
     }
 };
 
-console.log('autoTag loaded')
+console.log('autoTag.js loaded')
