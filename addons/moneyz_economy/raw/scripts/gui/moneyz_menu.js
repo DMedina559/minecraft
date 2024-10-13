@@ -4,14 +4,14 @@ import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
 const getScore = (objective, target, useZero = true) => {
     try {
         const obj = world.scoreboard.getObjective(objective);
-        if (typeof target == 'string') {
+        if (typeof target === 'string') {
             return obj.getScore(obj.getParticipants().find(v => v.displayName === target));
         }
         return obj.getScore(target.scoreboard);
     } catch {
         return useZero ? 0 : NaN;
     }
-}
+};
 
 world.beforeEvents.itemUse.subscribe(data => {
     let player = data.source
