@@ -5,7 +5,7 @@
         "name": "Moneyz Economy",
         "uuid": "97f0bff3-9af2-4a12-a869-a4090a90c734",
         "min_engine_version": [ 1, 21, 30 ],
-        "version": [1, 6, 2]
+        "version": [1, 7, 0]
     },
     "modules": [
         {
@@ -13,13 +13,13 @@
             "type": "data",
             "uuid": "59e3ae9c-4bf1-4737-a8dd-9fd9c7d13630",
 
-            "version": [1, 6, 2]
+            "version": [1, 7, 0]
         },
         {
           "description": "A Moneyz function pack using Scoreboards by ZVortex11325.",
             "type": "script",
             "uuid": "56f78814-6722-41ee-9374-27b30e413968",
-            "version": [1, 6, 2],
+            "version": [1, 7, 0],
             "entry": "scripts/main.js"
         }
       ],
