@@ -1,4 +1,8 @@
+execute as @initiator[scores={Moneyz=..74}] run playsound note.bassattack @s ~ ~ ~
+
 execute as @initiator[scores={Moneyz=..74}] run tellraw @s {"rawtext": [{"text": "§cYou need 75 Moneyz for this exchange\n"}, {"text": "§6You have "}, {"score":{"name": "@s","objective": "Moneyz"}}, {"text": " Moneyz"}]}
+
+execute as @initiator[scores={Moneyz=75..}] run playsound random.levelup @s ~ ~ ~
 
 execute as @initiator[scores={Moneyz=75..}] run tell @s §aYou can make this Exchange!
 

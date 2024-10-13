@@ -1,4 +1,8 @@
+execute as @initiator[tag=!hotelown] run playsound note.bassattack @s ~ ~ ~
+
 execute as @initiator[tag=!hotelown] run tell @s §cYou're not the Hotel Ownwer
+
+execute as @initiator[tag=hotelown] run playsound random.levelup @s ~ ~ ~
 
 execute as @initiator[tag=hotelown] run scoreboard players remove @a[tag=hotel] Moneyz 15
 

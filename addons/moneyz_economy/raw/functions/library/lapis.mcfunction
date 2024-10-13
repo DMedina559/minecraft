@@ -1,3 +1,5 @@
+execute as @initiator[scores={Moneyz=..29}] run playsound note.bassattack @s ~ ~ ~
+
 execute as @initiator[scores={Moneyz=..29}] run tell @s §cYou can't buy 5 Lapis Lazuli!
 
 execute as @initiator[scores={Moneyz=..29}] run tellraw @s {"rawtext": [{"text": "§cYou need 30 Moneyz for this purchase\n"}, {"text": "§6You have "}, {"score":{"name": "@s","objective": "Moneyz"}}, {"text": " Moneyz"}]}

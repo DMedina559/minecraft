@@ -1,4 +1,8 @@
+execute as @initiator[tag=!banker] run playsound note.bassattack @s ~ ~ ~
+
 execute as @initiator[tag=!banker] run tell @s §cYou're not a Banker 
+
+execute as @initiator[tag=banker] run playsound random.levelup @s ~ ~ ~
 
 execute as @initiator[tag=banker] run scoreboard players add @a[tag=banker] Moneyz 4000
 

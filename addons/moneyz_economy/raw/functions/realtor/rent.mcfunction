@@ -1,4 +1,8 @@
+playsound note.bassattack @initiator[tag=!realtor] ~ ~ ~
+
 execute as @initiator[tag=!realtor] run tell @s §cYou're not a Realtor
+
+playsound random.levelup @initiator[tag=realtor] ~ ~ ~
 
 execute as @initiator[tag=realtor] run scoreboard players remove @a[tag=w1001,tag=resident] Moneyz 700
 
@@ -159,5 +163,7 @@ execute as @initiator[tag=realtor] run scoreboard players remove @a[tag=d4018,ta
 execute as @initiator[tag=realtor] run scoreboard players remove @a[tag=d4019,tag=resident] Moneyz 3700
 
 execute as @initiator[tag=realtor] run scoreboard players remove @a[tag=d4020,tag=resident] Moneyz 3700
+
+playsound note.hat @a[tag=resident] ~ ~ ~ 
 
 execute as @initiator[tag=realtor] run tell @a[tag=resident] §aYou paid rent

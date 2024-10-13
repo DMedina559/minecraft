@@ -1,4 +1,8 @@
+playsound note.bassattack @initiator[hasitem={item=diamond,quantity=0}] ~ ~ ~
+
 execute as @initiator[hasitem={item=diamond,quantity=0}] run tell @s §cYou can't make this Exchange!
+
+playsound random.levelup @initiator[hasitem={item=diamond,quantity=1..}] ~ ~ ~
 
 execute as @initiator[hasitem={item=diamond,quantity=1..}] run tell @s §aYou can make this Exchange!
 

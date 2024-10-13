@@ -1,4 +1,8 @@
+playsound note.bassattack @initiator[hasitem={item=writable_book,quantity=..0}] ~ ~ ~
+
 tell @initiator[hasitem={item=writable_book,quantity=..0}] §cYou can't sell a Book and Quill!
+
+playsound random.levelup @initiator[hasitem={item=writable_book,quantity=1..}] ~ ~ ~
 
 tell @initiator[hasitem={item=writable_book,quantity=1..}] §aYou can sell a Book and Quill!
 
