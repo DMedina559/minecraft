@@ -450,9 +450,13 @@
 			},
 			{
 				"scene_tag": "help_shops",
-				"npc_name": "NPC",
+				"npc_name": "Shops",
 				"text": "You can check what items a shop carries and how much it cost from here.",
 				"buttons": [
+					{
+						"name": "Armory",
+						"commands": ["/function help/armory"]
+					},
 					{
 						"name": "Farmer's Market",
 						"commands": ["/function help/farmers_market"]
@@ -472,10 +476,6 @@
 					{
 						"name": "Workshop",
 						"commands": ["/function help/workshop"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator help"]
 					}
 				]
 			},

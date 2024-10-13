@@ -5,7 +5,7 @@
 			{
 				"scene_tag": "farmers_market",
 				"npc_name": "Farmer's Market",
-				"text": "Welcome to the Farmer's Market. What would can I help you with?",
+				"text": "Welcome to the Farmer's Market. What can I help you with?",
 				"buttons": [
 					{
 						"name": "Buy",

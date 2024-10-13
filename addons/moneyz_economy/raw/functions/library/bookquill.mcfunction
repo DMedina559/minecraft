@@ -4,7 +4,7 @@ execute as @initiator[scores={Moneyz=..24}] run tell @s §cYou can't buy a Book 
 
 execute as @initiator[scores={Moneyz=..24}] run tellraw @s {"rawtext": [{"text": "§cYou need 25 Moneyz for this purchase\n"}, {"text": "§6You have "}, {"score":{"name": "@s","objective": "Moneyz"}}, {"text": " Moneyz"}]}
 
-execute as @initiator[scores={Moneyz=25..}] playsound random.levelup @s ~ ~ ~
+execute as @initiator[scores={Moneyz=25..}] run playsound random.levelup @s ~ ~ ~
 
 execute as @initiator[scores={Moneyz=25..}] run tell @s §aYou can buy a Book and Quill!
 

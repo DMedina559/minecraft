@@ -35,6 +35,10 @@
 				"text": "Where do you want to shop?.\n",
 				"buttons": [
 					{
+						"name": "Armory",
+						"commands": ["/dialogue open @s @initiator armory"]
+					}
+					{
 						"name": "Farmer's Market",
 						"commands": ["/dialogue open @s @initiator farmers_market"]
 					},
