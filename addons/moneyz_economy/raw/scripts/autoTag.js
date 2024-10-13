@@ -1,5 +1,7 @@
 import { world, system } from "@minecraft/server"
 
+// Gets Scoreboards Data
+
 const getScore = (objective, target, useZero = true) => {
     try {
         const obj = world.scoreboard.getObjective(objective);
@@ -12,6 +14,8 @@ const getScore = (objective, target, useZero = true) => {
     }
 };
 
+//Trigger Events When Player Joins World
+
 world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
     if (!initialSpawn) return;
     console.log(`Checking auto tags for ${player.nameTag}`);
@@ -20,20 +24,35 @@ world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
     ensurePlayerHasMoneyzScore(player);
 });
 
-function applyAutoTags(player) {
+// Checks if Moneyz Auto Taggging is Enabled and Adds the Enabled Tags to Players When They Join if They Don't Already Have Tag
+
+async function applyAutoTags(player) {
     if (getScore('moneyzAutoTag', 'moneyzShop') > 0) {
-        player.runCommandAsync(`tag ${player.nameTag} add moneyzShop`);
-        console.log(`Applying moneyzShop tag for ${player.nameTag}`);
+        const hasShopTag = await player.hasTag('moneyzShop');
+        if (!hasShopTag) {
+            player.runCommandAsync(`tag ${player.nameTag} add moneyzShop`);
+            console.log(`Applying moneyzShop tag for ${player.nameTag}`);
+        }
     }
+
     if (getScore('moneyzAutoTag', 'moneyzATM') > 0) {
-        player.runCommandAsync(`tag ${player.nameTag} add moneyzATM`);
-        console.log(`Applying moneyzATM tag for ${player.nameTag}`);
+        const hasATMTag = await player.hasTag('moneyzATM');
+        if (!hasATMTag) {
+            player.runCommandAsync(`tag ${player.nameTag} add moneyzATM`);
+            console.log(`Applying moneyzATM tag for ${player.nameTag}`);
+        }
     }
+
     if (getScore('moneyzAutoTag', 'moneyzSend') > 0) {
-        player.runCommandAsync(`tag ${player.nameTag} add moneyzSend`);
-        console.log(`Applying moneyzSend tag for ${player.nameTag}`);
+        const hasSendTag = await player.hasTag('moneyzSend');
+        if (!hasSendTag) {
+            player.runCommandAsync(`tag ${player.nameTag} add moneyzSend`);
+            console.log(`Applying moneyzSend tag for ${player.nameTag}`);
+        }
     }
 }
+
+//Ensures Player has a Moneyz Score
 
 const ensurePlayerHasMoneyzScore = (player) => {
     const moneyzScore = getScore('Moneyz', player.nameTag, false);
