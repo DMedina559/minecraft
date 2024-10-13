@@ -1,4 +1,8 @@
+playsound note.bassattack @initiator[hasitem={item=firework_rocket,quantity=..9}] ~ ~ ~
+
 tell @initiator[hasitem={item=firework_rocket,quantity=..9}] §cYou can't sell 10 Fireworks!
+
+playsound random.levelup @initiator[hasitem={item=firework_rocket,quantity=10..}] ~ ~ ~
 
 tell @initiator[hasitem={item=firework_rocket,quantity=10..}] §aYou can sell 10 Fireworks!
 

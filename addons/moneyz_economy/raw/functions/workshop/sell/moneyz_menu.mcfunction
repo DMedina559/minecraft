@@ -1,4 +1,8 @@
+playsound note.bassattack @initiator[hasitem={item=zvortex:moneyz_menu,quantity=..0}] ~ ~ ~
+
 tell @initiator[hasitem={item=zvortex:moneyz_menu,quantity=..0}] §cYou can't sell a Moneyz Menu!
+
+playsound random.levelup @initiator[hasitem={item=zvortex:moneyz_menu,quantity=1..}] ~ ~ ~
 
 tell @initiator[hasitem={item=zvortex:moneyz_menu,quantity=1..}] §aYou can sell a Moneyz Menu!
 

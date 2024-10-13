@@ -1,4 +1,8 @@
+playsound note.bassattack @initiator[hasitem={item=leather_horse_armor,quantity=..0}] ~ ~ ~
+
 tell @initiator[hasitem={item=leather_horse_armor,quantity=..0}] §cYou can't sell a Leather Horse Armor!
+
+playsound note.bassattack @initiator[hasitem={item=leather_horse_armor,quantity=1..}] ~ ~ ~
 
 tell @initiator[hasitem={item=leather_horse_armor,quantity=1..}] §aYou can sell a Leather Horse Armor!
 

@@ -1,4 +1,8 @@
+playsound note.bassattack @initiator[hasitem={item=ender_pearl,quantity=..15}] ~ ~ ~
+
 tell @initiator[hasitem={item=ender_pearl,quantity=..15}] §cYou can't sell 16 Ender Pearls!
+
+playsound random.levelup @initiator[hasitem={item=ender_pearl,quantity=16..}] ~ ~ ~
 
 tell @initiator[hasitem={item=ender_pearl,quantity=16..}] §aYou can sell 16 Ender Pearls!
 

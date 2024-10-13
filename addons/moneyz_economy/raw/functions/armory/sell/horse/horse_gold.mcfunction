@@ -1,4 +1,8 @@
+playsound note.bassattack @initiator[hasitem={item=golden_horse_armor,quantity=..0}] ~ ~ ~
+
 tell @initiator[hasitem={item=golden_horse_armor,quantity=..0}] §cYou can't sell a Gold Horse Armor!
+
+playsound random.levelup @initiator[hasitem={item=golden_horse_armor,quantity=1..}] ~ ~ ~
 
 tell @initiator[hasitem={item=golden_horse_armor,quantity=1..}] §aYou can sell a Gold Horse Armor!
 

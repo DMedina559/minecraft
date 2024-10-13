@@ -1,4 +1,8 @@
+playsound note.bassattack @initiator[hasitem={item=shulker_shell,quantity=..1}] ~ ~ ~
+
 tell @initiator[hasitem={item=shulker_shell,quantity=..1}] §cYou can't sell 2 Shulker Shells!
+
+playsound random.levelup @initiator[hasitem={item=shulker_shell,quantity=2..}] ~ ~ ~
 
 tell @initiator[hasitem={item=shulker_shell,quantity=2..}] §aYou can sell 2 Shulker Shells!
 

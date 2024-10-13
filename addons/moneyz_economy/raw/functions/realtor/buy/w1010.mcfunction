@@ -1,19 +1,23 @@
-execute as @initiator[scores={Moneyz=..999}] run tell @s §cYou can't buy D4010!
+playsound note.bassattack @initiator[scores={Moneyz=..249}] ~ ~ ~
 
-execute as @initiator[scores={Moneyz=..999}] run tellraw @s {"rawtext": [{"text": "§cYou need 1000 Moneyz for the downpayment\n"}, {"text": "§6You have "}, {"score":{"name": "@s","objective": "Moneyz"}}, {"text": " Moneyz"}]}
+playsound note.bassattack @initiator[scores={Moneyz=..249}] ~ ~ ~
 
-execute as @initiator[tag=d4010] run tell @s §cYou already own D4010!
+execute as @initiator[scores={Moneyz=..249}] run tell @s §cYou can't buy W1010!
 
-execute as @initiator[scores={Moneyz=1000..},tag=!d4010] run tell @s §aYou can buy D4010!
+execute as @initiator[scores={Moneyz=..249}] run tellraw @s {"rawtext": [{"text": "§cYou need 250 Moneyz for the downpayment\n"}, {"text": "§6You have "}, {"score":{"name": "@s","objective": "Moneyz"}}, {"text": " Moneyz"}]}
 
-execute as @initiator[scores={Moneyz=1000..},tag=!d4010] run tag @s add tmp
+execute as @initiator[tag=w1010] run tell @s §cYou already own W1010!
 
-execute as @initiator[scores={Moneyz=1000..},tag=!d4010,tag=tmp] run scoreboard players remove @s Moneyz 1000
+execute as @initiator[scores={Moneyz=250..},tag=!w1010] run tell @s §aYou can buy W1010!
 
-execute as @initiator[tag=!d4010,tag=tmp] run tag @s add d4010
+execute as @initiator[scores={Moneyz=250..},tag=!w1010] run tag @s add tmp
 
-execute as @initiator[tag=d4010,tag=tmp] run tag @s remove tmp
+execute as @initiator[scores={Moneyz=250..},tag=!w1010,tag=tmp] run scoreboard players remove @s Moneyz 250
 
-execute as @initiator[tag=d4010,tag=!resident] run tag @s add resident
+execute as @initiator[tag=!w1010,tag=tmp] run tag @s add w1010
 
-execute as @initiator[tag=d4010,tag=resident] run tell @s §aPurchased D4010!
+execute as @initiator[tag=w1010,tag=tmp] run tag @s remove tmp
+
+execute as @initiator[tag=w1010,tag=!resident] run tag @s add resident
+
+execute as @initiator[tag=w1010,tag=resident] run tell @s §aPurchased W1010!

@@ -1,4 +1,8 @@
+playsound note.bassattack @initiator[hasitem={item=totem_of_undying,quantity=..0}] ~ ~ ~
+
 tell @initiator[hasitem={item=totem_of_undying,quantity=..0}] §cYou can't sell a Totem of Undying!
+
+playsound random.levelup @initiator[hasitem={item=totem_of_undying,quantity=1..}] ~ ~ ~
 
 tell @initiator[hasitem={item=totem_of_undying,quantity=1..}] §aYou can sell a Totem of Undying!
 
