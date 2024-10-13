@@ -24,9 +24,9 @@ tell @s §rYou can now build your §eNPC Shops.
 
 tell @s §eEnabling ATM and Send for Moneyz Menu.
 scoreboard objectives add moneyzAutoTag dummy
-scoreboard players add moneyzShop moneyzAutoTag 0
-scoreboard players add moneyzATM moneyzAutoTag 1
-scoreboard players add moneyzSend moneyzAutoTag 1
+scoreboard players set moneyzShop moneyzAutoTag 0
+scoreboard players set moneyzATM moneyzAutoTag 1
+scoreboard players set moneyzSend moneyzAutoTag 1
 tell @s §aATM and Send enabled for Moneyz Menu.
 tell @s §cShops disabled for Moneyz Menu. Admins can enable through Moneyz Menu.
 
