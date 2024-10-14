@@ -24,12 +24,11 @@ First run
 > [!NOTE]
 > This will set up the Moneyz scoreboard and adds all players currently online to the scoreboard with a score of 0
 >This will also give you an NPC Spawn Egg, and a Moneyz Menu item [^1] [^6]
-
-> [!NOTE]
-> If you didn't get a Spawn Egg from the last command you run `/give @p spawn_egg 1 51`
+> 
+> If you didn't get a Spawn Egg from the last command you can run `/give @p spawn_egg 1 51`
 >
 >You can also use `/summon npc ~ ~ ~`
-This will summon an NPC at your current position.
+>This will summon an NPC at your current position.
 
 Interact with the NPC and click on `Edit Dialog`
 
@@ -142,12 +141,12 @@ https://docs.google.com/spreadsheets/d/1TG4Ol5z_8U7mEJlSLx4I2LBmPVcJ0Aawu3_o_ac4
 ### Shout out to SoullessReaperYT for their YouTube video on custom menus and providing a GUI template:
 https://www.youtube.com/watch?v=6sjZkGPCF5A
 
-[^1]: Requires 1.7.0
+[^1]: Requires 1.7.0+
 [^2]: Requires moneyzTag in 1.7.0+
 [^3]: Requires 1.6.1+
 [^4]: Requires 1.6.0+
 [^5]: Requires 1.2.0+
 [^6]: Auto get NPC Spawn Egg requires 1.5.0+
 [^7]: Requires 1.4.0+
-[^8]: Enabled by Default
-  Requires rerunning `/function setup` if updating from a version before 1.7.0
+[^8]: Enabled by Default.
+  Requires rerunning `/function setup` if updating from a version before 1.7.0.
