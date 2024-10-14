@@ -295,4 +295,4 @@ world.beforeEvents.itemUse.subscribe(data => {
 
 })
 
-console.warn('moneyz_menu.js loaded')
+console.info('moneyz_menu.js loaded')

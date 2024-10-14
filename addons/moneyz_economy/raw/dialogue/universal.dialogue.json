@@ -37,7 +37,7 @@
 					{
 						"name": "Armory",
 						"commands": ["/dialogue open @s @initiator armory"]
-					}
+					},
 					{
 						"name": "Farmer's Market",
 						"commands": ["/dialogue open @s @initiator farmers_market"]
@@ -55,8 +55,27 @@
 						"commands": ["/dialogue open @s @initiator petshop"]
 					},
 					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator universal_shops_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "universal_shops_2",
+				"npc_name": "Shopping",
+				"text": "Where do you want to shop?.\n",
+				"buttons": [
+					{
 						"name": "Workshop",
 						"commands": ["/dialogue open @s @initiator workshop"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator universal_shops"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator universal"]
 					}
 				]
 			}

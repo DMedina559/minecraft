@@ -32,7 +32,7 @@
 					},
 					{
 						"name": "Weapons",
-						"commands": ["/dialogue open @s @initiator armory_buy_weapon"]
+						"commands": ["/dialogue open @s @initiator armory_buy_weapons"]
 					},
 					{
 						"name": "Pickaxe",
@@ -45,7 +45,7 @@
 					{
 						"name": "Pg. 2",
 						"commands": ["/dialogue open @s @initiator armory_buy_2"]
-					},
+					}
 				]
 			},
 			{
@@ -59,11 +59,11 @@
 					},
 					{
 						"name": "Hoe",
-						"commands": ["/dialogue open @s @initiator armory_buy_sword"]
+						"commands": ["/dialogue open @s @initiator armory_buy_hoe"]
 					},
 					{
 						"name": "Misc",
-						"commands": ["/dialogue open @s @initiator armory_buy_weapon"]
+						"commands": ["/dialogue open @s @initiator armory_buy_misc"]
 					},
 					{
 						"name": "Horse Armor",
@@ -607,7 +607,7 @@
 			},
 			{
 				"scene_tag": "armory_buy_misc",
-				"npc_name": "Hoes",
+				"npc_name": "Misc",
 				"text": {
 					"rawtext": 
 					[
@@ -628,19 +628,19 @@
 						"commands": ["/function armory/arrow"]
 					},
 					{
-						"name": "Diamond",
+						"name": "Elytra",
 						"commands": ["/function armory/elytra"]
 					},
 					{
-						"name": "Iron",
+						"name": "Fishing Rod",
 						"commands": ["/function armory/fishing_rod"]
 					},
 					{
-						"name": "Gold",
+						"name": "Shield",
 						"commands": ["/function armory/shield"]
 					},
 					{
-						"name": "Stone",
+						"name": "Totem",
 						"commands": ["/function armory/totem"]
 					},
 					{
@@ -723,17 +723,6 @@
 				"text": "What would you like to sell?",
 				"buttons": [
 					{
-						"name": "Horse Armor",
-						"commands": ["/dialogue open @s @initiator armory_sell_horse_armor"]
-					}
-				]
-			},
-			{
-				"scene_tag": "armory_sell",
-				"npc_name": "Selling",
-				"text": "What would you like to sell?",
-				"buttons": [
-					{
 						"name": "Armor",
 						"commands": ["/dialogue open @s @initiator armory_sell_armor"]
 					},
@@ -743,7 +732,7 @@
 					},
 					{
 						"name": "Weapons",
-						"commands": ["/dialogue open @s @initiator armory_sell_weapon"]
+						"commands": ["/dialogue open @s @initiator armory_sell_weapons"]
 					},
 					{
 						"name": "Pickaxe",
@@ -756,7 +745,7 @@
 					{
 						"name": "Pg. 2",
 						"commands": ["/dialogue open @s @initiator armory_sell_2"]
-					},
+					}
 				]
 			},
 			{
@@ -770,11 +759,11 @@
 					},
 					{
 						"name": "Hoe",
-						"commands": ["/dialogue open @s @initiator armory_sell_sword"]
+						"commands": ["/dialogue open @s @initiator armory_sell_hoe"]
 					},
 					{
 						"name": "Misc",
-						"commands": ["/dialogue open @s @initiator armory_sell_weapon"]
+						"commands": ["/dialogue open @s @initiator armory_sell_misc"]
 					},
 					{
 						"name": "Horse Armor",
@@ -1265,24 +1254,24 @@
 						"commands": ["/function armory/sell/arrow"]
 					},
 					{
-						"name": "Diamond",
+						"name": "Elyta",
 						"commands": ["/function armory/sell/elytra"]
 					},
 					{
-						"name": "Iron",
+						"name": "Fishing Rod",
 						"commands": ["/function armory/sell/fishing_rod"]
 					},
 					{
-						"name": "Gold",
+						"name": "Shield",
 						"commands": ["/function armory/sell/shield"]
 					},
 					{
-						"name": "Stone",
+						"name": "Totem",
 						"commands": ["/function armory/sell/totem"]
 					},
 					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator armory"]
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator armory_sell_misc_2"]
 					}
 				]
 			},
