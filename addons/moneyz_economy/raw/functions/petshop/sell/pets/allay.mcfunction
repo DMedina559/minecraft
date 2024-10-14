@@ -1,4 +1,8 @@
+playsound note.bassattack @initiator[hasitem={item=allay_spawn_egg,quantity=..0}] ~ ~ ~
+
 tell @initiator[hasitem={item=allay_spawn_egg,quantity=..0}] §cYou can't sell an Allay Spawn Egg!
+
+playsound random.levelup @initiator[hasitem={item=allay_spawn_egg,quantity=1..}] ~ ~ ~
 
 tell @initiator[hasitem={item=allay_spawn_egg,quantity=1..}] §aYou can sell an Allay Spawn Egg!
 

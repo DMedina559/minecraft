@@ -1,4 +1,8 @@
+playsound note.bassattack @initiator[hasitem={item=parrot_spawn_egg,quantity=..0}] ~ ~ ~
+
 tell @initiator[hasitem={item=parrot_spawn_egg,quantity=..0}] §cYou can't sell a Parrot Spawn Egg!
+
+playsound random.levelup @initiator[hasitem={item=parrot_spawn_egg,quantity=1..}] ~ ~ ~
 
 tell @initiator[hasitem={item=parrot_spawn_egg,quantity=1..}] §aYou can sell a Parrot Spawn Egg!
 
