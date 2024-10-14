@@ -1,4 +1,8 @@
+playsound note.bassattack @initiator[hasitem={item=salmon,quantity=..4}] ~ ~ ~
+
 tell @initiator[hasitem={item=salmon,quantity=..4}] §cYou can't sell 5 Raw Salmon!
+
+playsound random.levelup @initiator[hasitem={item=salmon,quantity=5..}] ~ ~ ~
 
 tell @initiator[hasitem={item=salmon,quantity=5..}] §aYou can sell 5 Raw Salmon!
 

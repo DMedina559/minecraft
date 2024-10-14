@@ -1,4 +1,8 @@
+playsound note.bassattack @initiator[hasitem={item=sugar_cane,quantity=..9}] ~ ~ ~
+
 tell @initiator[hasitem={item=sugar_cane,quantity=..9}] §cYou can't sell 10 Sugar Canes!
+
+playsound random.levelup @initiator[hasitem={item=sugar_cane,quantity=10..}] ~ ~ ~
 
 tell @initiator[hasitem={item=sugar_cane,quantity=10..}] §aYou can sell 10 Sugar Canes!
 

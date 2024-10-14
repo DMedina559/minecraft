@@ -1,4 +1,8 @@
+playsound note.bassattack @initiator[hasitem={item=chorus_fruit,quantity=..9}] ~ ~ ~
+
 tell @initiator[hasitem={item=chorus_fruit,quantity=..9}] §cYou can't sell 10 Chrous Fruits!
+
+playsound random.levelup @initiator[hasitem={item=chorus_fruit,quantity=10..}] ~ ~ ~
 
 tell @initiator[hasitem={item=chorus_fruit,quantity=10..}] §aYou can sell 10 Chrous Fruits!
 

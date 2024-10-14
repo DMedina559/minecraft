@@ -1,4 +1,8 @@
+playsound note.bassattack @initiator[hasitem={item=glow_berries,quantity=..4}] ~ ~ ~
+
 tell @initiator[hasitem={item=glow_berries,quantity=..4}] §cYou can't sell 10 Glow Berries!
+
+playsound random.levelup @initiator[hasitem={item=glow_berries,quantity=10..}] ~ ~ ~
 
 tell @initiator[hasitem={item=glow_berries,quantity=10..}] §aYou can sell 10 Glow Berries!
 

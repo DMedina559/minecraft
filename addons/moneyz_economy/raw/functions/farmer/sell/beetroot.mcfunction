@@ -1,4 +1,8 @@
+playsound note.bassattack @initiator[hasitem={item=beetroot,quantity=..9}] ~ ~ ~
+
 tell @initiator[hasitem={item=beetroot,quantity=..9}] §cYou can't sell 10 Beetroots!
+
+playsound random.levelup @initiator[hasitem={item=beetroot,quantity=10..}] ~ ~ ~
 
 tell @initiator[hasitem={item=beetroot,quantity=10..}] §aYou can sell 10 Beetroots!
 

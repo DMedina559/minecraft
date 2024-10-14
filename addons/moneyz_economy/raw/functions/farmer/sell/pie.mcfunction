@@ -1,4 +1,8 @@
+playsound note.bassattack @initiator[hasitem={item=pumpkin_pie,quantity=..0}] ~ ~ ~
+
 tell @initiator[hasitem={item=pumpkin_pie,quantity=..0}] §cYou can't sell a Pumpkin Pie!
+
+playsound random.levelup @initiator[hasitem={item=pumpkin_pie,quantity=1..}] ~ ~ ~
 
 tell @initiator[hasitem={item=pumpkin_pie,quantity=1..}] §aYou can sell a Pumpkin Pie!
 
