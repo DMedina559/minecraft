@@ -723,8 +723,8 @@
 				"text": "What would you like to sell?",
 				"buttons": [
 					{
-						"name": "Armor",
-						"commands": ["/dialogue open @s @initiator armory_sell_armor"]
+						"name": "Horse Armor",
+						"commands": ["/dialogue open @s @initiator armory_sell_horse_armor"]
 					},
 					{
 						"name": "Swords",
@@ -764,10 +764,6 @@
 					{
 						"name": "Misc",
 						"commands": ["/dialogue open @s @initiator armory_sell_misc"]
-					},
-					{
-						"name": "Horse Armor",
-						"commands": ["/dialogue open @s @initiator armory_sell_horse_armor"]
 					},
 					{
 						"name": "Pg. 1",

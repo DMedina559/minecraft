@@ -1,0 +1,9 @@
+tell @initiator[hasitem={item=pig_spawn_egg,quantity=..0}] §cYou can't sell a Pig Spawn Egg!
+
+tell @initiator[hasitem={item=pig_spawn_egg,quantity=1..}] §aYou can sell a Pig Spawn Egg!
+
+scoreboard players add @initiator[hasitem={item=pig_spawn_egg,quantity=1..}] Moneyz 30
+
+tell @initiator[hasitem={item=pig_spawn_egg,quantity=1..}] §aSold a Pig Spawn Egg!
+
+clear @initiator[hasitem={item=pig_spawn_egg,quantity=1..}] pig_spawn_egg 0 1
