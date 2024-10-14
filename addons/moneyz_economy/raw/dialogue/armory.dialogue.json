@@ -781,14 +781,14 @@
 				"text": {
 					"rawtext": 
 					[
-						{"text": "§lThese are the available Swords at the Armory.\n"},
-						{"text": "§lAll Armor Weapon Tools come Fully Enchanted.\n\n"},
-						{"text": "§r§lSwords:\n"},{"text": "§rNetherite Sword for 6,000 Moneyz\n"},
-						{"text": "§rDiamond Sword for 5,000 Moneyz\n"},
-						{"text": "§rIron Sword for 4,000 Moneyz\n"},
-						{"text": "§rGold Sword for 3,000 Moneyz\n"},
-						{"text": "§rStone Sword for 2,000 Moneyz\n"},
-						{"text": "§rWood Sword for 1,000 Moneyz\n\n"}
+						{"text": "§lThese are the available Swords you can sell at the Armory.\n"},
+						{"text": "§r§lSwords:\n"},
+						{"text": "§rNetherite Sword for 700 Moneyz\n"},
+						{"text": "§rDiamond Sword for 500 Moneyz\n"},
+						{"text": "§rIron Sword for 400 Moneyz\n"},
+						{"text": "§rGold Sword for 300 Moneyz\n"},
+						{"text": "§rStone Sword for 200 Moneyz\n"},
+						{"text": "§rWood Sword for 100 Moneyz\n\n"}
 					]
 				},
 				"buttons": [
@@ -824,14 +824,14 @@
 				"text": {
 					"rawtext": 
 					[
-						{"text": "§lThese are the available Swords at the Armory.\n"},
-						{"text": "§lAll Armor Weapon Tools come Fully Enchanted.\n\n"},
-						{"text": "§r§lSwords:\n"},{"text": "§rNetherite Sword for 6,000 Moneyz\n"},
-						{"text": "§rDiamond Sword for 5,000 Moneyz\n"},
-						{"text": "§rIron Sword for 4,000 Moneyz\n"},
-						{"text": "§rGold Sword for 3,000 Moneyz\n"},
-						{"text": "§rStone Sword for 2,000 Moneyz\n"},
-						{"text": "§rWood Sword for 1,000 Moneyz\n\n"}
+						{"text": "§lThese are the available Swords you can sell at the Armory.\n"},
+						{"text": "§r§lSwords:\n"},
+						{"text": "§rNetherite Sword for 700 Moneyz\n"},
+						{"text": "§rDiamond Sword for 500 Moneyz\n"},
+						{"text": "§rIron Sword for 400 Moneyz\n"},
+						{"text": "§rGold Sword for 300 Moneyz\n"},
+						{"text": "§rStone Sword for 200 Moneyz\n"},
+						{"text": "§rWood Sword for 100 Moneyz\n\n"}
 					]
 				},
 				"buttons": [
@@ -855,14 +855,12 @@
 				"text": {
 					"rawtext": 
 					[
-						{"text": "§lThese are the available items at the Armory.\n"},
-						{"text": "§lAll Weapons come Fully Enchanted.\n\n"},
+						{"text": "§lThese are the available items you can sell at the Armory.\n"},
 						{"text": "§r§lWeapons:\n"},
-						{"text": "§rBow for 250 Moneyz\n"},
-						{"text": "§rCrossbow for 500 Moneyz\n"},
-						{"text": "§rMace for 2,000 Moneyz\n"},
-						{"text": "§rRiptied Trident for 250 Moneyz\n"},
-						{"text": "§rTrident for 500 Moneyz\n\n"}
+						{"text": "§rBow for 50 Moneyz\n"},
+						{"text": "§rCrossbow for 100 Moneyz\n"},
+						{"text": "§rMace for 500 Moneyz\n"},
+						{"text": "§rTrident for 100 Moneyz\n\n"}
 					]
 				},
 				"buttons": [
@@ -879,16 +877,12 @@
 						"commands": ["/function armory/sell/weapons/mace"]
 					},
 					{
-						"name": "Gold",
-						"commands": ["/function armory/sell/weapons/gold"]
+						"name": "Tident",
+						"commands": ["/function armory/sell/weapons/trident"]
 					},
 					{
-						"name": "Riptied",
-						"commands": ["/function armory/sell/weapons/riptied"]
-					},
-					{
-						"name": "Pg. 2",
-						"commands": ["/dialogue open @s @initiator armory_sell_weapons_2"]
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator armory"]
 					}
 				]
 			},
@@ -898,21 +892,15 @@
 				"text": {
 					"rawtext": 
 					[
-						{"text": "§lThese are the available items at the Armory.\n"},
-						{"text": "§lAll Weapons come Fully Enchanted.\n\n"},
+						{"text": "§lThese are the available items you can sell at the Armory.\n"},
 						{"text": "§r§lWeapons:\n"},
-						{"text": "§rBow for 250 Moneyz\n"},
-						{"text": "§rCrossbow for 500 Moneyz\n"},
-						{"text": "§rMace for 2,000 Moneyz\n"},
-						{"text": "§rRiptied Trident for 250 Moneyz\n"},
-						{"text": "§rTrident for 500 Moneyz\n\n"}
+						{"text": "§rBow for 50 Moneyz\n"},
+						{"text": "§rCrossbow for 100 Moneyz\n"},
+						{"text": "§rMace for 500 Moneyz\n"},
+						{"text": "§rTrident for 100 Moneyz\n\n"}
 					]
 				},
 				"buttons": [
-					{
-						"name": "Tident",
-						"commands": ["/function armory/sell/weapons/trident"]
-					},
 					{
 						"name": "Pg. 1",
 						"commands": ["/dialogue open @s @initiator armory_sell_armor"]
@@ -929,15 +917,14 @@
 				"text": {
 					"rawtext": 
 					[
-						{"text": "§lThese are the Pickaxes items at the Armory.\n"},
-						{"text": "§lAll Tools come Fully Enchanted.\n\n"},
+						{"text": "§lThese are the Pickaxes items you can sell at the Armory.\n"},
 						{"text": "§r§lPickaxes:\n"},
-						{"text": "§rNetherite Pickaxe for 5,000 Moneyz\n"},
-						{"text": "§rDiamond Pickaxe for 4,000 Moneyz\n"},
-						{"text": "§rIron Pickaxe for 3,000 Moneyz\n"},
-						{"text": "§rGold Pickaxe for 2,000 Moneyz\n"},
-						{"text": "§rStone Pickaxe for 1,000 Moneyz\n"},
-						{"text": "§rWood Pickaxe for 500 Moneyz\n\n"}
+						{"text": "§rNetherite Pickaxe for 1,000 Moneyz\n"},
+						{"text": "§rDiamond Pickaxe for 500 Moneyz\n"},
+						{"text": "§rIron Pickaxe for 300 Moneyz\n"},
+						{"text": "§rGold Pickaxe for 200 Moneyz\n"},
+						{"text": "§rStone Pickaxe for 100 Moneyz\n"},
+						{"text": "§rWood Pickaxe for 50 Moneyz\n\n"}
 					]
 				},
 				"buttons": [
@@ -973,15 +960,14 @@
 				"text": {
 					"rawtext": 
 					[
-						{"text": "§lThese are the available Pickaxes at the Armory.\n"},
-						{"text": "§lAll Tools come Fully Enchanted.\n\n"},
+						{"text": "§lThese are the available Pickaxes you can sell at the Armory.\n"},
 						{"text": "§r§lPickaxes:\n"},
-						{"text": "§rNetherite Pickaxe for 5,000 Moneyz\n"},
-						{"text": "§rDiamond Pickaxe for 4,000 Moneyz\n"},
-						{"text": "§rIron Pickaxe for 3,000 Moneyz\n"},
-						{"text": "§rGold Pickaxe for 2,000 Moneyz\n"},
-						{"text": "§rStone Pickaxe for 1,000 Moneyz\n"},
-						{"text": "§rWood Pickaxe for 500 Moneyz\n\n"}
+						{"text": "§rNetherite Pickaxe for 1,000 Moneyz\n"},
+						{"text": "§rDiamond Pickaxe for 500 Moneyz\n"},
+						{"text": "§rIron Pickaxe for 300 Moneyz\n"},
+						{"text": "§rGold Pickaxe for 200 Moneyz\n"},
+						{"text": "§rStone Pickaxe for 100 Moneyz\n"},
+						{"text": "§rWood Pickaxe for 50 Moneyz\n\n"}
 					]
 				},
 				"buttons": [
@@ -1005,15 +991,14 @@
 				"text": {
 					"rawtext": 
 					[
-						{"text": "§lThese are the available Axes at the Armory.\n"},
-						{"text": "§lAll Tools come Fully Enchanted.\n\n"},
+						{"text": "§lThese are the available Axes you can sell at the Armory.\n"},
 						{"text": "§r§lAxes:\n"},
-						{"text": "§rNetherite Axe for 4,000 Moneyz\n"},
-						{"text": "§rDiamond Axe for 3,000 Moneyz\n"},
-						{"text": "§rIron Axe for 2,000 Moneyz\n"},
-						{"text": "§rGold Axe for 1,000 Moneyz\n"},
-						{"text": "§rStone Axe for 750 Moneyz\n"},
-						{"text": "§rWood Axe for 500 Moneyz\n\n"}
+						{"text": "§rNetherite Axe for 700 Moneyz\n"},
+						{"text": "§rDiamond Axe for 600 Moneyz\n"},
+						{"text": "§rIron Axe for 500 Moneyz\n"},
+						{"text": "§rGold Axe for 400 Moneyz\n"},
+						{"text": "§rStone Axe for 300 Moneyz\n"},
+						{"text": "§rWood Axe for 200 Moneyz\n\n"}
 					]
 				},
 				"buttons": [
@@ -1049,15 +1034,14 @@
 				"text": {
 					"rawtext": 
 					[
-						{"text": "§lThese are the available Axes at the Armory.\n"},
-						{"text": "§lAll Tools come Fully Enchanted.\n\n"},
+						{"text": "§lThese are the available Axes you can sell at the Armory.\n"},
 						{"text": "§r§lAxes:\n"},
-						{"text": "§rNetherite Axe for 4,000 Moneyz\n"},
-						{"text": "§rDiamond Axe for 3,000 Moneyz\n"},
-						{"text": "§rIron Axe for 2,000 Moneyz\n"},
-						{"text": "§rGold Axe for 1,000 Moneyz\n"},
-						{"text": "§rStone Axe for 750 Moneyz\n"},
-						{"text": "§rWood Axe for 500 Moneyz\n\n"}
+						{"text": "§rNetherite Axe for 700 Moneyz\n"},
+						{"text": "§rDiamond Axe for 600 Moneyz\n"},
+						{"text": "§rIron Axe for 500 Moneyz\n"},
+						{"text": "§rGold Axe for 400 Moneyz\n"},
+						{"text": "§rStone Axe for 300 Moneyz\n"},
+						{"text": "§rWood Axe for 200 Moneyz\n\n"}
 					]
 				},
 				"buttons": [
@@ -1081,15 +1065,14 @@
 				"text": {
 					"rawtext": 
 					[
-						{"text": "§lThese are the available Shovels at the Armory.\n"},
-						{"text": "§lAll Tools come Fully Enchanted.\n\n"},
+						{"text": "§lThese are the available Shovels you can sell at the Armory.\n"},
 						{"text": "§r§lShovels:\n"},
-						{"text": "§rNetherite Shovel for 1,500 Moneyz\n"},
-						{"text": "§rDiamond Shovel for 1,250 Moneyz\n"},
-						{"text": "§rIron Shovel for 1,000 Moneyz\n"},
-						{"text": "§rGold Shovel for 750 Moneyz\n"},
-						{"text": "§rStone Shovel for 500 Moneyz\n"},
-						{"text": "§rWood Shovel for 250 Moneyz\n\n"}
+						{"text": "§rNetherite Shovel for 600 Moneyz\n"},
+						{"text": "§rDiamond Shovel for 500 Moneyz\n"},
+						{"text": "§rIron Shovel for 400 Moneyz\n"},
+						{"text": "§rGold Shovel for 300 Moneyz\n"},
+						{"text": "§rStone Shovel for 200 Moneyz\n"},
+						{"text": "§rWood Shovel for 100 Moneyz\n\n"}
 					]
 				},
 				"buttons": [
@@ -1125,15 +1108,14 @@
 				"text": {
 					"rawtext": 
 					[
-						{"text": "§lThese are the available Shovels at the Armory.\n"},
-						{"text": "§lAll Tools come Fully Enchanted.\n\n"},
+						{"text": "§lThese are the available Shovels you can sell at the Armory.\n"},
 						{"text": "§r§lShovels:\n"},
-						{"text": "§rNetherite Shovel for 1,500 Moneyz\n"},
-						{"text": "§rDiamond Shovel for 1,250 Moneyz\n"},
-						{"text": "§rIron Shovel for 1,000 Moneyz\n"},
-						{"text": "§rGold Shovel for 750 Moneyz\n"},
-						{"text": "§rStone Shovel for 500 Moneyz\n"},
-						{"text": "§rWood Shovel for 250 Moneyz\n\n"}
+						{"text": "§rNetherite Shovel for 600 Moneyz\n"},
+						{"text": "§rDiamond Shovel for 500 Moneyz\n"},
+						{"text": "§rIron Shovel for 400 Moneyz\n"},
+						{"text": "§rGold Shovel for 300 Moneyz\n"},
+						{"text": "§rStone Shovel for 200 Moneyz\n"},
+						{"text": "§rWood Shovel for 100 Moneyz\n\n"}
 					]
 				},
 				"buttons": [
@@ -1157,15 +1139,14 @@
 				"text": {
 					"rawtext": 
 					[
-						{"text": "§lThese are the available Hoes at the Armory.\n"},
-						{"text": "§lAll Tools come Fully Enchanted.\n\n"},
+						{"text": "§lThese are the available Hoes you can sell at the Armory.\n"},
 						{"text": "§r§lHoes:\n"},
-						{"text": "§rNetherite Hoe for 600 Moneyz\n"},
-						{"text": "§rDiamond Hoe for 500 Moneyz\n"},
-						{"text": "§rIron Hoe for 450 Moneyz\n"},
-						{"text": "§rGold Hoe for 300 Moneyz\n"},
-						{"text": "§rStone Hoe for 200 Moneyz\n"},
-						{"text": "§rWood Hoe for 100 Moneyz\n\n"}
+						{"text": "§rNetherite Hoe for 500 Moneyz\n"},
+						{"text": "§rDiamond Hoe for 400 Moneyz\n"},
+						{"text": "§rIron Hoe for 350 Moneyz\n"},
+						{"text": "§rGold Hoe for 200 Moneyz\n"},
+						{"text": "§rStone Hoe for 100 Moneyz\n"},
+						{"text": "§rWood Hoe for 50 Moneyz\n\n"}
 					]
 				},
 				"buttons": [
@@ -1201,15 +1182,14 @@
 				"text": {
 					"rawtext": 
 					[
-						{"text": "§lThese are the available Hoes at the Armory.\n"},
-						{"text": "§lAll Tools come Fully Enchanted.\n\n"},
+						{"text": "§lThese are the available Hoes you can sell at the Armory.\n"},
 						{"text": "§r§lHoes:\n"},
-						{"text": "§rNetherite Hoe for 600 Moneyz\n"},
-						{"text": "§rDiamond Hoe for 500 Moneyz\n"},
-						{"text": "§rIron Hoe for 450 Moneyz\n"},
-						{"text": "§rGold Hoe for 300 Moneyz\n"},
-						{"text": "§rStone Hoe for 200 Moneyz\n"},
-						{"text": "§rWood Hoe for 100 Moneyz\n\n"}
+						{"text": "§rNetherite Hoe for 500 Moneyz\n"},
+						{"text": "§rDiamond Hoe for 400 Moneyz\n"},
+						{"text": "§rIron Hoe for 350 Moneyz\n"},
+						{"text": "§rGold Hoe for 200 Moneyz\n"},
+						{"text": "§rStone Hoe for 100 Moneyz\n"},
+						{"text": "§rWood Hoe for 50 Moneyz\n\n"}
 					]
 				},
 				"buttons": [
@@ -1233,15 +1213,14 @@
 				"text": {
 					"rawtext": 
 					[
-						{"text": "§lThese are the available items at the Armory.\n"},
-						{"text": "§lAll Armor Weapon Tools come Fully Enchanted.\n\n"},
+						{"text": "§lThese are the available items you can sell at the Armory.\n"},
 						{"text": "§r§lMisc Items:\n"},
 						{"text": "§r10 Arrows for 50 Moneyz\n"},
-						{"text": "§r1 Elytra for 2,000 Moneyz\n"},
-						{"text": "§r1 Fishing Rod for 500 Moneyz\n"},
+						{"text": "§r1 Elytra for 1,000 Moneyz\n"},
+						{"text": "§r1 Fishing Rod for 50 Moneyz\n"},
 						{"text": "§r1 Shield for 100 Moneyz\n"},
 						{"text": "§r1 Totem of Undying for 1,500 Moneyz\n"},
-						{"text": "§r1 Turtle Shell for 150 Moneyz\n\n"}
+						{"text": "§r1 Turtle Shell for 100 Moneyz\n\n"}
 					]
 				},
 				"buttons": [
@@ -1277,15 +1256,14 @@
 				"text": {
 					"rawtext": 
 					[
-						{"text": "§lThese are the available items at the Armory.\n"},
-						{"text": "§lAll Armor Weapon Tools come Fully Enchanted.\n\n"},
+						{"text": "§lThese are the available items you can sell at the Armory.\n"},
 						{"text": "§r§lMisc Items:\n"},
 						{"text": "§r10 Arrows for 50 Moneyz\n"},
-						{"text": "§r1 Elytra for 2,000 Moneyz\n"},
-						{"text": "§r1 Fishing Rod for 500 Moneyz\n"},
+						{"text": "§r1 Elytra for 1,000 Moneyz\n"},
+						{"text": "§r1 Fishing Rod for 50 Moneyz\n"},
 						{"text": "§r1 Shield for 100 Moneyz\n"},
 						{"text": "§r1 Totem of Undying for 1,500 Moneyz\n"},
-						{"text": "§r1 Turtle Shell for 150 Moneyz\n\n"}
+						{"text": "§r1 Turtle Shell for 100 Moneyz\n\n"}
 					]
 				},
 				"buttons": [
