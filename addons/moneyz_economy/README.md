@@ -87,9 +87,7 @@ The following tags are supported:
 - `moneyzATM`: Allows access to Moneyz & Resource Exchange [^8]
 - `moneyzSend`: Allows access to Sending feature [^8]
 
-Admins 
-
-
+Admins can turn on/off the autoTagging feature from the Admin Menu. This will allow players to automatically have the enabled tags applied when they join the world. 
 
 The Moneyz Menus allows Players direct access to:
 - View their Moneyz balance
