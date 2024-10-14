@@ -606,6 +606,82 @@
 				]
 			},
 			{
+				"scene_tag": "armory_buy_misc",
+				"npc_name": "Hoes",
+				"text": {
+					"rawtext": 
+					[
+						{"text": "§lThese are the available items at the Armory.\n"},
+						{"text": "§lAll Armor Weapon Tools come Fully Enchanted.\n\n"},
+						{"text": "§r§lMisc Items:\n"},
+						{"text": "§r10 Arrows for 50 Moneyz\n"},
+						{"text": "§r1 Elytra for 2,000 Moneyz\n"},
+						{"text": "§r1 Fishing Rod for 500 Moneyz\n"},
+						{"text": "§r1 Shield for 100 Moneyz\n"},
+						{"text": "§r1 Totem of Undying for 1,500 Moneyz\n"},
+						{"text": "§r1 Turtle Shell for 150 Moneyz\n\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Arrows",
+						"commands": ["/function armory/arrow"]
+					},
+					{
+						"name": "Diamond",
+						"commands": ["/function armory/elytra"]
+					},
+					{
+						"name": "Iron",
+						"commands": ["/function armory/fishing_rod"]
+					},
+					{
+						"name": "Gold",
+						"commands": ["/function armory/shield"]
+					},
+					{
+						"name": "Stone",
+						"commands": ["/function armory/totem"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator armory"]
+					}
+				]
+			},
+			{
+				"scene_tag": "armory_buy_misc_2",
+				"npc_name": "Hoes",
+				"text": {
+					"rawtext": 
+					[
+						{"text": "§lThese are the available items at the Armory.\n"},
+						{"text": "§lAll Armor Weapon Tools come Fully Enchanted.\n\n"},
+						{"text": "§r§lMisc Items:\n"},
+						{"text": "§r10 Arrows for 50 Moneyz\n"},
+						{"text": "§r1 Elytra for 2,000 Moneyz\n"},
+						{"text": "§r1 Fishing Rod for 500 Moneyz\n"},
+						{"text": "§r1 Shield for 100 Moneyz\n"},
+						{"text": "§r1 Totem of Undying for 1,500 Moneyz\n"},
+						{"text": "§r1 Turtle Shell for 150 Moneyz\n\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Turtle Shell",
+						"commands": ["/function armory/turtle_shell"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator armory_buy_misc"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator armory"]
+					}
+				]
+			},
+			{
 				"scene_tag": "armory_buy_horse_armor",
 				"npc_name": "Horse Armor",
 				"text": {
@@ -649,6 +725,596 @@
 					{
 						"name": "Horse Armor",
 						"commands": ["/dialogue open @s @initiator armory_sell_horse_armor"]
+					}
+				]
+			},
+			{
+				"scene_tag": "armory_sell",
+				"npc_name": "Selling",
+				"text": "What would you like to sell?",
+				"buttons": [
+					{
+						"name": "Armor",
+						"commands": ["/dialogue open @s @initiator armory_sell_armor"]
+					},
+					{
+						"name": "Swords",
+						"commands": ["/dialogue open @s @initiator armory_sell_sword"]
+					},
+					{
+						"name": "Weapons",
+						"commands": ["/dialogue open @s @initiator armory_sell_weapon"]
+					},
+					{
+						"name": "Pickaxe",
+						"commands": ["/dialogue open @s @initiator armory_sell_pickaxe"]
+					},
+					{
+						"name": "Axe",
+						"commands": ["/dialogue open @s @initiator armory_sell_axe"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator armory_sell_2"]
+					},
+				]
+			},
+			{
+				"scene_tag": "armory_sell_2",
+				"npc_name": "Buying",
+				"text": "What would you like to sell?",
+				"buttons": [
+					{
+						"name": "Shovel",
+						"commands": ["/dialogue open @s @initiator armory_sell_shovel"]
+					},
+					{
+						"name": "Hoe",
+						"commands": ["/dialogue open @s @initiator armory_sell_sword"]
+					},
+					{
+						"name": "Misc",
+						"commands": ["/dialogue open @s @initiator armory_sell_weapon"]
+					},
+					{
+						"name": "Horse Armor",
+						"commands": ["/dialogue open @s @initiator armory_sell_horse_armor"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator armory_sell"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator armory"]
+					}
+				]
+			},
+			{
+				"scene_tag": "armory_sell_sword",
+				"npc_name": "Swords",
+				"text": {
+					"rawtext": 
+					[
+						{"text": "§lThese are the available Swords at the Armory.\n"},
+						{"text": "§lAll Armor Weapon Tools come Fully Enchanted.\n\n"},
+						{"text": "§r§lSwords:\n"},{"text": "§rNetherite Sword for 6,000 Moneyz\n"},
+						{"text": "§rDiamond Sword for 5,000 Moneyz\n"},
+						{"text": "§rIron Sword for 4,000 Moneyz\n"},
+						{"text": "§rGold Sword for 3,000 Moneyz\n"},
+						{"text": "§rStone Sword for 2,000 Moneyz\n"},
+						{"text": "§rWood Sword for 1,000 Moneyz\n\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Netherite",
+						"commands": ["/function armory/sell/sword/netherite"]
+					},
+					{
+						"name": "Diamond",
+						"commands": ["/function armory/sell/sword/diamond"]
+					},
+					{
+						"name": "Iron",
+						"commands": ["/function armory/sell/sword/iron"]
+					},
+					{
+						"name": "Gold",
+						"commands": ["/function armory/sell/sword/gold"]
+					},
+					{
+						"name": "Stone",
+						"commands": ["/function armory/sell/sword/stone"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator armory_sell_sword_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "armory_sell_sword_2",
+				"npc_name": "Swords",
+				"text": {
+					"rawtext": 
+					[
+						{"text": "§lThese are the available Swords at the Armory.\n"},
+						{"text": "§lAll Armor Weapon Tools come Fully Enchanted.\n\n"},
+						{"text": "§r§lSwords:\n"},{"text": "§rNetherite Sword for 6,000 Moneyz\n"},
+						{"text": "§rDiamond Sword for 5,000 Moneyz\n"},
+						{"text": "§rIron Sword for 4,000 Moneyz\n"},
+						{"text": "§rGold Sword for 3,000 Moneyz\n"},
+						{"text": "§rStone Sword for 2,000 Moneyz\n"},
+						{"text": "§rWood Sword for 1,000 Moneyz\n\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Wood",
+						"commands": ["/function armory/sell/sword/wood"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator armory_sell_sword"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator armory"]
+					}
+				]
+			},
+			{
+				"scene_tag": "armory_sell_weapons",
+				"npc_name": "Weapons",
+				"text": {
+					"rawtext": 
+					[
+						{"text": "§lThese are the available items at the Armory.\n"},
+						{"text": "§lAll Weapons come Fully Enchanted.\n\n"},
+						{"text": "§r§lWeapons:\n"},
+						{"text": "§rBow for 250 Moneyz\n"},
+						{"text": "§rCrossbow for 500 Moneyz\n"},
+						{"text": "§rMace for 2,000 Moneyz\n"},
+						{"text": "§rRiptied Trident for 250 Moneyz\n"},
+						{"text": "§rTrident for 500 Moneyz\n\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Bow",
+						"commands": ["/function armory/sell/weapons/bow"]
+					},
+					{
+						"name": "Crossbow",
+						"commands": ["/function armory/sell/weapons/crossbow"]
+					},
+					{
+						"name": "Mace",
+						"commands": ["/function armory/sell/weapons/mace"]
+					},
+					{
+						"name": "Gold",
+						"commands": ["/function armory/sell/weapons/gold"]
+					},
+					{
+						"name": "Riptied",
+						"commands": ["/function armory/sell/weapons/riptied"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator armory_sell_weapons_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "armory_sell_weapons_2",
+				"npc_name": "Weapons",
+				"text": {
+					"rawtext": 
+					[
+						{"text": "§lThese are the available items at the Armory.\n"},
+						{"text": "§lAll Weapons come Fully Enchanted.\n\n"},
+						{"text": "§r§lWeapons:\n"},
+						{"text": "§rBow for 250 Moneyz\n"},
+						{"text": "§rCrossbow for 500 Moneyz\n"},
+						{"text": "§rMace for 2,000 Moneyz\n"},
+						{"text": "§rRiptied Trident for 250 Moneyz\n"},
+						{"text": "§rTrident for 500 Moneyz\n\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Tident",
+						"commands": ["/function armory/sell/weapons/trident"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator armory_sell_armor"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator armory"]
+					}
+				]
+			},
+			{
+				"scene_tag": "armory_sell_pickaxe",
+				"npc_name": "Pickaxes",
+				"text": {
+					"rawtext": 
+					[
+						{"text": "§lThese are the Pickaxes items at the Armory.\n"},
+						{"text": "§lAll Tools come Fully Enchanted.\n\n"},
+						{"text": "§r§lPickaxes:\n"},
+						{"text": "§rNetherite Pickaxe for 5,000 Moneyz\n"},
+						{"text": "§rDiamond Pickaxe for 4,000 Moneyz\n"},
+						{"text": "§rIron Pickaxe for 3,000 Moneyz\n"},
+						{"text": "§rGold Pickaxe for 2,000 Moneyz\n"},
+						{"text": "§rStone Pickaxe for 1,000 Moneyz\n"},
+						{"text": "§rWood Pickaxe for 500 Moneyz\n\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Netherite",
+						"commands": ["/function armory/sell/pickaxe/netherite"]
+					},
+					{
+						"name": "Diamond",
+						"commands": ["/function armory/sell/pickaxe/diamond"]
+					},
+					{
+						"name": "Iron",
+						"commands": ["/function armory/sell/pickaxe/iron"]
+					},
+					{
+						"name": "Gold",
+						"commands": ["/function armory/sell/pickaxe/gold"]
+					},
+					{
+						"name": "Stone",
+						"commands": ["/function armory/sell/pickaxe/stone"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator armory_sell_pickaxe_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "armory_sell_pickaxe_2",
+				"npc_name": "Pickaxes",
+				"text": {
+					"rawtext": 
+					[
+						{"text": "§lThese are the available Pickaxes at the Armory.\n"},
+						{"text": "§lAll Tools come Fully Enchanted.\n\n"},
+						{"text": "§r§lPickaxes:\n"},
+						{"text": "§rNetherite Pickaxe for 5,000 Moneyz\n"},
+						{"text": "§rDiamond Pickaxe for 4,000 Moneyz\n"},
+						{"text": "§rIron Pickaxe for 3,000 Moneyz\n"},
+						{"text": "§rGold Pickaxe for 2,000 Moneyz\n"},
+						{"text": "§rStone Pickaxe for 1,000 Moneyz\n"},
+						{"text": "§rWood Pickaxe for 500 Moneyz\n\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Wood",
+						"commands": ["/function armory/sell/pickaxe/wood"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator armory_sell_pickaxe"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator armory"]
+					}
+				]
+			},
+			{
+				"scene_tag": "armory_sell_axe",
+				"npc_name": "Axes",
+				"text": {
+					"rawtext": 
+					[
+						{"text": "§lThese are the available Axes at the Armory.\n"},
+						{"text": "§lAll Tools come Fully Enchanted.\n\n"},
+						{"text": "§r§lAxes:\n"},
+						{"text": "§rNetherite Axe for 4,000 Moneyz\n"},
+						{"text": "§rDiamond Axe for 3,000 Moneyz\n"},
+						{"text": "§rIron Axe for 2,000 Moneyz\n"},
+						{"text": "§rGold Axe for 1,000 Moneyz\n"},
+						{"text": "§rStone Axe for 750 Moneyz\n"},
+						{"text": "§rWood Axe for 500 Moneyz\n\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Netherite",
+						"commands": ["/function armory/sell/axe/netherite"]
+					},
+					{
+						"name": "Diamond",
+						"commands": ["/function armory/sell/axe/diamond"]
+					},
+					{
+						"name": "Iron",
+						"commands": ["/function armory/sell/axe/iron"]
+					},
+					{
+						"name": "Gold",
+						"commands": ["/function armory/sell/axe/gold"]
+					},
+					{
+						"name": "Stone",
+						"commands": ["/function armory/sell/axe/stone"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator armory_sell_axe_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "armory_sell_axe_2",
+				"npc_name": "Axes",
+				"text": {
+					"rawtext": 
+					[
+						{"text": "§lThese are the available Axes at the Armory.\n"},
+						{"text": "§lAll Tools come Fully Enchanted.\n\n"},
+						{"text": "§r§lAxes:\n"},
+						{"text": "§rNetherite Axe for 4,000 Moneyz\n"},
+						{"text": "§rDiamond Axe for 3,000 Moneyz\n"},
+						{"text": "§rIron Axe for 2,000 Moneyz\n"},
+						{"text": "§rGold Axe for 1,000 Moneyz\n"},
+						{"text": "§rStone Axe for 750 Moneyz\n"},
+						{"text": "§rWood Axe for 500 Moneyz\n\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Wood",
+						"commands": ["/function armory/sell/axe/wood"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator armory_sell_axe"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator armory"]
+					}
+				]
+			},
+			{
+				"scene_tag": "armory_sell_shovel",
+				"npc_name": "Shovels",
+				"text": {
+					"rawtext": 
+					[
+						{"text": "§lThese are the available Shovels at the Armory.\n"},
+						{"text": "§lAll Tools come Fully Enchanted.\n\n"},
+						{"text": "§r§lShovels:\n"},
+						{"text": "§rNetherite Shovel for 1,500 Moneyz\n"},
+						{"text": "§rDiamond Shovel for 1,250 Moneyz\n"},
+						{"text": "§rIron Shovel for 1,000 Moneyz\n"},
+						{"text": "§rGold Shovel for 750 Moneyz\n"},
+						{"text": "§rStone Shovel for 500 Moneyz\n"},
+						{"text": "§rWood Shovel for 250 Moneyz\n\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Netherite",
+						"commands": ["/function armory/sell/shovel/netherite"]
+					},
+					{
+						"name": "Diamond",
+						"commands": ["/function armory/sell/shovel/diamond"]
+					},
+					{
+						"name": "Iron",
+						"commands": ["/function armory/sell/shovel/iron"]
+					},
+					{
+						"name": "Gold",
+						"commands": ["/function armory/sell/shovel/gold"]
+					},
+					{
+						"name": "Stone",
+						"commands": ["/function armory/sell/shovel/stone"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator armory_sell_shovel_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "armory_sell_shovel_2",
+				"npc_name": "Shovels",
+				"text": {
+					"rawtext": 
+					[
+						{"text": "§lThese are the available Shovels at the Armory.\n"},
+						{"text": "§lAll Tools come Fully Enchanted.\n\n"},
+						{"text": "§r§lShovels:\n"},
+						{"text": "§rNetherite Shovel for 1,500 Moneyz\n"},
+						{"text": "§rDiamond Shovel for 1,250 Moneyz\n"},
+						{"text": "§rIron Shovel for 1,000 Moneyz\n"},
+						{"text": "§rGold Shovel for 750 Moneyz\n"},
+						{"text": "§rStone Shovel for 500 Moneyz\n"},
+						{"text": "§rWood Shovel for 250 Moneyz\n\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Wood",
+						"commands": ["/function armory/sell/shovel/wood"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator armory_sell_shovel"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator armory"]
+					}
+				]
+			},
+			{
+				"scene_tag": "armory_sell_hoe",
+				"npc_name": "Hoes",
+				"text": {
+					"rawtext": 
+					[
+						{"text": "§lThese are the available Hoes at the Armory.\n"},
+						{"text": "§lAll Tools come Fully Enchanted.\n\n"},
+						{"text": "§r§lHoes:\n"},
+						{"text": "§rNetherite Hoe for 600 Moneyz\n"},
+						{"text": "§rDiamond Hoe for 500 Moneyz\n"},
+						{"text": "§rIron Hoe for 450 Moneyz\n"},
+						{"text": "§rGold Hoe for 300 Moneyz\n"},
+						{"text": "§rStone Hoe for 200 Moneyz\n"},
+						{"text": "§rWood Hoe for 100 Moneyz\n\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Netherite",
+						"commands": ["/function armory/sell/hoe/netherite"]
+					},
+					{
+						"name": "Diamond",
+						"commands": ["/function armory/sell/hoe/diamond"]
+					},
+					{
+						"name": "Iron",
+						"commands": ["/function armory/sell/hoe/iron"]
+					},
+					{
+						"name": "Gold",
+						"commands": ["/function armory/sell/hoe/gold"]
+					},
+					{
+						"name": "Stone",
+						"commands": ["/function armory/sell/hoe/stone"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator armory_sell_hoe_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "armory_sell_hoe_2",
+				"npc_name": "Hoes",
+				"text": {
+					"rawtext": 
+					[
+						{"text": "§lThese are the available Hoes at the Armory.\n"},
+						{"text": "§lAll Tools come Fully Enchanted.\n\n"},
+						{"text": "§r§lHoes:\n"},
+						{"text": "§rNetherite Hoe for 600 Moneyz\n"},
+						{"text": "§rDiamond Hoe for 500 Moneyz\n"},
+						{"text": "§rIron Hoe for 450 Moneyz\n"},
+						{"text": "§rGold Hoe for 300 Moneyz\n"},
+						{"text": "§rStone Hoe for 200 Moneyz\n"},
+						{"text": "§rWood Hoe for 100 Moneyz\n\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Wood",
+						"commands": ["/function armory/sell/hoe/wood"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator armory_sell_hoe"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator armory"]
+					}
+				]
+			},
+			{
+				"scene_tag": "armory_sell_misc",
+				"npc_name": "Hoes",
+				"text": {
+					"rawtext": 
+					[
+						{"text": "§lThese are the available items at the Armory.\n"},
+						{"text": "§lAll Armor Weapon Tools come Fully Enchanted.\n\n"},
+						{"text": "§r§lMisc Items:\n"},
+						{"text": "§r10 Arrows for 50 Moneyz\n"},
+						{"text": "§r1 Elytra for 2,000 Moneyz\n"},
+						{"text": "§r1 Fishing Rod for 500 Moneyz\n"},
+						{"text": "§r1 Shield for 100 Moneyz\n"},
+						{"text": "§r1 Totem of Undying for 1,500 Moneyz\n"},
+						{"text": "§r1 Turtle Shell for 150 Moneyz\n\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Arrows",
+						"commands": ["/function armory/sell/arrow"]
+					},
+					{
+						"name": "Diamond",
+						"commands": ["/function armory/sell/elytra"]
+					},
+					{
+						"name": "Iron",
+						"commands": ["/function armory/sell/fishing_rod"]
+					},
+					{
+						"name": "Gold",
+						"commands": ["/function armory/sell/shield"]
+					},
+					{
+						"name": "Stone",
+						"commands": ["/function armory/sell/totem"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator armory"]
+					}
+				]
+			},
+			{
+				"scene_tag": "armory_sell_misc_2",
+				"npc_name": "Hoes",
+				"text": {
+					"rawtext": 
+					[
+						{"text": "§lThese are the available items at the Armory.\n"},
+						{"text": "§lAll Armor Weapon Tools come Fully Enchanted.\n\n"},
+						{"text": "§r§lMisc Items:\n"},
+						{"text": "§r10 Arrows for 50 Moneyz\n"},
+						{"text": "§r1 Elytra for 2,000 Moneyz\n"},
+						{"text": "§r1 Fishing Rod for 500 Moneyz\n"},
+						{"text": "§r1 Shield for 100 Moneyz\n"},
+						{"text": "§r1 Totem of Undying for 1,500 Moneyz\n"},
+						{"text": "§r1 Turtle Shell for 150 Moneyz\n\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Turtle Shell",
+						"commands": ["/function armory/sell/turtle_shell"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator armory_sell_misc"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator armory"]
 					}
 				]
 			},
