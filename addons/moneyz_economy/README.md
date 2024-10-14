@@ -52,7 +52,7 @@ Do this for all your shops and now you have a working economy in your world.
 
 ### Available dialogues `dialogue open @s @initiator {dialogue}`: 
 
-`Armory`: Armor Weapon Tools Shop, supports `{workshop_buy|sell}` [^1]
+`armory`: Armor Weapon Tools Shop, supports `{armory_buy|sell}` [^1]
 
 `atm`: ATM for Moneyz exchange
 
