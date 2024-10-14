@@ -23,7 +23,7 @@ First run
 
 > [!NOTE]
 > This will set up the Moneyz scoreboard and adds all players currently online to the scoreboard with a score of 0
->This will also give you an NPC Spawn Egg. [^4] [^6]
+>This will also give you an NPC Spawn Egg, and a Moneyz Menu item [^1] [^6]
 
 > [!NOTE]
 > If you didn't get a Spawn Egg from the last command you run `/give @p spawn_egg 1 51`
@@ -78,6 +78,18 @@ Do this for all your shops and now you have a working economy in your world.
 
 ### Moneyz Menu
 Moneyz Economy adds a custom Moneyz Menu that allows Players to access various NPC shops by using the Moneyz Menu item. The Moneyz Menu item is craftable in the Crafting Table by putting 1 of each Resource in the grid, no shape required. [^3]
+
+The Moneyz Menu also require Players to have moneyzTags to access certain features.[^1]
+
+The following tags are supported:
+- `moneyzAdmin`: Allows access to Admin Menu
+- `moneyzShop`: Allows access to Shopping 
+- `moneyzATM`: Allows access to Moneyz & Resource Exchange [^8]
+- `moneyzSend`: Allows access to Sending feature [^8]
+
+Admins 
+
+
 
 The Moneyz Menus allows Players direct access to:
 - View their Moneyz balance
@@ -139,3 +151,5 @@ https://www.youtube.com/watch?v=6sjZkGPCF5A
 [^5]: Requires 1.2.0+
 [^6]: Auto get NPC Spawn Egg requires 1.5.0+
 [^7]: Requires 1.4.0+
+[^8]: Enabled by Default
+  Requires rerunning `/function setup` if updating from a version before 1.7.0
