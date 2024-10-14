@@ -103,3 +103,118 @@ The move to NPCs and a Behavior Pack allows for easier maintenance, and fixes ha
 
 # 1.3.1
 1. Changed Moneyz Trader spawn rates
+
+# 1.4.0
+1. Now uses direct copy of Moneyz Economy instead of a modified version
+  - Using version 1.7.0
+  - Updates will now be independent
+2. Removed Moneyz Trader
+3. NPC shops now use Dialogue commands
+4. You can now selling items at the shop NPCs
+5. Added full Moneyz Economy to Square Town
+6. Added Help NPC to Villages
+  - Square Town
+  - Commu Village
+  - Resh Village
+7. Added Moneyz Menu
+  - Adds ability to send Moneyz to other Players
+  - Allows access to:
+    - Shops
+      - Armory
+      - Farmer's Market
+      - Library
+      - Pet Shop
+      - Workshop
+    - ATM Services
+    - Send Moneyz
+    - Help
+    - Credits
+8. Added New Custom Item: Moneyz Menu
+  - Allows Players to access the Moneyz Menu
+  - Craftable in Crafting Table by combining 1 of each Resource
+9. Added Admin Manager with Moneyz Menu
+  - Players with a moneyzAdmin tag can access the Admin Menu 
+  - Admins can View, Add, Set, or Remove online player Moneyz balances
+  - Admins can View, Add, or Remove online Player’s tags
+10. Added permissions levels to Moneyz Menu
+  - Admins can control what players have access to
+  - Players with moneyzShops moneyzATM moneyzSend can access their respective Menu
+  - Can be auto added to players when they join the world
+  - ATM and Send are enabled by default in Moneyz Menu
+    - Can be toggled off by Admins
+    - Admin can manually add or remove moneyzTags to individual online players
+11. Added Armory
+  - Added Armory Sets
+    - Come fully Enchanted
+    - Netherite
+    - Diamond 
+    - Iron
+    - Gold
+    - Chainmail 
+    - Leather
+  - Added Swords
+    - Come fully Enchanted
+    - Netherite
+    - Diamond 
+    - Iron
+    - Gold
+    - Stone 
+    - Wood
+  - Added Weapons
+    - Come fully Enchanted 
+    - Bow
+    - Crossbow
+    - Mace
+    - Riptide Trident
+    - Trident
+  - Added Pickaxes
+    - Come fully Enchanted
+    - Netherite
+    - Diamond 
+    - Iron
+    - Gold
+    - Stone 
+    - Wood
+  - Added Axes
+    -  Come fully Enchanted
+    - Netherite
+    - Diamond 
+    - Iron
+    - Gold
+    - Stone 
+    - Wood
+  - Added Shovels
+    - Come fully Enchanted
+    - Netherite
+    - Diamond 
+    - Iron
+    - Gold
+    - Stone 
+    - Wood
+  - Added Hoes
+    -  Come fully Enchanted
+    - Netherite
+    - Diamond 
+    - Iron
+    - Gold
+    - Stone 
+    - Wood
+  - Added Horse Armor
+    -  Come fully Enchanted
+    - Diamond 
+    - Iron
+    - Gold
+    - Leather
+  - Added Misc
+    - Come fully Enchanted when applicable
+    - Arrows
+    - Elytra
+    - Fishing Rod
+    - Shield
+    - Totem of Undying 
+    - Turtle Shell
+  - Accessible from Moneyz Menu
+12. Each District has new Real Estate Address
+13. Players that first join the world are now auto added to the Moneyz Scoreboard 
+  - This fixes when a player tries to make a purchase when they have no score resulting in no feedback
+14. Moneyz interactions now give sound feedback
