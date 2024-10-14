@@ -130,3 +130,108 @@
 3. Fixed Selling Ender Pearls
 4. Fixed Buying and Selling Gold Horse Armor
 5. Fixed Various Typos and Grammar
+
+# 1.7.0
+
+1. Added Admin Manager to Moneyz Menu
+  - Players with a moneyzAdmin tag can access the Admin Menu 
+  - Admins can View, Add, Set, or Remove online player Moneyz balances
+  - Admins can View, Add, or Remove online Player’s tags 
+  - Rerun function setup to be added as a moneyzAdmin
+2. Added permissions levels to Moneyz Menu
+  - Admins can control what players have access to
+  - Players with moneyzShops moneyzATM moneyzSend can access their respective Menu
+  - Can be auto added to players when they join the world
+  - It's recommended to rerun /function setup in chat to setup auto management of moneyzTags that admins can toggle on or off individually
+  - ATM and Send are enabled by default in Moneyz Menu
+    - Can be toggled off by Admins
+    - Admin can manually add or remove moneyzTags to individual online players
+3. Added Armory
+  - Added Armory Sets
+    - Come fully Enchanted
+    - Netherite
+    - Diamond 
+    - Iron
+    - Gold
+    - Chainmail 
+    - Leather
+  - Added Swords
+    - Come fully Enchanted
+    - Netherite
+    - Diamond 
+    - Iron
+    - Gold
+    - Stone 
+    - Wood
+  - Added Weapons
+    - Come fully Enchanted 
+    - Bow
+    - Crossbow
+    - Mace
+    - Riptide Trident
+    - Trident
+  - Added Pickaxes
+    - Come fully Enchanted
+    - Netherite
+    - Diamond 
+    - Iron
+    - Gold
+    - Stone 
+    - Wood
+  - Added Axes
+    -  Come fully Enchanted
+    - Netherite
+    - Diamond 
+    - Iron
+    - Gold
+    - Stone 
+    - Wood
+  - Added Shovels
+    - Come fully Enchanted
+    - Netherite
+    - Diamond 
+    - Iron
+    - Gold
+    - Stone 
+    - Wood
+  - Added Hoes
+    -  Come fully Enchanted
+    - Netherite
+    - Diamond 
+    - Iron
+    - Gold
+    - Stone 
+    - Wood
+  - Added Horse Armor
+    -  Come fully Enchanted
+    - Diamond 
+    - Iron
+    - Gold
+    - Leather
+  - Added Misc
+    - Come fully Enchanted when applicable
+    - Arrows
+    - Elytra
+    - Fishing Rod
+    - Shield
+    - Totem of Undying 
+    - Turtle Shell
+  - Added `armory` dialogue
+    - Supports `{armory_buy|sell}`
+  - Accessible from Moneyz Menu
+  - Added to `help` dialogue & `/function help/armory`
+4. BREAKING CHANGES: WORKSHOP
+  - Removed AWT Kits
+  - Moved Totem of Undying and Horse armor to Armory shop
+  - Workshop NPCs that were manually setup with function commands need to be updated 
+    - NPCs set up with dialogue commands don't require updating 
+5. Added Moneyz Menu Item to Workshop
+6. Each District Real Estate Address go up to 20 now
+7. Players that first join the world are now auto added to the Moneyz Scoreboard 
+  - This fixes when a player tries to make a purchase when they have no score resulting in no feedback
+8. Library XP now cost 35 Moneyz 
+9. Workshop XP now cost 1000 Moneyz
+10. Wind Charge and Fireworks buy and sell now give/take 10 instead of 64
+11. Most interactions now give sound feedback
+12. Setup no longer puts Moneyz score in pause menu, players can view their score anywhere anytime in the Moneyz Menu
+13. Fixed Typos and Grammar
