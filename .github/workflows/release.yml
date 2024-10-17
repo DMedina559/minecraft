@@ -1,0 +1,54 @@
+name: Create Release
+
+on:
+  push:
+    branches:
+      - main  # Adjust if your default branch is different
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'  # Specify the Node.js version
+
+      - name: Create .mcpack and .mcworld files
+        run: |
+          PROJECTS=("addons/moneyz_economy" "addons/sus_loot" "addons/moneyz_trader" "worlds/msv")
+          
+          for project in "${PROJECTS[@]}"; do
+            VERSION=$(ls "$project/raw" | grep -oP '\d+\.\d+\.\d+' | sort -V | tail -n 1)  # Extract the latest version
+            if [[ $project == *"worlds"* ]]; then
+              zip -r "${project}/${project##*/} $VERSION.mcworld" "$project/*"  # Create .mcworld
+            else
+              zip -r "${project}/${project##*/} $VERSION.mcpack" "$project/raw/*"  # Create .mcpack
+            fi
+          done
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}  # Use the tag name from the event
+          release_name: Release ${{ github.ref }}
+          body: |
+            Changelog:
+            - Added new features, fixes, etc.
+            ${{ steps.changelog.outputs.changelog }}
+          files: |
+            addons/moneyz_economy/*.mcpack
+            addons/sus_loot/*.mcpack
+            addons/moneyz_trader/*.mcpack
+            worlds/msv/*.mcworld
+        env:
+          GITHUB_TOKEN: ${{ secrets.MINECRAFTTOKEN }}
+
+      - name: Tag the Release
+        run: |
+          git tag "RELEASE-${GITHUB_REF#refs/tags/}"
+          git push origin "RELEASE-${GITHUB_REF#refs/tags/}"
