@@ -4,15 +4,15 @@
         "description": "All Sus Blocks drop better loot",
         "name": "Sus Blocks",
         "uuid": "82e7aa08-45bd-4a96-8299-1a25a46f355d",
-        "version": [ 1, 0, 0 ],
-        "min_engine_version": [ 1, 20, 0 ]
+        "version": [ 1, 1, 0 ],
+        "min_engine_version": [ 1, 21, 30 ]
     },
     "modules": [
         {
-            "description": "Naturally generated and player placed Sus Blocks drop better loot",
+            "description": "Naturally generated and Player placed Sus Blocks drop better loot",
             "type": "data",
             "uuid": "5de531d9-1280-44d2-95ec-a6955b037d23",
-            "version": [1, 0, 0]
+            "version": [1, 1, 0]
         }
     ]
 }

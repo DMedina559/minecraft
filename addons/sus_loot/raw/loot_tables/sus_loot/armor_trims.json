@@ -80,6 +80,16 @@
           "weight": 1
         },
         {
+            "type": "item",
+            "name": "minecraft:bolt_armor_trim_smithing_template",
+            "weight": 1
+          },
+        {
+            "type": "item",
+            "name": "minecraft:flow_armor_trim_smithing_template",
+            "weight": 1
+          },
+        {
           "type": "item",
           "name": "minecraft:rib_armor_trim_smithing_template",
           "weight": 1

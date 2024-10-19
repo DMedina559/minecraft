@@ -8,6 +8,11 @@
       "entries": [
         {
           "type": "item",
+          "name": "minecraft:coal",
+          "weight": 4
+        },
+        {
+          "type": "item",
           "name": "minecraft:raw_copper",
           "weight": 4
         },
