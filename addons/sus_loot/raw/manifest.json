@@ -1,15 +1,15 @@
 {
     "format_version": 2,
     "header": {
-        "description": "All Sus Blocks drop better loot",
-        "name": "Sus Blocks",
+        "description": "Naturally generated and Player placed Suspicious Blocks drop better loot.\nBy ZVortex11325",
+        "name": "Sus Loot",
         "uuid": "82e7aa08-45bd-4a96-8299-1a25a46f355d",
         "version": [ 1, 1, 0 ],
         "min_engine_version": [ 1, 21, 30 ]
     },
     "modules": [
         {
-            "description": "Naturally generated and Player placed Sus Blocks drop better loot",
+            "description": "Naturally generated and Player placed Suspicious Blocks drop better loot.\nBy ZVortex11325",
             "type": "data",
             "uuid": "5de531d9-1280-44d2-95ec-a6955b037d23",
             "version": [1, 1, 0]
