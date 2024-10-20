@@ -85,6 +85,17 @@
             ]
         },
         {
+          "type": "item",
+          "name": "minecraft:trial_key",
+          "weight": 1,
+          "conditions": [
+                        {
+                          "condition": "random_chance",
+                          "chance": 0.2
+                        }
+            ]
+        },
+        {
             "type": "item",
             "name": "minecraft:totem_of_undying",
             "weight": 1,
@@ -92,6 +103,17 @@
                         {
                           "condition": "random_chance",
                           "chance": 0.2
+                        }
+            ]
+        },
+        {
+            "type": "item",
+            "name": "minecraft:ominous_trial_key",
+            "weight": 1,
+            "conditions": [
+                        {
+                          "condition": "random_chance",
+                          "chance": 0.1
                         }
             ]
         }

@@ -1,7 +1,7 @@
 {
     "format_version": 2,
     "header": {
-        "description": "Naturally generated and Player placed Suspicious Blocks drop better loot.\nBy ZVortex11325",
+        "description": "Naturally generated and Player placed Suspicious Blocks drop better loot.\nBy ZVortex11325\nLink: https://linktr.ee/dmedina559",
         "name": "Sus Loot",
         "uuid": "82e7aa08-45bd-4a96-8299-1a25a46f355d",
         "version": [ 1, 1, 0 ],
@@ -9,7 +9,7 @@
     },
     "modules": [
         {
-            "description": "Naturally generated and Player placed Suspicious Blocks drop better loot.\nBy ZVortex11325",
+            "description": "Naturally generated and Player placed Suspicious Blocks drop better loot.\nBy ZVortex11325\nLink: https://linktr.ee/dmedina559",
             "type": "data",
             "uuid": "5de531d9-1280-44d2-95ec-a6955b037d23",
             "version": [1, 1, 0]
