@@ -95,7 +95,7 @@
 					},
 					{
 						"name": "Chours Fruit",
-						"commands": ["/function farmer/chrousfruit"]
+						"commands": ["/function farmer/chorusfruit"]
 					},
 					{
 						"name": "Pg. 2",
@@ -529,7 +529,7 @@
 					},
 					{
 						"name": "Chours Fruit",
-						"commands": ["/function farmer/sell/chrousfruit"]
+						"commands": ["/function farmer/sell/chorus_fruit"]
 					},
 					{
 						"name": "Pg. 2",
