@@ -10,4 +10,4 @@ scoreboard players add @initiator[hasitem={item=turtle_helmet,quantity=1..}] Mon
 
 tell @initiator[hasitem={item=turtle_helmet,quantity=1..}] §aSold a Turtle Shell!
 
-clear @initiator[hasitem={item=turtle_helmet,quantity=1..}] turtle_helmet 0 1
+clear @initiator[hasitem={item=turtle_helmet,quantity=1..}] turtle_helmet -1 1

@@ -10,4 +10,4 @@ scoreboard players add @initiator[hasitem={item=netherite_axe,quantity=1..}] Mon
 
 tell @initiator[hasitem={item=netherite_axe,quantity=1..}] §aSold a Netherite Axe!
 
-clear @initiator[hasitem={item=netherite_axe,quantity=1..}] netherite_axe 0 1
+clear @initiator[hasitem={item=netherite_axe,quantity=1..}] netherite_axe -1 1

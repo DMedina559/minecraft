@@ -10,4 +10,4 @@ scoreboard players add @initiator[hasitem={item=wooden_pickaxe,quantity=1..}] Mo
 
 tell @initiator[hasitem={item=wooden_pickaxe,quantity=1..}] §aSold a Wood Pickaxe!
 
-clear @initiator[hasitem={item=wooden_pickaxe,quantity=1..}] wooden_pickaxe 0 1
+clear @initiator[hasitem={item=wooden_pickaxe,quantity=1..}] wooden_pickaxe -1 1

@@ -10,4 +10,4 @@ scoreboard players add @initiator[hasitem={item=netherite_shovel,quantity=1..}] 
 
 tell @initiator[hasitem={item=netherite_shovel,quantity=1..}] §aSold a Netherite Shovel!
 
-clear @initiator[hasitem={item=netherite_shovel,quantity=1..}] netherite_shovel 0 1
+clear @initiator[hasitem={item=netherite_shovel,quantity=1..}] netherite_shovel -1 1

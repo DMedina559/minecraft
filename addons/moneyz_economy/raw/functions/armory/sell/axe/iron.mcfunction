@@ -10,4 +10,4 @@ scoreboard players add @initiator[hasitem={item=iron_axe,quantity=1..}] Moneyz 5
 
 tell @initiator[hasitem={item=iron_axe,quantity=1..}] §aSold a Iron Axe!
 
-clear @initiator[hasitem={item=iron_axe,quantity=1..}] iron_axe 0 1
+clear @initiator[hasitem={item=iron_axe,quantity=1..}] iron_axe -1 1
