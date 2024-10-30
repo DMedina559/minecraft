@@ -286,7 +286,7 @@ world.beforeEvents.itemUse.subscribe(data => {
     function Credits() {
         new ActionFormData()
             .title(title)
-            .body(`§l§o§6                Credits\n\n§5Creator:\n§dZVortex11325`)
+            .body(`§l§o§6                Credits\n\n§5Creator:\n§dZVortex11325\n§5Link:\n§dlinktr.ee/dmedina559`)
             .button(`§4§lBack`)
             .show(player).then(r => {
                 if (r.selection == 0) main(player)
