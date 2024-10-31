@@ -1,4 +1,4 @@
-playsound note.bassattack @initiator[hasitem={item=melon_slice,quantity=10..}] ~ ~ ~
+playsound note.bassattack @initiator[hasitem={item=melon_slice,quantity=9..}] ~ ~ ~
 
 tell @initiator[hasitem={item=melon_slice,quantity=..9}] §cYou can't sell 10 Melons!
 
