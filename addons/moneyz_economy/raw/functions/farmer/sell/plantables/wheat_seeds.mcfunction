@@ -1,4 +1,8 @@
+playsound note.bassattack @initiator[hasitem={item=wheat_seeds,quantity=..4}] ~ ~ ~
+
 tell @initiator[hasitem={item=wheat_seeds,quantity=..4}] §cYou can't sell 5 Wheat Seeds!
+
+playsound random.levelup @initiator[hasitem={item=wheat_seeds,quantity=5..}] ~ ~ ~
 
 tell @initiator[hasitem={item=wheat_seeds,quantity=5..}] §aYou can sell 5 Wheat Seeds!
 

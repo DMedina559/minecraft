@@ -36,7 +36,7 @@
 					},
 					{
 						"name": "Plantables",
-						"commands": ["/dialogue open @s @initiator farmer_buy_plantable"]
+						"commands": ["/dialogue open @s @initiator farmer_buy_plantables"]
 					}
 				]
 			},
@@ -695,7 +695,7 @@
 					},
 					{
 						"name": "Plantables",
-						"commands": ["/dialogue open @s @initiator farmer_sell_plantable"]
+						"commands": ["/dialogue open @s @initiator farmer_sell_plantables"]
 					}
 				]
 			},
