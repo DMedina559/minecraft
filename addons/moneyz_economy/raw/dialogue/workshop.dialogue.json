@@ -85,7 +85,7 @@
 			{
 				"scene_tag": "workshop_buy_misc",
 				"npc_name": "Misc",
-				"text": "§lThese are the available Items at the Workshop.\n§r§lMisc Items:\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r10 Wind Charges for 25 Moneyz\n§r10 Fireworks (Flight 3) for 25 Moneyz\n§r1 Moneyz Menu for 1,265 Moneyz\n§r1 Bundle for 5 Moneyz\n",
+				"text": "§lThese are the available Items at the Workshop.\n§r§lMisc Items:\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r10 Wind Charges for 25 Moneyz\n§r10 Fireworks (Flight 3) for 25 Moneyz\n§r1 Moneyz Menu for 1,265 Moneyz\n§r1 Bundle for 5 Moneyz\n§r4 Phantom Membrane for 100 Moneyz\n",
 				"buttons": [
 					{
 						"name": "End Crystal",
@@ -112,7 +112,7 @@
 			{
 				"scene_tag": "workshop_buy_misc_2",
 				"npc_name": "Misc",
-				"text": "§lThese are the available Items at the Workshop.\n§r§lMisc Items:\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r10 Wind Charges for 25 Moneyz\n§r10 Fireworks (Flight 3) for 25 Moneyz\n§r1 Moneyz Menu for 1,265 Moneyz\n§r1 Bundle for 5 Moneyz\n",
+				"text": "§lThese are the available Items at the Workshop.\n§r§lMisc Items:\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r10 Wind Charges for 25 Moneyz\n§r10 Fireworks (Flight 3) for 25 Moneyz\n§r1 Moneyz Menu for 1,265 Moneyz\n§r1 Bundle for 5 Moneyz\n§r4 Phantom Membrane for 100 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Conduit",
@@ -143,11 +143,15 @@
 			{
 				"scene_tag": "workshop_buy_misc_3",
 				"npc_name": "Misc",
-				"text": "§lThese are the available Items at the Workshop.\n§r§lMisc Items:\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r10 Wind Charges for 25 Moneyz\n§r10 Fireworks (Flight 3) for 25 Moneyz\n§r1 Moneyz Menu for 1,265 Moneyz\n§r1 Bundle for 5 Moneyz\n",
+				"text": "§lThese are the available Items at the Workshop.\n§r§lMisc Items:\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r10 Wind Charges for 25 Moneyz\n§r10 Fireworks (Flight 3) for 25 Moneyz\n§r1 Moneyz Menu for 1,265 Moneyz\n§r1 Bundle for 5 Moneyz\n§r4 Phantom Membrane for 100 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Bundle",
 						"commands": ["/function workshop/bundle"]
+					},
+					{
+						"name": "Membrane",
+						"commands": ["/function workshop/sell/membrane"]
 					},
 					{
 						"name": "Pg. 2",
@@ -173,7 +177,7 @@
 			{
 				"scene_tag": "workshop_sell_misc",
 				"npc_name": "Misc",
-				"text": "§lThese are the Items I'll buy from you.\n§r§lMisc Items:\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r10 Wind Charges for 25 Moneyz\n§r10 Fireworks (Flight 3) for 25 Moneyz\n§r1 Moneyz Menu for 1,265 Moneyz\n§r1 Bundle for 5 Moneyz\n",
+				"text": "§lThese are the Items I'll buy from you.\n§r§lMisc Items:\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r10 Wind Charges for 25 Moneyz\n§r10 Fireworks (Flight 3) for 25 Moneyz\n§r1 Moneyz Menu for 1,265 Moneyz\n§r1 Bundle for 5 Moneyz\n§r4 Phantom Membrane for 100 Moneyz\n",
 				"buttons": [
 					{
 						"name": "End Crystal",
@@ -200,7 +204,7 @@
 			{
 				"scene_tag": "workshop_sell_misc_2",
 				"npc_name": "Misc",
-				"text": "§lThese are the available Items at the Workshop.\n§r§lMisc Items:\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r10 Wind Charges for 25 Moneyz\n§r10 Fireworks (Flight 3) for 25 Moneyz\n§r1 Moneyz Menu for 1,265 Moneyz\n§r1 Bundle for 5 Moneyz\n",
+				"text": "§lThese are the available Items at the Workshop.\n§r§lMisc Items:\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r10 Wind Charges for 25 Moneyz\n§r10 Fireworks (Flight 3) for 25 Moneyz\n§r1 Moneyz Menu for 1,265 Moneyz\n§r1 Bundle for 5 Moneyz\n§r4 Phantom Membrane for 100 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Conduit",
@@ -231,11 +235,15 @@
 			{
 				"scene_tag": "workshop_sell_misc_3",
 				"npc_name": "Misc",
-				"text": "§lThese are the available Items at the Workshop.\n§r§lMisc Items:\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r10 Wind Charges for 25 Moneyz\n§r10 Fireworks (Flight 3) for 25 Moneyz\n§r1 Moneyz Menu for 1,265 Moneyz\n§r1 Bundle for 5 Moneyz\n",
+				"text": "§lThese are the available Items at the Workshop.\n§r§lMisc Items:\n§r1 End Cystal for 1,000 Moneyz\n§r1 Nether Star for 500 Moneyz\n§r16 Ender Pearls for 100 Moneyz\n§r2 Shulker Shells for 75 Moneyz\n§r1 Conduit for 50 Moneyz\n§r10 Wind Charges for 25 Moneyz\n§r10 Fireworks (Flight 3) for 25 Moneyz\n§r1 Moneyz Menu for 1,265 Moneyz\n§r1 Bundle for 5 Moneyz\n§r4 Phantom Membrane for 100 Moneyz\n",
 				"buttons": [
 					{
-						"name": "Moneyz Menu",
+						"name": "Bundle",
 						"commands": ["/function workshop/sell/bundle"]
+					},
+					{
+						"name": "Membrane",
+						"commands": ["/function workshop/sell/membrane"]
 					},
 					{
 						"name": "Pg. 2",
