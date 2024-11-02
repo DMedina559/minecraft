@@ -27,8 +27,27 @@
 						"commands": ["/dialogue open @s @initiator workshop_buy_kits"]
 					},
 					{
+						"name": "Logs",
+						"commands": ["/dialogue open @s @initiator workshop_buy_logs"]
+					},
+					{
 						"name": "Misc Items",
 						"commands": ["/dialogue open @s @initiator workshop_buy_misc"]
+					}
+				]
+			},
+			{
+				"scene_tag": "workshop_sell",
+				"npc_name": "Selling",
+				"text": "What would you like to sell?",
+				"buttons": [
+					{
+						"name": "Logs",
+						"commands": ["/dialogue open @s @initiator workshop_sell_logs"]
+					},
+					{
+						"name": "Misc Items",
+						"commands": ["/dialogue open @s @initiator workshop_sell_misc"]
 					}
 				]
 			},
@@ -75,6 +94,87 @@
 					{
 						"name": "Pg. 1",
 						"commands": ["/dialogue open @s @initiator workshop_buy_kits"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator workshop"]
+					}
+				]
+			},
+            {
+				"scene_tag": "workshop_buy_logs",
+				"npc_name": "Misc",
+				"text": "§lThese are the Logs I'll buy from you.\n§r§lLogs:\n§r5 Oak Logs for 10 Moneyz\n§r5 Spruce Logs for 10 Moneyz\n§r5 Birch Logs for 10 Moneyz\n§r5 Jungle Logs for 10 Moneyz\n§r5 Acacia Logs for 10 Moneyz\n§r5 Dark Oak Logs for 10 Moneyz\n§r5 Mangrove Logs for 15 Moneyz\n§r5 Cherry Logs for 15 Moneyz\n§r5 Crimson Stems for 20 Moneyz\n§r5 Warped Stems for 20 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Oak",
+						"commands": ["/function workshop/log/oak_log"]
+					},
+					{
+						"name": "Spruce",
+						"commands": ["/function workshop/log/spruce_log"]
+					},
+					{
+						"name": "Birch",
+						"commands": ["/function workshop/log/spruce_log"]
+					},
+					{
+						"name": "Jungle",
+						"commands": ["/function workshop/log/jungle_log"]
+					},
+					{
+						"name": "Acacia",
+						"commands": ["/function workshop/log/acacia_log"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator workshop_buy_logs_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "workshop_buy_logs_2",
+				"npc_name": "Misc",
+				"text": "§lThese are the Logs I'll buy from you.\n§r§lLogs:\n§r5 Oak Logs for 10 Moneyz\n§r5 Spruce Logs for 10 Moneyz\n§r5 Birch Logs for 10 Moneyz\n§r5 Jungle Logs for 10 Moneyz\n§r5 Acacia Logs for 10 Moneyz\n§r5 Dark Oak Logs for 10 Moneyz\n§r5 Mangrove Logs for 15 Moneyz\n§r5 Cherry Logs for 15 Moneyz\n§r5 Crimson Stems for 20 Moneyz\n§r5 Warped Stems for 20 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Dark Oak",
+						"commands": ["/function workshop/log/dark_oak_log"]
+					},
+					{
+						"name": "Mangrove",
+						"commands": ["/function workshop/log/mangrove_log"]
+					},
+					{
+						"name": "Cherry",
+						"commands": ["/function workshop/log/cherry_log"]
+					},
+					{
+						"name": "Crimson",
+						"commands": ["/function workshop/log/crimson_stem"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator workshop_buy_logs"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator workshop_buy_logs_3"]
+					}
+				]
+			},
+			{
+				"scene_tag": "workshop_buy_logs_3",
+				"npc_name": "Misc",
+				"text": "§lThese are the Logs I'll buy from you.\n§r§lLogs:\n§r5 Oak Logs for 10 Moneyz\n§r5 Spruce Logs for 10 Moneyz\n§r5 Birch Logs for 10 Moneyz\n§r5 Jungle Logs for 10 Moneyz\n§r5 Acacia Logs for 10 Moneyz\n§r5 Dark Oak Logs for 10 Moneyz\n§r5 Mangrove Logs for 15 Moneyz\n§r5 Cherry Logs for 15 Moneyz\n§r5 Crimson Stems for 20 Moneyz\n§r5 Warped Stems for 20 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Warped",
+						"commands": ["/function workshop/log/warped_stem"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator workshop_buy_logs"]
 					},
 					{
 						"name": "Main Menu",
@@ -163,14 +263,84 @@
 					}
 				]
 			},
-			{
-				"scene_tag": "workshop_sell",
-				"npc_name": "Selling",
-				"text": "What would you like to sell?",
+            {
+				"scene_tag": "workshop_sell_logs",
+				"npc_name": "Misc",
+				"text": "§lThese are the Logs I'll buy from you.\n§r§lLogs:\n§r5 Oak Logs for 10 Moneyz\n§r5 Spruce Logs for 10 Moneyz\n§r5 Birch Logs for 10 Moneyz\n§r5 Jungle Logs for 10 Moneyz\n§r5 Acacia Logs for 10 Moneyz\n§r5 Dark Oak Logs for 10 Moneyz\n§r5 Mangrove Logs for 15 Moneyz\n§r5 Cherry Logs for 15 Moneyz\n§r5 Crimson Stems for 20 Moneyz\n§r5 Warped Stems for 20 Moneyz\n",
 				"buttons": [
 					{
-						"name": "Misc Items",
-						"commands": ["/dialogue open @s @initiator workshop_sell_misc"]
+						"name": "Oak",
+						"commands": ["/function workshop/sell/log/oak_log"]
+					},
+					{
+						"name": "Spruce",
+						"commands": ["/function workshop/sell/log/spruce_log"]
+					},
+					{
+						"name": "Birch",
+						"commands": ["/function workshop/sell/log/spruce_log"]
+					},
+					{
+						"name": "Jungle",
+						"commands": ["/function workshop/sell/log/jungle_log"]
+					},
+					{
+						"name": "Acacia",
+						"commands": ["/function workshop/sell/log/acacia_log"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator workshop_sell_logs_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "workshop_sell_logs_2",
+				"npc_name": "Misc",
+				"text": "§lThese are the Logs I'll buy from you.\n§r§lLogs:\n§r5 Oak Logs for 10 Moneyz\n§r5 Spruce Logs for 10 Moneyz\n§r5 Birch Logs for 10 Moneyz\n§r5 Jungle Logs for 10 Moneyz\n§r5 Acacia Logs for 10 Moneyz\n§r5 Dark Oak Logs for 10 Moneyz\n§r5 Mangrove Logs for 15 Moneyz\n§r5 Cherry Logs for 15 Moneyz\n§r5 Crimson Stems for 20 Moneyz\n§r5 Warped Stems for 20 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Dark Oak",
+						"commands": ["/function workshop/sell/log/dark_oak_log"]
+					},
+					{
+						"name": "Mangrove",
+						"commands": ["/function workshop/sell/log/mangrove_log"]
+					},
+					{
+						"name": "Cherry",
+						"commands": ["/function workshop/sell/log/cherry_log"]
+					},
+					{
+						"name": "Crimson",
+						"commands": ["/function workshop/sell/log/crimson_stem"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator workshop_sell_logs"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator workshop_sell_logs_3"]
+					}
+				]
+			},
+			{
+				"scene_tag": "workshop_sell_logs_3",
+				"npc_name": "Misc",
+				"text": "§lThese are the Logs I'll buy from you.\n§r§lLogs:\n§r5 Oak Logs for 10 Moneyz\n§r5 Spruce Logs for 10 Moneyz\n§r5 Birch Logs for 10 Moneyz\n§r5 Jungle Logs for 10 Moneyz\n§r5 Acacia Logs for 10 Moneyz\n§r5 Dark Oak Logs for 10 Moneyz\n§r5 Mangrove Logs for 15 Moneyz\n§r5 Cherry Logs for 15 Moneyz\n§r5 Crimson Stems for 20 Moneyz\n§r5 Warped Stems for 20 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Warped",
+						"commands": ["/function workshop/sell/log/warped_stem"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator workshop_sell_logs"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator workshop"]
 					}
 				]
 			},
