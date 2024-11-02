@@ -65,10 +65,6 @@
 						"commands": ["/function workshop/kit_brewing"]
 					},
 					{
-						"name": "Wood",
-						"commands": ["/function workshop/kit_wood"]
-					},
-					{
 						"name": "Banner",
 						"commands": ["/function workshop/kit_banner"]
 					},
@@ -77,8 +73,8 @@
 						"commands": ["/function workshop/kit_dye"]
 					},
 					{
-						"name": "Pg. 2",
-						"commands": ["/dialogue open @s @initiator workshop_buy_kits_2"]
+						"name": "Pottery Sherds",
+						"commands": ["/function workshop/kit_pottery_sherds"]
 					}
 				]
 			},
