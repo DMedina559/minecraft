@@ -131,7 +131,7 @@
 							"text": "§r§lWhy can't I access all of the options in the Moneyz Menu?\n"
 						},
 						{
-							"text": "§rTo access Shops, ATMs, Send Moneyz, or Moneyz Admin features, §6Players must first obtain a moneyz tag.\n§rIt is up to the World Owners/Admin to §6provide a way to obtain these tags.\n\nThese are the available Tags:\nmoneyzShop\nmoneyzATM\nmoneyzSend\nmoneyzAdmin\n"
+							"text": "§rTo access Shops, ATMs, Send Moneyz, or Moneyz Admin features, §6Players must first obtain a moneyz tag.\nThese are the available Tags:\nmoneyzShop\nmoneyzATM\nmoneyzSend\nmoneyzAdmin\n\n§rMoneyz Economy 1.7.0 comes with an §6autotagging feature that can auto apply these moneyzTags,§r that World Owners/Admins with the §6moneyzAdmin §rtag can §6enable/disable each tag individially from the Moneyz Menu.\n"
 						}
 					]
 				},
@@ -339,7 +339,7 @@
 							"text": "§lWhat are the available dialogues?\n"
 						},
 						{
-							"text": "§rThese are the available dialogues:\natm\nbanker\nfarmers_market\nfarmer_buy\nfarmer_sell\nhelp\nhotel\njobs\nlibrary\nlibrary_buy\nlibrary_sell\npetshop\npetshpo_buy\npetshop_sell\nrealtor\ntags\nuniversal\nworkshop\nworkshop_buy\nworkshop_sell\n"
+							"text": "§rThese are the available dialogues:\narmory\narmory_buy\narmory_sell\natm\nbanker\ncraftershop\ncrafter_buy\ncrafter_sell\nfarmers_market\nfarmer_buy\nfarmer_sell\nhelp\nhotel\njobs\nlibrary\nlibrary_buy\nlibrary_sell\npetshop\npetshpo_buy\npetshop_sell\nrealtor\nuniversal\nworkshop\nworkshop_buy\nworkshop_sell\n"
 						},
 						{
 							"text": "§r§lWhat are some recommendations for setting up my shops?\n"
