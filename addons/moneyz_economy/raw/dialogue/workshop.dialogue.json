@@ -31,6 +31,10 @@
 						"commands": ["/dialogue open @s @initiator workshop_buy_logs"]
 					},
 					{
+						"name": "Planks",
+						"commands": ["/dialogue open @s @initiator workshop_buy_planks"]
+					},
+					{
 						"name": "Misc Items",
 						"commands": ["/dialogue open @s @initiator workshop_buy_misc"]
 					}
@@ -175,6 +179,87 @@
 					{
 						"name": "Main Menu",
 						"commands": ["/dialogue open @s @initiator workshop"]
+					}
+				]
+			},
+			{
+				"scene_tag": "workshop_buy_planks",
+				"npc_name": "Misc",
+				"text": "§lThese are the planks for sell.\n§r§lPlanks:\n§r20 Oak Planks for 5 Moneyz\n§r20 Spruce Planks for 5 Moneyz\n§r20 Birch Planks for 5 Moneyz\n§r20 Jungle Planks for 5 Moneyz\n§r20 Acacia Planks for 5 Moneyz\n§r20 Dark Oak Planks for 5 Moneyz\n§r15 Mangrove Planks for 10 Moneyz\n§r20 Cherry Planks for 10 Moneyz\n§r20 Crimson Planks for 15 Moneyz\n§r20 Warped Planks for 15 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Oak",
+						"commands": ["/function workshop/plank/oak_plank"]
+					},
+					{
+						"name": "Spruce",
+						"commands": ["/function workshop/plank/spruce_plank"]
+					},
+					{
+						"name": "Birch",
+						"commands": ["/function workshop/plank/spruce_plank"]
+					},
+					{
+						"name": "Jungle",
+						"commands": ["/function workshop/plank/jungle_plank"]
+					},
+					{
+						"name": "Acacia",
+						"commands": ["/function workshop/plank/acacia_plank"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/diaplankue open @s @initiator workshop_buy_planks_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "workshop_buy_planks_2",
+				"npc_name": "Misc",
+				"text": "§lThese are the planks for sale.\n§r§lPlanks:\n§r20 Oak Planks for 5 Moneyz\n§r20 Spruce Planks for 5 Moneyz\n§r20 Birch Planks for 5 Moneyz\n§r20 Jungle Planks for 5 Moneyz\n§r20 Acacia Planks for 5 Moneyz\n§r20 Dark Oak Planks for 5 Moneyz\n§r15 Mangrove Planks for 10 Moneyz\n§r20 Cherry Planks for 10 Moneyz\n§r20 Crimson Planks for 15 Moneyz\n§r20 Warped Planks for 15 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Dark Oak",
+						"commands": ["/function workshop/plank/dark_oak_plank"]
+					},
+					{
+						"name": "Mangrove",
+						"commands": ["/function workshop/plank/mangrove_plank"]
+					},
+					{
+						"name": "Cherry",
+						"commands": ["/function workshop/plank/cherry_plank"]
+					},
+					{
+						"name": "Crimson",
+						"commands": ["/function workshop/plank/crimson_plank"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/diaplankue open @s @initiator workshop_buy_planks"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/diaplankue open @s @initiator workshop_buy_planks_3"]
+					}
+				]
+			},
+			{
+				"scene_tag": "workshop_buy_planks_3",
+				"npc_name": "Misc",
+				"text": "§lThese are the planks for sale.\n§r§lPlanks:\n§r20 Oak Planks for 5 Moneyz\n§r20 Spruce Planks for 5 Moneyz\n§r20 Birch Planks for 5 Moneyz\n§r20 Jungle Planks for 5 Moneyz\n§r20 Acacia Planks for 5 Moneyz\n§r20 Dark Oak Planks for 5 Moneyz\n§r15 Mangrove Planks for 10 Moneyz\n§r20 Cherry Planks for 10 Moneyz\n§r20 Crimson Planks for 15 Moneyz\n§r20 Warped Planks for 15 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Warped",
+						"commands": ["/function workshop/plank/warped_plank"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/diaplankue open @s @initiator workshop_buy_planks"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/diaplankue open @s @initiator workshop"]
 					}
 				]
 			},
@@ -337,6 +422,87 @@
 					{
 						"name": "Main Menu",
 						"commands": ["/dialogue open @s @initiator workshop"]
+					}
+				]
+			},
+			{
+				"scene_tag": "workshop_sell_planks",
+				"npc_name": "Misc",
+				"text": "§lThese are the planks I'll Purchase.\n§r§lPlanks:\n§r20 Oak Planks for 5 Moneyz\n§r20 Spruce Planks for 5 Moneyz\n§r20 Birch Planks for 5 Moneyz\n§r20 Jungle Planks for 5 Moneyz\n§r20 Acacia Planks for 5 Moneyz\n§r20 Dark Oak Planks for 5 Moneyz\n§r15 Mangrove Planks for 10 Moneyz\n§r20 Cherry Planks for 10 Moneyz\n§r20 Crimson Planks for 15 Moneyz\n§r20 Warped Planks for 15 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Oak",
+						"commands": ["/function workshop/sell/plank/oak_plank"]
+					},
+					{
+						"name": "Spruce",
+						"commands": ["/function workshop/sell/plank/spruce_plank"]
+					},
+					{
+						"name": "Birch",
+						"commands": ["/function workshop/sell/plank/spruce_plank"]
+					},
+					{
+						"name": "Jungle",
+						"commands": ["/function workshop/sell/plank/jungle_plank"]
+					},
+					{
+						"name": "Acacia",
+						"commands": ["/function workshop/sell/plank/acacia_plank"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/diaplankue open @s @initiator workshop_sell_planks_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "workshop_sell_planks_2",
+				"npc_name": "Misc",
+				"text": "§lThese are the planks I'll purchase.\n§r§lPlanks:\n§r20 Oak Planks for 5 Moneyz\n§r20 Spruce Planks for 5 Moneyz\n§r20 Birch Planks for 5 Moneyz\n§r20 Jungle Planks for 5 Moneyz\n§r20 Acacia Planks for 5 Moneyz\n§r20 Dark Oak Planks for 5 Moneyz\n§r15 Mangrove Planks for 10 Moneyz\n§r20 Cherry Planks for 10 Moneyz\n§r20 Crimson Planks for 15 Moneyz\n§r20 Warped Planks for 15 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Dark Oak",
+						"commands": ["/function workshop/sell/plank/dark_oak_plank"]
+					},
+					{
+						"name": "Mangrove",
+						"commands": ["/function workshop/sell/plank/mangrove_plank"]
+					},
+					{
+						"name": "Cherry",
+						"commands": ["/function workshop/sell/plank/cherry_plank"]
+					},
+					{
+						"name": "Crimson",
+						"commands": ["/function workshop/sell/plank/crimson_plank"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/diaplankue open @s @initiator workshop_sell_planks"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/diaplankue open @s @initiator workshop_sell_planks_3"]
+					}
+				]
+			},
+			{
+				"scene_tag": "workshop_sell_planks_3",
+				"npc_name": "Misc",
+				"text": "§lThese are the planks I'll purchase.\n§r§lPlanks:\n§r20 Oak Planks for 5 Moneyz\n§r20 Spruce Planks for 5 Moneyz\n§r20 Birch Planks for 5 Moneyz\n§r20 Jungle Planks for 5 Moneyz\n§r20 Acacia Planks for 5 Moneyz\n§r20 Dark Oak Planks for 5 Moneyz\n§r15 Mangrove Planks for 10 Moneyz\n§r20 Cherry Planks for 10 Moneyz\n§r20 Crimson Planks for 15 Moneyz\n§r20 Warped Planks for 15 Moneyz\n",
+				"buttons": [
+					{
+						"name": "Warped",
+						"commands": ["/function workshop/sell/plank/warped_plank"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/diaplankue open @s @initiator workshop_sell_planks"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/diaplankue open @s @initiator workshop"]
 					}
 				]
 			},
