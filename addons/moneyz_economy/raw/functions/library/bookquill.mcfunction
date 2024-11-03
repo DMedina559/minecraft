@@ -10,6 +10,6 @@ execute as @initiator[scores={Moneyz=25..}] run tell @s §aYou can buy a Book an
 
 execute as @initiator[scores={Moneyz=25..}] run give @s writable_book
 
-execute as @initiator[scores={Moneyz=25..}] run tell @s §aPurchased an Book and Quill!
+execute as @initiator[scores={Moneyz=25..}] run tell @s §aPurchased a Book and Quill!
 
 execute as @initiator[scores={Moneyz=25..}] run scoreboard players remove @s Moneyz 25
