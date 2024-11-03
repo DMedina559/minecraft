@@ -125,13 +125,13 @@
 							"text": "§r§lHow do Players access the Moneyz Menu?\n"
 						},
 						{
-							"text": "§rPlayers can access the Moneyz Menu by §6crafting a Moneyz Menu item.\n§rPlayers can §6combine 1 of each resource in the crafting table §rto craft a Moneyz Menu item or purchase one from the Workshop."
+							"text": "§rPlayers can access the Moneyz Menu by §6crafting a Moneyz Menu item.\n§rPlayers can §6combine 1 of each resource in the crafting table §rto craft a Moneyz Menu item or purchase one from the Workshop.\n"
 						},
 						{
 							"text": "§r§lWhy can't I access all of the options in the Moneyz Menu?\n"
 						},
 						{
-							"text": "§rTo access Shops, ATMs, Send Moneyz, or Moneyz Admin features, §6Players must first obtain a moneyz tag.\nThese are the available Tags:\nmoneyzShop\nmoneyzATM\nmoneyzSend\nmoneyzAdmin\n\n§rMoneyz Economy 1.7.0 comes with an §6autotagging feature that can auto apply these moneyzTags,§r that World Owners/Admins with the §6moneyzAdmin §rtag can §6enable/disable each tag individially from the Moneyz Menu.\n"
+							"text": "§rTo access Shops, ATMs, Send Moneyz, or Moneyz Admin features, §6Players must first obtain a moneyz tag.\n§rThese are the available Tags:\nmoneyzShop\nmoneyzATM\nmoneyzSend\nmoneyzAdmin\n\n§rMoneyz Economy 1.7.0 comes with an §6autotagging feature that can auto apply these moneyzTags,§r that World Owners/Admins with the §6moneyzAdmin §rtag can §6enable/disable each tag individially from the Moneyz Menu.\n"
 						}
 					]
 				},
