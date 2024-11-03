@@ -458,6 +458,10 @@
 						"commands": ["/function help/armory"]
 					},
 					{
+						"name": "Crafter's Shop",
+						"commands": ["/function help/craftershop"]
+					},
+					{
 						"name": "Farmer's Market",
 						"commands": ["/function help/farmers_market"]
 					},
@@ -470,12 +474,31 @@
 						"commands": ["/function help/library"]
 					},
 					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator help_shops_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "help_shops_2",
+				"npc_name": "Shops",
+				"text": "You can check what items a shop carries and how much it cost from here.",
+				"buttons": [
+					{
 						"name": "Pet Shop",
 						"commands": ["/function help/pet_shop"]
 					},
 					{
 						"name": "Workshop",
 						"commands": ["/function help/workshop"]
+					}
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator help_shops"]
+					}
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator help"]
 					}
 				]
 			},

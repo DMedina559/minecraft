@@ -39,6 +39,10 @@
 						"commands": ["/dialogue open @s @initiator armory"]
 					},
 					{
+						"name": "Crafter's Shop",
+						"commands": ["/dialogue open @s @initiator craftershop"]
+					},
+					{
 						"name": "Farmer's Market",
 						"commands": ["/dialogue open @s @initiator farmers_market"]
 					},
@@ -51,10 +55,6 @@
 						"commands": ["/dialogue open @s @initiator library"]
 					},
 					{
-						"name": "Pet Shop",
-						"commands": ["/dialogue open @s @initiator petshop"]
-					},
-					{
 						"name": "Pg. 2",
 						"commands": ["/dialogue open @s @initiator universal_shops_2"]
 					}
@@ -65,6 +65,10 @@
 				"npc_name": "Shopping",
 				"text": "Where do you want to shop?.\n",
 				"buttons": [
+					{
+						"name": "Pet Shop",
+						"commands": ["/dialogue open @s @initiator petshop"]
+					},
 					{
 						"name": "Workshop",
 						"commands": ["/dialogue open @s @initiator workshop"]

@@ -1,0 +1,1280 @@
+{
+	"format_version": "1.21.0",
+	"minecraft:npc_dialogue": {
+		"scenes": [
+			{
+				"scene_tag": "craftershop",
+				"npc_name": "Crafter's Shop",
+				"text": "Welcome to the Crafter's Shop. What can I help you with?",
+				"buttons": [
+					{
+						"name": "Buy",
+						"commands": ["/dialogue open @s @initiator crafter_buy"]
+					},
+					{
+						"name": "Selling",
+						"commands": ["/dialogue open @s @initiator crafter_sell"]
+					}
+				]
+			},
+            {
+				"scene_tag": "crafter_buy",
+				"npc_name": "Buying",
+				"text": "What would you like to buy?",
+				"buttons": [
+					{
+						"name": "Flowers",
+						"commands": ["/dialogue open @s @initiator crafter_buy_flowers"]
+					}
+				]
+			},
+			{
+				"scene_tag": "crafter_buy_flowers",
+				"npc_name": "Flowers",
+				"text": {
+					"rawtext": [
+						{
+						"text": "§lThese are the available flowers at the Crafter's Shop.\n"
+					    },
+					    {
+						"text": "§r5 Alliums for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Azure Bluets for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Blue Orchids for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Cornflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Dandelions for 5 Moneyz\n"
+						},
+						//{
+							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						//},
+						{
+							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lilacs for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lily of the Valleys for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Orange Tulip for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Oxeye Daisies for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Peony for 5 Moneyz\n"
+						},
+						{
+							"text": "§r10 Pink Petals for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Pink Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Pitcher Plant for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 Poppies for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Red Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Rose Bushes for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Spore Blossom for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Sunflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§rTorchflower for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 White Tulip for 5 Moneyz\n"
+						},
+						{
+						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Allium",
+						"commands": ["/function crafter/flower/allium"]
+					},
+					{
+						"name": "Aure Bluet",
+						"commands": ["/function crafter/flower/azure_bluet"]
+					},
+					{
+						"name": "Blue Orchid",
+						"commands": ["/function crafter/flower/blue_orchid"]
+					},
+					{
+						"name": "Cornflower",
+						"commands": ["/function crafter/flower/cornflower"]
+					},
+					{
+						"name": "Dandelion",
+						"commands": ["/function crafter/flower/dandelion"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator crafter_buy_flowers_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "crafter_buy_flowers_2",
+				"npc_name": "Flowers",
+				"text": {
+					"rawtext": [
+						{
+						"text": "§lThese are the available flowers at the Crafter's Shop.\n"
+					    },
+					    {
+						"text": "§r5 Alliums for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Azure Bluets for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Blue Orchids for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Cornflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Dandelions for 5 Moneyz\n"
+						},
+						//{
+							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						//},
+						{
+							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lilacs for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lily of the Valleys for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Orange Tulip for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Oxeye Daisies for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Peony for 5 Moneyz\n"
+						},
+						{
+							"text": "§r10 Pink Petals for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Pink Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Pitcher Plant for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 Poppies for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Red Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Rose Bushes for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Spore Blossom for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Sunflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§rTorchflower for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 White Tulip for 5 Moneyz\n"
+						},
+						{
+						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Azalea",
+						"commands": ["/function crafter/flower/flowering_azalea"]
+					},
+					{
+						"name": "Lilac",
+						"commands": ["/function crafter/flower/lilac"]
+					},
+					{
+						"name": "Lily Valley",
+						"commands": ["/function crafter/flower/lily_valley"]
+					},
+					//{
+//						"name": "Eyeblossom",
+//						"commands": ["/function crafter/flower/open_eyeblossom"]
+//					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator crafter_buy_flowers"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator crafter_buy_flowers_3"]
+					}
+				]
+			},
+			{
+				"scene_tag": "crafter_buy_flowers_3",
+				"npc_name": "Flowers",
+				"text": {
+					"rawtext": [
+						{
+						"text": "§lThese are the available flowers at the Crafter's Shop.\n"
+					    },
+					    {
+						"text": "§r5 Alliums for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Azure Bluets for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Blue Orchids for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Cornflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Dandelions for 5 Moneyz\n"
+						},
+						//{
+							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						//},
+						{
+							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lilacs for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lily of the Valleys for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Orange Tulip for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Oxeye Daisies for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Peony for 5 Moneyz\n"
+						},
+						{
+							"text": "§r10 Pink Petals for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Pink Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Pitcher Plant for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 Poppies for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Red Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Rose Bushes for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Spore Blossom for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Sunflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§rTorchflower for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 White Tulip for 5 Moneyz\n"
+						},
+						{
+						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Orange Tulip",
+						"commands": ["/function crafter/flower/orange_tulip"]
+					},
+					{
+						"name": "Oxeye Daisy",
+						"commands": ["/function crafter/flower/oxeye_daisy"]
+					},
+					{
+						"name": "Peony",
+						"commands": ["/function crafter/flower/peony"]
+					},
+					{
+						"name": "Pink Petals",
+						"commands": ["/function crafter/flower/pink_petals"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator crafter_buy_flowers_2"]
+					},
+					{
+						"name": "Pg. 4",
+						"commands": ["/dialogue open @s @initiator crafter_buy_flowers_4"]
+					}
+				]
+			},
+			{
+				"scene_tag": "crafter_buy_flowers_4",
+				"npc_name": "Flowers",
+				"text": {
+					"rawtext": [
+						{
+						"text": "§lThese are the available flowers at the Crafter's Shop.\n"
+					    },
+					    {
+						"text": "§r5 Alliums for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Azure Bluets for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Blue Orchids for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Cornflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Dandelions for 5 Moneyz\n"
+						},
+						//{
+							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						//},
+						{
+							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lilacs for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lily of the Valleys for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Orange Tulip for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Oxeye Daisies for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Peony for 5 Moneyz\n"
+						},
+						{
+							"text": "§r10 Pink Petals for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Pink Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Pitcher Plant for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 Poppies for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Red Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Rose Bushes for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Spore Blossom for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Sunflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§rTorchflower for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 White Tulip for 5 Moneyz\n"
+						},
+						{
+						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Pitcher Plant",
+						"commands": ["/function crafter/flower/pitcher_plant"]
+					},
+					{
+						"name": "Poppy",
+						"commands": ["/function crafter/flower/poppy"]
+					},
+					{
+						"name": "Red Tulip",
+						"commands": ["/function crafter/flower/red_tulip"]
+					},
+					{
+						"name": "Rose Bush",
+						"commands": ["/function crafter/flower/rose_bush"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator crafter_buy_flowers_3"]
+					},
+					{
+						"name": "Pg. 5",
+						"commands": ["/dialogue open @s @initiator crafter_buy_flowers_5"]
+					}
+				]
+			},
+			{
+				"scene_tag": "crafter_buy_flowers_5",
+				"npc_name": "Flowers",
+				"text": {
+					"rawtext": [
+						{
+						"text": "§lThese are the available flowers at the Crafter's Shop.\n"
+					    },
+					    {
+						"text": "§r5 Alliums for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Azure Bluets for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Blue Orchids for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Cornflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Dandelions for 5 Moneyz\n"
+						},
+						//{
+							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						//},
+						{
+							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lilacs for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lily of the Valleys for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Orange Tulip for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Oxeye Daisies for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Peony for 5 Moneyz\n"
+						},
+						{
+							"text": "§r10 Pink Petals for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Pink Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Pitcher Plant for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 Poppies for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Red Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Rose Bushes for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Spore Blossom for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Sunflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§rTorchflower for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 White Tulip for 5 Moneyz\n"
+						},
+						{
+						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Spore Blossom",
+						"commands": ["/function crafter/flower/spore_blossom"]
+					},
+					{
+						"name": "Sunflower",
+						"commands": ["/function crafter/flower/sunflower"]
+					},
+					{
+						"name": "Torchflower",
+						"commands": ["/function crafter/flower/torchflower"]
+					},
+					{
+						"name": "White",
+						"commands": ["/function crafter/flower/white_tulip"]
+					},
+					{
+						"name": "Pg. 4",
+						"commands": ["/dialogue open @s @initiator crafter_buy_flowers_4"]
+					},
+					{
+						"name": "Pg. 6",
+						"commands": ["/dialogue open @s @initiator crafter_buy_flowers_6"]
+					}
+				]
+			},
+			{
+				"scene_tag": "crafter_buy_flowers_3",
+				"npc_name": "Flowers",
+				"text": {
+					"rawtext": [
+						{
+						"text": "§lThese are the available flowers at the Crafter's Shop.\n"
+					    },
+					    {
+						"text": "§r5 Alliums for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Azure Bluets for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Blue Orchids for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Cornflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Dandelions for 5 Moneyz\n"
+						},
+						//{
+							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						//},
+						{
+							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lilacs for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lily of the Valleys for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Orange Tulip for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Oxeye Daisies for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Peony for 5 Moneyz\n"
+						},
+						{
+							"text": "§r10 Pink Petals for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Pink Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Pitcher Plant for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 Poppies for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Red Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Rose Bushes for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Spore Blossom for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Sunflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§rTorchflower for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 White Tulip for 5 Moneyz\n"
+						},
+						{
+						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Wither Flower",
+						"commands": ["/function crafter/flower/wither_flower"]
+					},
+					{
+						"name": "Pg. 5",
+						"commands": ["/dialogue open @s @initiator crafter_buy_flowers_5"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator craftshop"]
+					}
+				]
+			},
+            {
+				"scene_tag": "crafter_sell",
+				"npc_name": "Buying",
+				"text": "What would you like to sell?",
+				"buttons": [
+					{
+						"name": "Flowers",
+						"commands": ["/dialogue open @s @initiator crafter_sell_flowers"]
+					}
+				]
+			},
+			{
+				"scene_tag": "crafter_sell_flowers",
+				"npc_name": "Flowers",
+				"text": {
+					"rawtext": [
+						{
+						"text": "§lThese are the available flowers to sell at the Crafter's Shop.\n"
+					    },
+					    {
+						"text": "§r5 Alliums for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Azure Bluets for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Blue Orchids for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Cornflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Dandelions for 5 Moneyz\n"
+						},
+						//{
+							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						//},
+						{
+							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lilacs for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lily of the Valleys for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Orange Tulip for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Oxeye Daisies for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Peony for 5 Moneyz\n"
+						},
+						{
+							"text": "§r10 Pink Petals for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Pink Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Pitcher Plant for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 Poppies for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Red Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Rose Bushes for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Spore Blossom for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Sunflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§rTorchflower for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 White Tulip for 5 Moneyz\n"
+						},
+						{
+						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Allium",
+						"commands": ["/function crafter/sell/flower/allium"]
+					},
+					{
+						"name": "Aure Bluet",
+						"commands": ["/function crafter/sell/flower/azure_bluet"]
+					},
+					{
+						"name": "Blue Orchid",
+						"commands": ["/function crafter/sell/flower/blue_orchid"]
+					},
+					{
+						"name": "Cornflower",
+						"commands": ["/function crafter/sell/flower/cornflower"]
+					},
+					{
+						"name": "Dandelion",
+						"commands": ["/function crafter/sell/flower/dandelion"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator crafter_sell_flowers_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "crafter_sell_flowers_2",
+				"npc_name": "Flowers",
+				"text": {
+					"rawtext": [
+						{
+						"text": "§lThese are the available flowers to sell at the Crafter's Shop.\n"
+					    },
+					    {
+						"text": "§r5 Alliums for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Azure Bluets for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Blue Orchids for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Cornflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Dandelions for 5 Moneyz\n"
+						},
+						//{
+							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						//},
+						{
+							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lilacs for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lily of the Valleys for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Orange Tulip for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Oxeye Daisies for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Peony for 5 Moneyz\n"
+						},
+						{
+							"text": "§r10 Pink Petals for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Pink Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Pitcher Plant for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 Poppies for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Red Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Rose Bushes for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Spore Blossom for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Sunflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§rTorchflower for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 White Tulip for 5 Moneyz\n"
+						},
+						{
+						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Azalea",
+						"commands": ["/function crafter/sell/flower/sell/flowering_azalea"]
+					},
+					{
+						"name": "Lilac",
+						"commands": ["/function crafter/sell/flower/lilac"]
+					},
+					{
+						"name": "Lily Valley",
+						"commands": ["/function crafter/sell/flower/lily_valley"]
+					},
+					{
+						"name": "Eyeblossom",
+						"commands": ["/function crafter/sell/flower/open_eyeblossom"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator crafter_sell_flowers"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator crafter_sell_flowers_3"]
+					}
+				]
+			},
+			{
+				"scene_tag": "crafter_sell_flowers_3",
+				"npc_name": "Flowers",
+				"text": {
+					"rawtext": [
+						{
+						"text": "§lThese are the available flowers to sell at the Crafter's Shop.\n"
+					    },
+					    {
+						"text": "§r5 Alliums for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Azure Bluets for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Blue Orchids for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Cornflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Dandelions for 5 Moneyz\n"
+						},
+						//{
+							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						//},
+						{
+							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lilacs for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lily of the Valleys for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Orange Tulip for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Oxeye Daisies for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Peony for 5 Moneyz\n"
+						},
+						{
+							"text": "§r10 Pink Petals for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Pink Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Pitcher Plant for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 Poppies for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Red Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Rose Bushes for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Spore Blossom for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Sunflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§rTorchflower for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 White Tulip for 5 Moneyz\n"
+						},
+						{
+						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Orange Tulip",
+						"commands": ["/function crafter/sell/flower/orange_tulip"]
+					},
+					{
+						"name": "Oxeye Daisy",
+						"commands": ["/function crafter/sell/flower/oxeye_daisy"]
+					},
+					{
+						"name": "Peony",
+						"commands": ["/function crafter/sell/flower/peony"]
+					},
+					{
+						"name": "Pink Petals",
+						"commands": ["/function crafter/sell/flower/pink_petals"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator crafter_sell_flowers_2"]
+					},
+					{
+						"name": "Pg. 4",
+						"commands": ["/dialogue open @s @initiator crafter_sell_flowers_4"]
+					}
+				]
+			},
+			{
+				"scene_tag": "crafter_sell_flowers_4",
+				"npc_name": "Flowers",
+				"text": {
+					"rawtext": [
+						{
+						"text": "§lThese are the available flowers to sell at the Crafter's Shop.\n"
+					    },
+					    {
+						"text": "§r5 Alliums for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Azure Bluets for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Blue Orchids for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Cornflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Dandelions for 5 Moneyz\n"
+						},
+						//{
+							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						//},
+						{
+							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lilacs for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lily of the Valleys for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Orange Tulip for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Oxeye Daisies for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Peony for 5 Moneyz\n"
+						},
+						{
+							"text": "§r10 Pink Petals for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Pink Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Pitcher Plant for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 Poppies for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Red Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Rose Bushes for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Spore Blossom for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Sunflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§rTorchflower for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 White Tulip for 5 Moneyz\n"
+						},
+						{
+						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Pitcher Plant",
+						"commands": ["/function crafter/sell/flower/pitcher_plant"]
+					},
+					{
+						"name": "Poppy",
+						"commands": ["/function crafter/sell/flower/poppy"]
+					},
+					{
+						"name": "Red Tulip",
+						"commands": ["/function crafter/sell/flower/red_tulip"]
+					},
+					{
+						"name": "Rose Bush",
+						"commands": ["/function crafter/sell/flower/rose_bush"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator crafter_sell_flowers_3"]
+					},
+					{
+						"name": "Pg. 5",
+						"commands": ["/dialogue open @s @initiator crafter_sell_flowers_5"]
+					}
+				]
+			},
+			{
+				"scene_tag": "crafter_sell_flowers_5",
+				"npc_name": "Flowers",
+				"text": {
+					"rawtext": [
+						{
+						"text": "§lThese are the available flowers to sell at the Crafter's Shop.\n"
+					    },
+					    {
+						"text": "§r5 Alliums for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Azure Bluets for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Blue Orchids for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Cornflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Dandelions for 5 Moneyz\n"
+						},
+						//{
+							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						//},
+						{
+							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lilacs for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lily of the Valleys for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Orange Tulip for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Oxeye Daisies for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Peony for 5 Moneyz\n"
+						},
+						{
+							"text": "§r10 Pink Petals for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Pink Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Pitcher Plant for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 Poppies for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Red Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Rose Bushes for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Spore Blossom for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Sunflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§rTorchflower for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 White Tulip for 5 Moneyz\n"
+						},
+						{
+						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Spore Blossom",
+						"commands": ["/function crafter/sell/flower/spore_blossom"]
+					},
+					{
+						"name": "Sunflower",
+						"commands": ["/function crafter/sell/flower/sunflower"]
+					},
+					{
+						"name": "Torchflower",
+						"commands": ["/function crafter/sell/flower/torchflower"]
+					},
+					{
+						"name": "White",
+						"commands": ["/function crafter/sell/flower/white_tulip"]
+					},
+					{
+						"name": "Pg. 4",
+						"commands": ["/dialogue open @s @initiator crafter_sell_flowers_4"]
+					},
+					{
+						"name": "Pg. 6",
+						"commands": ["/dialogue open @s @initiator crafter_sell_flowers_6"]
+					}
+				]
+			},
+			{
+				"scene_tag": "crafter_sell_flowers_3",
+				"npc_name": "Flowers",
+				"text": {
+					"rawtext": [
+						{
+						"text": "§lThese are the available flowers to sell at the Crafter's Shop.\n"
+					    },
+					    {
+						"text": "§r5 Alliums for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Azure Bluets for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Blue Orchids for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Cornflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Dandelions for 5 Moneyz\n"
+						},
+						//{
+							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						//},
+						{
+							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lilacs for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Lily of the Valleys for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Orange Tulip for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Oxeye Daisies for 15 Moneyz\n"
+						},
+						{
+							"text": "§r5 Peony for 5 Moneyz\n"
+						},
+						{
+							"text": "§r10 Pink Petals for 10 Moneyz\n"
+						},
+						{
+							"text": "§r5 Pink Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Pitcher Plant for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 Poppies for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Red Tulips for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Rose Bushes for 5 Moneyz\n"
+						},
+						{
+							"text": "§r1 Spore Blossom for 5 Moneyz\n"
+						},
+						{
+							"text": "§r5 Sunflowers for 5 Moneyz\n"
+						},
+						{
+							"text": "§rTorchflower for 40 Moneyz\n"
+						},
+						{
+							"text": "§r5 White Tulip for 5 Moneyz\n"
+						},
+						{
+						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Wither Flower",
+						"commands": ["/function crafter/sell/flower/wither_flower"]
+					},
+					{
+						"name": "Pg. 5",
+						"commands": ["/dialogue open @s @initiator crafter_sell_flowers_5"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator craftshop"]
+					}
+				]
+			}
+		]
+	}
+}

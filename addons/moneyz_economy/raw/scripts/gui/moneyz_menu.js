@@ -53,6 +53,7 @@ world.beforeEvents.itemUse.subscribe(data => {
             .title(title)
             .body(`§fMoneyz Balance: §g${getScore('Moneyz', player.nameTag)}`)
             .button("§d§lArmory\n§r§7[ Click to Shop ]")
+            .button("§d§lCrafters's Market\n§r§7[ Click to Shop ]")
             .button("§d§lFarmer's Market\n§r§7[ Click to Shop ]")
             .button("§d§lLibrary\n§r§7[ Click to Shop ]")
             .button("§d§lPet Shop\n§r§7[ Click to Shop ]")
@@ -63,18 +64,21 @@ world.beforeEvents.itemUse.subscribe(data => {
                     player.runCommandAsync("dialogue open @s @s armory")
                 }
                 if (r.selection == 1) {
-                    player.runCommandAsync("dialogue open @s @s farmers_market")
+                    player.runCommandAsync("dialogue open @s @s craftershop")
                 }
                 if (r.selection == 2) {
-                    player.runCommandAsync("dialogue open @s @s library")
+                    player.runCommandAsync("dialogue open @s @s farmers_market")
                 }
                 if (r.selection == 3) {
-                    player.runCommandAsync("dialogue open @s @s petshop")
+                    player.runCommandAsync("dialogue open @s @s library")
                 }
                 if (r.selection == 4) {
+                    player.runCommandAsync("dialogue open @s @s petshop")
+                }
+                if (r.selection == 5) {
                     player.runCommandAsync("dialogue open @s @s workshop")
                 }
-                if (r.selection == 5) main(player)
+                if (r.selection == 6) main(player)
             })
     }
 
