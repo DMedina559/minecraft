@@ -8,7 +8,7 @@ playsound random.levelup @initiator[scores={Moneyz=20..}] ~ ~ ~
 
 execute as @initiator[scores={Moneyz=20..}] run tell @s §aYou can buy 20 Crimson Planks!
 
-execute as @initiator[scores={Moneyz=20..}] run give @s crimson_plank 20
+execute as @initiator[scores={Moneyz=20..}] run give @s crimson_planks 20
 
 execute as @initiator[scores={Moneyz=20..}] run tell @s §aPurchased 20 Crimson Planks!
 

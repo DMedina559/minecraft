@@ -189,23 +189,23 @@
 				"buttons": [
 					{
 						"name": "Oak",
-						"commands": ["/function workshop/plank/oak_plank"]
+						"commands": ["/function workshop/plank/oak_planks"]
 					},
 					{
 						"name": "Spruce",
-						"commands": ["/function workshop/plank/spruce_plank"]
+						"commands": ["/function workshop/plank/spruce_planks"]
 					},
 					{
 						"name": "Birch",
-						"commands": ["/function workshop/plank/spruce_plank"]
+						"commands": ["/function workshop/plank/spruce_planks"]
 					},
 					{
 						"name": "Jungle",
-						"commands": ["/function workshop/plank/jungle_plank"]
+						"commands": ["/function workshop/plank/jungle_planks"]
 					},
 					{
 						"name": "Acacia",
-						"commands": ["/function workshop/plank/acacia_plank"]
+						"commands": ["/function workshop/plank/acacia_planks"]
 					},
 					{
 						"name": "Pg. 2",
@@ -220,19 +220,19 @@
 				"buttons": [
 					{
 						"name": "Dark Oak",
-						"commands": ["/function workshop/plank/dark_oak_plank"]
+						"commands": ["/function workshop/plank/dark_oak_planks"]
 					},
 					{
 						"name": "Mangrove",
-						"commands": ["/function workshop/plank/mangrove_plank"]
+						"commands": ["/function workshop/plank/mangrove_planks"]
 					},
 					{
 						"name": "Cherry",
-						"commands": ["/function workshop/plank/cherry_plank"]
+						"commands": ["/function workshop/plank/cherry_planks"]
 					},
 					{
 						"name": "Crimson",
-						"commands": ["/function workshop/plank/crimson_plank"]
+						"commands": ["/function workshop/plank/crimson_planks"]
 					},
 					{
 						"name": "Pg. 1",
@@ -251,7 +251,7 @@
 				"buttons": [
 					{
 						"name": "Warped",
-						"commands": ["/function workshop/plank/warped_plank"]
+						"commands": ["/function workshop/plank/warped_planks"]
 					},
 					{
 						"name": "Pg. 2",
@@ -432,23 +432,23 @@
 				"buttons": [
 					{
 						"name": "Oak",
-						"commands": ["/function workshop/sell/plank/oak_plank"]
+						"commands": ["/function workshop/sell/plank/oak_planks"]
 					},
 					{
 						"name": "Spruce",
-						"commands": ["/function workshop/sell/plank/spruce_plank"]
+						"commands": ["/function workshop/sell/plank/spruce_planks"]
 					},
 					{
 						"name": "Birch",
-						"commands": ["/function workshop/sell/plank/spruce_plank"]
+						"commands": ["/function workshop/sell/plank/spruce_planks"]
 					},
 					{
 						"name": "Jungle",
-						"commands": ["/function workshop/sell/plank/jungle_plank"]
+						"commands": ["/function workshop/sell/plank/jungle_planks"]
 					},
 					{
 						"name": "Acacia",
-						"commands": ["/function workshop/sell/plank/acacia_plank"]
+						"commands": ["/function workshop/sell/plank/acacia_planks"]
 					},
 					{
 						"name": "Pg. 2",
@@ -463,19 +463,19 @@
 				"buttons": [
 					{
 						"name": "Dark Oak",
-						"commands": ["/function workshop/sell/plank/dark_oak_plank"]
+						"commands": ["/function workshop/sell/plank/dark_oak_planks"]
 					},
 					{
 						"name": "Mangrove",
-						"commands": ["/function workshop/sell/plank/mangrove_plank"]
+						"commands": ["/function workshop/sell/plank/mangrove_planks"]
 					},
 					{
 						"name": "Cherry",
-						"commands": ["/function workshop/sell/plank/cherry_plank"]
+						"commands": ["/function workshop/sell/plank/cherry_planks"]
 					},
 					{
 						"name": "Crimson",
-						"commands": ["/function workshop/sell/plank/crimson_plank"]
+						"commands": ["/function workshop/sell/plank/crimson_planks"]
 					},
 					{
 						"name": "Pg. 1",
@@ -494,7 +494,7 @@
 				"buttons": [
 					{
 						"name": "Warped",
-						"commands": ["/function workshop/sell/plank/warped_plank"]
+						"commands": ["/function workshop/sell/plank/warped_planks"]
 					},
 					{
 						"name": "Pg. 2",
