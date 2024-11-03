@@ -6,7 +6,7 @@ execute as @initiator[scores={Moneyz=..4}] run tellraw @s {"rawtext": [{"text": 
 
 execute as @initiator[scores={Moneyz=5..}] run tell @s §aYou can buy 5 Azure Bluets!
 
-execute as @initiator[scores={Moneyz=5..}] run give @s azure_bluets 5
+execute as @initiator[scores={Moneyz=5..}] run give @s azure_bluet 5
 
 execute as @initiator[scores={Moneyz=5..}] run tell @s §aPurchased 5 Azure Bluets!
 

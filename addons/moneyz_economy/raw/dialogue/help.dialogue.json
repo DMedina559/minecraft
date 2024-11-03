@@ -491,11 +491,11 @@
 					{
 						"name": "Workshop",
 						"commands": ["/function help/workshop"]
-					}
+					},
 					{
 						"name": "Pg. 1",
 						"commands": ["/dialogue open @s @initiator help_shops"]
-					}
+					},
 					{
 						"name": "Main Menu",
 						"commands": ["/dialogue open @s @initiator help"]

@@ -103,7 +103,7 @@
 							"text": "§r5 White Tulip for 5 Moneyz\n"
 						},
 						{
-						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+						"text": "§r1 Wither Rose for 5 Moneyz\n"}
 					]
 				},
 				"buttons": [
@@ -208,7 +208,7 @@
 							"text": "§r5 White Tulip for 5 Moneyz\n"
 						},
 						{
-						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+						"text": "§r1 Wither Rose for 5 Moneyz\n"}
 					]
 				},
 				"buttons": [
@@ -313,7 +313,7 @@
 							"text": "§r5 White Tulip for 5 Moneyz\n"
 						},
 						{
-						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+						"text": "§r1 Wither Rose for 5 Moneyz\n"}
 					]
 				},
 				"buttons": [
@@ -418,7 +418,7 @@
 							"text": "§r5 White Tulip for 5 Moneyz\n"
 						},
 						{
-						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+						"text": "§r1 Wither Rose for 5 Moneyz\n"}
 					]
 				},
 				"buttons": [
@@ -523,7 +523,7 @@
 							"text": "§r5 White Tulip for 5 Moneyz\n"
 						},
 						{
-						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+						"text": "§r1 Wither Rose for 5 Moneyz\n"}
 					]
 				},
 				"buttons": [
@@ -554,7 +554,7 @@
 				]
 			},
 			{
-				"scene_tag": "crafter_buy_flowers_3",
+				"scene_tag": "crafter_buy_flowers_6",
 				"npc_name": "Flowers",
 				"text": {
 					"rawtext": [
@@ -628,13 +628,13 @@
 							"text": "§r5 White Tulip for 5 Moneyz\n"
 						},
 						{
-						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+						"text": "§r1 Wither Rose for 5 Moneyz\n"}
 					]
 				},
 				"buttons": [
 					{
-						"name": "Wither Flower",
-						"commands": ["/function crafter/flower/wither_flower"]
+						"name": "Wither Rose",
+						"commands": ["/function crafter/flower/wither_rose"]
 					},
 					{
 						"name": "Pg. 5",
@@ -732,7 +732,7 @@
 							"text": "§r5 White Tulip for 5 Moneyz\n"
 						},
 						{
-						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+						"text": "§r1 Wither Rose for 5 Moneyz\n"}
 					]
 				},
 				"buttons": [
@@ -837,7 +837,7 @@
 							"text": "§r5 White Tulip for 5 Moneyz\n"
 						},
 						{
-						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+						"text": "§r1 Wither Rose for 5 Moneyz\n"}
 					]
 				},
 				"buttons": [
@@ -942,7 +942,7 @@
 							"text": "§r5 White Tulip for 5 Moneyz\n"
 						},
 						{
-						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+						"text": "§r1 Wither Rose for 5 Moneyz\n"}
 					]
 				},
 				"buttons": [
@@ -1047,7 +1047,7 @@
 							"text": "§r5 White Tulip for 5 Moneyz\n"
 						},
 						{
-						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+						"text": "§r1 Wither Rose for 5 Moneyz\n"}
 					]
 				},
 				"buttons": [
@@ -1152,7 +1152,7 @@
 							"text": "§r5 White Tulip for 5 Moneyz\n"
 						},
 						{
-						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+						"text": "§r1 Wither Rose for 5 Moneyz\n"}
 					]
 				},
 				"buttons": [
@@ -1183,7 +1183,7 @@
 				]
 			},
 			{
-				"scene_tag": "crafter_sell_flowers_3",
+				"scene_tag": "crafter_sell_flowers_6",
 				"npc_name": "Flowers",
 				"text": {
 					"rawtext": [
@@ -1257,13 +1257,13 @@
 							"text": "§r5 White Tulip for 5 Moneyz\n"
 						},
 						{
-						"text": "§r1 Wither Flower for 5 Moneyz\n"}
+						"text": "§r1 Wither Rose for 5 Moneyz\n"}
 					]
 				},
 				"buttons": [
 					{
-						"name": "Wither Flower",
-						"commands": ["/function crafter/sell/flower/wither_flower"]
+						"name": "Wither Rose",
+						"commands": ["/function crafter/sell/flower/wither_rose"]
 					},
 					{
 						"name": "Pg. 5",
