@@ -235,3 +235,104 @@
 11. Most interactions now give sound feedback
 12. Setup no longer puts Moneyz score in pause menu, players can view their score anywhere anytime in the Moneyz Menu
 13. Fixed Typos and Grammar
+
+# 1.8.0
+1. Added New Shop: Crafter's Shop
+  - Blocks:
+    - Dirt
+    - Gravel
+    - Red Sand
+    - Sand
+  - Stones:
+    - Andesite
+    - Blackstone
+    - Cobbled Deepslate
+    - Cobblestone
+    - Deepslate
+    - Diorite
+    - End Stone
+    - Granite
+    - Netherrack
+    - Stone
+  -  Flowers:
+    - Allium
+    - Azure Bluet
+    - Blue Orchid
+    - Cornflower
+    - Dandelion
+    - Flowering Azalea
+    - Lilac
+    - Lilly of the Valley
+    - Eyeblossom (Open) (Wont be added to craftershop dialogue until official release)
+    - Orange Tulip
+    - Oxeye Daisy
+    - Peony
+    - Pink Petals
+    - Pink Tulip
+    - Pitcher Plant
+    - Poppy
+    - Red Tulip
+    - Rose Bush
+    - Spore Blossom
+    - Sunflower
+    - Torchflower
+    - White Tulip
+    - Wither Flower
+  - Added /help craftershop
+  - Added Crafter's Shop to Moneyz Menu
+  - Added `craftershop` dialogue
+    - Supports `crafter_{buy|sell}`
+2. Added new Workshop items:
+  - Logs:
+    - Acacia Log
+    - Birch Log
+    - Cherry Log
+    - Crimson Stem
+    - Dark Oak Log
+    - Jungle Log
+    - Mangrove Log
+    - Oak Log
+    - Pale Oak Log (Wont be added in workshop dialogue until official release)
+    - Spruce Log
+    - Warped Stem
+  - Planks:
+    - Acacia Planks
+    - Birch Planks
+    - Cherry Planks
+    - Crimson Planks
+    - Dark Oak Planks
+    - Jungle Planks
+    - Mangrove Planks
+    - Oak Planks
+    - Pale Oak Planks (Wont be added in workshop dialogue until official release)
+    - Spruce Planks
+    - Warped Planks
+  - Misc:
+    - Bundles
+    - Phantom Membrane
+3. New Farmer's Market items:
+  - Plantables:
+    - Bamboo
+    - Beetroot Seeds
+    - Brown Mushroom
+    - Cactus
+    - Chorus Flower
+    - Cocoa Beans
+    - Crimson Fungus
+    - Melon Seeds
+    - Nether Wart
+    - Pitcher Pod
+    - Pumpkin Seeds
+    - Red Mushroom
+    - Sea Pickle
+    - Torchflower Seeds
+    - Wheat Seeds (Cheaper than Pet Shop)
+  - Growables:
+    - Pumpkin
+  - Misc:
+    - Bowl
+4. BREAKING CHANGE: Workshop
+  - Removed Wood Kit
+5. Most damaged items can be now be sold
+6. Pet Shop Sell Supplies now gives Sound Feedback
+7. Fixed Chorus Fruit typos

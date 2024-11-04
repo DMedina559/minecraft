@@ -57,6 +57,8 @@ Do this for all your shops and now you have a working economy in your world.
 
 `banker`: Worker Pay and ATM Services 
 
+`craftershop` Crafter's Shop, supports `{crafter_buy|sell}` [^9]
+
 `farmers_market` Farmer's Market, supports `{farmer_buy|sell}`
 
 `help`: Help Commands
@@ -92,6 +94,7 @@ The Moneyz Menus allows Players direct access to:
 - View their Moneyz balance
 - Shops [^2]
   - Armory [^1]
+  - Crafter's Shop [^9]
   - Farmer's Market
   - Library
   - Pet Shop
@@ -109,15 +112,31 @@ The Moneyz Menus allows Players direct access to:
 Moneyz Economy allows Players to send Moneyz directly to other Players straight from the Moneyz Menu.
 Just select a Player from the dropdown menu and enter an amount to send. [^2][^3]
 
-### Help Commands
+### Help Dialogue
 Moneyz Economy comes with various help documentation to help all players setup and use Moneyz easily. [^7]
+
+Help Dialogues allow players to get help with:
+ - General
+   - Explains what Moneyz is
+   - Explains the Bank System
+   - Explains the Real Estate system
+   - Explains the Selling aspect
+   - Explains the Set Up process
+   - Explains the Moneyz Menu
+ - Shops
+   - Details all items and prices available at the Shops
+ - Check Balance
+   - Allows players to check their Moneyz balance if they don't have a Moneyz Menu item or if no scoreboard display is set up
+ - Jobs
+   - Explains the various aspects of each job such as pay and responsibilities
+
 
 > [!IMPORTANT]
 > World Owners/Admins should setup an NPC with the help dialogue in a general area for all players to get help with Moneyz. [^4]
 
 To setup a Help NPC run `/dialogue change @e[type=npc,r=5,c=1] help` in chat while standing next to an NPC to set up a pre-configured NPC, or set up an NPC with `dialogue open @s @initiator help`
 
-These commands include tips for World Owners/Admins settings up their shops, and allows players to check their Moneyz balance or the available items and prices in any shop.
+The Help Dialogue includes tips for World Owners/Admins settings up their shops, and allows players to check their Moneyz balance or the available items and prices in any shop.
 
 ## Dialogue VS Function
 It is recommended to use the `dialogue` commands as this will allow NPC shops to automatically update with new items. `function` commands should only be used for manually selecting items to be sold/purchased. [^4]
@@ -144,9 +163,9 @@ https://www.youtube.com/watch?v=6sjZkGPCF5A
 [^1]: Requires 1.7.0+
 [^2]: Requires moneyzTag in 1.7.0+
 [^3]: Requires 1.6.1+
-[^4]: Requires 1.6.0+
+[^4]: Dialogues require 1.6.0+
 [^5]: Requires 1.2.0+
 [^6]: Auto get NPC Spawn Egg requires 1.5.0+
 [^7]: Requires 1.4.0+
-[^8]: Enabled by Default.
-  Requires rerunning `/function setup` if updating from a version before 1.7.0.
+[^8]: Enabled by Default, re-run `/function setup` if updating from a version before 1.7.0.
+[^9]: Requires 1.8.0+
