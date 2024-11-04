@@ -254,7 +254,7 @@
     - Granite
     - Netherrack
     - Stone
-  -  Flowers:
+  - Flowers:
     - Allium
     - Azure Bluet
     - Blue Orchid
