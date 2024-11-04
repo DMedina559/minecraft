@@ -27,6 +27,10 @@
 						"commands": ["/dialogue open @s @initiator crafter_buy_blocks"]
 					},
 					{
+						"name": "Stones",
+						"commands": ["/dialogue open @s @initiator crafter_buy_stones"]
+					},
+					{
 						"name": "Flowers",
 						"commands": ["/dialogue open @s @initiator crafter_buy_flowers"]
 					}
@@ -70,6 +74,207 @@
 					{
 						"name": "Sand",
 						"commands": ["/function crafter/block/sand"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator craftershop"]
+					}
+				]
+			},
+			{
+				"scene_tag": "crafter_buy_stones",
+				"npc_name": "Stones",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§r§lStones:\n"
+						},
+						{
+							"text": "§r5 Andesite for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r10 Blackstone for 15 Moneyz\n"
+					    },
+						{
+							"text": "§r15 Cobbled Deepslate for 15 Moneyz\n"
+					    },
+						{
+							"text": "§r20 Cobblestone for 10 Moneyz\n"
+					    },
+						{
+							"text": "§r5 Deepslate for 10 Moneyz\n"
+					    },
+						{
+							"text": "§r5 Diorite for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r10 End Stone for 20 Moneyz\n"
+					    },
+						{
+							"text": "§r5 Granite for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r15 Netherrack for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r10 Stone for 10 Moneyz\n"
+					    }
+					]
+				},
+				"buttons": [
+					{
+						"name": "Andesite",
+						"commands": ["/function crafter/stone/andesite"]
+					},
+					{
+						"name": "Blackstone",
+						"commands": ["/function crafter/stone/blacksotne"]
+					},
+					{
+						"name": "Cobbled Deepslate",
+						"commands": ["/function crafter/stone/cobbled_deepslate"]
+					},
+					{
+						"name": "Cobblestone",
+						"commands": ["/function crafter/stone/cobblestone"]
+					},
+					{
+						"name": "Deepslate",
+						"commands": ["/function crafter/stone/deepslate"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator crafter_buy_stones_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "crafter_buy_stones_2",
+				"npc_name": "Stones",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§r§lStones:\n"
+						},
+						{
+							"text": "§r5 Andesite for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r10 Blackstone for 15 Moneyz\n"
+					    },
+						{
+							"text": "§r15 Cobbled Deepslate for 15 Moneyz\n"
+					    },
+						{
+							"text": "§r20 Cobblestone for 10 Moneyz\n"
+					    },
+						{
+							"text": "§r5 Deepslate for 10 Moneyz\n"
+					    },
+						{
+							"text": "§r5 Diorite for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r10 End Stone for 20 Moneyz\n"
+					    },
+						{
+							"text": "§r5 Granite for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r15 Netherrack for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r10 Stone for 10 Moneyz\n"
+					    }
+					]
+				},
+				"buttons": [
+					{
+						"name": "Diorite",
+						"commands": ["/function crafter/stone/diorite"]
+					},
+					{
+						"name": "End Stone",
+						"commands": ["/function crafter/stone/end_stone"]
+					},
+					{
+						"name": "Granite",
+						"commands": ["/function crafter/stone/granite"]
+					},
+					{
+						"name": "Netherrack",
+						"commands": ["/function crafter/stone/netherrack"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator crafter_buy_stones"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator crafter_buy_stones_3"]
+					}
+				]
+			},
+			{
+				"scene_tag": "crafter_buy_stones_3",
+				"npc_name": "Stones",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§r§lStones:\n"
+						},
+						{
+							"text": "§r5 Andesite for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r10 Blackstone for 15 Moneyz\n"
+					    },
+						{
+							"text": "§r15 Cobbled Deepslate for 15 Moneyz\n"
+					    },
+						{
+							"text": "§r20 Cobblestone for 10 Moneyz\n"
+					    },
+						{
+							"text": "§r5 Deepslate for 10 Moneyz\n"
+					    },
+						{
+							"text": "§r5 Diorite for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r10 End Stone for 20 Moneyz\n"
+					    },
+						{
+							"text": "§r5 Granite for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r15 Netherrack for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r10 Stone for 10 Moneyz\n"
+					    }
+					]
+				},
+				"buttons": [
+					{
+						"name": "Diorite",
+						"commands": ["/function crafter/stone/diorite"]
+					},
+					{
+						"name": "End Stone",
+						"commands": ["/function crafter/stone/end_stone"]
+					},
+					{
+						"name": "Granite",
+						"commands": ["/function crafter/stone/granite"]
+					},
+					{
+						"name": "Stone",
+						"commands": ["/function crafter/stone/cobblestone"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator crafter_buy_stones_2"]
 					},
 					{
 						"name": "Main Menu",
@@ -697,9 +902,17 @@
 			},
             {
 				"scene_tag": "crafter_sell",
-				"npc_name": "Buying",
+				"npc_name": "Selling",
 				"text": "What would you like to sell?",
 				"buttons": [
+					{
+						"name": "Blocks",
+						"commands": ["/dialogue open @s @initiator crafter_sell_blocks"]
+					},
+					{
+						"name": "Stones",
+						"commands": ["/dialogue open @s @initiator crafter_sell_stones"]
+					},
 					{
 						"name": "Flowers",
 						"commands": ["/dialogue open @s @initiator crafter_sell_flowers"]
@@ -744,6 +957,207 @@
 					{
 						"name": "Sand",
 						"commands": ["/function crafter/sell/block/sand"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator craftershop"]
+					}
+				]
+			},
+			{
+				"scene_tag": "crafter_sell_stones",
+				"npc_name": "Stones",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§r§lStones:\n"
+						},
+						{
+							"text": "§r5 Andesite for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r10 Blackstone for 15 Moneyz\n"
+					    },
+						{
+							"text": "§r15 Cobbled Deepslate for 15 Moneyz\n"
+					    },
+						{
+							"text": "§r20 Cobblestone for 10 Moneyz\n"
+					    },
+						{
+							"text": "§r5 Deepslate for 10 Moneyz\n"
+					    },
+						{
+							"text": "§r5 Diorite for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r10 End Stone for 20 Moneyz\n"
+					    },
+						{
+							"text": "§r5 Granite for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r15 Netherrack for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r10 Stone for 10 Moneyz\n"
+					    }
+					]
+				},
+				"buttons": [
+					{
+						"name": "Andesite",
+						"commands": ["/function crafter/sell/stone/andesite"]
+					},
+					{
+						"name": "Blackstone",
+						"commands": ["/function crafter/sell/stone/blacksotne"]
+					},
+					{
+						"name": "Cobbled Deepslate",
+						"commands": ["/function crafter/sell/stone/cobbled_deepslate"]
+					},
+					{
+						"name": "Cobblestone",
+						"commands": ["/function crafter/sell/stone/cobblestone"]
+					},
+					{
+						"name": "Deepslate",
+						"commands": ["/function crafter/sell/stone/deepslate"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator crafter_sell_stones_2"]
+					}
+				]
+			},
+			{
+				"scene_tag": "crafter_sell_stones_2",
+				"npc_name": "Stones",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§r§lStones:\n"
+						},
+						{
+							"text": "§r5 Andesite for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r10 Blackstone for 15 Moneyz\n"
+					    },
+						{
+							"text": "§r15 Cobbled Deepslate for 15 Moneyz\n"
+					    },
+						{
+							"text": "§r20 Cobblestone for 10 Moneyz\n"
+					    },
+						{
+							"text": "§r5 Deepslate for 10 Moneyz\n"
+					    },
+						{
+							"text": "§r5 Diorite for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r10 End Stone for 20 Moneyz\n"
+					    },
+						{
+							"text": "§r5 Granite for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r15 Netherrack for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r10 Stone for 10 Moneyz\n"
+					    }
+					]
+				},
+				"buttons": [
+					{
+						"name": "Diorite",
+						"commands": ["/function crafter/sell/stone/diorite"]
+					},
+					{
+						"name": "End Stone",
+						"commands": ["/function crafter/sell/stone/end_stone"]
+					},
+					{
+						"name": "Granite",
+						"commands": ["/function crafter/sell/stone/granite"]
+					},
+					{
+						"name": "Netherrack",
+						"commands": ["/function crafter/sell/stone/netherrack"]
+					},
+					{
+						"name": "Pg. 1",
+						"commands": ["/dialogue open @s @initiator crafter_sell_stones"]
+					},
+					{
+						"name": "Pg. 3",
+						"commands": ["/dialogue open @s @initiator crafter_sell_stones_3"]
+					}
+				]
+			},
+			{
+				"scene_tag": "crafter_sell_stones_3",
+				"npc_name": "Stones",
+				"text": {
+					"rawtext": [
+						{
+							"text": "§r§lStones:\n"
+						},
+						{
+							"text": "§r5 Andesite for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r10 Blackstone for 15 Moneyz\n"
+					    },
+						{
+							"text": "§r15 Cobbled Deepslate for 15 Moneyz\n"
+					    },
+						{
+							"text": "§r20 Cobblestone for 10 Moneyz\n"
+					    },
+						{
+							"text": "§r5 Deepslate for 10 Moneyz\n"
+					    },
+						{
+							"text": "§r5 Diorite for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r10 End Stone for 20 Moneyz\n"
+					    },
+						{
+							"text": "§r5 Granite for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r15 Netherrack for 5 Moneyz\n"
+					    },
+						{
+							"text": "§r10 Stone for 10 Moneyz\n"
+					    }
+					]
+				},
+				"buttons": [
+					{
+						"name": "Diorite",
+						"commands": ["/function crafter/sell/stone/diorite"]
+					},
+					{
+						"name": "End Stone",
+						"commands": ["/function crafter/sell/stone/end_stone"]
+					},
+					{
+						"name": "Granite",
+						"commands": ["/function crafter/sell/stone/granite"]
+					},
+					{
+						"name": "Stone",
+						"commands": ["/function crafter/sell/stone/cobblestone"]
+					},
+					{
+						"name": "Pg. 2",
+						"commands": ["/dialogue open @s @initiator crafter_sell_stones_2"]
 					},
 					{
 						"name": "Main Menu",
