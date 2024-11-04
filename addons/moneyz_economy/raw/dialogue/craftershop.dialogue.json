@@ -23,8 +23,56 @@
 				"text": "What would you like to buy?",
 				"buttons": [
 					{
+						"name": "Blocks",
+						"commands": ["/dialogue open @s @initiator crafter_buy_blocks"]
+					},
+					{
 						"name": "Flowers",
 						"commands": ["/dialogue open @s @initiator crafter_buy_flowers"]
+					}
+				]
+			},
+			{
+				"scene_tag": "crafter_buy_blocks",
+				"npc_name": "Blocks",
+				"text": {
+					"rawtext": [
+						{
+						"text": "§r§lBlocks:\n"
+					},
+					{
+						"text": "§r15 Dirts for 5 Moneyz\n"
+					},
+					{
+						"text": "§r10 Gravel for 5 Moneyz\n"
+					},
+					{
+						"text": "§r5 Red Sands for 10 Moneyz\n"
+					},
+					{
+						"text": "§r5 Sands for 5 Moneyz\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Dirt",
+						"commands": ["/function crafter/block/dirt"]
+					},
+					{
+						"name": "Gravel",
+						"commands": ["/function crafter/block/gravel"]
+					},
+					{
+						"name": "Red Sand",
+						"commands": ["/function crafter/block/red_sand"]
+					},
+					{
+						"name": "Sand",
+						"commands": ["/function crafter/block/sand"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator craftershop"]
 					}
 				]
 			},
@@ -654,6 +702,50 @@
 					{
 						"name": "Flowers",
 						"commands": ["/dialogue open @s @initiator crafter_sell_flowers"]
+					}
+				]
+			},
+			{
+				"scene_tag": "crafter_sell_blocks",
+				"npc_name": "Blocks",
+				"text": {
+					"rawtext": [
+						{
+						"text": "§r§lBlocks:\n"
+					},
+					{
+						"text": "§r15 Dirts for 5 Moneyz\n"
+					},
+					{
+						"text": "§r10 Gravel for 5 Moneyz\n"
+					},
+					{
+						"text": "§r5 Red Sands for 10 Moneyz\n"
+					},
+					{
+						"text": "§r5 Sands for 5 Moneyz\n"}
+					]
+				},
+				"buttons": [
+					{
+						"name": "Dirt",
+						"commands": ["/function crafter/sell/block/dirt"]
+					},
+					{
+						"name": "Gravel",
+						"commands": ["/function crafter/sell/block/gravel"]
+					},
+					{
+						"name": "Red Sand",
+						"commands": ["/function crafter/sell/block/red_sand"]
+					},
+					{
+						"name": "Sand",
+						"commands": ["/function crafter/sell/block/sand"]
+					},
+					{
+						"name": "Main Menu",
+						"commands": ["/dialogue open @s @initiator craftershop"]
 					}
 				]
 			},
