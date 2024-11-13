@@ -1,0 +1,19 @@
+{
+  "format_version": "1.21.50",
+  "minecraft:template_pool": {
+    "description": {
+      "identifier": "zv:digsites"
+    },
+    "elements": [
+      {
+        "element": {
+          "element_type": "minecraft:single_pool_element",
+          "location": "zv:digsites/dirt_digsite",
+          "processors": "zv:sus_placement",
+          "projection": "minecraft:terrain_matching" 
+        },
+        "weight": 1
+      }
+    ]
+  }
+}

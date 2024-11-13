@@ -1,0 +1,18 @@
+{
+  "format_version": "1.21.50",
+  "minecraft:template_pool": {
+    "description": {
+      "identifier": "zv:campfires"
+    },
+    "elements": [
+      {
+        "element": {
+          "element_type": "minecraft:single_pool_element",
+          "location": "zv:campfires/dark_oak_campfire",
+          "processors": "zv:sus_placement"
+        },
+        "weight": 1
+      }
+    ]
+  }
+}

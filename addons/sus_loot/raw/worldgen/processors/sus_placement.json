@@ -1,0 +1,62 @@
+{ 
+  "format_version": "1.21.50", 
+  "minecraft:processor_list": { 
+    "description": { 
+      "identifier": "zv:sus_placement" 
+    }, 
+    "processors": [ 
+      { 
+        "processor_type": "minecraft:rule", 
+        "rules": [ 
+          { 
+            "input_predicate": { 
+              "predicate_type": "minecraft:random_block_match", 
+              "block": "minecraft:dirt", 
+              "probability": 0.2 
+            }, 
+            "output_state": { 
+              "name": "minecraft:coarse_dirt" 
+            } 
+          }, 
+          { 
+            "input_predicate": { 
+              "predicate_type": "minecraft:random_block_match", 
+              "block": "minecraft:dirt", 
+              "probability": 0.3 
+            }, 
+            "output_state": { 
+              "name": "minecraft:sand" 
+            } 
+          }, 
+          { 
+            "input_predicate": { 
+              "predicate_type": "minecraft:random_block_match", 
+              "block": "minecraft:dirt", 
+              "probability": 0.1 
+            }, 
+            "output_state": { 
+              "name": "minecraft:gravel" 
+            } 
+          }
+//          { 
+//            "input_predicate": { 
+//              "predicate_type": "minecraft:block_match", 
+//              "block": "minecraft:sand" 
+//            }, 
+//            "position_predicate": { 
+//              "predicate_type": "minecraft:archeology_block_loot", 
+//              "limit": 10, 
+//              "loot_table": "loot_tables/sus_loot/sus_blocks.json", 
+//              "block_mapping": [ 
+//                { 
+//                  "key": "minecraft:sand", 
+//                  "value": "minecraft:suspicious_sand" 
+//                } 
+//              ] 
+//            } 
+//          } 
+        ] 
+      } 
+    ] 
+  } 
+}

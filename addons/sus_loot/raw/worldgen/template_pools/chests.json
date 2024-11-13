@@ -1,0 +1,18 @@
+{
+  "format_version": "1.21.50",
+  "minecraft:template_pool": {
+    "description": {
+      "identifier": "zv:chests"
+    },
+    "elements": [
+      {
+        "element": {
+          "element_type": "minecraft:single_pool_element",
+          "location": "zv:chests/dark_oak_tent",
+          "processors": "zv:sus_placement"
+        },
+        "weight": 1
+      }
+    ]
+  }
+}

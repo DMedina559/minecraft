@@ -1,0 +1,14 @@
+{
+  "format_version": "1.21.50",
+  "minecraft:jigsaw": {
+    "description": {
+      "identifier": "zv:digsite"
+    }, 
+    "step": "surface_structures",
+    "terrain_adaptation": "beard_thin",
+    "start_pool": "zv:digsites",
+    "max_depth": 7,
+    "start_height": 64, 
+    "heightmap_projection": "world_surface"
+  }
+}
