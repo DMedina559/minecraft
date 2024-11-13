@@ -50,6 +50,10 @@
 						"commands": ["/dialogue open @s @initiator workshop_sell_logs"]
 					},
 					{
+						"name": "Planks",
+						"commands": ["/dialogue open @s @initiator workshop_sell_planks"]
+					},
+					{
 						"name": "Misc Items",
 						"commands": ["/dialogue open @s @initiator workshop_sell_misc"]
 					}
@@ -209,7 +213,7 @@
 					},
 					{
 						"name": "Pg. 2",
-						"commands": ["/diaplankue open @s @initiator workshop_buy_planks_2"]
+						"commands": ["/dialogue open @s @initiator workshop_buy_planks_2"]
 					}
 				]
 			},
@@ -236,11 +240,11 @@
 					},
 					{
 						"name": "Pg. 1",
-						"commands": ["/diaplankue open @s @initiator workshop_buy_planks"]
+						"commands": ["/dialogue open @s @initiator workshop_buy_planks"]
 					},
 					{
 						"name": "Pg. 3",
-						"commands": ["/diaplankue open @s @initiator workshop_buy_planks_3"]
+						"commands": ["/dialogue open @s @initiator workshop_buy_planks_3"]
 					}
 				]
 			},
@@ -255,11 +259,11 @@
 					},
 					{
 						"name": "Pg. 2",
-						"commands": ["/diaplankue open @s @initiator workshop_buy_planks"]
+						"commands": ["/dialogue open @s @initiator workshop_buy_planks"]
 					},
 					{
 						"name": "Main Menu",
-						"commands": ["/diaplankue open @s @initiator workshop"]
+						"commands": ["/dialogue open @s @initiator workshop"]
 					}
 				]
 			},
@@ -452,7 +456,7 @@
 					},
 					{
 						"name": "Pg. 2",
-						"commands": ["/diaplankue open @s @initiator workshop_sell_planks_2"]
+						"commands": ["/dialogue open @s @initiator workshop_sell_planks_2"]
 					}
 				]
 			},
@@ -479,11 +483,11 @@
 					},
 					{
 						"name": "Pg. 1",
-						"commands": ["/diaplankue open @s @initiator workshop_sell_planks"]
+						"commands": ["/dialogue open @s @initiator workshop_sell_planks"]
 					},
 					{
 						"name": "Pg. 3",
-						"commands": ["/diaplankue open @s @initiator workshop_sell_planks_3"]
+						"commands": ["/dialogue open @s @initiator workshop_sell_planks_3"]
 					}
 				]
 			},
@@ -498,11 +502,11 @@
 					},
 					{
 						"name": "Pg. 2",
-						"commands": ["/diaplankue open @s @initiator workshop_sell_planks"]
+						"commands": ["/dialogue open @s @initiator workshop_sell_planks"]
 					},
 					{
 						"name": "Main Menu",
-						"commands": ["/diaplankue open @s @initiator workshop"]
+						"commands": ["/dialogue open @s @initiator workshop"]
 					}
 				]
 			},
