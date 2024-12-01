@@ -336,3 +336,10 @@
 5. Most damaged items can be now be sold
 6. Pet Shop Sell Supplies now gives Sound Feedback
 7. Fixed Chorus Fruit typos
+
+# 1.8.1
+1. Added Pale Oak and Eye Blossom to Dialogues
+2. Added Missing Kelp Buy from 1.8.0 release
+3. Fixed Planks typos in Dialogue
+4. Fixed Gravel Sell
+5. Fixed some typos in Help Dialogue
