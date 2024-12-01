@@ -108,7 +108,7 @@
             {
 				"scene_tag": "workshop_buy_logs",
 				"npc_name": "Misc",
-				"text": "§lThese are the logs for sell.\n§r§lLogs:\n§r5 Oak Logs for 10 Moneyz\n§r5 Spruce Logs for 10 Moneyz\n§r5 Birch Logs for 10 Moneyz\n§r5 Jungle Logs for 10 Moneyz\n§r5 Acacia Logs for 10 Moneyz\n§r5 Dark Oak Logs for 10 Moneyz\n§r5 Mangrove Logs for 15 Moneyz\n§r5 Cherry Logs for 15 Moneyz\n§r5 Crimson Stems for 20 Moneyz\n§r5 Warped Stems for 20 Moneyz\n",
+				"text": "§lThese are the logs for sell.\n§r§lLogs:\n§r5 Oak Logs for 10 Moneyz\n§r5 Spruce Logs for 10 Moneyz\n§r5 Birch Logs for 10 Moneyz\n§r5 Jungle Logs for 10 Moneyz\n§r5 Acacia Logs for 10 Moneyz\n§r5 Dark Oak Logs for 10 Moneyz\n§r5 Mangrove Logs for 15 Moneyz\n§r5 Cherry Logs for 15 Moneyz\n§r5 Crimson Stems for 20 Moneyz\n§r5 Warped Stems for 20 Moneyz\n§r5 Pale Oak Logs for 15 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Oak",
@@ -139,7 +139,7 @@
 			{
 				"scene_tag": "workshop_buy_logs_2",
 				"npc_name": "Misc",
-				"text": "§lThese are the logs for sale.\n§r§lLogs:\n§r5 Oak Logs for 10 Moneyz\n§r5 Spruce Logs for 10 Moneyz\n§r5 Birch Logs for 10 Moneyz\n§r5 Jungle Logs for 10 Moneyz\n§r5 Acacia Logs for 10 Moneyz\n§r5 Dark Oak Logs for 10 Moneyz\n§r5 Mangrove Logs for 15 Moneyz\n§r5 Cherry Logs for 15 Moneyz\n§r5 Crimson Stems for 20 Moneyz\n§r5 Warped Stems for 20 Moneyz\n",
+				"text": "§lThese are the logs for sale.\n§r§lLogs:\n§r5 Oak Logs for 10 Moneyz\n§r5 Spruce Logs for 10 Moneyz\n§r5 Birch Logs for 10 Moneyz\n§r5 Jungle Logs for 10 Moneyz\n§r5 Acacia Logs for 10 Moneyz\n§r5 Dark Oak Logs for 10 Moneyz\n§r5 Mangrove Logs for 15 Moneyz\n§r5 Cherry Logs for 15 Moneyz\n§r5 Crimson Stems for 20 Moneyz\n§r5 Warped Stems for 20 Moneyz\n§r5 Pale Oak Logs for 15 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Dark Oak",
@@ -170,11 +170,15 @@
 			{
 				"scene_tag": "workshop_buy_logs_3",
 				"npc_name": "Misc",
-				"text": "§lThese are the logs for sale.\n§r§lLogs:\n§r5 Oak Logs for 10 Moneyz\n§r5 Spruce Logs for 10 Moneyz\n§r5 Birch Logs for 10 Moneyz\n§r5 Jungle Logs for 10 Moneyz\n§r5 Acacia Logs for 10 Moneyz\n§r5 Dark Oak Logs for 10 Moneyz\n§r5 Mangrove Logs for 15 Moneyz\n§r5 Cherry Logs for 15 Moneyz\n§r5 Crimson Stems for 20 Moneyz\n§r5 Warped Stems for 20 Moneyz\n",
+				"text": "§lThese are the logs for sale.\n§r§lLogs:\n§r5 Oak Logs for 10 Moneyz\n§r5 Spruce Logs for 10 Moneyz\n§r5 Birch Logs for 10 Moneyz\n§r5 Jungle Logs for 10 Moneyz\n§r5 Acacia Logs for 10 Moneyz\n§r5 Dark Oak Logs for 10 Moneyz\n§r5 Mangrove Logs for 15 Moneyz\n§r5 Cherry Logs for 15 Moneyz\n§r5 Crimson Stems for 20 Moneyz\n§r5 Warped Stems for 20 Moneyz\n§r5 Pale Oak Logs for 15 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Warped",
 						"commands": ["/function workshop/log/warped_stem"]
+					},
+					{
+						"name": "Pale Oak",
+						"commands": ["/function workshop/log/pale_oak_log"]
 					},
 					{
 						"name": "Pg. 2",
@@ -189,7 +193,7 @@
 			{
 				"scene_tag": "workshop_buy_planks",
 				"npc_name": "Misc",
-				"text": "§lThese are the planks for sell.\n§r§lPlanks:\n§r20 Oak Planks for 5 Moneyz\n§r20 Spruce Planks for 5 Moneyz\n§r20 Birch Planks for 5 Moneyz\n§r20 Jungle Planks for 5 Moneyz\n§r20 Acacia Planks for 5 Moneyz\n§r20 Dark Oak Planks for 5 Moneyz\n§r15 Mangrove Planks for 10 Moneyz\n§r20 Cherry Planks for 10 Moneyz\n§r20 Crimson Planks for 15 Moneyz\n§r20 Warped Planks for 15 Moneyz\n",
+				"text": "§lThese are the planks for sell.\n§r§lPlanks:\n§r20 Oak Planks for 5 Moneyz\n§r20 Spruce Planks for 5 Moneyz\n§r20 Birch Planks for 5 Moneyz\n§r20 Jungle Planks for 5 Moneyz\n§r20 Acacia Planks for 5 Moneyz\n§r20 Dark Oak Planks for 5 Moneyz\n§r15 Mangrove Planks for 10 Moneyz\n§r20 Cherry Planks for 10 Moneyz\n§r20 Crimson Planks for 15 Moneyz\n§r20 Warped Planks for 15 Moneyz\n§r20 Pale Oak Planks for 10 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Oak",
@@ -220,7 +224,7 @@
 			{
 				"scene_tag": "workshop_buy_planks_2",
 				"npc_name": "Misc",
-				"text": "§lThese are the planks for sale.\n§r§lPlanks:\n§r20 Oak Planks for 5 Moneyz\n§r20 Spruce Planks for 5 Moneyz\n§r20 Birch Planks for 5 Moneyz\n§r20 Jungle Planks for 5 Moneyz\n§r20 Acacia Planks for 5 Moneyz\n§r20 Dark Oak Planks for 5 Moneyz\n§r15 Mangrove Planks for 10 Moneyz\n§r20 Cherry Planks for 10 Moneyz\n§r20 Crimson Planks for 15 Moneyz\n§r20 Warped Planks for 15 Moneyz\n",
+				"text": "§lThese are the planks for sale.\n§r§lPlanks:\n§r20 Oak Planks for 5 Moneyz\n§r20 Spruce Planks for 5 Moneyz\n§r20 Birch Planks for 5 Moneyz\n§r20 Jungle Planks for 5 Moneyz\n§r20 Acacia Planks for 5 Moneyz\n§r20 Dark Oak Planks for 5 Moneyz\n§r15 Mangrove Planks for 10 Moneyz\n§r20 Cherry Planks for 10 Moneyz\n§r20 Crimson Planks for 15 Moneyz\n§r20 Warped Planks for 15 Moneyz\n§r20 Pale Oak Planks for 10 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Dark Oak",
@@ -251,11 +255,15 @@
 			{
 				"scene_tag": "workshop_buy_planks_3",
 				"npc_name": "Misc",
-				"text": "§lThese are the planks for sale.\n§r§lPlanks:\n§r20 Oak Planks for 5 Moneyz\n§r20 Spruce Planks for 5 Moneyz\n§r20 Birch Planks for 5 Moneyz\n§r20 Jungle Planks for 5 Moneyz\n§r20 Acacia Planks for 5 Moneyz\n§r20 Dark Oak Planks for 5 Moneyz\n§r15 Mangrove Planks for 10 Moneyz\n§r20 Cherry Planks for 10 Moneyz\n§r20 Crimson Planks for 15 Moneyz\n§r20 Warped Planks for 15 Moneyz\n",
+				"text": "§lThese are the planks for sale.\n§r§lPlanks:\n§r20 Oak Planks for 5 Moneyz\n§r20 Spruce Planks for 5 Moneyz\n§r20 Birch Planks for 5 Moneyz\n§r20 Jungle Planks for 5 Moneyz\n§r20 Acacia Planks for 5 Moneyz\n§r20 Dark Oak Planks for 5 Moneyz\n§r15 Mangrove Planks for 10 Moneyz\n§r20 Cherry Planks for 10 Moneyz\n§r20 Crimson Planks for 15 Moneyz\n§r20 Warped Planks for 15 Moneyz\n§r20 Pale Oak Planks for 10 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Warped",
 						"commands": ["/function workshop/plank/warped_planks"]
+					},
+					{
+						"name": "Pale Oak",
+						"commands": ["/function workshop/plank/pale_oak_planks"]
 					},
 					{
 						"name": "Pg. 2",
@@ -351,7 +359,7 @@
             {
 				"scene_tag": "workshop_sell_logs",
 				"npc_name": "Misc",
-				"text": "§lThese are the Logs I'll buy from you.\n§r§lLogs:\n§r5 Oak Logs for 10 Moneyz\n§r5 Spruce Logs for 10 Moneyz\n§r5 Birch Logs for 10 Moneyz\n§r5 Jungle Logs for 10 Moneyz\n§r5 Acacia Logs for 10 Moneyz\n§r5 Dark Oak Logs for 10 Moneyz\n§r5 Mangrove Logs for 15 Moneyz\n§r5 Cherry Logs for 15 Moneyz\n§r5 Crimson Stems for 20 Moneyz\n§r5 Warped Stems for 20 Moneyz\n",
+				"text": "§lThese are the Logs I'll buy from you.\n§r§lLogs:\n§r5 Oak Logs for 10 Moneyz\n§r5 Spruce Logs for 10 Moneyz\n§r5 Birch Logs for 10 Moneyz\n§r5 Jungle Logs for 10 Moneyz\n§r5 Acacia Logs for 10 Moneyz\n§r5 Dark Oak Logs for 10 Moneyz\n§r5 Mangrove Logs for 15 Moneyz\n§r5 Cherry Logs for 15 Moneyz\n§r5 Crimson Stems for 20 Moneyz\n§r5 Warped Stems for 20 Moneyz\n§r5 Pale Oak Logs for 15 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Oak",
@@ -382,7 +390,7 @@
 			{
 				"scene_tag": "workshop_sell_logs_2",
 				"npc_name": "Misc",
-				"text": "§lThese are the Logs I'll buy from you.\n§r§lLogs:\n§r5 Oak Logs for 10 Moneyz\n§r5 Spruce Logs for 10 Moneyz\n§r5 Birch Logs for 10 Moneyz\n§r5 Jungle Logs for 10 Moneyz\n§r5 Acacia Logs for 10 Moneyz\n§r5 Dark Oak Logs for 10 Moneyz\n§r5 Mangrove Logs for 15 Moneyz\n§r5 Cherry Logs for 15 Moneyz\n§r5 Crimson Stems for 20 Moneyz\n§r5 Warped Stems for 20 Moneyz\n",
+				"text": "§lThese are the Logs I'll buy from you.\n§r§lLogs:\n§r5 Oak Logs for 10 Moneyz\n§r5 Spruce Logs for 10 Moneyz\n§r5 Birch Logs for 10 Moneyz\n§r5 Jungle Logs for 10 Moneyz\n§r5 Acacia Logs for 10 Moneyz\n§r5 Dark Oak Logs for 10 Moneyz\n§r5 Mangrove Logs for 15 Moneyz\n§r5 Cherry Logs for 15 Moneyz\n§r5 Crimson Stems for 20 Moneyz\n§r5 Warped Stems for 20 Moneyz\n§r5 Pale Oak Logs for 15 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Dark Oak",
@@ -413,11 +421,15 @@
 			{
 				"scene_tag": "workshop_sell_logs_3",
 				"npc_name": "Misc",
-				"text": "§lThese are the Logs I'll buy from you.\n§r§lLogs:\n§r5 Oak Logs for 10 Moneyz\n§r5 Spruce Logs for 10 Moneyz\n§r5 Birch Logs for 10 Moneyz\n§r5 Jungle Logs for 10 Moneyz\n§r5 Acacia Logs for 10 Moneyz\n§r5 Dark Oak Logs for 10 Moneyz\n§r5 Mangrove Logs for 15 Moneyz\n§r5 Cherry Logs for 15 Moneyz\n§r5 Crimson Stems for 20 Moneyz\n§r5 Warped Stems for 20 Moneyz\n",
+				"text": "§lThese are the Logs I'll buy from you.\n§r§lLogs:\n§r5 Oak Logs for 10 Moneyz\n§r5 Spruce Logs for 10 Moneyz\n§r5 Birch Logs for 10 Moneyz\n§r5 Jungle Logs for 10 Moneyz\n§r5 Acacia Logs for 10 Moneyz\n§r5 Dark Oak Logs for 10 Moneyz\n§r5 Mangrove Logs for 15 Moneyz\n§r5 Cherry Logs for 15 Moneyz\n§r5 Crimson Stems for 20 Moneyz\n§r5 Warped Stems for 20 Moneyz\n§r5 Pale Oak Logs for 15 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Warped",
 						"commands": ["/function workshop/sell/log/warped_stem"]
+					},
+					{
+						"name": "Pale Oak",
+						"commands": ["/function workshop/sell/log/pale_oak_log"]
 					},
 					{
 						"name": "Pg. 2",
@@ -432,7 +444,7 @@
 			{
 				"scene_tag": "workshop_sell_planks",
 				"npc_name": "Misc",
-				"text": "§lThese are the planks I'll Purchase.\n§r§lPlanks:\n§r20 Oak Planks for 5 Moneyz\n§r20 Spruce Planks for 5 Moneyz\n§r20 Birch Planks for 5 Moneyz\n§r20 Jungle Planks for 5 Moneyz\n§r20 Acacia Planks for 5 Moneyz\n§r20 Dark Oak Planks for 5 Moneyz\n§r15 Mangrove Planks for 10 Moneyz\n§r20 Cherry Planks for 10 Moneyz\n§r20 Crimson Planks for 15 Moneyz\n§r20 Warped Planks for 15 Moneyz\n",
+				"text": "§lThese are the planks I'll Purchase.\n§r§lPlanks:\n§r20 Oak Planks for 5 Moneyz\n§r20 Spruce Planks for 5 Moneyz\n§r20 Birch Planks for 5 Moneyz\n§r20 Jungle Planks for 5 Moneyz\n§r20 Acacia Planks for 5 Moneyz\n§r20 Dark Oak Planks for 5 Moneyz\n§r15 Mangrove Planks for 10 Moneyz\n§r20 Cherry Planks for 10 Moneyz\n§r20 Crimson Planks for 15 Moneyz\n§r20 Warped Planks for 15 Moneyz\n§r20 Pale Oak Planks for 10 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Oak",
@@ -463,7 +475,7 @@
 			{
 				"scene_tag": "workshop_sell_planks_2",
 				"npc_name": "Misc",
-				"text": "§lThese are the planks I'll purchase.\n§r§lPlanks:\n§r20 Oak Planks for 5 Moneyz\n§r20 Spruce Planks for 5 Moneyz\n§r20 Birch Planks for 5 Moneyz\n§r20 Jungle Planks for 5 Moneyz\n§r20 Acacia Planks for 5 Moneyz\n§r20 Dark Oak Planks for 5 Moneyz\n§r15 Mangrove Planks for 10 Moneyz\n§r20 Cherry Planks for 10 Moneyz\n§r20 Crimson Planks for 15 Moneyz\n§r20 Warped Planks for 15 Moneyz\n",
+				"text": "§lThese are the planks I'll purchase.\n§r§lPlanks:\n§r20 Oak Planks for 5 Moneyz\n§r20 Spruce Planks for 5 Moneyz\n§r20 Birch Planks for 5 Moneyz\n§r20 Jungle Planks for 5 Moneyz\n§r20 Acacia Planks for 5 Moneyz\n§r20 Dark Oak Planks for 5 Moneyz\n§r15 Mangrove Planks for 10 Moneyz\n§r20 Cherry Planks for 10 Moneyz\n§r20 Crimson Planks for 15 Moneyz\n§r20 Warped Planks for 15 Moneyz\n§r20 Pale Oak Planks for 10 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Dark Oak",
@@ -494,11 +506,15 @@
 			{
 				"scene_tag": "workshop_sell_planks_3",
 				"npc_name": "Misc",
-				"text": "§lThese are the planks I'll purchase.\n§r§lPlanks:\n§r20 Oak Planks for 5 Moneyz\n§r20 Spruce Planks for 5 Moneyz\n§r20 Birch Planks for 5 Moneyz\n§r20 Jungle Planks for 5 Moneyz\n§r20 Acacia Planks for 5 Moneyz\n§r20 Dark Oak Planks for 5 Moneyz\n§r15 Mangrove Planks for 10 Moneyz\n§r20 Cherry Planks for 10 Moneyz\n§r20 Crimson Planks for 15 Moneyz\n§r20 Warped Planks for 15 Moneyz\n",
+				"text": "§lThese are the planks I'll purchase.\n§r§lPlanks:\n§r20 Oak Planks for 5 Moneyz\n§r20 Spruce Planks for 5 Moneyz\n§r20 Birch Planks for 5 Moneyz\n§r20 Jungle Planks for 5 Moneyz\n§r20 Acacia Planks for 5 Moneyz\n§r20 Dark Oak Planks for 5 Moneyz\n§r15 Mangrove Planks for 10 Moneyz\n§r20 Cherry Planks for 10 Moneyz\n§r20 Crimson Planks for 15 Moneyz\n§r20 Warped Planks for 15 Moneyz\n§r20 Pale Oak Planks for 10 Moneyz\n",
 				"buttons": [
 					{
 						"name": "Warped",
 						"commands": ["/function workshop/sell/plank/warped_planks"]
+					},
+					{
+						"name": "Pale Oak",
+						"commands": ["/function workshop/sell/plank/pale_oak_planks"]
 					},
 					{
 						"name": "Pg. 2",

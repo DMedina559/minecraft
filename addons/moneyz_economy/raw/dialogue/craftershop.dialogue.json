@@ -305,9 +305,9 @@
 						{
 							"text": "§r5 Dandelions for 5 Moneyz\n"
 						},
-						//{
-							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
-						//},
+						{
+							"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						},
 						{
 							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
 						},
@@ -410,9 +410,9 @@
 						{
 							"text": "§r5 Dandelions for 5 Moneyz\n"
 						},
-						//{
-							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
-						//},
+						{
+							"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						},
 						{
 							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
 						},
@@ -478,10 +478,10 @@
 						"name": "Lily Valley",
 						"commands": ["/function crafter/flower/lily_valley"]
 					},
-					//{
-//						"name": "Eyeblossom",
-//						"commands": ["/function crafter/flower/open_eyeblossom"]
-//					},
+					{
+						"name": "Eyeblossom",
+						"commands": ["/function crafter/flower/open_eyeblossom"]
+					},
 					{
 						"name": "Pg. 1",
 						"commands": ["/dialogue open @s @initiator crafter_buy_flowers"]
@@ -515,9 +515,9 @@
 						{
 							"text": "§r5 Dandelions for 5 Moneyz\n"
 						},
-						//{
-							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
-						//},
+						{
+							"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						},
 						{
 							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
 						},
@@ -620,9 +620,9 @@
 						{
 							"text": "§r5 Dandelions for 5 Moneyz\n"
 						},
-						//{
-							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
-						//},
+						{
+							"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						},
 						{
 							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
 						},
@@ -725,9 +725,9 @@
 						{
 							"text": "§r5 Dandelions for 5 Moneyz\n"
 						},
-						//{
-							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
-						//},
+						{
+							"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						},
 						{
 							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
 						},
@@ -830,9 +830,9 @@
 						{
 							"text": "§r5 Dandelions for 5 Moneyz\n"
 						},
-						//{
-							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
-						//},
+						{
+							"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						},
 						{
 							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
 						},
@@ -1188,9 +1188,9 @@
 						{
 							"text": "§r5 Dandelions for 5 Moneyz\n"
 						},
-						//{
-							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
-						//},
+						{
+							"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						},
 						{
 							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
 						},
@@ -1293,9 +1293,9 @@
 						{
 							"text": "§r5 Dandelions for 5 Moneyz\n"
 						},
-						//{
-							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
-						//},
+						{
+							"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						},
 						{
 							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
 						},
@@ -1398,9 +1398,9 @@
 						{
 							"text": "§r5 Dandelions for 5 Moneyz\n"
 						},
-						//{
-							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
-						//},
+						{
+							"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						},
 						{
 							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
 						},
@@ -1503,9 +1503,9 @@
 						{
 							"text": "§r5 Dandelions for 5 Moneyz\n"
 						},
-						//{
-							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
-						//},
+						{
+							"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						},
 						{
 							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
 						},
@@ -1608,9 +1608,9 @@
 						{
 							"text": "§r5 Dandelions for 5 Moneyz\n"
 						},
-						//{
-							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
-						//},
+						{
+							"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						},
 						{
 							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
 						},
@@ -1713,9 +1713,9 @@
 						{
 							"text": "§r5 Dandelions for 5 Moneyz\n"
 						},
-						//{
-							//"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
-						//},
+						{
+							"text": "§r1 Open Eye Blossom for 10 Moneyz\n"
+						},
 						{
 							"text": "§r1 Flowering Azalea for 5 Moneyz\n"
 						},
