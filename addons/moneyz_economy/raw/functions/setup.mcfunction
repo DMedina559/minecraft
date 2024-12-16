@@ -25,15 +25,14 @@ tell @s §rYou can now build your §eNPC Shops.
 tell @s §eEnabling ATM and Send for Moneyz Menu.
 scoreboard objectives add moneyzAutoTag dummy
 scoreboard players set moneyzShop moneyzAutoTag 0
+scoreboard players set moneyzLucky moneyzAutoTag 0
 scoreboard players set moneyzATM moneyzAutoTag 1
 scoreboard players set moneyzSend moneyzAutoTag 1
 tell @s §aATM and Send enabled for Moneyz Menu.
-tell @s §cShops disabled for Moneyz Menu. Admins can enable through Moneyz Menu.
+tell @s §cShops and Lucky Purchase disabled for Moneyz Menu. Admins can enable through Moneyz Menu.
 
 tag @a add moneyzATM
 tag @a add moneyzSend
-
-tell @s §rATM and Send enabled for Moneyz Menu.
 
 give @s zvortex:moneyz_menu
 

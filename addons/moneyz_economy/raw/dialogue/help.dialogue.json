@@ -119,7 +119,7 @@
 							"text": "§lWhat Is the Moneyz Menu?\n"
 						},
 						{
-							"text": "§rThe Moneyz Menu is a §6menu Player can access that allows §6direct Moneyz management from the Players inventory, and allows World Owners/Admins to manage the moneyz economy.\n\n§rPlayers can:\nBuy\nSell\nSend Moneyz\nExchange Resources\nView Help\n\nWorld Owners/Admins can:\nView Players Tags\nView Players Moneyz Balances\nAdd/Remove/Set Players Moneyz Balance\nAdd/Remove Players Tags\n"
+							"text": "§rThe Moneyz Menu is a §6menu Player can access that allows §6direct Moneyz management from the Players inventory, and allows World Owners/Admins to manage the moneyz economy.\n\n§rPlayers can:\nBuy\nSell\nSend Moneyz\nExchange Resources\nMake a Lucky Purchase\nView Help\n\nWorld Owners/Admins can:\nView Players Tags\nView Players Moneyz Balances\nAdd/Remove/Set Players Moneyz Balance\nAdd/Remove Players Tags\nView/Set Player Properties (only 'lastLuckyPurchase' is used ('lastLuckyPurchase' uses 'YYYY-MM-DD' format. Nubers Only))\nView/Set/Clear World Properties (not currently used for anything)"
 						},
 						{
 							"text": "§r§lHow do Players access the Moneyz Menu?\n"
@@ -131,7 +131,19 @@
 							"text": "§r§lWhy can't I access all of the options in the Moneyz Menu?\n"
 						},
 						{
-							"text": "§rTo access Shops, ATMs, Send Moneyz, or Moneyz Admin features, §6Players must first obtain a moneyz tag.\n§rThese are the available Tags:\nmoneyzShop\nmoneyzATM\nmoneyzSend\nmoneyzAdmin\n\n§rMoneyz Economy 1.7.0 comes with an §6autotagging feature that can auto apply these moneyzTags,§r that World Owners/Admins with the §6moneyzAdmin §rtag can §6enable/disable each tag individially from the Moneyz Menu.\n"
+							"text": "§rTo access Shops, ATMs, Send Moneyz, Lucky Purchases, or Moneyz Admin features, §6Players must first obtain a moneyz tag.\n§rThese are the available Tags:\nmoneyzShop\nmoneyzATM\nmoneyzSend\nmoneyzLucky\nmoneyzAdmin\n\n§rMoneyz Economy 1.7.0 comes with an §6autotagging feature that can auto apply these moneyzTags,§r that World Owners/Admins with the §6moneyzAdmin §rtag can §6enable/disable each tag individially from the Moneyz Menu.\n"
+						},
+						{
+							"text": "§r§lWhat is a Lucky Purchase?\n"
+						},
+						{
+							"text": "§rIf enabled by World Owners/Admins, a §6Lucky Purchase is a purchase Players can make once a day, from 1 shop only, §rfrom the Moneyz Menu.\nPlayers §6have a chance to win random items §rat different values form any shop.\nTo access this menu World Owners/Admins must enable the moneyzLucky tag.\n"
+						}
+						{
+							"text": "§r§lWhat do you mean once a day?\n"
+						},
+						{
+							"text": "§rAfter a player makes a purchase the date will be stored as a property in the Player's game data.\nWorld Owners/Admins can add and modiy this value for any online Player from the Moneyz Menu.\nThe property will be §6lastLuckyPurchase §rand the value has to be in this §6date format: YYYY-MM-DD\n"
 						}
 					]
 				},
