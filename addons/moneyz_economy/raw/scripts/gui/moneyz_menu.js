@@ -25,6 +25,10 @@ world.beforeEvents.itemUse.subscribe(data => {
             buttons.push('§d§lSend Moneyz\n§r§7[ Click to Send Moneyz ]');
             actions.push(() => moneyzTransfer(player));
         }
+        if (player.hasTag("moneyzLucky")) {
+        buttons.push('§d§lFeeling Lucky?\n§r§7[ Click to Access ]');
+        actions.push(() => luckyPurchase(player));
+        }
         if (player.hasTag('moneyzAdmin')) {
             buttons.push('§d§lMoneyz Admin\n§r§7[ Click to Manage ]');
             actions.push(() => moneyzAdmin(player));
@@ -133,6 +137,58 @@ world.beforeEvents.itemUse.subscribe(data => {
             });
     }
 
+    function luckyPurchase(player) {    
+        function getCurrentUTCDate() {
+            const date = new Date();
+            return `${date.getUTCFullYear()}-${(date.getUTCMonth() + 1).toString().padStart(2, '0')}-${date.getUTCDate().toString().padStart(2, '0')}`;
+        }
+        
+        function canAccessLuckyMenu(player) {
+            const lastAccessDate = player.getDynamicProperty("lastLuckyPurchase");
+
+            if (!lastAccessDate) {
+                return true;
+            }
+            const currentDate = getCurrentUTCDate();
+            if (lastAccessDate !== currentDate) {
+                return true;
+            }
+            return false; 
+        }
+
+        if (canAccessLuckyMenu(player)) {
+            player.setDynamicProperty("lastLuckyPurchase", getCurrentUTCDate());
+
+            const shops = ["armory", "craftershop", "farmers_market", "library", "petshop", "workshop"];
+
+            new ActionFormData()
+                .title("§l§1Lucky Purchase Menu")
+                .body("§l§o§fChoose a shop to make a lucky purchase!")
+                .button("§d§lArmory\n§r§7[ Feeling Lucky? ]")
+                .button("§d§lCrafter's Market\n§r§7[ Feeling Lucky? ]")
+                .button("§d§lFarmer's Market\n§r§7[ Lucky Purchase ]")
+                .button("§d§lLibrary\n§r§7[ Feeling Lucky? ]")
+                .button("§d§lPet Shop\n§r§7[ Feeling Lucky? ]")
+                .button("§d§lWorkshop\n§r§7[ Feeling Lucky? ]")
+                .button("§4§lBack")
+                .show(player).then(r => {
+                    if (r.selection === 0) player.runCommandAsync("function armory/lucky");
+                    if (r.selection === 1) player.runCommandAsync("function craftershop/lucky");
+                    if (r.selection === 2) player.runCommandAsync("function farmers_market/lucky");
+                    if (r.selection === 3) player.runCommandAsync("function library/lucky");
+                    if (r.selection === 4) player.runCommandAsync("function petshop/lucky");
+                    if (r.selection === 5) player.runCommandAsync("function workshop/lucky");
+                    if (r.selection === 6) main(player);
+                });
+        } else {
+            new ActionFormData()
+                .title("§l§cLucky Purchase Restricted")
+                .body("§cYou have already made your Lucky Purchase today.\n§7Try again tomorrow!")
+                .button("§4§lBack")
+                .show(player);
+        }
+    }
+
     function moneyzAdmin() {
         const form = new ActionFormData()
             .title(title)
@@ -140,18 +196,22 @@ world.beforeEvents.itemUse.subscribe(data => {
             .button(`§d§lManage Tags\n§r§7[ Click to Manage ]`)
             .button(`§d§lManage Balances\n§r§7[ Click to Manage ]`)
             .button(`§d§lManage Auto Tags\n§r§7[ Click to Manage ]`)
+            .button(`§d§lManage Player Properties\n§r§7[ Click to Manage ]`)
+            .button(`§d§lManage World Properties\n§r§7[ Click to Manage ]`)
             .button(`§4§lBack`);
 
         form.show(player).then(r => {
             if (r.selection === 0) tagManage(player);
             if (r.selection === 1) balanceManage(player);
             if (r.selection === 2) toggleAutoTags(player);
-            if (r.selection === 3) main(player);
+            if (r.selection === 3) playerPropertiesMenu();
+            if (r.selection === 4) worldPropertiesMenu(player);
+            if (r.selection === 5) main(player);
         });
     }
 
     function toggleAutoTags(player) {
-        const options = ['moneyzShop', 'moneyzATM', 'moneyzSend'];
+        const options = ['moneyzShop', 'moneyzATM', 'moneyzSend', 'moneyzLucky'];
         const scores = options.map(tag => `${tag}: ${getScore('moneyzAutoTag', tag)}`);
 
         new ActionFormData()
@@ -160,12 +220,13 @@ world.beforeEvents.itemUse.subscribe(data => {
             .button('§d§lToggle moneyzShop')
             .button('§d§lToggle moneyzATM')
             .button('§d§lToggle moneyzSend')
+            .button('§d§lToggle moneyzLucky')
             .button('§4§lBack')
             .show(player).then(({ selection }) => {
                 if (selection >= 0 && selection < options.length) {
                     const selectedTag = options[selection];
                     const currentScore = getScore('moneyzAutoTag', selectedTag);
-                    const newScore = currentScore === 0 ? 1 : 0; // Toggle between 0 and 1
+                    const newScore = currentScore === 0 ? 1 : 0;
                     player.runCommandAsync(`scoreboard players set ${selectedTag} moneyzAutoTag ${newScore}`);
                     player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aToggled ${selectedTag} to ${newScore === 1 ? 'On' : 'Off'}."}]}`);
                     console.log(`Admin toggled ${selectedTag}`)
@@ -285,6 +346,152 @@ world.beforeEvents.itemUse.subscribe(data => {
                     moneyzAdmin(player);
                 }
             });
+    }
+
+    function playerPropertiesMenu() {
+        const players = [...world.getPlayers()].map(p => p.nameTag);
+
+        new ModalFormData()
+            .title("§l§fView or Modify Dynamic Properties")
+            .dropdown("§oChoose a Player", players)
+            .show(player)
+            .then(({ formValues: [dropdown] }) => {
+                const selectedPlayer = players[dropdown];
+                const player = world.getPlayers().find(p => p.nameTag === selectedPlayer);
+
+                if (!player) {
+                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlayer not found!"}]}`);
+                    return;
+                }
+
+                new ActionFormData()
+                    .title(`§l§f${selectedPlayer} Dynamic Properties`)
+                    .body("§oWhat would you like to do?")
+                    .button("§d§lView Properties\n§r§7[ View ]")
+                    .button("§d§lModify Properties\n§r§7[ Modify ]")
+                    .button("§4§lBack")
+                    .show(player).then(r => {
+                        if (r.selection === 0) viewPlayerProperties(player, selectedPlayer);
+                        if (r.selection === 1) modifyPlayerProperties(player, selectedPlayer);
+                        if (r.selection === 2) moneyzAdmin(player);
+                    });
+            });
+    }
+
+    function viewPlayerProperties(player, selectedPlayer) {
+        const targetPlayer = world.getPlayers().find(p => p.nameTag === selectedPlayer);
+        
+        if (!targetPlayer) {
+            player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlayer not found!"}]}`);
+            return;
+        }
+
+        const dynamicPropertyIds = targetPlayer.getDynamicPropertyIds();
+        let propertyList = "§l§oDynamic Properties:\n\n";
+        let foundProperties = false;
+
+        dynamicPropertyIds.forEach(property => {
+            const value = targetPlayer.getDynamicProperty(property);
+            if (value !== undefined) {
+                foundProperties = true;
+                propertyList += `§f${property}: §7${value}\n`;
+            }
+        });
+
+        if (!foundProperties) {
+            propertyList += "§cNo properties found.\n";
+        }
+
+        new ActionFormData()
+            .title(`§l§f${selectedPlayer} Properties`)
+            .body(propertyList)
+            .button("§4§lBack")
+            .show(player)
+            .then(r => {
+                if (r.selection === 0) moneyzAdmin(player);
+            });
+    }
+
+    function modifyPlayerProperties(player, selectedPlayer) {
+        new ModalFormData()
+            .title(`§l§fModify ${selectedPlayer} Properties`)
+            .textField("§fEnter Property Key:", "§oProperty Key")
+            .textField("§fEnter Property Value:", "§oProperty Value")
+            .show(player)
+            .then(({ formValues: [keyField, valueField] }) => {
+                const targetPlayer = world.getPlayers().find(p => p.nameTag === selectedPlayer);
+                if (!targetPlayer) {
+                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlayer not found!"}]}`);
+                    return;
+                }
+
+                if (keyField.trim() === "" || valueField.trim() === "") {
+                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cBoth key and value must be provided!"}]}`);
+                    return;
+                }
+
+                targetPlayer.setDynamicProperty(keyField, valueField);
+                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aDynamic property ${keyField} has been set to ${valueField} for ${selectedPlayer}."}]}`);
+                console.log(`Admin set dynamic property ${keyField} to ${valueField} for ${selectedPlayer}`);
+            }).catch(error => {
+                console.error("Error with ModalFormData:", error);
+            });
+    }
+
+    function worldPropertiesMenu(player) {
+        const worldProperties = world.getDynamicPropertyIds();
+
+        let propertiesList = "§l§oWorld Properties:\n\n";
+        if (worldProperties.length === 0) {
+            propertiesList += "§cNo world properties found.";
+        } else {
+            worldProperties.forEach(property => {
+                const value = world.getDynamicProperty(property);
+                if (value === undefined) {
+                    propertiesList += `§f${property}: §cundefined\n`;
+                } else {
+                    propertiesList += `§f${property}: §7${value}\n`;
+                }
+            });
+        }
+
+        new ActionFormData()
+            .title("§l§1World Properties Menu")
+            .body(propertiesList)
+            .button("§d§lModify Properties\n§r§7[ Modify World Properties ]")
+            .button("§d§lClear Properties\n§r§7[ Clear World Properties ]")
+            .button("§4§lBack")
+            .show(player)
+            .then(r => {
+                if (r.selection === 0) modifyWorldProperties(player);
+                if (r.selection === 1) clearAllWorldProperties(player);
+                if (r.selection === 2) moneyzAdmin(player);
+            });
+    }
+
+    function modifyWorldProperties(player) {
+        new ModalFormData()
+            .title("§l§fModify World Properties")
+            .textField("§fEnter Property Key:", "§oProperty Key")
+            .textField("§fEnter Property Value:", "§oProperty Value")
+            .show(player)
+            .then(({ formValues: [keyField, valueField] }) => {
+                if (keyField.trim() === "" || valueField.trim() === "") {
+                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cBoth key and value must be provided!"}]}`);
+                    return;
+                }
+
+                world.setDynamicProperty(keyField, valueField);
+                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aWorld property ${keyField} has been set to ${valueField}."}]}`);
+            }).catch(error => {
+                console.error("Error with ModalFormData:", error);
+            });
+    }
+
+    function clearAllWorldProperties(player) {
+        world.clearDynamicProperties();
+        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aAll dynamic properties have been cleared successfully!"}]}`);
+        console.log("All dynamic properties cleared by", player.nameTag);
     }
 
     function Credits() {

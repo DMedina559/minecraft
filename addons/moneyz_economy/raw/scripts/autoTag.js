@@ -50,6 +50,14 @@ async function applyAutoTags(player) {
             console.log(`Applying moneyzSend tag for ${player.nameTag}`);
         }
     }
+
+    if (getScore('moneyzAutoTag', 'moneyzLucky') > 0) {
+        const hasSendTag = await player.hasTag('moneyzLucky');
+        if (!hasSendTag) {
+            player.runCommandAsync(`tag ${player.nameTag} add moneyzLucky`);
+            console.log(`Applying moneyzLucky tag for ${player.nameTag}`);
+        }
+    }
 }
 
 //Ensures Player has a Moneyz Score
