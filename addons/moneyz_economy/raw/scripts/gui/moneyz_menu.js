@@ -166,7 +166,7 @@ world.beforeEvents.itemUse.subscribe(data => {
                 .body("§l§o§fChoose a shop to make a lucky purchase!")
                 .button("§d§lArmory\n§r§7[ Feeling Lucky? ]")
                 .button("§d§lCrafter's Market\n§r§7[ Feeling Lucky? ]")
-                .button("§d§lFarmer's Market\n§r§7[ Lucky Purchase ]")
+                .button("§d§lFarmer's Market\n§r§7[ Feeling Lucky? ]")
                 .button("§d§lLibrary\n§r§7[ Feeling Lucky? ]")
                 .button("§d§lPet Shop\n§r§7[ Feeling Lucky? ]")
                 .button("§d§lWorkshop\n§r§7[ Feeling Lucky? ]")
