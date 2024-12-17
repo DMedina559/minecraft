@@ -181,3 +181,4 @@ function clearAllWorldProperties(player) {
     console.log("All dynamic properties cleared by", player.nameTag);
     worldPropertiesMenu(player)
 }
+console.info('properties_menu.js loaded')

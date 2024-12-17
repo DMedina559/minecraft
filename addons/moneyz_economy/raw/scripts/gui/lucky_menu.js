@@ -62,3 +62,4 @@ export function luckyPurchase(player) {
             .show(player);
     }
 }
+console.info('lucky_menu.js loaded')

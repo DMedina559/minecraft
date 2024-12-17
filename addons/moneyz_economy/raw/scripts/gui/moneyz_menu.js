@@ -155,4 +155,4 @@ function Credits(player) {
         })
 }
 
-console.info('main_menu.js loaded')
+console.info('moneyz_menu.js loaded')

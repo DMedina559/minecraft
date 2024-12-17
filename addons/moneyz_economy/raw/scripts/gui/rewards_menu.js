@@ -52,3 +52,5 @@ function dailyRewardLogic(player, rewardValue, currentDate) {
         player.sendMessage("§cYou have already claimed your daily rewards. Come back tomorrow!");
     }
 };
+
+console.info('rewards_menu.js loaded')

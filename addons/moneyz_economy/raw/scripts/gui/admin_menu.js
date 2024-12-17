@@ -25,9 +25,8 @@ export function moneyzAdmin(player) {
     });
 }
 
-
 function toggleAutoTags(player) {
-    const options = ['moneyzShop', 'moneyzATM', 'moneyzSend', 'moneyzLucky', 'moneyzDaily', 'syncPlayers', 'oneLuckyPurchase'];
+    const options = ['moneyzShop', 'moneyzATM', 'moneyzSend', 'moneyzLucky', 'moneyzDaily', 'oneLuckyPurchase', 'syncPlayers'];
     const scores = options.map(tag => `${tag}: ${world.getDynamicProperty(tag)}`);
 
     new ActionFormData()
@@ -38,8 +37,8 @@ function toggleAutoTags(player) {
         .button('§d§lToggle moneyzSend')
         .button('§d§lToggle moneyzLucky')
         .button('§d§lToggle moneyzDaily')
-        .button('§d§lToggle syncPlayers')
         .button('§d§lToggle oneLuckyPurchase')
+        .button('§d§lToggle syncPlayers')
         .button('§4§lBack')
         .show(player).then(({ selection }) => {
             if (selection >= 0 && selection < options.length) {
@@ -57,7 +56,6 @@ function toggleAutoTags(player) {
             }
         });
 }
-
 
 function balanceManage(player) {
     const players = [...world.getPlayers()].map(p => {
@@ -115,58 +113,64 @@ function balanceManage(player) {
 
 function tagManage(player) {
     const players = [...world.getPlayers()];
+
     const playerTagsList = players.map(p => `${p.nameTag}: §g${p.getTags().join(', ') || 'No Tags'}`).join('\n');
 
     new ActionFormData()
         .title(title)
         .body(`§l§oPlayers Tags:\n${playerTagsList}`)
-        .button('§d§lAdd Tag\n§r§7[ Click to Add ]')
-        .button('§d§lRemove Tag\n§r§7[ Click to Remove ]')
+        .button('§d§lManage Tags\n§r§7[ Add or Remove ]')
         .button('§4§lBack')
         .show(player).then(r => {
             if (r.selection === 0) {
                 new ModalFormData()
                     .title(title)
-                    .dropdown('§o§fChoose a Player to Add Tag', players.map(p => p.nameTag))
-                    .textField('§fEnter Tag to Add:', '§oTag')
+                    .dropdown('§o§fChoose a Player', players.map(p => p.nameTag))
                     .show(player)
-                    .then(({ formValues: [dropdown, textField] }) => {
-                        const selectedPlayer = players[dropdown];
-                        if (textField.trim() === "") {
-                            player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid tag!"}]}`);
-                            console.log(`Admin entered an invalid tag`)
-                            return;
-                        }
-                        selectedPlayer.addTag(textField);
-                        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aAdded tag §l${textField} §r§ato ${selectedPlayer.nameTag}."}]}`);
-                        console.log(`Admin added ${textField} tag to ${selectedPlayer.nameTag}`)
-                        tagManage(player);
-                    });
-            } else if (r.selection === 1) {
-                new ModalFormData()
-                    .title(title)
-                    .dropdown('§o§fChoose a Player to Remove Tag', players.map(p => p.nameTag))
-                    .textField('§fEnter Tag to Remove:', '§oTag')
-                    .show(player)
-                    .then(({ formValues: [dropdown, textField] }) => {
-                        const selectedPlayer = players[dropdown];
-                        if (textField.trim() === "") {
-                            player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid tag!"}]}`);
-                            console.log(`Admin entered an invalid tag`)
-                            return;
-                        }
-                        if (selectedPlayer.hasTag(textField)) {
-                            selectedPlayer.removeTag(textField);
-                            player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aRemoved tag §l${textField} §r§afrom ${selectedPlayer.nameTag}."}]}`);
-                            console.log(`Admin removed ${textField} tag to ${selectedPlayer.nameTag}`)
-                        } else {
-                            player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§c${selectedPlayer.nameTag} does not have the tag §l${textField}."}]}`);
-                            console.log(`Admin tried to remove a tag that didnt exist from ${selectedPlayer.nameTag}`)
-                        }
-                        tagManage(player);
+                    .then(({ formValues: [playerIndex] }) => {
+
+                        const selectedPlayer = players[playerIndex];
+                        const tags = selectedPlayer.getTags().join(', ') || 'No Tags';
+
+                        new ModalFormData()
+                            .title(`§lManage ${selectedPlayer.nameTag}'s Tags`)
+                            .dropdown('§o§fAction', ['Add Tag', 'Remove Tag'])
+                            .textField('§fEnter Tag:', '§oTag')
+                            .show(player)
+                            .then(({ formValues: [currentTags, actionIndex, tag] }) => { 
+
+                                const trimmedTag = tag.trim();
+
+                                if (trimmedTag === "") {
+                                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid tag!"}]}`);
+                                    console.log(`Admin entered an invalid tag`);
+                                    tagManage(player);
+                                    return;
+                                }
+
+                                if (actionIndex === 0) {
+                                    selectedPlayer.addTag(trimmedTag);
+                                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aAdded tag §l${trimmedTag} §r§ato ${selectedPlayer.nameTag}."}]}`);
+                                    console.log(`Admin added ${trimmedTag} tag to ${selectedPlayer.nameTag}`);
+                                } else if (actionIndex === 1) {
+                                    if (selectedPlayer.hasTag(trimmedTag)) {
+                                        selectedPlayer.removeTag(trimmedTag);
+                                        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aRemoved tag §l${trimmedTag} §r§afrom ${selectedPlayer.nameTag}."}]}`);
+                                        console.log(`Admin removed ${trimmedTag} tag from ${selectedPlayer.nameTag}`);
+                                    } else {
+                                        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§c${selectedPlayer.nameTag} does not have the tag §l${trimmedTag}."}]}`);
+                                        console.log(`Admin tried to remove a tag that didn't exist from ${selectedPlayer.nameTag}`);
+                                    }
+                                }
+
+                                tagManage(player);
+                            });
                     });
             } else {
                 moneyzAdmin(player);
             }
         });
 }
+
+
+console.info('admin_menu.js loaded')
