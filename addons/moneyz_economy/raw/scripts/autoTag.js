@@ -1,4 +1,5 @@
 import { world, system } from "@minecraft/server"
+import { getScore } from './utilities.js';
 
 const ensureWorldPropertiesExist = () => {
     const properties = [
@@ -52,18 +53,6 @@ const syncPlayerPropertiesWithWorld = (player) => {
         });
     } else {
         console.log(`Syncing is disabled as syncPlayers is set to false.`);
-    }
-};
-
-const getScore = (objective, target, useZero = true) => {
-    try {
-        const obj = world.scoreboard.getObjective(objective);
-        if (typeof target === 'string') {
-            return obj.getScore(obj.getParticipants().find(v => v.displayName === target));
-        }
-        return obj.getScore(target.scoreboard);
-    } catch {
-        return useZero ? 0 : NaN;
     }
 };
 
