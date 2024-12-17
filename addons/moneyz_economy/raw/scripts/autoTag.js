@@ -1,6 +1,59 @@
 import { world, system } from "@minecraft/server"
 
-// Gets Scoreboards Data
+const ensureWorldPropertiesExist = () => {
+    const properties = [
+        { name: 'moneyzATM', defaultValue: true },
+        { name: 'moneyzSend', defaultValue: true },
+        { name: 'oneLuckyPurchase', defaultValue: true },
+        { name: 'moneyzShop', defaultValue: false },
+        { name: 'moneyzLucky', defaultValue: false },
+        { name: 'moneyzDaily', defaultValue: false },
+        { name: 'syncPlayers', defaultValue: false },
+        { name: 'dailyReward', defaultValue: 0 }
+    ];
+
+    properties.forEach(prop => {
+        const currentValue = world.getDynamicProperty(prop.name);
+        if (currentValue === undefined) {
+            world.setDynamicProperty(prop.name, prop.defaultValue);
+            console.log(`Initialized world property ${prop.name} with value ${prop.defaultValue}`);
+        }
+    });
+};
+
+const ensurePlayerHasMoneyzScore = (player) => {
+    console.log(`Checking Moneyz balance for ${player.nameTag}`);
+    const moneyzScore = getScore('Moneyz', player.nameTag, false);
+    if (isNaN(moneyzScore)) {
+        player.runCommandAsync(`scoreboard players set ${player.nameTag} Moneyz 0`);
+        console.log(`Initialized Moneyz balance for ${player.nameTag}`);
+    }
+};
+
+const syncPlayerPropertiesWithWorld = (player) => {
+    const syncPlayers = world.getDynamicProperty('syncPlayers');
+    
+    if (syncPlayers === true) {
+        const properties = [
+            { name: 'moneyzATM', defaultValue: true },
+            { name: 'moneyzSend', defaultValue: true },
+            { name: 'moneyzShop', defaultValue: false },
+            { name: 'moneyzLucky', defaultValue: false },
+            { name: 'moneyzDaily', defaultValue: false }
+        ];
+
+        properties.forEach(prop => {
+            const worldValue = world.getDynamicProperty(prop.name);
+            const playerValue = player.getDynamicProperty(prop.name);
+            if (playerValue !== worldValue) {
+                player.setDynamicProperty(prop.name, worldValue);
+                console.log(`Syncing ${prop.name} for ${player.nameTag} to ${worldValue}`);
+            }
+        });
+    } else {
+        console.log(`Syncing is disabled as syncPlayers is set to false.`);
+    }
+};
 
 const getScore = (objective, target, useZero = true) => {
     try {
@@ -14,60 +67,26 @@ const getScore = (objective, target, useZero = true) => {
     }
 };
 
-//Trigger Events When Player Joins World
-
 world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
     if (!initialSpawn) return;
-    console.log(`Checking auto tags for ${player.nameTag}`);
-    applyAutoTags(player);
-    console.log(`Checking ${player.nameTag}s Moneyz balance`);
+
+    console.log(`Checking world properties and syncing properties for ${player.nameTag}`);
+    ensureWorldPropertiesExist();
     ensurePlayerHasMoneyzScore(player);
+    syncPlayerPropertiesWithWorld(player);
 });
 
-// Checks if Moneyz Auto Taggging is Enabled and Adds the Enabled Tags to Players When They Join if They Don't Already Have Tag
+system.runInterval(() => {
+    const syncPlayers = world.getDynamicProperty('syncPlayers');
+    
+    if (syncPlayers === true) {
+        world.getPlayers().forEach(player => {
+            syncPlayerPropertiesWithWorld(player);
+        });
+    } else {
 
-async function applyAutoTags(player) {
-    if (getScore('moneyzAutoTag', 'moneyzShop') > 0) {
-        const hasShopTag = await player.hasTag('moneyzShop');
-        if (!hasShopTag) {
-            player.runCommandAsync(`tag ${player.nameTag} add moneyzShop`);
-            console.log(`Applying moneyzShop tag for ${player.nameTag}`);
-        }
     }
+}, 90);
 
-    if (getScore('moneyzAutoTag', 'moneyzATM') > 0) {
-        const hasATMTag = await player.hasTag('moneyzATM');
-        if (!hasATMTag) {
-            player.runCommandAsync(`tag ${player.nameTag} add moneyzATM`);
-            console.log(`Applying moneyzATM tag for ${player.nameTag}`);
-        }
-    }
 
-    if (getScore('moneyzAutoTag', 'moneyzSend') > 0) {
-        const hasSendTag = await player.hasTag('moneyzSend');
-        if (!hasSendTag) {
-            player.runCommandAsync(`tag ${player.nameTag} add moneyzSend`);
-            console.log(`Applying moneyzSend tag for ${player.nameTag}`);
-        }
-    }
-
-    if (getScore('moneyzAutoTag', 'moneyzLucky') > 0) {
-        const hasSendTag = await player.hasTag('moneyzLucky');
-        if (!hasSendTag) {
-            player.runCommandAsync(`tag ${player.nameTag} add moneyzLucky`);
-            console.log(`Applying moneyzLucky tag for ${player.nameTag}`);
-        }
-    }
-}
-
-//Ensures Player has a Moneyz Score
-
-const ensurePlayerHasMoneyzScore = (player) => {
-    const moneyzScore = getScore('Moneyz', player.nameTag, false);
-    if (isNaN(moneyzScore)) {
-        player.runCommandAsync(`scoreboard players set ${player.nameTag} Moneyz 0`);
-        console.log(`Initialized Moneyz balance for ${player.nameTag}`);
-    }
-};
-
-console.log('autoTag.js loaded')
+console.log('autoTag.js loaded');
