@@ -1,5 +1,6 @@
 import { world, system } from "@minecraft/server"
 import { getScore } from './utilities.js';
+import { convertTagsToProperties } from './convertTags.js';
 
 const ensureWorldPropertiesExist = () => {
     const properties = [
@@ -63,6 +64,7 @@ world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
     ensureWorldPropertiesExist();
     ensurePlayerHasMoneyzScore(player);
     syncPlayerPropertiesWithWorld(player);
+    convertTagsToProperties(player);
 });
 
 system.runInterval(() => {
