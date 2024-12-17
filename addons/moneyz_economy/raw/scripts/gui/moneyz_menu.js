@@ -145,22 +145,11 @@ world.beforeEvents.itemUse.subscribe(data => {
         
         function canAccessLuckyMenu(player) {
             const lastAccessDate = player.getDynamicProperty("lastLuckyPurchase");
-
-            if (!lastAccessDate) {
-                return true;
-            }
             const currentDate = getCurrentUTCDate();
-            if (lastAccessDate !== currentDate) {
-                return true;
-            }
-            return false; 
+            return !lastAccessDate || lastAccessDate !== currentDate;
         }
 
         if (canAccessLuckyMenu(player)) {
-            player.setDynamicProperty("lastLuckyPurchase", getCurrentUTCDate());
-
-            const shops = ["armory", "craftershop", "farmers_market", "library", "petshop", "workshop"];
-
             new ActionFormData()
                 .title("§l§1Lucky Purchase Menu")
                 .body("§l§o§fChoose a shop to make a lucky purchase!")
@@ -172,12 +161,22 @@ world.beforeEvents.itemUse.subscribe(data => {
                 .button("§d§lWorkshop\n§r§7[ Feeling Lucky? ]")
                 .button("§4§lBack")
                 .show(player).then(r => {
-                    if (r.selection === 0) player.runCommandAsync("function armory/lucky");
-                    if (r.selection === 1) player.runCommandAsync("function craftershop/lucky");
-                    if (r.selection === 2) player.runCommandAsync("function farmers_market/lucky");
-                    if (r.selection === 3) player.runCommandAsync("function library/lucky");
-                    if (r.selection === 4) player.runCommandAsync("function petshop/lucky");
-                    if (r.selection === 5) player.runCommandAsync("function workshop/lucky");
+                    const currentDate = getCurrentUTCDate();
+                    
+                    const executeLuckyPurchase = (command) => {
+                        const score = getScore('moneyzAutoTag', 'oneLuckyPurchase');
+                        player.runCommandAsync(command);
+                        if (score >= 1) {
+                            player.setDynamicProperty("lastLuckyPurchase", currentDate);
+                        }
+                    };
+
+                    if (r.selection === 0) executeLuckyPurchase("function armory/lucky");
+                    if (r.selection === 1) executeLuckyPurchase("function craftershop/lucky");
+                    if (r.selection === 2) executeLuckyPurchase("function farmers_market/lucky");
+                    if (r.selection === 3) executeLuckyPurchase("function library/lucky");
+                    if (r.selection === 4) executeLuckyPurchase("function petshop/lucky");
+                    if (r.selection === 5) executeLuckyPurchase("function workshop/lucky");
                     if (r.selection === 6) main(player);
                 });
         } else {
