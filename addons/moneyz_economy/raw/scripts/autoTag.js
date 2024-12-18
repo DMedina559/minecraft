@@ -1,6 +1,6 @@
 import { world, system } from "@minecraft/server"
 import { getScore } from './utilities.js';
-import { convertTagsToProperties } from './convertTags.js';
+import { convertTagsToProperties, updateWorldProperties } from './convertTags.js';
 
 const ensureWorldPropertiesExist = () => {
     const properties = [
