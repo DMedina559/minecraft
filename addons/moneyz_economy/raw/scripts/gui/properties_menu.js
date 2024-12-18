@@ -139,7 +139,7 @@ function worldPropertiesMenu(player) {
         .title("§l§1World Properties Menu")
         .body(propertiesList)
         .button("§d§lModify Properties\n§r§7[ Modify World Properties ]")
-        .button("§d§lClear Properties\n§r§7[ Clear World Properties ]")
+        .button("§d§lClear Properties\n§r§7[ Clear ALL World Properties ]")
         .button("§4§lBack")
         .show(player)
         .then(r => {
