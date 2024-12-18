@@ -27,22 +27,27 @@ export function updateWorldProperties() {
 
     const objectiveName = "moneyzAutoTag";
     const dummyPlayers = ["moneyzShop", "moneyzATM", "moneyzSend"];
-    const propertyPrefix = "moneyz";
 
     const objective = scoreboard.getObjective(objectiveName);
     if (!objective) {
-        console.error(`Objective "${objectiveName}" not found!`);
+        console.warn(`Objective "${objectiveName}" does not exist. Skipping update.`);
         return;
     }
 
     dummyPlayers.forEach(playerName => {
-        const score = objective.getScore(playerName);
-        const propertyName = `${propertyPrefix}${playerName}`;
+        try {
+            const score = objective.getScore(playerName);
+            if (score === undefined) {
+                console.warn(`"${playerName}" does not exist in the objective "${objectiveName}". Skipping.`);
+                return;
+            }
 
-        if (score !== undefined) {
+            const propertyName = `${playerName}`;
             const propertyValue = score > 0;
             world.setDynamicProperty(propertyName, propertyValue);
-            console.log(`Migraged to World Property: ${propertyName} = ${propertyValue}`);
+            console.log(`Updated world property: ${propertyName} = ${propertyValue}`);
+        } catch (error) {
+            console.error(`Error processing "${playerName}":`, error);
         }
     });
 
