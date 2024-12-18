@@ -45,7 +45,7 @@ function playerPropertiesMenu(player) {
                 .show(player).then(r => {
                     if (r.selection === 0) viewPlayerProperties(player, selectedPlayer);
                     if (r.selection === 1) modifyPlayerProperties(player, selectedPlayer);
-                    if (r.selection === 1) propertiesMenu(player);
+                    if (r.selection === 2) propertiesMenu(player);
                 });
         });
 }
