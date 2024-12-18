@@ -4,6 +4,7 @@ import { getScore, getCurrentUTCDate } from '../utilities.js';
 import { openRewardsMenu } from './rewards_menu.js';
 import { moneyzAdmin } from './admin_menu.js';
 import { luckyPurchase } from './lucky_menu.js';
+import { chanceMenu } from './chance_menu.js';
 
 const title = "§l§1Moneyz Menu";
 
@@ -18,29 +19,34 @@ export function main(player) {
     const buttons = [];
     const actions = [];
 
-    if (player.getDynamicProperty('moneyzShop') === true) {
+    if (player.getDynamicProperty('moneyzShop') === "true") {
         buttons.push('§d§lShops\n§r§7[ Click to Shop ]');
         actions.push(() => shops(player));
     }
     
-    if (player.getDynamicProperty('moneyzATM') === true) {
+    if (player.getDynamicProperty('moneyzATM') === "true") {
         buttons.push('§d§lATM\n§r§7[ Click to Exchange ]');
         actions.push(() => player.runCommandAsync("dialogue open @s @s atm"));
     }
     
-    if (player.getDynamicProperty('moneyzSend') === true) {
+    if (player.getDynamicProperty('moneyzSend') === "true") {
         buttons.push('§d§lSend Moneyz\n§r§7[ Click to Send Moneyz ]');
         actions.push(() => moneyzTransfer(player));
     }
     
-    if (player.getDynamicProperty('moneyzLucky') === true) {
-        buttons.push('§d§lFeeling Lucky?\n§r§7[ Click to Access ]');
+    if (player.getDynamicProperty('moneyzDaily') === "true") {
+        buttons.push('§d§lDaily Reward\n§r§7[ Click to Redeem ]');
+        actions.push(() => openRewardsMenu(player));
+    }
+
+    if (player.getDynamicProperty('moneyzLucky') === "true") {
+        buttons.push('§d§lFeeling Lucky?\n§r§7[ Click to See ]');
         actions.push(() => luckyPurchase(player));
     }
 
-    if (player.getDynamicProperty('moneyzDaily') === true) {
-        buttons.push('§d§lDaily Reward\n§r§7[ Click to Redeem ]');
-        actions.push(() => openRewardsMenu(player));
+    if (player.getDynamicProperty('moneyzChance') === "true") {
+        buttons.push('§d§lChance Game\n§r§7[ Click to Play ]');
+        actions.push(() => chanceMenu(player));
     }
     
     if (player.hasTag('moneyzAdmin')) {

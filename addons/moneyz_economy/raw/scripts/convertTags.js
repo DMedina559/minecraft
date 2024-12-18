@@ -9,7 +9,7 @@ export const convertTagsToProperties = (player) => {
 
   tagsToConvert.forEach((tag) => {
     if (player.hasTag(tag)) {
-      player.setDynamicProperty(tag, true);
+      player.setDynamicProperty(tag, 'true');
       player.removeTag(tag);
       console.log(
         `Converted tag ${tag} to property for ${player.nameTag}`
@@ -45,11 +45,11 @@ export function updateWorldProperties() {
       }
 
       const propertyName = `${playerName}`;
-      const propertyValue = score > 0;
+      const propertyValue = score > 0 ? 'true' : 'false';
       world.setDynamicProperty(propertyName, propertyValue);
       console.log(`Updated world property: ${propertyName} = ${propertyValue}`);
 
-      if (propertyValue) { 
+      if (propertyValue === 'true') {
         syncPlayers = true;
       }
     } catch (error) {
@@ -57,8 +57,8 @@ export function updateWorldProperties() {
     }
   });
 
-  world.setDynamicProperty('syncPlayers', syncPlayers);
-  console.log(`Updated world property: syncPlayers = ${syncPlayers}`);
+  world.setDynamicProperty('syncPlayers', syncPlayers ? 'true' : 'false');
+  console.log(`Updated world property: syncPlayers = ${syncPlayers ? 'true' : 'false'}`);
 
   try {
     const removed = scoreboard.removeObjective(objectiveName);
@@ -71,5 +71,6 @@ export function updateWorldProperties() {
     console.error(`Error removing scoreboard objective "${objectiveName}":`, error);
   }
 }
+
 
 console.log("convertTags.js loaded");

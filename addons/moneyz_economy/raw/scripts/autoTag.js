@@ -4,14 +4,17 @@ import { convertTagsToProperties, updateWorldProperties } from './convertTags.js
 
 const ensureWorldPropertiesExist = () => {
     const properties = [
-        { name: 'syncPlayers', defaultValue: true },
-        { name: 'moneyzATM', defaultValue: true },
-        { name: 'moneyzSend', defaultValue: true },
-        { name: 'oneLuckyPurchase', defaultValue: true },
-        { name: 'moneyzShop', defaultValue: false },
-        { name: 'moneyzLucky', defaultValue: false },
-        { name: 'moneyzDaily', defaultValue: false },
-        { name: 'dailyReward', defaultValue: 0 }
+        { name: 'dailyReward', defaultValue: 0 },
+        { name: 'chanceX', defaultValue: '0' },
+        { name: 'chanceWin', defaultValue: '0' },
+        { name: 'syncPlayers', defaultValue: 'true' },
+        { name: 'moneyzATM', defaultValue: 'true' },
+        { name: 'moneyzSend', defaultValue: 'true' },
+        { name: 'oneLuckyPurchase', defaultValue: 'true' },
+        { name: 'moneyzShop', defaultValue: 'false' },
+        { name: 'moneyzDaily', defaultValue: 'false' },
+        { name: 'moneyzLucky', defaultValue: 'false' },
+        { name: 'moneyzChance', defaultValue: 'false' }
     ];
 
     properties.forEach(prop => {
@@ -35,13 +38,14 @@ const ensurePlayerHasMoneyzScore = (player) => {
 const syncPlayerPropertiesWithWorld = (player) => {
     const syncPlayers = world.getDynamicProperty('syncPlayers');
     
-    if (syncPlayers === true) {
+    if (syncPlayers === 'true') {
         const properties = [
-            { name: 'moneyzATM', defaultValue: true },
-            { name: 'moneyzSend', defaultValue: true },
-            { name: 'moneyzShop', defaultValue: false },
-            { name: 'moneyzLucky', defaultValue: false },
-            { name: 'moneyzDaily', defaultValue: false }
+            { name: 'moneyzATM', defaultValue: 'true' },
+            { name: 'moneyzSend', defaultValue: 'true' },
+            { name: 'moneyzShop', defaultValue: 'false' },
+            { name: 'moneyzDaily', defaultValue: 'false' },
+            { name: 'moneyzLucky', defaultValue: 'false' },
+            { name: 'moneyzChance', defaultValue: 'false' }
         ];
 
         properties.forEach(prop => {
@@ -71,7 +75,7 @@ world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
 system.runInterval(() => {
     const syncPlayers = world.getDynamicProperty('syncPlayers');
     
-    if (syncPlayers === true) {
+    if (syncPlayers === 'true') {
         world.getPlayers().forEach(player => {
             syncPlayerPropertiesWithWorld(player);
         });

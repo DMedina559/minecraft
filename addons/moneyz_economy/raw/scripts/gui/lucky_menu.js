@@ -36,7 +36,7 @@ export function luckyPurchase(player) {
                     console.log(`Executing lucky purchase command: ${command}`);
                     player.runCommandAsync(command);
                     
-                    if (oneLuckyPurchaseEnabled === true) {
+                    if (oneLuckyPurchaseEnabled === 'true') {
                         console.log(`oneLuckyPurchase is enabled, setting ${player.nameTag}'s lastLuckyPurchase to ${currentDate}`);
                         
                         player.setDynamicProperty("lastLuckyPurchase", currentDate);

@@ -43,7 +43,7 @@
 							"text": "§r§lWhat are Resources?\n"
 						},
 						{
-							"text": "§r§6Resources §rare various ores Players can §6mine in a Minecraft world. §rSee §6below §r for more information about the Bank.\n"
+							"text": "§r§6Resources §rare various ores Players can §6mine in a Minecraft world. §rSee §6below §rfor more information about the Bank.\n"
 						},
 						{
 							"text": "§r§lHow can Players earn Moneyz?\n"
@@ -119,19 +119,37 @@
 							"text": "§lWhat Is the Moneyz Menu?\n"
 						},
 						{
-							"text": "§rThe Moneyz Menu is a §6menu Player can access that allows §6direct Moneyz management from the Players inventory, and allows World Owners/Admins to manage the moneyz economy.\n\n§rPlayers can:\nBuy\nSell\nSend Moneyz\nExchange Resources\nMake a Lucky Purchase\nView Help\n\nWorld Owners/Admins can:\nView Players Tags\nView Players Moneyz Balances\nAdd/Remove/Set Players Moneyz Balance\nAdd/Remove Players Tags\nView/Set Player Properties (only 'lastLuckyPurchase' is used ('lastLuckyPurchase' uses 'YYYY-MM-DD' format. Nubers Only))\nView/Set/Clear World Properties (not currently used for anything)\n"
+							"text": "§rThe Moneyz Menu is a §6menu Player can access that allows §6direct Moneyz management from the Players inventory, and allows World Owners/Admins to manage the moneyz economy.\n\n§rPlayers can:\nBuy\nSell\nSend Moneyz\nExchange Resources\nMake a Lucky Purchase\nRedeem Daily Rewards\nView Help\n\nWorld Owners/Admins can:\nView/Add/Remove/Set Players Moneyz Balance\nView/Add/Remove Players Tags\nView/Set Player Properties\nView/Set/Clear World Properties\nToggle AutoTags\n"
 						},
 						{
 							"text": "§r§lHow do Players access the Moneyz Menu?\n"
 						},
 						{
-							"text": "§rPlayers can access the Moneyz Menu by §6crafting a Moneyz Menu item.\n§rPlayers can §6combine 1 of each resource in the crafting table §rto craft a Moneyz Menu item or purchase one from the Workshop.\n"
+							"text": "§rPlayers can access the Moneyz Menu by §6crafting or purchasing a Moneyz Menu item.\n§rPlayers can §6combine 1 of each resource in the crafting table §rto craft a Moneyz Menu item or purchase one from the Workshop.\n"
 						},
 						{
 							"text": "§r§lWhy can't I access all of the options in the Moneyz Menu?\n"
 						},
 						{
-							"text": "§rTo access Shops, ATMs, Send Moneyz, Lucky Purchases, or Redeem Rewards, §6Players must first obtain a moneyzTag.\n§rmoneyzTags are §6Properties that are set for a Player to access the Moneyz Menu options\n§rThese are the available Properties:\nmoneyzShop\nmoneyzATM\nmoneyzSend\nmoneyzLucky\nmoneyzDaily\nWorld Owners/Admins can view and set these Properties for any online Players.\n§rMoneyz Economy also comes with an §6auto tagging §rfeature that can auto apply these moneyzTags to online Players.\n§rWorld Owners/Admins with the §6moneyzAdmin §rtag can §6enable/disable this feature for each individial tag from the Moneyz Menu, syncPlayers must also be enabled to turn on auto tagging.\n"
+							"text": "§rTo access Shops, ATMs, Send Moneyz, Daiy Rewards, Lucky Purchases, or play the Chance Game, §6Players must first obtain a moneyzTag property with  a true value.\n§rmoneyzTags are §6Properties that are set on a Player to access the Moneyz Menu options\n§rThey can have the value §6true §ror §6false.\n§rThese are the available Properties:\nmoneyzShop\nmoneyzATM\nmoneyzSend\nmoneyzDaily\nmoneyzLucky\nmoneyzChance\nWorld Owners/Admins can view and set these Properties for any online Players.\n§rMoneyz Economy also comes with an §6auto tagging §rfeature that can auto apply these moneyzTags to online Players.\n§rWorld Owners/Admins with the §6moneyzAdmin §rtag can §6enable/disable this feature for each individial tag in the Admin Menu, syncPlayers must also be enabled to turn on auto tagging.\n"
+						},
+						{
+							"text": "§r§lWhat are Daily Rewards?\n"
+						},
+						{
+							"text": "§rIf enabled by World Owners/Admins, a §6Daily Reward allows Players to redeem Moneyz in their balance, §rin the Moneyz Menu once a day.\nTo acess Daily Rewards Players §6must have the moneyzDaily property set to true, §rand §6World Owners/Admins must set the dailyReward §rWorld Property to §6any number.\n"
+						},
+						{
+							"text": "§r§lWhat is a Lucky Purchase?\n"
+						},
+						{
+							"text": "§rIf enabled by World Owners/Admins, a §6Lucky Purchase is a purchase Players can make once a day, from 1 shop only, §rin the Moneyz Menu.\nPlayers §6have a chance to win random items §rat different values form any shop.\nTo access Lucky Purchases, §6Players must have the moneyzLucky property set to true.\n"
+						},
+						{
+							"text": "§r§lWhat do you mean once a day?\n"
+						},
+						{
+							"text": "§rAfter a player makes a Lucky Purchase or redeems a Daily Reward §6the date will be stored as a property §rin the Player's game data.\n§6World Owners/Admins can add, view, and modiy these values §rfor any online Player in the Admin Menu.\nThe properties will be §6lastLuckyPurchase §rand §6lastDailyReward §r and the value has to be in this §6date format: YYYY-MM-DD\n§rWorld Owners/Admins can also §6disable the once a day limit for Lucky Purchases §6in the Admin Menu\n"
 						},
 						{
 							"text": "§r§lWhat about the Admin Menu?\n"
@@ -140,22 +158,10 @@
 							"text": "§rWorld Owners/Admins require a §6moneyzAdmin tag §r(not to be confused with the above moneyzTag properties) to §6access the Admin Menu\n§rThe moneyzAdmin tag is §6first applied to the Player who runs the setup function. §rFrom there §6they can add the moneyzAdmin to other Admins from the Admin Menu\n"
 						},
 						{
-							"text": "§r§lWhat is a Lucky Purchase?\n"
+							"text": "§r§lWhat is the Chance Game?\n"
 						},
 						{
-							"text": "§rIf enabled by World Owners/Admins, a §6Lucky Purchase is a purchase Players can make once a day, from 1 shop only, §rfrom the Moneyz Menu.\nPlayers §6have a chance to win random items §rat different values form any shop.\nTo access Lucky Purchases, §6Players must have the moneyzLucky property.\n"
-						},
-						{
-							"text": "§r§lWhat are Daily Rewards?\n"
-						},
-						{
-							"text": "§rIf enabled by World Owners/Admins, a §6Daily Reward allows Players to redeem Moneyz in their balance, §rfrom the Moneyz Menu once a day.\nTo acess Daily Rewards Players §6must have the moneyzDaily tag, §rand §6World Owners/Admins must set the dailyReward §rWorld Property to §6any number.\n"
-						},
-						{
-							"text": "§r§lWhat do you mean once a day?\n"
-						},
-						{
-							"text": "§rAfter a player makes a Lucky Purchase or redeems a Daily Reward §6the date will be stored as a property §rin the Player's game data.\n§6World Owners/Admins can add, view, and modiy these values §rfor any online Player in the Admin Menu.\nThe properties will be §6lastLuckyPurchase §rand §6lastDailyReward §r and the value has to be in this §6date format: YYYY-MM-DD\n§rWorld Owners/Admins can also §6disable the once a day limit for Lucky Purchases §6in the Admin Menu\n"
+							"text": "§rIf enabled by World Owners/Admins, the §6Chance Game allows Players to play Moneyz for a chance to win more Moneyz.\nTo acess the Chance Game, Players §6must have the moneyzChance property set to true, §rand §6World Owners/Admins must set the chanceX and chanceWin §rWorld Property to §6any number.\n§rThe §6chanceX property controls the multiplyer of earnings.\n§rFor example if a Player plays the Chance Game and places a stake for §65 Moneyz, §rand the §6chanceX property is set to 2 §rthe Player will earn back §610 Moneyz.\n§rThe §6chanceWin property controls the chances of the Player earning back Moneyz. §rThis should be set to any number between §61-100, 100 being always earn.\n"
 						}
 					]
 				},

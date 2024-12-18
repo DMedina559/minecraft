@@ -10,52 +10,54 @@ export function moneyzAdmin(player) {
     const form = new ActionFormData()
         .title(title)
         .body(`§l§o§fManage Various Moneyz Aspects Here`)
-        .button(`§d§lManage Tags\n§r§7[ Click to Manage ]`)
         .button(`§d§lManage Balances\n§r§7[ Click to Manage ]`)
         .button(`§d§lManage Auto Tags\n§r§7[ Click to Manage ]`)
         .button(`§d§lManage Properties\n§r§7[ Click to Manage ]`)
+        .button(`§d§lManage Tags\n§r§7[ Click to Manage ]`)
         .button(`§4§lBack`);
 
     form.show(player).then(r => {
-        if (r.selection === 0) tagManage(player);
-        if (r.selection === 1) balanceManage(player);
-        if (r.selection === 2) toggleAutoTags(player);
-        if (r.selection === 3) propertiesMenu(player);
+        if (r.selection === 0) balanceManage(player);
+        if (r.selection === 1) toggleAutoTags(player);
+        if (r.selection === 2) propertiesMenu(player);
+        if (r.selection === 3) tagManage(player);
         if (r.selection === 4) main(player);
     });
 }
 
 function toggleAutoTags(player) {
-    const options = ['moneyzShop', 'moneyzATM', 'moneyzSend', 'moneyzLucky', 'moneyzDaily', 'oneLuckyPurchase', 'syncPlayers'];
+    const options = ['syncPlayers', 'moneyzShop', 'moneyzATM', 'moneyzSend', 'moneyzDaily', 'moneyzLucky', 'moneyzChance', 'oneLuckyPurchase'];
     const scores = options.map(tag => `${tag}: ${world.getDynamicProperty(tag)}`);
 
     new ActionFormData()
         .title("Toggle Auto Tags")
         .body(`§l§oToggle Auto Tags:\n${scores.join('\n')}`)
+        .button('§d§lToggle syncPlayers')
         .button('§d§lToggle moneyzShop')
         .button('§d§lToggle moneyzATM')
         .button('§d§lToggle moneyzSend')
-        .button('§d§lToggle moneyzLucky')
         .button('§d§lToggle moneyzDaily')
+        .button('§d§lToggle moneyzLucky')
+        .button('§d§lToggle moneyzChance')
         .button('§d§lToggle oneLuckyPurchase')
-        .button('§d§lToggle syncPlayers')
         .button('§4§lBack')
         .show(player).then(({ selection }) => {
             if (selection >= 0 && selection < options.length) {
                 const selectedTag = options[selection];
                 const currentValue = world.getDynamicProperty(selectedTag);
-                const newValue = currentValue === true ? false : true;
+                const newValue = currentValue === 'true' ? 'false' : 'true';
 
                 world.setDynamicProperty(selectedTag, newValue);
 
-                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aToggled ${selectedTag} to ${newValue === true ? 'On' : 'Off'}."}]}`);
+                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aToggled ${selectedTag} to ${newValue === 'true' ? 'On' : 'Off'}."}]}`);
                 toggleAutoTags(player);
-                console.log(`Admin toggled ${selectedTag} to ${newValue === true ? 'On' : 'Off'}`);
+                console.log(`Admin toggled ${selectedTag} to ${newValue === 'true' ? 'On' : 'Off'}`);
             } else {
                 moneyzAdmin(player);
             }
         });
 }
+
 
 function balanceManage(player) {
     const players = [...world.getPlayers()].map(p => {
