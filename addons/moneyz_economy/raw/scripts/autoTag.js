@@ -4,13 +4,13 @@ import { convertTagsToProperties, updateWorldProperties } from './convertTags.js
 
 const ensureWorldPropertiesExist = () => {
     const properties = [
+        { name: 'syncPlayers', defaultValue: true },
         { name: 'moneyzATM', defaultValue: true },
         { name: 'moneyzSend', defaultValue: true },
         { name: 'oneLuckyPurchase', defaultValue: true },
         { name: 'moneyzShop', defaultValue: false },
         { name: 'moneyzLucky', defaultValue: false },
         { name: 'moneyzDaily', defaultValue: false },
-        { name: 'syncPlayers', defaultValue: false },
         { name: 'dailyReward', defaultValue: 0 }
     ];
 
