@@ -65,6 +65,7 @@ world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
     ensurePlayerHasMoneyzScore(player);
     syncPlayerPropertiesWithWorld(player);
     convertTagsToProperties(player);
+    updateWorldProperties();
 });
 
 system.runInterval(() => {
