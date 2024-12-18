@@ -81,7 +81,7 @@ function viewPlayerProperties(player, selectedPlayer) {
         .button("§4§lBack")
         .show(player)
         .then(r => {
-            if (r.selection === 0) playerPropertiesMenu(player); // Go back to playerPropertiesMenu
+            if (r.selection === 0) playerPropertiesMenu(player);
         });
 }
 

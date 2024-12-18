@@ -130,15 +130,13 @@ function tagManage(player) {
                     .then(({ formValues: [playerIndex] }) => {
 
                         const selectedPlayer = players[playerIndex];
-                        const tags = selectedPlayer.getTags().join(', ') || 'No Tags';
 
                         new ModalFormData()
-                            .title(`§lManage ${selectedPlayer.nameTag}'s Tags`)
+                            .title(`§lManage Tags for ${selectedPlayer.nameTag}`)
                             .dropdown('§o§fAction', ['Add Tag', 'Remove Tag'])
                             .textField('§fEnter Tag:', '§oTag')
                             .show(player)
-                            .then(({ formValues: [currentTags, actionIndex, tag] }) => { 
-
+                            .then(({ formValues: [actionIndex, tag] }) => { 
                                 const trimmedTag = tag.trim();
 
                                 if (trimmedTag === "") {

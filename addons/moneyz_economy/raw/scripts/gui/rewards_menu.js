@@ -8,6 +8,11 @@ export function openRewardsMenu(player) {
     const currentDate = getCurrentUTCDate();
     const lastRedemption = player.getDynamicProperty("lastDailyReward");
 
+    console.info(`openRewardsMenu called for ${player.nameTag}`);
+    console.info(`Current reward value: ${rewardValue}`);
+    console.info(`Current date: ${currentDate}`);
+    console.info(`Last redemption date for ${player.nameTag}: ${lastRedemption}`);
+
     let bodyText = `§l§o§fDaily Rewards!\n\n`;
 
     if (rewardValue && !isNaN(rewardValue)) {
@@ -41,15 +46,20 @@ export function openRewardsMenu(player) {
 function dailyRewardLogic(player, rewardValue, currentDate) {
     const lastRedemption = player.getDynamicProperty("lastDailyReward");
 
+    console.info(`dailyRewardLogic called for ${player.nameTag}`);
+    console.info(`Current date: ${currentDate}`);
+    console.info(`Last redemption date for ${player.nameTag}: ${lastRedemption}`);
+
     if (lastRedemption !== currentDate) {
         player.runCommandAsync(`scoreboard players add "${player.nameTag}" Moneyz ${rewardValue}`);
 
         player.setDynamicProperty("lastDailyReward", currentDate);
 
         player.sendMessage(`§aYou have claimed your daily rewards! §f${rewardValue} Moneyz`);
+        console.info(`${player.nameTag} claimed daily reward: ${rewardValue} Moneyz`);
     } else {
-
         player.sendMessage("§cYou have already claimed your daily rewards. Come back tomorrow!");
+        console.info(`${player.nameTag} tried to claim reward twice. Last redemption: ${lastRedemption}`);
     }
 };
 
