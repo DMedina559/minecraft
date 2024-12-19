@@ -74,12 +74,14 @@ export function chanceMenu(player) {
             if (isNaN(stakeAmount) || stakeAmount <= 0) {
               player.sendMessage('§cInvalid stake amount. Please enter a positive number.');
               chanceMenu(player);
+              player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
               return;
             }
 
             if (stakeAmount > playerScore) {
               player.sendMessage('§cInvalid stake amount. You cannot stake more than your current balance.');
               chanceMenu(player);
+              player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
               return;
             }
 
@@ -88,9 +90,11 @@ export function chanceMenu(player) {
               const winAmount = stakeAmount * worldMultiplier;
               objective.setScore(playerIdentity, playerScore + winAmount);
               player.sendMessage(`§aYou won ${winAmount} Moneyz!`);
+              player.runCommandAsync("playsound random.levelup @s ~ ~ ~");
             } else {
               objective.setScore(playerIdentity, playerScore - stakeAmount);
               player.sendMessage(`§cYou lost ${stakeAmount} Moneyz. Better luck next time!`);
+              player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
             }
 
             chanceMenu(player);
