@@ -108,7 +108,7 @@ function shops(player) {
 }
 
 const moneyzTransfer = (player) => {
-    log('Opening Money Transfer Menu for player:', LOG_LEVELS.INFO, player.nameTag);
+    log('Opening Money Transfer Menu for player:', LOG_LEVELS.DEBUG, player.nameTag);
 
     const players = [...world.getPlayers()];
     new ModalFormData()
