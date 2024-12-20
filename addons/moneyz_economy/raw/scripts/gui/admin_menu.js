@@ -3,63 +3,33 @@ import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
 import { getScore, getCurrentUTCDate } from '../utilities.js';
 import { main } from './moneyz_menu.js';
 import { propertiesMenu } from './properties_menu.js';
+import { moneyzSettings } from './settings.js';
+import { log, LOG_LEVELS } from '../logger.js';
 
 const title = "§l§1Admin Menu";
 
 export function moneyzAdmin(player) {
+    log(`Player ${player.nameTag} opened the Moneyz Admin Menu.`, LOG_LEVELS.DEBUG);
     const form = new ActionFormData()
         .title(title)
         .body(`§l§o§fManage Various Moneyz Aspects Here`)
         .button(`§d§lManage Balances\n§r§7[ Click to Manage ]`)
-        .button(`§d§lManage Auto Tags\n§r§7[ Click to Manage ]`)
         .button(`§d§lManage Properties\n§r§7[ Click to Manage ]`)
         .button(`§d§lManage Tags\n§r§7[ Click to Manage ]`)
+        .button(`§d§lSettings\n§r§7[ Click to Manage ]`)
         .button(`§4§lBack`);
 
     form.show(player).then(r => {
         if (r.selection === 0) balanceManage(player);
-        if (r.selection === 1) toggleAutoTags(player);
-        if (r.selection === 2) propertiesMenu(player);
-        if (r.selection === 3) tagManage(player);
+        if (r.selection === 1) propertiesMenu(player);
+        if (r.selection === 2) tagManage(player);
+        if (r.selection === 3) moneyzSettings(player);
         if (r.selection === 4) main(player);
     });
-}
-
-function toggleAutoTags(player) {
-    const options = ['syncPlayers', 'moneyzShop', 'moneyzATM', 'moneyzSend', 'moneyzDaily', 'moneyzLucky', 'moneyzChance', 'oneLuckyPurchase'];
-    const scores = options.map(tag => `${tag}: ${world.getDynamicProperty(tag)}`);
-
-    new ActionFormData()
-        .title("Toggle Auto Tags")
-        .body(`§l§oToggle Auto Tags:\n${scores.join('\n')}`)
-        .button('§d§lToggle syncPlayers')
-        .button('§d§lToggle moneyzShop')
-        .button('§d§lToggle moneyzATM')
-        .button('§d§lToggle moneyzSend')
-        .button('§d§lToggle moneyzDaily')
-        .button('§d§lToggle moneyzLucky')
-        .button('§d§lToggle moneyzChance')
-        .button('§d§lToggle oneLuckyPurchase')
-        .button('§4§lBack')
-        .show(player).then(({ selection }) => {
-            if (selection >= 0 && selection < options.length) {
-                const selectedTag = options[selection];
-                const currentValue = world.getDynamicProperty(selectedTag);
-                const newValue = currentValue === 'true' ? 'false' : 'true';
-
-                world.setDynamicProperty(selectedTag, newValue);
-
-                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aToggled ${selectedTag} to ${newValue === 'true' ? 'On' : 'Off'}."}]}`);
-                toggleAutoTags(player);
-                console.log(`Admin toggled ${selectedTag} to ${newValue === 'true' ? 'On' : 'Off'}`);
-            } else {
-                moneyzAdmin(player);
-            }
-        });
-}
-
+};
 
 function balanceManage(player) {
+    log(`Player ${player.nameTag} opened the Balance Manage Menu.`, LOG_LEVELS.DEBUG);
     const players = [...world.getPlayers()].map(p => {
         return p.nameTag;
     });
@@ -81,7 +51,7 @@ function balanceManage(player) {
                         const amount = parseInt(textField);
                         if (isNaN(amount) || amount < 0) {
                             player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid number!"}]}`);
-                            console.log(`Admin entered an invalid Number`)
+                            log(`Player ${player.nameTag} entered an invalid amount for balance adjustment.`, LOG_LEVELS.WARN);
                             return;
                         }
                         new ActionFormData()
@@ -95,15 +65,15 @@ function balanceManage(player) {
                                 if (selection === 0) {
                                     player.runCommandAsync(`scoreboard players add ${selectedPlayer} Moneyz ${amount}`);
                                     player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aAdded §l${amount} §r§ato ${selectedPlayer}'s Moneyz."}]}`);
-                                    console.log(`Admin added ${amount} Moneyz to ${selectedPlayer} balance`)
+                                    log(`Player ${player.nameTag} added ${amount} Moneyz to ${selectedPlayer}.`, LOG_LEVELS.INFO);
                                 } else if (selection === 1) {
                                     player.runCommandAsync(`scoreboard players set ${selectedPlayer} Moneyz ${amount}`);
                                     player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aSet ${selectedPlayer}'s Moneyz to §l${amount}."}]}`);
-                                    console.log(`Admin set ${selectedPlayer} balance to ${amount} Moneyz`)
+                                    log(`Player ${player.nameTag} set ${selectedPlayer}'s Moneyz to ${amount}.`, LOG_LEVELS.INFO);
                                 } else if (selection === 2) {
                                     player.runCommandAsync(`scoreboard players remove ${selectedPlayer} Moneyz ${amount}`);
                                     player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aRemoved §l${amount} §r§afrom ${selectedPlayer}'s Moneyz."}]}`);
-                                    console.log(`Admin removed ${amount} Moneyz from ${selectedPlayer} balance`)
+                                    log(`Player ${player.nameTag} removed ${amount} Moneyz from ${selectedPlayer}.`, LOG_LEVELS.INFO);
                                 }
                             });
                     });
@@ -114,8 +84,8 @@ function balanceManage(player) {
 }
 
 function tagManage(player) {
+    log(`Player ${player.nameTag} opened the Tag Manage Menu.`, LOG_LEVELS.DEBUG);
     const players = [...world.getPlayers()];
-
     const playerTagsList = players.map(p => `${p.nameTag}: §g${p.getTags().join(', ') || 'No Tags'}`).join('\n');
 
     new ActionFormData()
@@ -143,7 +113,7 @@ function tagManage(player) {
 
                                 if (trimmedTag === "") {
                                     player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid tag!"}]}`);
-                                    console.log(`Admin entered an invalid tag`);
+                                    log(`Player ${player.nameTag} entered an invalid tag.`, LOG_LEVELS.WARN);
                                     tagManage(player);
                                     return;
                                 }
@@ -151,15 +121,15 @@ function tagManage(player) {
                                 if (actionIndex === 0) {
                                     selectedPlayer.addTag(trimmedTag);
                                     player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aAdded tag §l${trimmedTag} §r§ato ${selectedPlayer.nameTag}."}]}`);
-                                    console.log(`Admin added ${trimmedTag} tag to ${selectedPlayer.nameTag}`);
+                                    log(`Player ${player.nameTag} added tag ${trimmedTag} to ${selectedPlayer.nameTag}.`, LOG_LEVELS.INFO);
                                 } else if (actionIndex === 1) {
                                     if (selectedPlayer.hasTag(trimmedTag)) {
                                         selectedPlayer.removeTag(trimmedTag);
                                         player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aRemoved tag §l${trimmedTag} §r§afrom ${selectedPlayer.nameTag}."}]}`);
-                                        console.log(`Admin removed ${trimmedTag} tag from ${selectedPlayer.nameTag}`);
+                                        log(`Player ${player.nameTag} removed tag ${trimmedTag} from ${selectedPlayer.nameTag}.`, LOG_LEVELS.INFO);
                                     } else {
                                         player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§c${selectedPlayer.nameTag} does not have the tag §l${trimmedTag}."}]}`);
-                                        console.log(`Admin tried to remove a tag that didn't exist from ${selectedPlayer.nameTag}`);
+                                        log(`Player ${player.nameTag} tried to remove a non-existent tag ${trimmedTag} from ${selectedPlayer.nameTag}.`, LOG_LEVELS.WARN);
                                     }
                                 }
 
@@ -172,5 +142,4 @@ function tagManage(player) {
         });
 }
 
-
-console.info('admin_menu.js loaded')
+log('admin_menu.js loaded', LOG_LEVELS.DEBUG);

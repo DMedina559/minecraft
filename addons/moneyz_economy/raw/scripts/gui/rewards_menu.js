@@ -2,16 +2,14 @@ import { world, system } from "@minecraft/server"
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
 import { getScore, getCurrentUTCDate } from '../utilities.js';
 import { main } from './moneyz_menu.js';
+import { log, LOG_LEVELS } from '../logger.js';
 
 export function openRewardsMenu(player) {
     const rewardValue = world.getDynamicProperty("dailyReward");
     const currentDate = getCurrentUTCDate();
     const lastRedemption = player.getDynamicProperty("lastDailyReward");
 
-    console.info(`openRewardsMenu called for ${player.nameTag}`);
-    console.info(`Current reward value: ${rewardValue}`);
-    console.info(`Current date: ${currentDate}`);
-    console.info(`Last redemption date for ${player.nameTag}: ${lastRedemption}`);
+ log(`Current reward value: ${rewardValue}, Current date: ${currentDate}, Last redemption for ${player.nameTag}: ${lastRedemption}`, LOG_LEVELS.DEBUG);
 
     let bodyText = `§l§o§fDaily Rewards!\n\n`;
 
@@ -23,6 +21,7 @@ export function openRewardsMenu(player) {
         }
     } else {
         bodyText += `§cDaily Rewards are currently unavailable.`;
+        log(`Daily Rewards unavailable.`, LOG_LEVELS.WARN);
     }
 
     const form = new ActionFormData()
@@ -44,23 +43,23 @@ export function openRewardsMenu(player) {
 }
 
 function dailyRewardLogic(player, rewardValue, currentDate) {
+
+    log(`Running dailyRewardLogic for ${player.nameTag}`, LOG_LEVELS.INFO);
+
     const lastRedemption = player.getDynamicProperty("lastDailyReward");
 
-    console.info(`dailyRewardLogic called for ${player.nameTag}`);
-    console.info(`Current date: ${currentDate}`);
-    console.info(`Last redemption date for ${player.nameTag}: ${lastRedemption}`);
+    log(`Current date: ${currentDate}`, LOG_LEVELS.DEBUG);
+    log(`Last redemption date for ${player.nameTag}: ${lastRedemption}`, LOG_LEVELS.DEBUG);
 
     if (lastRedemption !== currentDate) {
         player.runCommandAsync(`scoreboard players add "${player.nameTag}" Moneyz ${rewardValue}`);
-
         player.setDynamicProperty("lastDailyReward", currentDate);
-
         player.sendMessage(`§aYou have claimed your daily rewards! §f${rewardValue} Moneyz`);
-        console.info(`${player.nameTag} claimed daily reward: ${rewardValue} Moneyz`);
+        log(`${player.nameTag} claimed daily reward: ${rewardValue} Moneyz`, LOG_LEVELS.INFO);
     } else {
         player.sendMessage("§cYou have already claimed your daily rewards. Come back tomorrow!");
-        console.info(`${player.nameTag} tried to claim reward twice. Last redemption: ${lastRedemption}`);
+        log(`${player.nameTag} tried to claim reward twice. Last redemption: ${lastRedemption}`, LOG_LEVELS.INFO);
     }
 };
 
-console.info('rewards_menu.js loaded')
+log('rewards_menu.js loaded', LOG_LEVELS.DEBUG);

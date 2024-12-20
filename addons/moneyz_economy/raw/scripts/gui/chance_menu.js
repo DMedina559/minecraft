@@ -1,15 +1,18 @@
 import { world, system } from "@minecraft/server";
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
 import { main } from './moneyz_menu.js';
+import { log, LOG_LEVELS } from '../logger.js';
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
+  log(`Generated random integer between ${min} and ${max}: ${result}`, LOG_LEVELS.DEBUG);
 }
 
 function getWorldProperty(key) {
   return world.getDynamicProperty(key);
+  log(`Retrieved world property "${key}": ${property}`, LOG_LEVELS.DEBUG);
 }
 
 export function chanceMenu(player) {
@@ -26,14 +29,16 @@ export function chanceMenu(player) {
       if (r.selection === 0) {
         const scoreboard = world.scoreboard;
         if (!scoreboard) {
-          console.error("Scoreboard not found!");
+          log("Scoreboard not found!", LOG_LEVELS.ERROR);
+          player.sendMessage("§cAn error occurred. Please try again later.");
           return;
         }
 
         const objectiveName = "Moneyz";
         const objective = scoreboard.getObjective(objectiveName);
         if (!objective) {
-          console.warn(`Objective "${objectiveName}" does not exist.`);
+          log(`Objective "${objectiveName}" does not exist.`, LOG_LEVELS.WARN);
+          player.sendMessage(`§cThe Moneyz objective is missing. Contact an administrator.`);
           return;
         }
 
@@ -63,18 +68,15 @@ export function chanceMenu(player) {
 
             const stakeAmount = parseInt(response.formValues[0], 10);
 
-            // Debugging
-            console.log(`Player's Score: ${playerScore}`);
-            console.log(`Stake Amount: ${stakeAmount}`);
-
             const worldMultiplier = getWorldProperty("chanceX") || 0;
 
-            console.log(`World Multiplier: ${worldMultiplier}`);
+            log(`Player's Score: ${playerScore}, Stake Amount: ${stakeAmount}, World Multiplier: ${worldMultiplier}`, LOG_LEVELS.DEBUG);
 
             if (isNaN(stakeAmount) || stakeAmount <= 0) {
               player.sendMessage('§cInvalid stake amount. Please enter a positive number.');
               chanceMenu(player);
               player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
+              log(`Player ${player.nameTag} entered an invalid stake amount.`, LOG_LEVELS.WARN);
               return;
             }
 
@@ -82,6 +84,7 @@ export function chanceMenu(player) {
               player.sendMessage('§cInvalid stake amount. You cannot stake more than your current balance.');
               chanceMenu(player);
               player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
+              log(`Player ${player.nameTag} tried to stake more than their balance.`, LOG_LEVELS.WARN);
               return;
             }
 
@@ -91,24 +94,29 @@ export function chanceMenu(player) {
               objective.setScore(playerIdentity, playerScore + winAmount);
               player.sendMessage(`§aYou won ${winAmount} Moneyz!`);
               player.runCommandAsync("playsound random.levelup @s ~ ~ ~");
+              log(`Player ${player.nameTag} won ${winAmount} Moneyz.`, LOG_LEVELS.INFO);
             } else {
               objective.setScore(playerIdentity, playerScore - stakeAmount);
               player.sendMessage(`§cYou lost ${stakeAmount} Moneyz. Better luck next time!`);
               player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
+              log(`Player ${player.nameTag} lost ${stakeAmount} Moneyz.`, LOG_LEVELS.INFO);
             }
 
             chanceMenu(player);
 
           }).catch(error => {
-            console.error(`Error showing modal form:`, error);
+            log(`Error showing modal form: ${error}`, LOG_LEVELS.ERROR);
+            player.sendMessage("§cAn error occurred. Please try again later.");
           });
 
         } catch (error) {
-          console.error(`Error processing "${player.nameTag}":`, error);
+           log(`Error processing chance for ${player.nameTag}: ${error}`, LOG_LEVELS.ERROR);
+           player.sendMessage("§cAn error occurred. Please try again later.");
         }
       } else if (r.selection === 1) {
         main(player);
       }
     });
 }
-console.info('chance_menu.js loaded');
+
+log('chance_menu.js loaded', LOG_LEVELS.DEBUG);

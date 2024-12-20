@@ -2,6 +2,7 @@ import { world, system } from "@minecraft/server";
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
 import { getScore, getCurrentUTCDate } from '../utilities.js';
 import { moneyzAdmin } from './admin_menu.js';
+import { log, LOG_LEVELS } from '../logger.js';
 
 const title = "§l§1Properties Menu";
 
@@ -32,6 +33,7 @@ function playerPropertiesMenu(player) {
             const player = world.getPlayers().find(p => p.nameTag === selectedPlayer);
 
             if (!player) {
+                 log(`${player.nameTag} tried to modify properties for non-existent player: ${selectedPlayer}`, LOG_LEVELS.WARN);
                 player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlayer not found!"}]}`);
                 return;
             }
@@ -51,12 +53,15 @@ function playerPropertiesMenu(player) {
 }
 
 function viewPlayerProperties(player, selectedPlayer) {
+    log(`Opening View Player Properties for ${player.nameTag} viewing ${selectedPlayer}'s properties`, LOG_LEVELS.INFO);
+
     const targetPlayer = world.getPlayers().find(p => p.nameTag === selectedPlayer);
 
     if (!targetPlayer) {
+        log(`Player ${selectedPlayer} not found.`, LOG_LEVELS.WARN, player.nameTag);
         player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlayer not found!"}]}`);
+        playerPropertiesMenu(player);
         return;
-        playerPropertiesMenu(player)
     }
 
     const dynamicPropertyIds = targetPlayer.getDynamicPropertyIds();
@@ -81,11 +86,16 @@ function viewPlayerProperties(player, selectedPlayer) {
         .button("§4§lBack")
         .show(player)
         .then(r => {
-            if (r.selection === 0) playerPropertiesMenu(player);
+            if (r.selection === 0) {
+                playerPropertiesMenu(player);
+            } else {
+                log(`Unexpected selection in View Player Properties Menu for ${player.nameTag}`, LOG_LEVELS.WARN);
+            }
         });
 }
 
 function modifyPlayerProperties(player, selectedPlayer) {
+
     new ModalFormData()
         .title(`§l§fModify ${selectedPlayer} Properties`)
         .textField("§fEnter Property Key:", "§oProperty Key")
@@ -93,44 +103,54 @@ function modifyPlayerProperties(player, selectedPlayer) {
         .show(player)
         .then(({ formValues: [keyField, valueField] }) => {
             if (keyField === undefined || valueField === undefined) {
+                log(`${player.nameTag} canceled property modification`, LOG_LEVELS.INFO);
                 playerPropertiesMenu(player, selectedPlayer);
                 return;
             }
 
             const targetPlayer = world.getPlayers().find(p => p.nameTag === selectedPlayer);
             if (!targetPlayer) {
+                log(`Player ${selectedPlayer} not found (modify properties).`, LOG_LEVELS.WARN, player.nameTag);
                 player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlayer not found!"}]}`);
                 return;
             }
 
-            if (keyField.trim() === "" || valueField.trim() === "") {
+            // const trimmedKey = keyField.trim();
+            // const trimmedValue = valueField.trim();
+
+            if (keyField === "" || valueField === "") {
+                log(`${player.nameTag} entered empty key or value for property modification`, LOG_LEVELS.WARN);
                 player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cBoth key and value must be provided!"}]}`);
                 return;
             }
 
             targetPlayer.setDynamicProperty(keyField, valueField);
+            log(`Admin set dynamic property ${keyField} to ${valueField} for ${selectedPlayer}`, LOG_LEVELS.INFO, player.nameTag);
             player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aDynamic property ${keyField} has been set to ${valueField} for ${selectedPlayer}."}]}`);
-            console.log(`Admin set dynamic property ${keyField} to ${valueField} for ${selectedPlayer}`);
         })
         .catch(error => {
-            console.error("Error with ModalFormData:", error);
+            log(`Error with ModalFormData in modifyPlayerProperties: ${error}`, LOG_LEVELS.ERROR, player.nameTag, error, error.stack);
             playerPropertiesMenu(player, selectedPlayer);
         });
 }
 
 function worldPropertiesMenu(player) {
+
     const worldProperties = world.getDynamicPropertyIds();
 
     let propertiesList = "§l§oWorld Properties:\n\n";
     if (worldProperties.length === 0) {
         propertiesList += "§cNo world properties found.";
+        log("No world properties found.", LOG_LEVELS.INFO);
     } else {
         worldProperties.forEach(property => {
             const value = world.getDynamicProperty(property);
             if (value === undefined) {
                 propertiesList += `§f${property}: §cundefined\n`;
+                log(`World property ${property} is undefined.`, LOG_LEVELS.WARN);
             } else {
                 propertiesList += `§f${property}: §7${value}\n`;
+                log(`World property ${property}: ${value}`, LOG_LEVELS.DEBUG);
             }
         });
     }
@@ -143,13 +163,21 @@ function worldPropertiesMenu(player) {
         .button("§4§lBack")
         .show(player)
         .then(r => {
-            if (r.selection === 0) modifyWorldProperties(player);
-            if (r.selection === 1) clearAllWorldProperties(player);
-            if (r.selection === 2) propertiesMenu(player);
+            if (r.selection === 0) {
+                modifyWorldProperties(player);
+            } else if (r.selection === 1) {
+                log(`${player.nameTag} selected Clear All World Properties.`, LOG_LEVELS.WARN);
+                clearAllWorldProperties(player);
+            } else if (r.selection === 2) {
+                propertiesMenu(player);
+            } else {
+                log(`Unexpected selection in World Properties Menu: ${r.selection}`, LOG_LEVELS.WARN, player.nameTag);
+            }
         });
 }
 
 function modifyWorldProperties(player) {
+
     new ModalFormData()
         .title("§l§fModify World Properties")
         .textField("§fEnter Property Key:", "§oProperty Key")
@@ -157,28 +185,36 @@ function modifyWorldProperties(player) {
         .show(player)
         .then(({ formValues: [keyField, valueField] }) => {
             if (keyField === undefined || valueField === undefined) {
+                log(`${player.nameTag} canceled world property modification.`, LOG_LEVELS.INFO);
                 worldPropertiesMenu(player);
                 return;
             }
 
-            if (keyField.trim() === "" || valueField.trim() === "") {
+            const trimmedKey = keyField.trim();
+            const trimmedValue = valueField.trim();
+
+            if (trimmedKey === "" || trimmedValue === "") {
+                log(`${player.nameTag} entered empty key or value for world property modification.`, LOG_LEVELS.WARN);
                 player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cBoth key and value must be provided!"}]}`);
                 return;
             }
 
-            world.setDynamicProperty(keyField, valueField);
-            player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aWorld property ${keyField} has been set to ${valueField}."}]}`);
+            world.setDynamicProperty(trimmedKey, trimmedValue);
+            log(`World property ${trimmedKey} set to ${trimmedValue} by ${player.nameTag}.`, LOG_LEVELS.INFO);
+            player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aWorld property ${trimmedKey} has been set to ${trimmedValue}."}]}`);
         })
         .catch(error => {
-            console.error("Error with ModalFormData:", error);
+            log(`Error with ModalFormData in modifyWorldProperties: ${error}`, LOG_LEVELS.ERROR, player.nameTag, error, error.stack);
             worldPropertiesMenu(player);
         });
 }
 
 function clearAllWorldProperties(player) {
+    log(`Clearing all world properties initiated by ${player.nameTag}.`, LOG_LEVELS.WARN);
     world.clearDynamicProperties();
     player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aAll dynamic properties have been cleared successfully!"}]}`);
-    console.log("All dynamic properties cleared by", player.nameTag);
-    worldPropertiesMenu(player)
+    log(`All world properties cleared by ${player.nameTag}.`, LOG_LEVELS.WARN);
+    worldPropertiesMenu(player);
 }
-console.info('properties_menu.js loaded')
+
+log('properties_menu.js loaded', LOG_LEVELS.DEBUG);

@@ -2,6 +2,7 @@ import { world, system } from "@minecraft/server"
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
 import { getScore, getCurrentUTCDate } from '../utilities.js';
 import { main } from './moneyz_menu.js';
+import { log, LOG_LEVELS } from '../logger.js';
 
 
 export function luckyPurchase(player) {    
@@ -10,7 +11,10 @@ export function luckyPurchase(player) {
         const lastAccessDate = player.getDynamicProperty("lastLuckyPurchase");
         const currentDate = getCurrentUTCDate();
         const oneLuckyPurchaseEnabled = world.getDynamicProperty('oneLuckyPurchase');
-        console.log(`Checking Lucky Purchase access for ${player.nameTag}: lastAccessDate = ${lastAccessDate}, currentDate = ${currentDate}, oneLuckyPurchaseEnabled = ${oneLuckyPurchaseEnabled}`);
+        log(`Checking Lucky Purchase access for ${player.nameTag}:`, LOG_LEVELS.DEBUG);
+        log(`  - lastAccessDate: ${lastAccessDate}`, LOG_LEVELS.DEBUG);
+        log(`  - currentDate: ${currentDate}`, LOG_LEVELS.DEBUG);
+        log(`  - oneLuckyPurchaseEnabled: ${oneLuckyPurchaseEnabled}`, LOG_LEVELS.DEBUG);
         return !oneLuckyPurchaseEnabled || !lastAccessDate || lastAccessDate !== currentDate;
     }
 
@@ -27,22 +31,22 @@ export function luckyPurchase(player) {
             .button("§4§lBack")
             .show(player).then(r => {
                 const currentDate = getCurrentUTCDate();
-                console.log(`currentDate: ${currentDate}`);
+                log(`Player ${player.nameTag} selection: ${r.selection}`, LOG_LEVELS.INFO);
                 
                 const oneLuckyPurchaseEnabled = world.getDynamicProperty('oneLuckyPurchase');
-                console.log(`oneLuckyPurchaseEnabled: ${oneLuckyPurchaseEnabled}`);
+                log(`oneLuckyPurchaseEnabled: ${oneLuckyPurchaseEnabled}`, LOG_LEVELS.DEBUG);
                 
                 const executeLuckyPurchase = (command) => {
-                    console.log(`Executing lucky purchase command: ${command}`);
+                    log(`Executing lucky purchase command: ${command}`, LOG_LEVELS.INFO);
                     player.runCommandAsync(command);
                     
                     if (oneLuckyPurchaseEnabled === 'true') {
-                        console.log(`oneLuckyPurchase is enabled, setting ${player.nameTag}'s lastLuckyPurchase to ${currentDate}`);
+                        log(`oneLuckyPurchase is enabled, setting ${player.nameTag}'s lastLuckyPurchase to ${currentDate}`, LOG_LEVELS.INFO);
                         
                         player.setDynamicProperty("lastLuckyPurchase", currentDate);
 
                     } else {
-                        console.log(`oneLuckyPurchase is disabled in the world properties`);
+                        log(`oneLuckyPurchase is disabled in the world properties`, LOG_LEVELS.DEBUG);
                     }
                 };
 
@@ -62,4 +66,5 @@ export function luckyPurchase(player) {
             .show(player);
     }
 }
-console.info('lucky_menu.js loaded')
+
+log('lucky_menu.js loaded', LOG_LEVELS.DEBUG);

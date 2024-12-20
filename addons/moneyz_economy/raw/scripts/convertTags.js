@@ -1,4 +1,5 @@
 import { world } from "@minecraft/server";
+import { log, LOG_LEVELS } from './logger.js';
 
 export const convertTagsToProperties = (player) => {
   const tagsToConvert = [
@@ -11,9 +12,7 @@ export const convertTagsToProperties = (player) => {
     if (player.hasTag(tag)) {
       player.setDynamicProperty(tag, 'true');
       player.removeTag(tag);
-      console.log(
-        `Converted tag ${tag} to property for ${player.nameTag}`
-      );
+      log(`Converted tag ${tag} to property for ${player.nameTag}`, LOG_LEVELS.INFO);
     }
   });
 };
@@ -21,7 +20,7 @@ export const convertTagsToProperties = (player) => {
 export function updateWorldProperties() {
   const scoreboard = world.scoreboard;
   if (!scoreboard) {
-    console.error("Scoreboard not found!");
+    log("Scoreboard not found!", LOG_LEVELS.WARN);
     return;
   }
 
@@ -30,7 +29,7 @@ export function updateWorldProperties() {
 
   const objective = scoreboard.getObjective(objectiveName);
   if (!objective) {
-    console.warn(`Objective "${objectiveName}" does not exist. Skipping update.`);
+    log(`Objective "${objectiveName}" does not exist. Skipping update.`, LOG_LEVELS.INFO);
     return;
   }
 
@@ -40,37 +39,36 @@ export function updateWorldProperties() {
     try {
       const score = objective.getScore(playerName);
       if (score === undefined) {
-        console.warn(`"${playerName}" does not exist in the objective "${objectiveName}". Skipping.`);
+        log(`"${playerName}" does not exist in the objective "${objectiveName}". Skipping.`, LOG_LEVELS.DEBUG);
         return;
       }
 
       const propertyName = `${playerName}`;
       const propertyValue = score > 0 ? 'true' : 'false';
       world.setDynamicProperty(propertyName, propertyValue);
-      console.log(`Updated world property: ${propertyName} = ${propertyValue}`);
+      log(`Updated world property: ${propertyName} = ${propertyValue}`, LOG_LEVELS.INFO);
 
       if (propertyValue === 'true') {
         syncPlayers = true;
       }
     } catch (error) {
-      console.error(`Error processing "${playerName}":`, error);
+      log(`Error processing "${playerName}":`, LOG_LEVELS.ERROR, error);
     }
   });
 
   world.setDynamicProperty('syncPlayers', syncPlayers ? 'true' : 'false');
-  console.log(`Updated world property: syncPlayers = ${syncPlayers ? 'true' : 'false'}`);
+  log(`Updated world property: syncPlayers = ${syncPlayers ? 'true' : 'false'}`, LOG_LEVELS.INFO);
 
   try {
     const removed = scoreboard.removeObjective(objectiveName);
     if (removed) {
-      console.log(`Scoreboard objective "${objectiveName}" removed successfully.`);
+      log(`Scoreboard objective "${objectiveName}" removed successfully.`, LOG_LEVELS.INFO);
     } else {
-      console.error(`Failed to remove scoreboard objective "${objectiveName}".`);
+      log(`Failed to remove scoreboard objective "${objectiveName}".`, LOG_LEVELS.WARN);
     }
   } catch (error) {
-    console.error(`Error removing scoreboard objective "${objectiveName}":`, error);
+    log(`Error removing scoreboard objective "${objectiveName}":`, LOG_LEVELS.ERROR, error);
   }
 }
 
-
-console.log("convertTags.js loaded");
+log("convertTags.js loaded", LOG_LEVELS.DEBUG);
