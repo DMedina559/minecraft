@@ -1,26 +1,12 @@
 import { world } from "@minecraft/server";
 import { log, LOG_LEVELS } from './logger.js';
 
-export const convertTagsToProperties = (player) => {
-  const tagsToConvert = [
-    "moneyzATM",
-    "moneyzSend",
-    "moneyzShop"
-  ];
-
-  tagsToConvert.forEach((tag) => {
-    if (player.hasTag(tag)) {
-      player.setDynamicProperty(tag, 'true');
-      player.removeTag(tag);
-      log(`Converted tag ${tag} to property for ${player.nameTag}`, LOG_LEVELS.INFO);
-    }
-  });
-};
-
+// Convert moneyzAutoTag scoreboard to World Properties and remove scoreboard
+// If any moneyzTag had a score above 0 set the World Property syncPlayers to true else sset to false
 export function updateWorldProperties() {
   const scoreboard = world.scoreboard;
   if (!scoreboard) {
-    log("Scoreboard not found!", LOG_LEVELS.WARN);
+    log("Scoreboard not found!", LOG_LEVELS.DEBUG);
     return;
   }
 
@@ -29,7 +15,7 @@ export function updateWorldProperties() {
 
   const objective = scoreboard.getObjective(objectiveName);
   if (!objective) {
-    log(`Objective "${objectiveName}" does not exist. Skipping update.`, LOG_LEVELS.INFO);
+    log(`Objective "${objectiveName}" does not exist. Skipping update.`, LOG_LEVELS.DEBUG);
     return;
   }
 
@@ -69,6 +55,23 @@ export function updateWorldProperties() {
   } catch (error) {
     log(`Error removing scoreboard objective "${objectiveName}":`, LOG_LEVELS.ERROR, error);
   }
-}
+};
+
+// Convert legacy moneyzTags to Player Properties
+export const convertTagsToProperties = (player) => {
+  const tagsToConvert = [
+    "moneyzATM",
+    "moneyzSend",
+    "moneyzShop"
+  ];
+
+  tagsToConvert.forEach((tag) => {
+    if (player.hasTag(tag)) {
+      player.setDynamicProperty(tag, 'true');
+      player.removeTag(tag);
+      log(`Converted tag ${tag} to property for ${player.nameTag}`, LOG_LEVELS.INFO);
+    }
+  });
+};
 
 log("convertTags.js loaded", LOG_LEVELS.DEBUG);

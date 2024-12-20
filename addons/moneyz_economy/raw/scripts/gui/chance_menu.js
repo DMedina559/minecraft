@@ -1,5 +1,6 @@
 import { world, system } from "@minecraft/server";
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
+import { getScore } from '../utilities.js';
 import { main } from './moneyz_menu.js';
 import { log, LOG_LEVELS } from '../logger.js';
 
@@ -25,33 +26,14 @@ export function chanceMenu(player) {
     .body(chanceMessage)
     .button("§2§lTest Your Luck")
     .button("§4§lBack")
-    .show(player).then(r => {
+    .show(player)
+    .then(r => {
       if (r.selection === 0) {
-        const scoreboard = world.scoreboard;
-        if (!scoreboard) {
-          log("Scoreboard not found!", LOG_LEVELS.ERROR);
-          player.sendMessage("§cAn error occurred. Please try again later.");
-          return;
-        }
-
         const objectiveName = "Moneyz";
-        const objective = scoreboard.getObjective(objectiveName);
-        if (!objective) {
-          log(`Objective "${objectiveName}" does not exist.`, LOG_LEVELS.WARN);
-          player.sendMessage(`§cThe Moneyz objective is missing. Contact an administrator.`);
-          return;
-        }
 
         try {
-          const participants = objective.getParticipants();
-          const playerIdentity = participants.find(p => p.displayName === player.nameTag);
+          const playerScore = getScore(objectiveName, player);
 
-          if (!playerIdentity) {
-            player.sendMessage(`§cYou do not have any Moneyz in the scoreboard "${objectiveName}".`);
-            return;
-          }
-
-          const playerScore = objective.getScore(playerIdentity);
           if (playerScore === undefined) {
             player.sendMessage(`§cYour score could not be retrieved. Please try again later.`);
             return;
@@ -91,32 +73,32 @@ export function chanceMenu(player) {
             const winChance = getWorldProperty("chanceWin") || 0;
             if (getRandomInt(1, 100) <= winChance) {
               const winAmount = stakeAmount * worldMultiplier;
-              objective.setScore(playerIdentity, playerScore + winAmount);
+              const updatedScore = getScore(objectiveName, player) + winAmount;
+              world.scoreboard.getObjective(objectiveName).setScore(player.nameTag, updatedScore);
               player.sendMessage(`§aYou won ${winAmount} Moneyz!`);
               player.runCommandAsync("playsound random.levelup @s ~ ~ ~");
               log(`Player ${player.nameTag} won ${winAmount} Moneyz.`, LOG_LEVELS.INFO);
             } else {
-              objective.setScore(playerIdentity, playerScore - stakeAmount);
+              const updatedScore = getScore(objectiveName, player) - stakeAmount;
+              world.scoreboard.getObjective(objectiveName).setScore(player.nameTag, updatedScore);
               player.sendMessage(`§cYou lost ${stakeAmount} Moneyz. Better luck next time!`);
               player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
               log(`Player ${player.nameTag} lost ${stakeAmount} Moneyz.`, LOG_LEVELS.INFO);
             }
 
             chanceMenu(player);
-
           }).catch(error => {
             log(`Error showing modal form: ${error}`, LOG_LEVELS.ERROR);
             player.sendMessage("§cAn error occurred. Please try again later.");
           });
-
         } catch (error) {
-           log(`Error processing chance for ${player.nameTag}: ${error}`, LOG_LEVELS.ERROR);
-           player.sendMessage("§cAn error occurred. Please try again later.");
+          log(`Error processing chance for ${player.nameTag}: ${error}`, LOG_LEVELS.ERROR);
+          player.sendMessage("§cAn error occurred. Please try again later.");
         }
       } else if (r.selection === 1) {
         main(player);
       }
     });
-}
+};
 
 log('chance_menu.js loaded', LOG_LEVELS.DEBUG);

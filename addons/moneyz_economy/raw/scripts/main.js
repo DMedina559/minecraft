@@ -1,7 +1,7 @@
 import { log, LOG_LEVELS } from './logger.js';
 
-import "./gui/moneyz_menu.js"
+import "./utilities.js";
 
-import "./autoTag.js"
+import "./gui/moneyz_menu.js";
 
 log('main.js loaded', LOG_LEVELS.INFO);
