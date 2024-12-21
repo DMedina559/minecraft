@@ -23,8 +23,8 @@ export function testYourLuck(player) {
         }
 
         const playerScore = scoreData.score;
-        const winChance = world.getDynamicProperty("chanceWin") || 50;
-        const worldMultiplier = world.getDynamicProperty("chanceX") || 2;
+        const winChance = world.getDynamicProperty("chanceWin") || 0;
+        const worldMultiplier = world.getDynamicProperty("chanceX") || 0;
 
         const modalForm = new ModalFormData()
             .title("Test Your Luck")
@@ -55,11 +55,13 @@ export function testYourLuck(player) {
 
             if (getRandomInt(1, 100) <= winChance) {
                 const winAmount = stakeAmount * worldMultiplier;
-                updateScore(player, winAmount, "add"); // Add winnings
+                updateScore(player, winAmount, "add");
                 player.sendMessage(`§aYou won ${winAmount} Moneyz!`);
+                player.runCommandAsync("playsound random.levelup @s ~ ~ ~");
                 log(`${player.nameTag} won ${winAmount} Moneyz.`, LOG_LEVELS.INFO);
             } else {
                 player.sendMessage(`§cYou lost ${stakeAmount} Moneyz. Better luck next time!`);
+                player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
                 log(`${player.nameTag} lost ${stakeAmount} Moneyz.`, LOG_LEVELS.INFO);
             }
         }).catch(error => {
