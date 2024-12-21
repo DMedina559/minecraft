@@ -1,6 +1,6 @@
 import { world, system } from "@minecraft/server"
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
-import { getScore, getCurrentUTCDate } from '../utilities.js';
+import { getScore, updateScore, getCurrentUTCDate } from '../utilities.js';
 import { main } from './moneyz_menu.js';
 import { propertiesMenu } from './properties_menu.js';
 import { moneyzSettings } from './settings.js';
@@ -30,8 +30,9 @@ export function moneyzAdmin(player) {
 
 function balanceManage(player) {
     log(`Player ${player.nameTag} opened the Balance Manage Menu.`, LOG_LEVELS.DEBUG);
+
     const players = [...world.getPlayers()].map(p => {
-        return p.nameTag;
+      return p.nameTag;
     });
 
     new ActionFormData()
@@ -39,41 +40,45 @@ function balanceManage(player) {
         .body(`§l§oPlayers Moneyz Balances:\n${players.map(p => `§f${p}: §g${getScore('Moneyz', p)}`).join('\n')}`)
         .button('§d§lManage Player Balances\n§r§7[ Click to Manage ]')
         .button('§4§lBack')
-        .show(player).then(r => {
+        .show(player)
+        .then(r => {
             if (r.selection === 0) {
                 new ModalFormData()
                     .title(title)
-                    .dropdown('§o§fChoose a Player to Manage', players)
+                    .dropdown('§o§fChoose a Player to Manage', players.map(p => p.nameTag))
                     .textField('§fEnter the Amount to Adjust:\n', '§oNumbers Only')
                     .show(player)
                     .then(({ formValues: [dropdown, textField] }) => {
                         const selectedPlayer = players[dropdown];
                         const amount = parseInt(textField);
+
                         if (isNaN(amount) || amount < 0) {
                             player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid number!"}]}`);
                             log(`Player ${player.nameTag} entered an invalid amount for balance adjustment.`, LOG_LEVELS.WARN);
                             return;
                         }
+
                         new ActionFormData()
                             .title(title)
-                            .body(`§l§oManage ${selectedPlayer}'s Moneyz`)
+                            .body(`§l§oManage ${selectedPlayer.nameTag}'s Moneyz`)
                             .button('§d§lAdd Moneyz')
                             .button('§d§lSet Moneyz')
                             .button('§d§lRemove Moneyz')
                             .button('§4§lCancel')
-                            .show(player).then(({ selection }) => {
+                            .show(player)
+                            .then(({ selection }) => {
                                 if (selection === 0) {
-                                    player.runCommandAsync(`scoreboard players add ${selectedPlayer} Moneyz ${amount}`);
-                                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aAdded §l${amount} §r§ato ${selectedPlayer}'s Moneyz."}]}`);
-                                    log(`Player ${player.nameTag} added ${amount} Moneyz to ${selectedPlayer}.`, LOG_LEVELS.INFO);
+                                    updateScore(selectedPlayer, amount, "add");
+                                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aAdded §l${amount} §r§ato ${selectedPlayer.nameTag}'s Moneyz."}]}`);
+                                    log(`Player ${player.nameTag} added ${amount} Moneyz to ${selectedPlayer.nameTag}.`, LOG_LEVELS.INFO);
                                 } else if (selection === 1) {
-                                    player.runCommandAsync(`scoreboard players set ${selectedPlayer} Moneyz ${amount}`);
-                                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aSet ${selectedPlayer}'s Moneyz to §l${amount}."}]}`);
-                                    log(`Player ${player.nameTag} set ${selectedPlayer}'s Moneyz to ${amount}.`, LOG_LEVELS.INFO);
+                                    updateScore(selectedPlayer, amount, "set");
+                                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aSet ${selectedPlayer.nameTag}'s Moneyz to §l${amount}."}]}`);
+                                    log(`Player ${player.nameTag} set ${selectedPlayer.nameTag}'s Moneyz to ${amount}.`, LOG_LEVELS.INFO);
                                 } else if (selection === 2) {
-                                    player.runCommandAsync(`scoreboard players remove ${selectedPlayer} Moneyz ${amount}`);
-                                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aRemoved §l${amount} §r§afrom ${selectedPlayer}'s Moneyz."}]}`);
-                                    log(`Player ${player.nameTag} removed ${amount} Moneyz from ${selectedPlayer}.`, LOG_LEVELS.INFO);
+                                    updateScore(selectedPlayer, amount, "remove");
+                                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aRemoved §l${amount} §r§afrom ${selectedPlayer.nameTag}'s Moneyz."}]}`);
+                                    log(`Player ${player.nameTag} removed ${amount} Moneyz from ${selectedPlayer.nameTag}.`, LOG_LEVELS.INFO);
                                 }
                             });
                     });
@@ -81,7 +86,7 @@ function balanceManage(player) {
                 main(player);
             }
         });
-}
+};
 
 function tagManage(player) {
     log(`Player ${player.nameTag} opened the Tag Manage Menu.`, LOG_LEVELS.DEBUG);
@@ -140,6 +145,6 @@ function tagManage(player) {
                 moneyzAdmin(player);
             }
         });
-}
+};
 
 log('admin_menu.js loaded', LOG_LEVELS.DEBUG);

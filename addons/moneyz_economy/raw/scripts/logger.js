@@ -31,7 +31,7 @@ export const setLogLevelFromWorldProperty = () => {
         currentLogLevel = LOG_LEVELS.WARN;
         break;
     }
-    console.info(`Log level set from world property to: ${logLevelString.toUpperCase()}`);
+    log(`Log level set from world property to: ${logLevelString.toUpperCase()}`, LOG_LEVELS.INFO);
   } else {
     log("No 'logLevel' world property found. Using default WARN level.", LOG_LEVELS.WARN);
   }

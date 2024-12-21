@@ -11,22 +11,72 @@ updateWorldProperties();
 
 // Get Scoreboard info
 export const getScore = (objective, target, useZero = true) => {
-  try {
     const obj = world.scoreboard.getObjective(objective);
-    if (typeof target === 'string') {
-      const participant = obj.getParticipants().find(v => v.displayName === target);
-      if (!participant) {
-        log(`Player "${target}" not found in objective "${objective}".`, LOG_LEVELS.DEBUG);
+    if (!obj) {
+        log(`Objective "${objective}" not found.`, LOG_LEVELS.WARN);
         return useZero ? 0 : NaN;
-      }
-      return obj.getScore(participant);
     }
-    return obj.getScore(target.scoreboard);
-  } catch (error) {
-    log(`Error getting score for "${objective}" and "${target}":`, LOG_LEVELS.ERROR, error);
-    return useZero ? 0 : NaN;
-  }
+
+    let participant;
+    let targetNameForLog;
+    
+    if (typeof target === 'string') {
+        participant = world.scoreboard.getParticipants().find(p => p.displayName === target);
+        targetNameForLog = target;
+    } else if (typeof target === 'object' && target !== null && 'name' in target) {
+        participant = world.scoreboard.getParticipants().find(p => p.displayName === target.name);
+        targetNameForLog = target.name;
+    } else {
+        log(`Invalid target provided: ${typeof target}`, LOG_LEVELS.WARN);
+        return useZero ? 0 : NaN;
+    }
+
+    if (!participant) {
+        log(`Participant "${targetNameForLog}" not found.`, LOG_LEVELS.WARN);
+        return useZero ? 0 : NaN;
+    }
+
+    const score = obj.getScore(participant);
+    return score !== undefined ? score : (useZero ? 0 : NaN);
 };
+
+// Add/Set/Remove Scores
+export function updateScore(player, amount, operation = "add") {
+    log(`updateScore: Updating score for ${player?.nameTag} by ${amount} using ${operation}.`, LOG_LEVELS.DEBUG);
+
+    if (!player) {
+        log("updateScore: Invalid player provided.", LOG_LEVELS.ERROR);
+        return;
+    }
+
+    const playerName = player.nameTag;
+
+    const roundedAmount = Math.round(amount);
+    log(`updateScore: Rounded amount to ${roundedAmount}.`, LOG_LEVELS.DEBUG);
+
+    try {
+        switch (operation.toLowerCase()) {
+            case "add":
+                player.runCommandAsync(`scoreboard players add "${playerName}" Moneyz ${roundedAmount}`);
+                log(`updateScore: Added ${roundedAmount} to ${playerName}'s Moneyz.`, LOG_LEVELS.DEBUG);
+                break;
+            case "remove":
+                player.runCommandAsync(`scoreboard players remove "${playerName}" Moneyz ${roundedAmount}`);
+                log(`updateScore: Removed ${roundedAmount} from ${playerName}'s Moneyz.`, LOG_LEVELS.DEBUG);
+                break;
+            case "set":
+                player.runCommandAsync(`scoreboard players set "${playerName}" Moneyz ${roundedAmount}`);
+                log(`updateScore: Set ${playerName}'s Moneyz to ${roundedAmount}.`, LOG_LEVELS.DEBUG);
+                break;
+            default:
+                log(`updateScore: Invalid operation: ${operation}`, LOG_LEVELS.ERROR);
+                break;
+        }
+    } catch (error) {
+        log(`updateScore: Error updating score: ${error}`, LOG_LEVELS.ERROR);
+    }
+};
+
 
 // Get Current Day in UTC YYYY-MM-DD format
 export function getCurrentUTCDate() {
@@ -66,12 +116,13 @@ const ensureWorldPropertiesExist = () => {
 // Set Player Moneyz score if they Don't Already
 const ensurePlayerHasMoneyzScore = (player) => {
     log(`Checking Moneyz balance for ${player.nameTag}`, LOG_LEVELS.DEBUG);
-    const moneyzScore = getScore('Moneyz', player.nameTag, false);
-    if (isNaN(moneyzScore)) {
-        player.runCommandAsync(`scoreboard players set ${player.nameTag} Moneyz 0`);
+
+    const scoreData = getScore('Moneyz', player);
+    if (!scoreData) { 
+        updateScore(player, 0, "set");
         log(`Initialized Moneyz balance for ${player.nameTag}`, LOG_LEVELS.INFO);
     } else {
-        log(`Moneyz balance for ${player.nameTag} is ${moneyzScore}`, LOG_LEVELS.DEBUG);
+        log(`Moneyz balance for ${player.nameTag} is ${scoreData.score}`, LOG_LEVELS.DEBUG);
     }
 };
 
@@ -141,5 +192,15 @@ system.runInterval(() => {
         //log("Skipping property sync check (syncPlayers is false)", LOG_LEVELS.DEBUG)
     }
 }, 90);
+
+
+// Random Number for Chance Games
+export function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  const result = Math.floor(Math.random() * (max - min + 1)) + min;
+  log(`Generated random integer between ${min} and ${max}: ${result}`, LOG_LEVELS.DEBUG);
+  return result;
+};
 
 log('utilities.js loaded', LOG_LEVELS.DEBUG);

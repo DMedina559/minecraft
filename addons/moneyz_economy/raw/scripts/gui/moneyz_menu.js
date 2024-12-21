@@ -1,6 +1,6 @@
 import { world, system } from "@minecraft/server"
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
-import { getScore, getCurrentUTCDate } from '../utilities.js';
+import { getScore, updateScore, getCurrentUTCDate } from '../utilities.js';
 import { openRewardsMenu } from './rewards_menu.js';
 import { moneyzAdmin } from './admin_menu.js';
 import { luckyPurchase } from './lucky_menu.js';
@@ -71,7 +71,7 @@ export function main(player) {
             actions[selection]();
         }
     });
-}
+};
 
 function shops(player) {
     new ActionFormData()
@@ -105,60 +105,62 @@ function shops(player) {
             }
             if (r.selection == 6) main(player)
         })
-}
+};
 
 const moneyzTransfer = (player) => {
-    log('Opening Money Transfer Menu for player:', LOG_LEVELS.DEBUG, player.nameTag);
+  log('Opening Money Transfer Menu for player:', LOG_LEVELS.DEBUG, player.nameTag);
 
-    const players = [...world.getPlayers()];
-    new ModalFormData()
-        .title(title)
-        .dropdown('§o§fChoose Who to Send Moneyz to!', players.map(player => player.nameTag))
-        .textField(`§fEnter the Amount to Send!\n§fMoneyz Balance: §g${getScore('Moneyz', player.nameTag)}`, `§oNumbers Only`)
-        .show(player)
-        .then(({ formValues: [dropdown, textField] }) => {
-            const selectedPlayer = players[dropdown];
+  const players = [...world.getPlayers()];
+  new ModalFormData()
+    .title(title)
+    .dropdown('§o§fChoose Who to Send Moneyz to!', players.map(player => player.nameTag))
+    .textField(`§fEnter the Amount to Send!\n§fMoneyz Balance: §g${getScore('Moneyz', player.nameTag)}`, `§oNumbers Only`)
+    .show(player)
+    .then(({ formValues: [dropdown, textField] }) => {
+      const selectedPlayer = players[dropdown];
 
-            if (selectedPlayer === player) {
-                log(`${player.nameTag} tried sending Moneyz to self`, LOG_LEVELS.WARN);
-                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cYou Can't Send Moneyz to Yourself"}]}`);
-                moneyzTransfer(player);
-                return;
-            }
+      if (selectedPlayer === player) {
+        log(`${player.nameTag} tried sending Moneyz to self`, LOG_LEVELS.WARN);
+        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cYou Can't Send Moneyz to Yourself"}]}`);
+        moneyzTransfer(player);
+        return;
+      }
 
-            if (textField.includes("-")) {
-                log(`${player.nameTag} entered invalid numbers (negative)`, LOG_LEVELS.WARN);
-                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cNumbers Only!"}]}`);
-                moneyzTransfer(player);
-                return;
-            }
+      if (textField.includes("-")) {
+        log(`${player.nameTag} entered invalid numbers (negative)`, LOG_LEVELS.WARN);
+        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cNumbers Only!"}]}`);
+        moneyzTransfer(player);
+        return;
+      }
 
-            const amountToSend = parseInt(textField, 10);
+      const amountToSend = parseInt(textField, 10);
 
-            if (getScore('Moneyz', player.nameTag) < amountToSend) {
-                log(`${player.nameTag} didn't have enough Moneyz to send`, LOG_LEVELS.WARN);
-                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cYou Don't Have Enough Moneyz"}]}`);
-                moneyzTransfer(player);
-                return;
-            }
+      const senderBalance = getScore('Moneyz', player);
+      if (!senderBalance || senderBalance < amountToSend) {
+        log(`${player.nameTag} didn't have enough Moneyz to send`, LOG_LEVELS.WARN);
+        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cYou Don't Have Enough Moneyz"}]}`);
+        moneyzTransfer(player);
+        return;
+      }
 
-            try {
-                player.runCommandAsync(`scoreboard players remove @s Moneyz ${amountToSend}`);
-                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aSent §l${selectedPlayer.nameTag} §r§2${amountToSend} Moneyz"}]}`);
-                selectedPlayer.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§l${player.nameTag} §r§aSent You §2${amountToSend} Moneyz"}]}`);
-                selectedPlayer.runCommandAsync(`scoreboard players add @s Moneyz ${amountToSend}`);
-                log(`${player.nameTag} sent ${amountToSend} Moneyz to ${selectedPlayer.nameTag}`, LOG_LEVELS.INFO);
-                moneyzTransfer(player);
-            } catch (error) {
-                log(`Error during Moneyz transfer: ${error}`, LOG_LEVELS.ERROR, player.nameTag);
-                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cAn error occurred during the transfer."}]}`);
-                moneyzTransfer(player);
-                return;
-            }
-        })
-        .catch((error) => {
-            log(`Error during Money Transfer Menu: ${error}`, LOG_LEVELS.ERROR, error, error.stack);
-        });
+      try {
+
+        updateScore(player, amountToSend, "remove");
+
+        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aSent §l${selectedPlayer.nameTag} §r§2${amountToSend} Moneyz"}]}`);
+        selectedPlayer.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§l${player.nameTag} §r§aSent You §2${amountToSend} Moneyz"}]}`);
+
+        updateScore(selectedPlayer, amountToSend, "add");
+
+        log(`${player.nameTag} sent ${amountToSend} Moneyz to ${selectedPlayer.nameTag}`, LOG_LEVELS.INFO);
+      } catch (error) {
+        log(`Error during Moneyz transfer: ${error}`, LOG_LEVELS.ERROR, player.nameTag);
+        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cAn error occurred during the transfer."}]}`);
+      }
+    })
+    .catch((error) => {
+      log(`Error during Money Transfer Menu: ${error}`, LOG_LEVELS.ERROR, error, error.stack);
+    });
 };
 
 function Credits(player) {

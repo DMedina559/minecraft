@@ -1,6 +1,6 @@
 import { world, system } from "@minecraft/server"
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
-import { getScore, getCurrentUTCDate } from '../utilities.js';
+import { getScore,  updateScore, getCurrentUTCDate } from '../utilities.js';
 import { main } from './moneyz_menu.js';
 import { log, LOG_LEVELS } from '../logger.js';
 
@@ -42,17 +42,17 @@ export function openRewardsMenu(player) {
         });
 }
 
-function dailyRewardLogic(player, rewardValue, currentDate) {
+function dailyRewardLogic(player, rewardValue) {
+    log(`Running dailyRewardLogic for ${player.nameTag}`, LOG_LEVELS.DEBUG);
 
-    log(`Running dailyRewardLogic for ${player.nameTag}`, LOG_LEVELS.INFO);
+    const currentDate = getCurrentUTCDate();
+    log(`Current date: ${currentDate}`, LOG_LEVELS.DEBUG);
 
     const lastRedemption = player.getDynamicProperty("lastDailyReward");
-
-    log(`Current date: ${currentDate}`, LOG_LEVELS.DEBUG);
     log(`Last redemption date for ${player.nameTag}: ${lastRedemption}`, LOG_LEVELS.DEBUG);
 
     if (lastRedemption !== currentDate) {
-        player.runCommandAsync(`scoreboard players add "${player.nameTag}" Moneyz ${rewardValue}`);
+        updateScore(player, rewardValue, "add");
         player.setDynamicProperty("lastDailyReward", currentDate);
         player.sendMessage(`§aYou have claimed your daily rewards! §f${rewardValue} Moneyz`);
         log(`${player.nameTag} claimed daily reward: ${rewardValue} Moneyz`, LOG_LEVELS.INFO);
@@ -60,6 +60,6 @@ function dailyRewardLogic(player, rewardValue, currentDate) {
         player.sendMessage("§cYou have already claimed your daily rewards. Come back tomorrow!");
         log(`${player.nameTag} tried to claim reward twice. Last redemption: ${lastRedemption}`, LOG_LEVELS.INFO);
     }
-};
+}
 
 log('rewards_menu.js loaded', LOG_LEVELS.DEBUG);
