@@ -9,7 +9,7 @@ export function moneyzSettings(player) {
     log(`Player ${player.nameTag} opened the Moneyz Settings Menu.`, LOG_LEVELS.DEBUG);
 
     const form = new ActionFormData();
-    form.title('Moneyz Settings')
+    form.title('Moneyz Settings');
 
     const buttons = [];
     const actions = [];
@@ -22,7 +22,7 @@ export function moneyzSettings(player) {
 
     if (world.getDynamicProperty('syncPlayers') === "true") {
       buttons.push(`§d§lManage Auto Tags\n§r§7[ Click to Manage ]`);
-      toggleAutoTags(player);
+      actions.push(() => toggleAutoTags(player));
     };
 
     const syncPlayers = world.getDynamicProperty('syncPlayers') === "true";
