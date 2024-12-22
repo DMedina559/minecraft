@@ -32,12 +32,12 @@ function balanceManage(player) {
     log(`Player ${player.nameTag} opened the Balance Manage Menu.`, LOG_LEVELS.DEBUG);
 
     const players = [...world.getPlayers()].map(p => {
-      return p.nameTag;
+        return { name: p.nameTag, player: p };
     });
 
     new ActionFormData()
         .title(title)
-        .body(`§l§oPlayers Moneyz Balances:\n${players.map(p => `§f${p}: §g${getScore('Moneyz', p)}`).join('\n')}`)
+        .body(`§l§oPlayers Moneyz Balances:\n${players.map(p => `§f${p.name}: §g${getScore('Moneyz', p.name)}`).join('\n')}`)
         .button('§d§lManage Player Balances\n§r§7[ Click to Manage ]')
         .button('§4§lBack')
         .show(player)
@@ -45,11 +45,15 @@ function balanceManage(player) {
             if (r.selection === 0) {
                 new ModalFormData()
                     .title(title)
-                    .dropdown('§o§fChoose a Player to Manage', players.map(p => p.nameTag))
+                    .dropdown('§o§fChoose a Player to Manage', players.map(p => p.name))
                     .textField('§fEnter the Amount to Adjust:\n', '§oNumbers Only')
                     .show(player)
                     .then(({ formValues: [dropdown, textField] }) => {
-                        const selectedPlayer = players[dropdown];
+                        log(`Player selected: ${players[dropdown].name}`, LOG_LEVELS.DEBUG);
+
+                        const selectedPlayer = players[dropdown].player;
+                        log(`Selected Player Object: ${JSON.stringify(selectedPlayer)}`, LOG_LEVELS.DEBUG);
+
                         const amount = parseInt(textField);
 
                         if (isNaN(amount) || amount < 0) {
@@ -80,11 +84,16 @@ function balanceManage(player) {
                                     player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aRemoved §l${amount} §r§afrom ${selectedPlayer.nameTag}'s Moneyz."}]}`);
                                     log(`Player ${player.nameTag} removed ${amount} Moneyz from ${selectedPlayer.nameTag}.`, LOG_LEVELS.INFO);
                                 }
+                                moneyzAdmin(player);
                             });
+                    }).catch(err => {
+                        log(`Error in ModalFormData: ${err}`, LOG_LEVELS.ERROR);
                     });
             } else {
-                main(player);
+                moneyzAdmin(player);
             }
+        }).catch(err => {
+            log(`Error in ActionFormData: ${err}`, LOG_LEVELS.ERROR);
         });
 };
 
