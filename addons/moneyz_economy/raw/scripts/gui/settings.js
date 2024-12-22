@@ -6,41 +6,71 @@ import { log, LOG_LEVELS, setLogLevelFromWorldProperty } from '../logger.js';
 const title = "§l§1Setings";
 
 export function moneyzSettings(player) {
-  log(`Player ${player.nameTag} opened the Moneyz Settings Menu.`, LOG_LEVELS.DEBUG);
-  const form = new ActionFormData()
-    .title(title)
-    .body(`§l§o§fMoneyz Settings`)
-    .button(`§d§lDaily Reward Amount\n§r§7[ Set Level ]`)
-    .button(`§d§lChance Game Settings\n§r§7[ Set Level ]`)
-    .button(`§d§lManage Auto Tags\n§r§7[ Click to Manage ]`)
-    .button(`§d§lLog Level\n§r§7[ Set Level ]`)
-    .button(`§4§lBack`);
+    log(`Player ${player.nameTag} opened the Moneyz Settings Menu.`, LOG_LEVELS.DEBUG);
 
-  form.show(player).then(r => {
-    if (r.selection === 0) dailyRewardSettings(player);
-    if (r.selection === 1) chanceSettings(player);
-    if (r.selection === 2) toggleAutoTags(player);
-    if (r.selection === 3) showLogLevelMenu(player);
-    if (r.selection === 4) moneyzAdmin(player);
-  });
+    const form = new ActionFormData();
+    form.title('Moneyz Settings')
+
+    const buttons = [];
+    const actions = [];
+
+    buttons.push('§d§lDaily Reward Amount\n§r§7[ Set Amount ]');
+    actions.push(() => dailyRewardSettings(player));
+
+    buttons.push('§d§lChance Game Settings\n§r§7[ Set Chance Settings ]');
+    actions.push(() => chanceSettings(player));
+
+    if (world.getDynamicProperty('syncPlayers') === "true") {
+      buttons.push(`§d§lManage Auto Tags\n§r§7[ Click to Manage ]`);
+      toggleAutoTags(player);
+    };
+
+    const syncPlayers = world.getDynamicProperty('syncPlayers') === "true";
+    buttons.push(`§d§lSync Players\n§r§7[ ${syncPlayers ? 'Enabled' : 'Disabled'} ]`);
+    actions.push(() => {
+        world.setDynamicProperty('syncPlayers', syncPlayers ? "false" : "true");
+        log(`syncPlayers set to ${!syncPlayers}`, LOG_LEVELS.INFO);
+        moneyzSettings(player);
+    });
+
+    const oneLuckyPurchase = world.getDynamicProperty('oneLuckyPurchase') === "true";
+    buttons.push(`§d§lOne Lucky Purchase\n§r§7[ ${oneLuckyPurchase ? 'Enabled' : 'Disabled'} ]`);
+    actions.push(() => {
+        world.setDynamicProperty('oneLuckyPurchase', oneLuckyPurchase ? "false" : "true");
+        log(`oneLuckyPurchase set to ${!oneLuckyPurchase}`, LOG_LEVELS.INFO);
+        moneyzSettings(player);
+    });
+
+    const logLevel = world.getDynamicProperty('logLevel');
+    buttons.push(`§d§lLog Level\n§r§7[ ${logLevel} ]`);
+    actions.push(() => showLogLevelMenu(player));
+
+    buttons.push('§4§lBack');
+    actions.push(() => moneyzAdmin(player));
+
+    buttons.forEach(button => form.button(button));
+
+    form.show(player).then(({ selection }) => {
+        if (selection >= 0 && selection < actions.length) {
+            actions[selection]();
+        }
+    });
 };
 
 function toggleAutoTags(player) {
     log(`Player ${player.nameTag} opened the Auto Tag Menu.`, LOG_LEVELS.DEBUG);
-    const options = ['syncPlayers', 'moneyzShop', 'moneyzATM', 'moneyzSend', 'moneyzDaily', 'moneyzLucky', 'moneyzChance', 'oneLuckyPurchase'];
+    const options = ['moneyzShop', 'moneyzATM', 'moneyzSend', 'moneyzDaily', 'moneyzLucky', 'moneyzChance'];
     const scores = options.map(tag => `${tag}: ${world.getDynamicProperty(tag)}`);
 
     new ActionFormData()
         .title("Toggle Auto Tags")
         .body(`§l§oToggle Auto Tags:\n${scores.join('\n')}`)
-        .button('§d§lToggle syncPlayers')
         .button('§d§lToggle moneyzShop')
         .button('§d§lToggle moneyzATM')
         .button('§d§lToggle moneyzSend')
         .button('§d§lToggle moneyzDaily')
         .button('§d§lToggle moneyzLucky')
         .button('§d§lToggle moneyzChance')
-        .button('§d§lToggle oneLuckyPurchase')
         .button('§4§lBack')
         .show(player).then(({ selection }) => {
             if (selection >= 0 && selection < options.length) {
@@ -199,6 +229,7 @@ function showLogLevelMenu(player) {
             const selectedLevel = logLevelOptions[response.selection];
             world.setDynamicProperty("logLevel", selectedLevel);
             setLogLevelFromWorldProperty()
+            moneyzSettings(player)
             log(`Log level set to: ${selectedLevel}`, LOG_LEVELS.INFO);
             if (selectedLevel === "DEBUG") {
                 player.sendMessage("§cWARNING! Setting log level to DEBUG can impact server performance. Ensure you set the `syncPlayers` world property to `false` to optimize for debugging.");
