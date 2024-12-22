@@ -1,0 +1,15 @@
+{
+  "pools": [
+    {
+      "rolls": { "min": 1, "max": 3 },
+      "entries": [
+        { "type": "loot_table", "name": "loot_tables/shops/armory.json", "weight": 1, "conditions": [{ "condition": "random_chance", "chance": 0.4 }]},
+        { "type": "loot_table", "name": "loot_tables/shops/bank.json", "weight": 2,"conditions": [{ "condition": "random_chance", "chance": 0.4 }]},
+        { "type": "loot_table", "name": "loot_tables/shops/crafters_shop.json", "weight": 4 },
+        { "type": "loot_table", "name": "loot_tables/shops/farmers_market.json", "weight": 4 },
+        { "type": "loot_table", "name": "loot_tables/shops/petshop.json", "weight": 3 },
+        { "type": "loot_table", "name": "loot_tables/shops/workshop.json", "weight": 2 }
+      ]
+    }
+  ]
+}

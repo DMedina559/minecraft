@@ -1,0 +1,34 @@
+{
+  "pools": [
+    {
+      "rolls": { "min": 1, "max": 2 },
+      "conditions": [{ "condition": "random_chance", "chance": 0.4 }],
+      "entries": [
+        {"type": "item", "name": "allay_spawn_egg", "weight": 1},
+        {"type": "item", "name": "axolotl_spawn_egg", "weight": 1},
+        {"type": "item", "name": "cat_spawn_egg", "weight": 3},
+        {"type": "item", "name": "wolf_spawn_egg", "weight": 3},
+        {"type": "item", "name": "horse_spawn_egg", "weight": 2},
+        {"type": "item", "name": "donkey_spawn_egg", "weight": 2},
+        {"type": "item", "name": "mule_spawn_egg", "weight": 2},
+        {"type": "item", "name": "parrot_spawn_egg", "weight": 5},
+        {"type": "item", "name": "pig_spawn_egg", "weight": 4},
+        {"type": "item", "name": "strider_spawn_egg", "weight": 1}
+      ]
+    },
+    {
+      "rolls": { "min": 3, "max": 5 },
+      "entries": [
+        {"type": "item", "name": "bone", "weight": 4, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "carrot_on_a_stick", "weight": 3},
+        {"type": "item", "name": "fish", "weight": 4, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "warped_fungus_on_a_stick", "weight": 2},
+        {"type": "item", "name": "lead", "weight": 4},
+        {"type": "item", "name": "name_tag", "weight": 4},
+        {"type": "item", "name": "saddle", "weight": 3},
+        {"type": "item", "name": "wheat_seeds", "weight": 5, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "experience_bottle", "weight": 3, "functions": [{"function": "set_count", "count": 5}]}
+      ]
+    }
+  ]
+}

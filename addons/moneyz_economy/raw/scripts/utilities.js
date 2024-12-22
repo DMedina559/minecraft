@@ -77,7 +77,6 @@ export function updateScore(player, amount, operation = "add") {
     }
 };
 
-
 // Get Current Day in UTC YYYY-MM-DD format
 export function getCurrentUTCDate() {
         const date = new Date();

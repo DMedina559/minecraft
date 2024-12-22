@@ -1,0 +1,42 @@
+{
+  "pools": [
+    {
+      "rolls": { "min": 1, "max": 3 },
+      "entries": [
+        { "type": "item", "name": "minecraft:dye", "weight": 1, "functions": [{ "function": "set_count", "count": { "min": 5, "max": 10 }}, { "function": "random_aux_value", "values": { "min": 0, "max": 15}}]}
+      ]
+    },
+    {
+      "rolls": { "min": 1, "max": 2 },
+      "conditions": [{ "condition": "random_chance", "chance": 0.6 }],
+      "entries": [
+        {"type": "item", "name": "oak_log", "weight": 10, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "spruce_log", "weight": 10, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "birch_log", "weight": 10, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "jungle_log", "weight": 10, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "acacia_log", "weight": 10, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "dark_oak_log", "weight": 10, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "mangrove_log", "weight": 8, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "cherry_log", "weight": 8, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "crimson_stem", "weight": 6, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "warped_stem", "weight": 6, "functions": [{"function": "set_count", "count": 5}]}
+      ]
+    },
+    {
+      "rolls": { "min": 1, "max": 2 },
+      "conditions": [{ "condition": "random_chance", "chance": 0.7 }],
+      "entries": [
+        {"type": "item", "name": "acacia_planks", "weight": 10, "functions": [{"function": "set_count", "count": 20}]},
+        {"type": "item", "name": "birch_planks", "weight": 10, "functions": [{"function": "set_count", "count": 20}]},
+        {"type": "item", "name": "cherry_planks", "weight": 8, "functions": [{"function": "set_count", "count": 20}]},
+        {"type": "item", "name": "crimson_planks", "weight": 6, "functions": [{"function": "set_count", "count": 20}]},
+        {"type": "item", "name": "dark_oak_planks", "weight": 10, "functions": [{"function": "set_count", "count": 20}]},
+        {"type": "item", "name": "jungle_planks", "weight": 10, "functions": [{"function": "set_count", "count": 20}]},
+        {"type": "item", "name": "mangrove_planks", "weight": 8, "functions": [{"function": "set_count", "count": 20}]},
+        {"type": "item", "name": "oak_planks", "weight": 10, "functions": [{"function": "set_count", "count": 20}]},
+        {"type": "item", "name": "spruce_planks", "weight": 10, "functions": [{"function": "set_count", "count": 20}]},
+        {"type": "item", "name": "warped_planks", "weight": 6, "functions": [{"function": "set_count", "count": 20}]}
+      ]
+    }
+  ]
+}

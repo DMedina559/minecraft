@@ -1,0 +1,49 @@
+{
+  "pools": [
+    {
+      "rolls": { "min": 1, "max": 3 },
+      "entries": [
+        {"type": "item", "name": "dirt", "weight": 20, "functions": [{"function": "set_count", "count": 15}]},
+        {"type": "item", "name": "gravel", "weight": 15, "functions": [{"function": "set_count", "count": 10}]},
+        {"type": "item", "name": "red_sand", "weight": 5, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "sand", "weight": 10, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "cobblestone", "weight": 15, "functions": [{"function": "set_count", "count": 20}]},
+        {"type": "item", "name": "deepslate", "weight": 5, "functions": [{"function": "set_count", "count": 15}]},
+        {"type": "item", "name": "stone", "weight": 10, "functions": [{"function": "set_count", "count": 10}]},
+        {"type": "item", "name": "cobbled_deepslate", "weight": 8, "functions": [{"function": "set_count", "count": 15}]},
+        {"type": "item", "name": "netherrack", "weight": 5, "functions": [{"function": "set_count", "count": 15}]},
+        {"type": "item", "name": "end_stone", "weight": 2, "functions": [{"function": "set_count", "count": 10}]},
+        {"type": "item", "name": "granite", "weight": 5, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "diorite", "weight": 5, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "andesite", "weight": 5, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "blackstone", "weight": 3, "functions": [{"function": "set_count", "count": 10}]}
+      ]
+    },
+    {
+      "rolls": { "min": 2, "max": 4 },
+      "entries": [
+        {"type": "item", "name": "allium", "weight": 5, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "azure_bluet", "weight": 10, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "blue_orchid", "weight": 8, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "cornflower", "weight": 10, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "dandelion", "weight": 10, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "flowering_azalea", "weight": 4, "functions": [{"function": "set_count", "count": 1}]},
+        {"type": "item", "name": "lilac", "weight": 10, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "lily_of_the_valley", "weight": 10, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "orange_tulip", "weight": 10, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "oxeye_daisy", "weight": 5, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "peony", "weight": 10, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "pink_tulip", "weight": 10, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "poppy", "weight": 10, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "red_tulip", "weight": 10, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "rose_bush", "weight": 10, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "sunflower", "weight": 10, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "white_tulip", "weight": 10, "functions": [{"function": "set_count", "count": 5}]},
+        {"type": "item", "name": "pitcher_plant", "weight": 1, "functions": [{"function": "set_count", "count": 1}]},
+        {"type": "item", "name": "spore_blossom", "weight": 2, "functions": [{"function": "set_count", "count": 1}]},
+        {"type": "item", "name": "torchflower", "weight": 1, "functions": [{"function": "set_count", "count": 1}]},
+        {"type": "item", "name": "wither_rose", "weight": 1, "functions": [{"function": "set_count", "count": 1}]}
+      ]
+    }
+  ]
+}
