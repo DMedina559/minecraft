@@ -131,7 +131,7 @@
 							"text": "§r§lWhy can't I access all of the options in the Moneyz Menu?\n"
 						},
 						{
-							"text": "§rTo access Shops, ATMs, Send Moneyz, Daiy Rewards, Lucky Purchases, or play the Chance Game, §6Players must first obtain a moneyzTag property with  a true value.\n§rmoneyzTags are §6Properties that are set on a Player to access the Moneyz Menu options\n§rThey can have the value §6true §ror §6false.\n§rThese are the available Properties:\nmoneyzShop\nmoneyzATM\nmoneyzSend\nmoneyzDaily\nmoneyzLucky\nmoneyzChance\nWorld Owners/Admins can view and set these Properties for any online Players.\n§rMoneyz Economy also comes with an §6auto tagging §rfeature that can auto apply these moneyzTags to online Players.\n§rWorld Owners/Admins with the §6moneyzAdmin §rtag can §6enable/disable this feature for each individial tag in the Admin Menu, syncPlayers must also be enabled to turn on auto tagging.\n"
+							"text": "§rTo access Shops, ATMs, Send Moneyz, Daiy Rewards, Lucky Purchases, or play Chance Games, §6Players must first obtain a moneyzTag property with a true value.\n§rmoneyzTags are §6Properties that are set on a Player to access the Moneyz Menu options\n§rThey can have the value §6true §ror §6false.\n§rThese are the available Properties:\nmoneyzShop\nmoneyzATM\nmoneyzSend\nmoneyzDaily\nmoneyzLucky\nmoneyzChance\nWorld Owners/Admins can view and set these Properties for any online Players.\n§rMoneyz Economy also comes with an §6auto tagging §rfeature that can auto apply these moneyzTags to online Players.\n§rWorld Owners/Admins with the §6moneyzAdmin §rtag can §6enable/disable this feature for each individial tag in the Admin Menu, syncPlayers must also be enabled to turn on auto tagging.\n"
 						},
 						{
 							"text": "§r§lWhat are Daily Rewards?\n"
@@ -143,7 +143,7 @@
 							"text": "§r§lWhat is a Lucky Purchase?\n"
 						},
 						{
-							"text": "§rIf enabled by World Owners/Admins, a §6Lucky Purchase is a purchase Players can make once a day, from 1 shop only, §rin the Moneyz Menu.\nPlayers §6have a chance to win random items §rat different values form any shop.\nTo access Lucky Purchases, §6Players must have the moneyzLucky property set to true.\n"
+							"text": "§rIf enabled by World Owners/Admins, a §6Lucky Purchase is a purchase Players can make once a day, §rin the Moneyz Menu.\nPlayers §6have a chance to win random items §rat different values form any shop.\nTo access Lucky Purchases, §6Players must have the moneyzLucky property set to true.\n"
 						},
 						{
 							"text": "§r§lWhat do you mean once a day?\n"
@@ -158,10 +158,10 @@
 							"text": "§rWorld Owners/Admins require a §6moneyzAdmin tag §r(not to be confused with the above moneyzTag properties) to §6access the Admin Menu\n§rThe moneyzAdmin tag is §6first applied to the Player who runs the setup function. §rFrom there §6they can add the moneyzAdmin to other Admins from the Admin Menu\n"
 						},
 						{
-							"text": "§r§lWhat is the Chance Game?\n"
+							"text": "§r§lWhat are Chance Games?\n"
 						},
 						{
-							"text": "§rIf enabled by World Owners/Admins, the §6Chance Game allows Players to play Moneyz for a chance to win more Moneyz.\nTo acess the Chance Game, Players §6must have the moneyzChance property set to true, §rand §6World Owners/Admins must set the chanceX and chanceWin §rWorld Property to §6any number.\n§rThe §6chanceX property controls the multiplyer of earnings.\n§rFor example if a Player plays the Chance Game and places a stake for §65 Moneyz, §rand the §6chanceX property is set to 2 §rthe Player will earn back §610 Moneyz.\n§rThe §6chanceWin property controls the chances of the Player earning back Moneyz. §rThis should be set to any number between §61-100, 100 being always earn.\n"
+							"text": "§rIf enabled by World Owners/Admins, §6Chance Games allows Players to play Moneyz for a chance to win more Moneyz.\nTo acess Chance Games, Players §6must have the moneyzChance property set to true, §rand §6World Owners/Admins must set the chanceX and chanceWin §rWorld Property to §6any number.\n§rThe §6chanceX property controls the multiplyer of earnings.\n§rFor example if a Player plays the Chance Game and places a stake for §65 Moneyz, §rand the §6chanceX property is set to 2 §rthe Player will earn back §610 Moneyz.\n§rThe §6chanceWin property controls the chances of the Player earning back Moneyz. §rThis should be set to any number between §61-100, 100 being always earn.\n"
 						}
 					]
 				},
