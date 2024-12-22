@@ -3,7 +3,7 @@ import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
 import { getScore, updateScore, getCurrentUTCDate } from '../utilities.js';
 import { openRewardsMenu } from './rewards_menu.js';
 import { moneyzAdmin } from './admin_menu.js';
-import { luckyPurchase } from './lucky_menu.js';
+import { luckyMenu } from './lucky_menu.js';
 import { chanceMenu } from './chance_menu.js';
 import { log, LOG_LEVELS } from '../logger.js';
 
@@ -39,21 +39,15 @@ export function main(player) {
         actions.push(() => openRewardsMenu(player));
     }
 
-    if (player.getDynamicProperty('moneyzLucky') === "true") {
+    if (player.getDynamicProperty('moneyzLucky') === "true" || player.getDynamicProperty('moneyzChance') === "true") {
         buttons.push('§d§lFeeling Lucky?\n§r§7[ Click to See ]');
-        actions.push(() => luckyPurchase(player));
-    }
-
-    if (player.getDynamicProperty('moneyzChance') === "true") {
-        buttons.push('§d§lChance Game\n§r§7[ Click to Play ]');
-        actions.push(() => chanceMenu(player));
+        actions.push(() => luckyMenu(player));
     }
     
     if (player.hasTag('moneyzAdmin')) {
         buttons.push('§d§lMoneyz Admin\n§r§7[ Click to Manage ]');
         actions.push(() => moneyzAdmin(player));
     }
-    
     
     buttons.push('§d§lHelp\n§r§7[ Click for Help ]');
     actions.push(() => player.runCommandAsync("dialogue open @s @s help"));

@@ -2,69 +2,41 @@ import { world, system } from "@minecraft/server"
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
 import { getScore, getCurrentUTCDate } from '../utilities.js';
 import { main } from './moneyz_menu.js';
+import { chanceMenu } from './chance_menu.js';
+import { luckyPurchase } from './lucky_purchase.js';
 import { log, LOG_LEVELS } from '../logger.js';
 
 
-export function luckyPurchase(player) {    
+export function luckyMenu(player) {
+    
+    const form = new ActionFormData();
+    form.title("§l§1Feeling Lucky?");
+    
+    form.body(`§l§o§fWelcome §g${player.nameTag}§f!\nTest your Luck with a\nLucky Purchase or Chance Game\n§fMoneyz Balance: §g${getScore('Moneyz', player.nameTag)}`);
+    
+    const buttons = [];
+    const actions = [];
 
-    function canAccessLuckyMenu(player) {
-        const lastAccessDate = player.getDynamicProperty("lastLuckyPurchase");
-        const currentDate = getCurrentUTCDate();
-        const oneLuckyPurchaseEnabled = world.getDynamicProperty('oneLuckyPurchase');
-        log(`Checking Lucky Purchase access for ${player.nameTag}:`, LOG_LEVELS.DEBUG);
-        log(`  - lastAccessDate: ${lastAccessDate}`, LOG_LEVELS.DEBUG);
-        log(`  - currentDate: ${currentDate}`, LOG_LEVELS.DEBUG);
-        log(`  - oneLuckyPurchaseEnabled: ${oneLuckyPurchaseEnabled}`, LOG_LEVELS.DEBUG);
-        return !oneLuckyPurchaseEnabled || !lastAccessDate || lastAccessDate !== currentDate;
+    if (player.getDynamicProperty('moneyzLucky') === "true") {
+        buttons.push('§d§lLucky Purchase\n§r§7[ Click to Shop ]');
+        actions.push(() => luckyPurchase(player));
+    }
+    
+    if (player.getDynamicProperty('moneyzChance') === "true") {
+        buttons.push('§d§lChance Games\n§r§7[ Click to Play ]');
+        actions.push(() => chanceMenu(player));
     }
 
-    if (canAccessLuckyMenu(player)) {
-        new ActionFormData()
-            .title("§l§1Lucky Purchase Menu")
-            .body("§l§o§fChoose a shop to make a lucky purchase!")
-            .button("§d§lArmory\n§r§7[ Feeling Lucky? ]")
-            .button("§d§lCrafter's Market\n§r§7[ Feeling Lucky? ]")
-            .button("§d§lFarmer's Market\n§r§7[ Feeling Lucky? ]")
-            .button("§d§lLibrary\n§r§7[ Feeling Lucky? ]")
-            .button("§d§lPet Shop\n§r§7[ Feeling Lucky? ]")
-            .button("§d§lWorkshop\n§r§7[ Feeling Lucky? ]")
-            .button("§4§lBack")
-            .show(player).then(r => {
-                const currentDate = getCurrentUTCDate();
-                log(`Player ${player.nameTag} selection: ${r.selection}`, LOG_LEVELS.INFO);
-                
-                const oneLuckyPurchaseEnabled = world.getDynamicProperty('oneLuckyPurchase');
-                log(`oneLuckyPurchaseEnabled: ${oneLuckyPurchaseEnabled}`, LOG_LEVELS.DEBUG);
-                
-                const executeLuckyPurchase = (command) => {
-                    log(`Executing lucky purchase command: ${command}`, LOG_LEVELS.INFO);
-                    player.runCommandAsync(command);
-                    
-                    if (oneLuckyPurchaseEnabled === 'true') {
-                        log(`oneLuckyPurchase is enabled, setting ${player.nameTag}'s lastLuckyPurchase to ${currentDate}`, LOG_LEVELS.INFO);
-                        
-                        player.setDynamicProperty("lastLuckyPurchase", currentDate);
+    buttons.push('§4§lBack');
+    actions.push(() => main(player));
+    
+    buttons.forEach(button => form.button(button));
 
-                    } else {
-                        log(`oneLuckyPurchase is disabled in the world properties`, LOG_LEVELS.DEBUG);
-                    }
-                };
-
-                if (r.selection === 0) executeLuckyPurchase("function armory/lucky");
-                if (r.selection === 1) executeLuckyPurchase("function craftershop/lucky");
-                if (r.selection === 2) executeLuckyPurchase("function farmers_market/lucky");
-                if (r.selection === 3) executeLuckyPurchase("function library/lucky");
-                if (r.selection === 4) executeLuckyPurchase("function petshop/lucky");
-                if (r.selection === 5) executeLuckyPurchase("function workshop/lucky");
-                if (r.selection === 6) main(player);
-            });
-    } else {
-        new ActionFormData()
-            .title("§l§cLucky Purchase Restricted")
-            .body("§cYou have already made your Lucky Purchase today.\n§7Try again tomorrow!")
-            .button("§4§lBack")
-            .show(player);
-    }
-}
+    form.show(player).then(({ selection }) => {
+        if (selection >= 0 && selection < actions.length) {
+            actions[selection]();
+        }
+    });
+};
 
 log('lucky_menu.js loaded', LOG_LEVELS.DEBUG);
