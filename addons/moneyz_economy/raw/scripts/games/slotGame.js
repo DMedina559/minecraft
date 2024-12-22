@@ -55,7 +55,7 @@ function playSlots(player, stake) {
 };
 
 function showSlotResults(player, stake, reels, winnings, winType) {
-    let message = `§l§6[SLOTS]§r\n`;
+    let message = `§l§6[RESULTS]§r\n`;
     message += `[ ${reels.join(" | ")} ]\n`;
 
     if (winnings > 0) {
