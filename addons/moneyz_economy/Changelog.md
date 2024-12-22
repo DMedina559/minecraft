@@ -343,3 +343,67 @@
 3. Fixed Planks typos in Dialogue
 4. Fixed Gravel Sell
 5. Fixed some typos in Help Dialogue
+
+# 1.9.0
+1. Added Chance Games
+  - Players can put a stake for a chance to win more Moneyz
+  - Games:
+    - Test Your Luck
+    - 21 (Blackjack)
+    - Dice Game (Craps)
+    - Slots
+  - Requires moneyzChance Player property set to true
+  - Requires chanceX world property to be set to any number
+    - Sets the multiplier for the amount a Player stakes in a Chance Game
+      - For example if a player puts a stake for 20 Moneyz and the chanceX world property is set to 2 the player can earn 40 Moneyz
+      -  Defaults to 0 resulting in 0 Moneyz won
+  - Requires chanceWin world property to be set to any number 1 - 100
+    - Control’s how likely it is for a Player to win a Chance Game
+    - Defaults to 0 which means 0% win chance
+2. Added Lucky Purchases
+  - Players can make a purchase to receive random items at different values from any shop
+  - Players can only make one Lucky Purchase a day
+    - The world property oneLuckyPurchase can be set to false to disable this and allow Players to make as many Lucky Purchases as they want
+     - After a Player makes a Lucky Purchases they will get the Player property lastLuckyPurchase set to the current date in UTC YYYY-MM-DD format
+  - Requires the moneyzLucky Player property set to true
+3. Added Daily Rewards
+  - Players can receive a set amount of Moneyz in their balance daily
+  - Requires the world property dailyReward to be set to any number which sets the amount of Moneyz players can receive Daily.
+    - Defaults to 0
+  - Once a Player receives a Daily Reward they will get the Player Property lastDailyReward set to the current date in UTC YYYY-MM-DD format
+  - Requires the Player property moneyzDaily set to true
+4. Migrated moneyzTags Player Tags (moneyzShop, moneyzATM, moneyzSend) and moneyzAutoTag scoreboard to World Properties
+  - moneyzAdmin will remain a Player Tag
+  - moneyzShop, moneyzATM, moneyzSend Player and World Properties can be set to true or false
+  - Player Properties control what they can access in the Moneyz Menu
+    - To manually control players properties the world property syncPlayers must be set to false
+  - World Properties control whether to auto sync these properties to the Player.
+    - Requires the world property syncPlayers to be set to true 
+    - This will be set to true by default and if any of the previous scores in moneyzAutoTag is above 0
+    - If all of the previous scores in moneyzAutoTag is 0 syncPlayers will be set to false
+    - World Properties will be auto created if they don't exist already
+    -  syncPlayers, moneyzATM, and moneyzSend will be set to true by default
+    - 1.9.0 will look for the moneyzAutoTag scoreboard and auto set the appropriate world properties with their appropriate value
+      - For example if you had the moneyzShop autoTag enable before 1.9.0 it will be auto set to true in the world properties and also set the world property syncPlayers to true
+    - After all moneyzAutoTag values have been set the scoreboard will be auto removed
+      - This will NOT affect the Moneyz scoreboard which is separate
+5. Rearranged Admin Menu
+  - Player Tag Screens (Add/Remove) have been merged
+  - Added Properties menu
+    - Can add/view/modify players and world properties 
+    - World Properties can be fully cleared
+  - Auto Tag menu has been moved to Settings
+6. Added Settings Menu
+  - Players with the moneyzAdmin tag can easily be set dailyReward, chanceX and chanceWin values
+  - Added Log settings
+   - Admins can set the log level in the behavior pack to different levels for debug purposes
+     - This allows admins to see what who and why something happens in the .js scripts
+   - logLevel world property is auto set WARN
+     - Setting to DEBUG can spam the creator log if  the syncPlayers world property is set to true
+   - Will only affect the log level in the Moneyz Economy behavior pack .js files
+   - Requires Creator Log settings in the Minecraft settings to be enabled and set to INFO
+     - Note: This will also show logs for other behavior packs also installed/running
+7. Changed Moneyz Item to use the Emerald texture
+8. Revamped logging throughout the pack .js Files
+9. Cleaned up .js files
+10. Updated dependencies to latest versions

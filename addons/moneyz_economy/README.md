@@ -92,7 +92,7 @@ Admins can turn on/off the autoTagging feature from the Admin Menu. This will al
 
 The Moneyz Menus allows Players direct access to:
 - View their Moneyz balance
-- Shops [^2]
+- Shops [^2][^11]
   - Armory [^1]
   - Crafter's Shop [^9]
   - Farmer's Market
@@ -101,16 +101,42 @@ The Moneyz Menus allows Players direct access to:
   - Workshop
 - ATM Services [^2]
 - Send Moneyz [^2]
+- Daily Rewards [^10][^11]
+- Feeling Lucky Menu [^10]
+  - Lucky Purchase [^11]
+  - Chance Minigames [^11]
+    - Test Your Luck
+    - 21
+    - Dice Game
+    - Slots
 - Admin Menu [^1] [^2]
   - Manage Online Players Moneyz balances
   - Manage Online Players tags
-  - Manage autoTagging 
+  - Manage World/Player Properties
+  - Manage Settings
+    - Set the Daily Reward Amount
+    - Set Chance Games Settings
+    - Manage Auto Tag Settings
+    - Set Log Level
 - Help
 - Credits
 
 ### Send Moneyz to other Players!
 Moneyz Economy allows Players to send Moneyz directly to other Players straight from the Moneyz Menu.
 Just select a Player from the dropdown menu and enter an amount to send. [^2][^3]
+
+### Set Daily Rewards!
+Moneyz Economy allows Players to redeem a set amount of Moneyz to their Balance! World Owners/Admins can set the dailyReward world property to any number which represents the amount of Moneyz a Player will get daily. After a Player redeems the Daily Reward they will get the Player Property lastDailyReward set to the current date in UTC YYYY-MM-DD format. [^10][^11]
+
+### Feeling Lucky?
+Moneyz Economy allows Players to access the Lucky Menu. With the Lucky Menu a Player can make a Lucky Purchse or play Chance Mini Games.[^10][^11]
+
+A Lucky Purchase lets the Player to make a purchase once a day in the Moneyz Menu that'll give them random items at different values from the various shops. After the Player makes a Lucky Purchase they will get the Player Property lastLuckyPurchase set to the current date in UTC YYYY-MM-DD format. The once a day limit can be disabled in the Settings Menu.
+
+Chance Games allows a Player to put an amount of Moneyz at stake for a chance to win more Moneyz. The Player will be able to enter an amount of Moneyz to stake. This can be multiplied if they win a chance game or lost if they lose the game. World Owners/Admins must set the World Properties chanceX and chanceWin. These can be set in the Settings Menu.
+
+- The chanceX World Property sets the multiplier for the stake amount. For example: if a places a stake for 15 Moneyz, the chanceX property is set to 2 and they win a game they will win 30 Moneyz. This is set to 0 by default resulting in 0 Moneyz won.
+- The chanceWin World Property set the chances a Player can win. For example if chanceWin is set to 50, the Player has a 50% chance to win a Chance Game. This is set to 0 by default resulting in 0% chances to win.
 
 ### Help Dialogue
 Moneyz Economy comes with various help documentation to help all players setup and use Moneyz easily. [^7]
@@ -169,3 +195,5 @@ https://www.youtube.com/watch?v=6sjZkGPCF5A
 [^7]: Requires 1.4.0+
 [^8]: Enabled by Default, re-run `/function setup` if updating from a version before 1.7.0.
 [^9]: Requires 1.8.0+
+[^10]: Requires 1.9.0+
+[^11]: Disabled by Default
