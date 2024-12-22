@@ -23,8 +23,8 @@ export function testYourLuck(player) {
         }
 
         const playerScore = scoreData.score;
-        const winChance = world.getDynamicProperty("chanceWin") || 0;
-        const worldMultiplier = world.getDynamicProperty("chanceX") || 0;
+        const winChance = world.getDynamicProperty("chanceWin");
+        const worldMultiplier = world.getDynamicProperty("chanceX");
 
         const modalForm = new ModalFormData()
             .title("Test Your Luck")

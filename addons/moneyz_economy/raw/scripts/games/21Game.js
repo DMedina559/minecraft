@@ -73,7 +73,7 @@ export function start21Game(player) {
 function startGameRound(player, stake) {
     let playerHand = [];
     let dealerHand = [];
-    const chanceX = world.getDynamicProperty("chanceX") || 1;
+    const chanceX = world.getDynamicProperty("chanceX");
 
     playerHand.push(getRandomCard());
     dealerHand.push(getRandomCard());
@@ -91,7 +91,7 @@ function continue21Game(player, stake, playerHand, dealerHand, chanceX) {
     const playerValue = calculateHandValue(playerHand);
     const dealerFirstCard = dealerHand[0];
     const dealerValue = calculateHandValue(dealerHand);
-    const winChance = world.getDynamicProperty("chanceWin") || 50; // Default to 50%
+    const winChance = world.getDynamicProperty("chanceWin");
 
     let message = `Your hand: ${displayHand(playerHand)} (${playerValue})\nDealer's showing card: ${displayHand([dealerFirstCard])}\n`;
     log(`Player's hand: ${displayHand(playerHand)} (Value: ${playerValue})`, LOG_LEVELS.DEBUG);
