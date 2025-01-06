@@ -9,7 +9,7 @@ export function moneyzSettings(player) {
     log(`Player ${player.nameTag} opened the Moneyz Settings Menu.`, LOG_LEVELS.DEBUG);
 
     const form = new ActionFormData();
-    form.title('Moneyz Settings');
+    form.title('§l§1Moneyz Settings');
 
     const buttons = [];
     const actions = [];
@@ -63,7 +63,7 @@ function toggleAutoTags(player) {
     const scores = options.map(tag => `${tag}: ${world.getDynamicProperty(tag)}`);
 
     new ActionFormData()
-        .title("Toggle Auto Tags")
+        .title("§l§1Toggle Auto Tags")
         .body(`§l§oToggle Auto Tags:\n${scores.join('\n')}`)
         .button('§d§lToggle moneyzShop')
         .button('§d§lToggle moneyzATM')
@@ -162,7 +162,7 @@ function setChanceValue(player, propertyName) {
     }
 
     const form = new ModalFormData()
-        .title(`Set ${propertyName}`)
+        .title(`§l§1Set ${propertyName}`)
         .textField(`Enter new value for ${propertyName}: Current value: ${currentValue}`, "");
 
     form.show(player).then(response => {

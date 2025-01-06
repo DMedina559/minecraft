@@ -42,7 +42,7 @@ export function openRewardsMenu(player) {
         });
 }
 
-function dailyRewardLogic(player, rewardValue) {
+async function dailyRewardLogic(player, rewardValue) {
     log(`Running dailyRewardLogic for ${player.nameTag}`, LOG_LEVELS.DEBUG);
 
     const currentDate = getCurrentUTCDate();
@@ -52,14 +52,26 @@ function dailyRewardLogic(player, rewardValue) {
     log(`Last redemption date for ${player.nameTag}: ${lastRedemption}`, LOG_LEVELS.DEBUG);
 
     if (lastRedemption !== currentDate) {
-        updateScore(player, rewardValue, "add");
-        player.setDynamicProperty("lastDailyReward", currentDate);
-        player.sendMessage(`§aYou have claimed your daily rewards! §f${rewardValue} Moneyz`);
-        log(`${player.nameTag} claimed daily reward: ${rewardValue} Moneyz`, LOG_LEVELS.INFO);
+        try {
+            const updateResult = await updateScore(player, rewardValue, "add");
+
+            if (updateResult) {
+                player.setDynamicProperty("lastDailyReward", currentDate);
+                player.sendMessage(`§aYou have claimed your daily rewards! §f${rewardValue} Moneyz`);
+                log(`${player.nameTag} successfully claimed daily reward: ${rewardValue} Moneyz`, LOG_LEVELS.INFO);
+            } else {
+                player.sendMessage("§cAn error occurred while claiming your daily reward. Please try again later.");
+                log(`Failed to add ${rewardValue} Moneyz for ${player.nameTag} during daily reward process.`, LOG_LEVELS.ERROR);
+            }
+        } catch (error) {
+            log(`Error during daily reward for ${player.nameTag}: ${error}`, LOG_LEVELS.ERROR);
+            player.sendMessage("§cAn unexpected error occurred while claiming your daily reward.");
+        }
     } else {
         player.sendMessage("§cYou have already claimed your daily rewards. Come back tomorrow!");
         log(`${player.nameTag} tried to claim reward twice. Last redemption: ${lastRedemption}`, LOG_LEVELS.INFO);
     }
 }
+
 
 log('rewards_menu.js loaded', LOG_LEVELS.DEBUG);

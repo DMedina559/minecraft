@@ -12,8 +12,8 @@ function rollDice() {
     return sum;
 };
 
-function playCraps(player, stake) {
-    const chanceWin = world.getDynamicProperty("chanceWin");
+async function playCraps(player, stake) {
+    const chanceWin = parseFloat(world.getDynamicProperty("chanceWin"));
     const chanceX = parseFloat(world.getDynamicProperty("chanceX"));
 
     const comeOutRoll = rollDice();
@@ -21,8 +21,8 @@ function playCraps(player, stake) {
 
     if (comeOutRoll === 7 || comeOutRoll === 11) {
         if (getRandomInt(1, 100) <= chanceWin) {
-            const winnings = stake * chanceX;
-            updateScore(player, winnings, "add");
+            const winnings = Math.round(stake * chanceX);
+            await updateScore(player, winnings, "add");
             message += `§aYou win ${winnings} Moneyz! (Natural)`;
             log(`${player.nameTag} won ${winnings} Moneyz (Natural).`, LOG_LEVELS.INFO);
             player.runCommandAsync("playsound random.levelup @s ~ ~ ~");
@@ -44,68 +44,69 @@ function playCraps(player, stake) {
         message += `Point is now ${point}\n`;
         log(`Point established: ${point}`, LOG_LEVELS.DEBUG);
 
-        new ActionFormData()
+        const actionForm = new ActionFormData()
             .title("Craps - Roll for Point")
             .body(message + "Roll again to match the point, or 7 to lose.")
-            .button("Roll")
-            .show(player)
-            .then(rollResponse => {
-                if (rollResponse.canceled) return;
+            .button("Roll");
 
-                const nextRoll = rollDice();
-                message += `You rolled: ${nextRoll}\n`;
+        const rollResponse = await actionForm.show(player);
+        if (rollResponse.canceled) return;
 
-                if (nextRoll === point) {
-                    if (getRandomInt(1, 100) <= chanceWin) {
-                        const winnings = stake * chanceX;
-                        updateScore(player, winnings, "add");
-                        message += `§aYou win ${winnings} Moneyz! (Hit the Point)`;
-                        log(`${player.nameTag} won ${winnings} Moneyz (Hit the Point).`, LOG_LEVELS.INFO);
-                        player.runCommandAsync("playsound random.levelup @s ~ ~ ~");
-                    } else { //Chance of LOSING
-                        message += "§cYou lose! (Hit the Point - Chance Fail)";
-                        log(`${player.nameTag} lost ${stake} Moneyz (Hit the Point - Chance Fail).`, LOG_LEVELS.INFO);
-                        player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
-                    }
-                } else if (nextRoll === 7) {
-                    message += "§cYou lose! (Seven Out)";
-                    log(`${player.nameTag} lost ${stake} Moneyz (Seven Out).`, LOG_LEVELS.INFO);
-                    player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
-                } else {
-                    message += "Roll again!";
-                    log(`Rolled ${nextRoll}, still trying for point ${point}`, LOG_LEVELS.DEBUG);
-                    playCraps(player, stake);
-                    return;
-                }
-                player.sendMessage(message);
-            });
+        const nextRoll = rollDice();
+        message += `You rolled: ${nextRoll}\n`;
+
+        if (nextRoll === point) {
+            if (getRandomInt(1, 100) <= chanceWin) {
+                const winnings = Math.round(stake * chanceX);
+                await updateScore(player, winnings, "add");
+                message += `§aYou win ${winnings} Moneyz! (Hit the Point)`;
+                log(`${player.nameTag} won ${winnings} Moneyz (Hit the Point).`, LOG_LEVELS.INFO);
+                player.runCommandAsync("playsound random.levelup @s ~ ~ ~");
+            } else {
+                message += "§cYou lose! (Hit the Point - Chance Fail)";
+                log(`${player.nameTag} lost ${stake} Moneyz (Hit the Point - Chance Fail).`, LOG_LEVELS.INFO);
+                player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
+            }
+        } else if (nextRoll === 7) {
+            message += "§cYou lose! (Seven Out)";
+            log(`${player.nameTag} lost ${stake} Moneyz (Seven Out).`, LOG_LEVELS.INFO);
+            player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
+        } else {
+            message += "Roll again!";
+            log(`Rolled ${nextRoll}, still trying for point ${point}`, LOG_LEVELS.DEBUG);
+            await playCraps(player, stake);
+            return;
+        }
+        player.sendMessage(message);
     }
 };
 
-export function startCrapsGame(player) {
-    new ModalFormData()
-        .title("§l§6Dice Game")
-        .textField("Enter your stake:", "Enter stake amount here")
-        .show(player)
-        .then(response => {
-            if (response.canceled) {
-                return;
-            }
+export async function startCrapsGame(player) {
+    try {
+        const modalForm = new ModalFormData()
+            .title("§l§6Dice Game")
+            .textField("Enter your stake:", "Enter stake amount here");
 
-            const stake = parseInt(response.formValues[0], 10);
-            if (isNaN(stake) || stake <= 0) {
-                player.sendMessage("§cInvalid stake amount.");
-                return;
-            }
+        const response = await modalForm.show(player);
+        if (response.canceled) return;
 
-            const playerScore = getScore("Moneyz", player);
-            if (playerScore < stake) {
-                player.sendMessage("§cYou don't have enough Moneyz!");
-                return;
-            }
-            updateScore(player, stake, "remove")
-            playCraps(player, stake);
-        });
+        const stake = parseInt(response.formValues[0], 10);
+        if (isNaN(stake) || stake <= 0) {
+            player.sendMessage("§cInvalid stake amount.");
+            return;
+        }
+
+        const scoreData = await getScore("Moneyz", player);
+        if (!scoreData || scoreData.score < stake) {
+            player.sendMessage("§cYou don't have enough Moneyz!");
+            return;
+        }
+
+        await updateScore(player, stake, "remove");
+        await playCraps(player, stake);
+    } catch (error) {
+        log(`Error in Craps game: ${error}`, LOG_LEVELS.ERROR);
+    }
 };
 
 log("diceGame.js loaded", LOG_LEVELS.DEBUG);

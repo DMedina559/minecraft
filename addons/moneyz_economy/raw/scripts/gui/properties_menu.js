@@ -11,13 +11,15 @@ export function propertiesMenu(player) {
         .title(title)
         .body(`§l§o§fManage World and Player Properties Here`)
         .button(`§d§lManage Player Properties\n§r§7[ Click to Manage ]`)
+        .button(`§d§lManage Shop Properties\n§r§7[ Click to Manage ]`)
         .button(`§d§lManage World Properties\n§r§7[ Click to Manage ]`)
         .button(`§4§lBack`);
 
     form.show(player).then(r => {
         if (r.selection === 0) playerPropertiesMenu(player);
-        if (r.selection === 1) worldPropertiesMenu(player);
-        if (r.selection === 2) moneyzAdmin(player);
+        if (r.selection === 1) shopItemPropertiesMenu(player);
+        if (r.selection === 2) worldPropertiesMenu(player);
+        if (r.selection === 3) moneyzAdmin(player);
     });
 }
 
@@ -133,6 +135,71 @@ function modifyPlayerProperties(player, selectedPlayer) {
             playerPropertiesMenu(player, selectedPlayer);
         });
 }
+
+function shopItemPropertiesMenu(player) {
+    const worldProperties = world.getDynamicPropertyIds().filter(id => id.startsWith('shopItem_'));
+    
+    const propertyList = worldProperties.map(property => {
+        const value = world.getDynamicProperty(property);
+        return `§f${property} §7-> §f${value}`;
+    });
+    
+    const options = [...propertyList, "§aAdd New Property"];
+
+    new ModalFormData()
+        .title("§l§1Custom Items")
+        .dropdown("§oSelect an Option", options)
+        .textField("§fNew Property Name (required if adding new):", "shopItem_example")
+        .textField("§fItem Name:", "minecraft:stone")
+        .textField("§fBuy Amount:", "1")
+        .textField("§fBuy Cost:", "100")
+        .textField("§fBuy Data:", "0")
+        .textField("§fSell Amount:", "1")
+        .textField("§fSell Cost:", "50")
+        .textField("§fSell Data:", "0")
+        .show(player)
+        .then(result => {
+            if (!result || !result.formValues) {
+                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cNo valid input received!"}]}`);
+                return;
+            }
+
+            const formValues = result.formValues;
+            const selectedOption = formValues[0];
+            const propertyName = (formValues[1] || "").trim();
+            const itemName = (formValues[2] || "").trim();
+            const buyAmount = parseInt(formValues[3] || "0", 10);
+            const buyCost = parseInt(formValues[4] || "0", 10);
+            const buyData = parseInt(formValues[5] || "0", 10);
+            const sellAmount = parseInt(formValues[6] || "0", 10);
+            const sellCost = parseInt(formValues[7] || "0", 10);
+            const sellData = parseInt(formValues[8] || "0", 10);
+
+            // Handle the 'Add New Property' action
+            if (selectedOption === options.length - 1) {
+                if (!propertyName || !propertyName.startsWith("shopItem_")) {
+                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cProperty name must start with 'shopItem_'."}]}`);
+                    return;
+                }
+
+                const newValue = `${itemName},${buyAmount},${buyCost},${buyData},${sellAmount},${sellCost},${sellData}`;
+                world.setDynamicProperty(propertyName, newValue);
+                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aNew property '${propertyName}' has been created."}]}`);
+
+            } else if (selectedOption >= 0 && selectedOption < worldProperties.length) {
+                const existingProperty = worldProperties[selectedOption];
+                const newValue = `${itemName},${buyAmount},${buyCost},${buyData},${sellAmount},${sellCost},${sellData}`;
+                world.setDynamicProperty(existingProperty, newValue);
+                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aProperty '${existingProperty}' has been updated."}]}`);
+            } else {
+                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cInvalid selection."}]}`);
+            }
+        })
+        .catch(error => {
+            log(`Error in shopItemPropertiesMenu: ${error}`, LOG_LEVELS.ERROR, player.nameTag, error, error.stack);
+        });
+}
+
 
 function worldPropertiesMenu(player) {
 

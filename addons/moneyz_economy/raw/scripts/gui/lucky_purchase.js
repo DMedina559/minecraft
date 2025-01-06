@@ -4,9 +4,9 @@ import { getScore, getCurrentUTCDate, updateScore } from '../utilities.js';
 import { luckyMenu } from './lucky_menu.js';
 import { log, LOG_LEVELS } from '../logger.js';
 
-export function luckyPurchase(player) {
+export async function luckyPurchase(player) {
 
-    function canAccessLuckyMenu(player) {
+    async function canAccessLuckyMenu(player) {
         const lastAccessDate = player.getDynamicProperty("lastLuckyPurchase");
         const currentDate = getCurrentUTCDate();
         const oneLuckyPurchaseEnabled = world.getDynamicProperty('oneLuckyPurchase');
@@ -17,18 +17,18 @@ export function luckyPurchase(player) {
         return !oneLuckyPurchaseEnabled || !lastAccessDate || lastAccessDate !== currentDate;
     }
 
-    if (canAccessLuckyMenu(player)) {
+    if (await canAccessLuckyMenu(player)) {
         new ActionFormData()
             .title("§l§1Lucky Purchase")
             .body("§l§o§fMake a Lucky Purchase for 150 Moneyz!")
             .button("§a§lMake Purchase")
             .button("§4§lBack")
-            .show(player).then(r => {
+            .show(player).then(async r => {
                 if (r.selection === 0) {
                     const currentDate = getCurrentUTCDate();
                     const oneLuckyPurchaseEnabled = world.getDynamicProperty('oneLuckyPurchase');
 
-                    const money = getScore("Moneyz", player);
+                    const money = await getScore("Moneyz", player);
 
                     if (money >= 150) {
                         player.runCommandAsync("playsound random.levelup @s ~ ~ ~");
@@ -37,7 +37,7 @@ export function luckyPurchase(player) {
                         player.runCommandAsync(`loot spawn ~ ~ ~ loot "lucky_purchase"`);
 
                         player.sendMessage("§aDo You Feel Lucky?");
-                        updateScore(player, -150, "remove");
+                        await updateScore(player, 150, "remove");
 
                         if (oneLuckyPurchaseEnabled === 'true') {
                             log(`oneLuckyPurchase is enabled, setting ${player.nameTag}'s lastLuckyPurchase to ${currentDate}`, LOG_LEVELS.INFO);
@@ -52,6 +52,8 @@ export function luckyPurchase(player) {
                 } else if (r.selection === 1) {
                     luckyMenu(player);
                 }
+            }).catch(err => {
+                log(`Error in ActionFormData: ${err}`, LOG_LEVELS.ERROR);
             });
     } else {
         new ActionFormData()
@@ -61,5 +63,6 @@ export function luckyPurchase(player) {
             .show(player);
     }
 }
+
 
 log('lucky_purchase.js loaded', LOG_LEVELS.DEBUG);
