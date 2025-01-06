@@ -41,41 +41,32 @@ export const getScore = (objective, target, useZero = true) => {
 };
 
 // Add/Set/Remove Scores
-export function updateScore(player, amount, operation = "add") {
+export async function updateScore(player, amount, operation = "add") {
     log(`updateScore: Updating score for ${player?.nameTag} by ${amount} using ${operation}.`, LOG_LEVELS.DEBUG);
 
     if (!player) {
         log("updateScore: Invalid player provided.", LOG_LEVELS.ERROR);
-        return;
+        return false;
     }
 
     const playerName = player.nameTag;
-
     const roundedAmount = Math.round(amount);
     log(`updateScore: Rounded amount to ${roundedAmount}.`, LOG_LEVELS.DEBUG);
 
     try {
-        switch (operation.toLowerCase()) {
-            case "add":
-                player.runCommandAsync(`scoreboard players add "${playerName}" Moneyz ${roundedAmount}`);
-                log(`updateScore: Added ${roundedAmount} to ${playerName}'s Moneyz.`, LOG_LEVELS.DEBUG);
-                break;
-            case "remove":
-                player.runCommandAsync(`scoreboard players remove "${playerName}" Moneyz ${roundedAmount}`);
-                log(`updateScore: Removed ${roundedAmount} from ${playerName}'s Moneyz.`, LOG_LEVELS.DEBUG);
-                break;
-            case "set":
-                player.runCommandAsync(`scoreboard players set "${playerName}" Moneyz ${roundedAmount}`);
-                log(`updateScore: Set ${playerName}'s Moneyz to ${roundedAmount}.`, LOG_LEVELS.DEBUG);
-                break;
-            default:
-                log(`updateScore: Invalid operation: ${operation}`, LOG_LEVELS.ERROR);
-                break;
+        let command = `scoreboard players ${operation} "${playerName}" Moneyz ${roundedAmount}`;
+        let commandResult = await player.runCommandAsync(command);
+        if(commandResult.successCount === undefined || commandResult.successCount === 0){
+            log(`updateScore: Command failed: ${command}`, LOG_LEVELS.ERROR)
+            return false;
         }
+        log(`updateScore: ${operation}ed ${roundedAmount} to ${playerName}'s Moneyz.`, LOG_LEVELS.DEBUG);
+        return true;
     } catch (error) {
         log(`updateScore: Error updating score: ${error}`, LOG_LEVELS.ERROR);
+        return false;
     }
-};
+}
 
 // Get Current Day in UTC YYYY-MM-DD format
 export function getCurrentUTCDate() {

@@ -5,6 +5,7 @@ import { openRewardsMenu } from './rewards_menu.js';
 import { moneyzAdmin } from './admin_menu.js';
 import { luckyMenu } from './lucky_menu.js';
 import { chanceMenu } from './chance_menu.js';
+import { customShop } from './custom_shop.js';
 import { log, LOG_LEVELS } from '../logger.js';
 
 const title = "§l§1Moneyz Menu";
@@ -68,49 +69,63 @@ export function main(player) {
 };
 
 function shops(player) {
+
+    const customShopName = world.getDynamicProperty("customShop") || "Custom Shop";
+    const title = "§l§1Shop Menu";
+
+    const playerBalance = getScore('Moneyz', player.nameTag);
+    if (typeof playerBalance !== "number") {
+        player.sendMessage("§cUnable to retrieve your balance.");
+        return;
+    }
+
     new ActionFormData()
         .title(title)
-        .body(`§fMoneyz Balance: §g${getScore('Moneyz', player.nameTag)}`)
+        .body(`§fMoneyz Balance: §g${playerBalance}`)
         .button("§d§lArmory\n§r§7[ Click to Shop ]")
-        .button("§d§lCrafters's Market\n§r§7[ Click to Shop ]")
+        .button("§d§lCrafter's Market\n§r§7[ Click to Shop ]")
         .button("§d§lFarmer's Market\n§r§7[ Click to Shop ]")
         .button("§d§lLibrary\n§r§7[ Click to Shop ]")
         .button("§d§lPet Shop\n§r§7[ Click to Shop ]")
         .button("§d§lWorkshop\n§r§7[ Click to Shop ]")
-        .button(`§4§lBack`)
-        .show(player).then(r => {
-            if (r.selection == 0) {
-                player.runCommandAsync("dialogue open @s @s armory")
+        .button(`§d§l${customShopName}\n§r§7[ Click to Shop ]`)
+        .button("§4§lBack")
+        .show(player)
+        .then(r => {
+            if (r.selection === 0) {
+                player.runCommandAsync("dialogue open @s @s armory");
+            } else if (r.selection === 1) {
+                player.runCommandAsync("dialogue open @s @s craftershop");
+            } else if (r.selection === 2) {
+                player.runCommandAsync("dialogue open @s @s farmers_market");
+            } else if (r.selection === 3) {
+                player.runCommandAsync("dialogue open @s @s library");
+            } else if (r.selection === 4) {
+                player.runCommandAsync("dialogue open @s @s petshop");
+            } else if (r.selection === 5) {
+                player.runCommandAsync("dialogue open @s @s workshop");
+            } else if (r.selection === 6) {
+                customShop(player);
+            } else if (r.selection === 7) {
+                main(player);
             }
-            if (r.selection == 1) {
-                player.runCommandAsync("dialogue open @s @s craftershop")
-            }
-            if (r.selection == 2) {
-                player.runCommandAsync("dialogue open @s @s farmers_market")
-            }
-            if (r.selection == 3) {
-                player.runCommandAsync("dialogue open @s @s library")
-            }
-            if (r.selection == 4) {
-                player.runCommandAsync("dialogue open @s @s petshop")
-            }
-            if (r.selection == 5) {
-                player.runCommandAsync("dialogue open @s @s workshop")
-            }
-            if (r.selection == 6) main(player)
         })
-};
+        .catch(error => {
+            log(`Error showing shop menu: ${error.message}`, LOG_LEVELS.ERROR);
+            player.sendMessage("§cAn error occurred while opening the shop.");
+        });
+}
 
-const moneyzTransfer = (player) => {
+const moneyzTransfer = async (player) => {
   log('Opening Money Transfer Menu for player:', LOG_LEVELS.DEBUG, player.nameTag);
 
   const players = [...world.getPlayers()];
   new ModalFormData()
     .title(title)
-    .dropdown('§o§fChoose Who to Send Moneyz to!', players.map(player => player.nameTag))
-    .textField(`§fEnter the Amount to Send!\n§fMoneyz Balance: §g${getScore('Moneyz', player.nameTag)}`, `§oNumbers Only`)
+    .dropdown('§o§fChoose Who to Send Moneyz to!', players.map(p => p.nameTag))
+    .textField(`§fEnter the Amount to Send!\n§fMoneyz Balance: §g${await getScore('Moneyz', player.nameTag)}`, `§oNumbers Only`)
     .show(player)
-    .then(({ formValues: [dropdown, textField] }) => {
+    .then(async ({ formValues: [dropdown, textField] }) => {
       const selectedPlayer = players[dropdown];
 
       if (selectedPlayer === player) {
@@ -129,7 +144,7 @@ const moneyzTransfer = (player) => {
 
       const amountToSend = parseInt(textField, 10);
 
-      const senderBalance = getScore('Moneyz', player);
+      const senderBalance = await getScore('Moneyz', player.nameTag);
       if (!senderBalance || senderBalance < amountToSend) {
         log(`${player.nameTag} didn't have enough Moneyz to send`, LOG_LEVELS.WARN);
         player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cYou Don't Have Enough Moneyz"}]}`);
@@ -138,13 +153,12 @@ const moneyzTransfer = (player) => {
       }
 
       try {
-
-        updateScore(player, amountToSend, "remove");
+        await updateScore(player, amountToSend, "remove");
 
         player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aSent §l${selectedPlayer.nameTag} §r§2${amountToSend} Moneyz"}]}`);
         selectedPlayer.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§l${player.nameTag} §r§aSent You §2${amountToSend} Moneyz"}]}`);
 
-        updateScore(selectedPlayer, amountToSend, "add");
+        await updateScore(selectedPlayer, amountToSend, "add");
 
         log(`${player.nameTag} sent ${amountToSend} Moneyz to ${selectedPlayer.nameTag}`, LOG_LEVELS.INFO);
       } catch (error) {
@@ -157,10 +171,11 @@ const moneyzTransfer = (player) => {
     });
 };
 
+
 function Credits(player) {
     new ActionFormData()
-        .title(title)
-        .body(`§l§o§6Credits\n\n§5Creator: §dZVortex11325\n§5Link: §dlinktr.ee/dmedina559\n§5Version: §d1.9.0`)
+        .title('§l§1Credits')
+        .body(`\n§l§5Creator: §dZVortex11325\n§5Link: §dlinktr.ee/dmedina559\n§5Version: §d1.9.0`)
         .button(`§4§lBack`)
         .show(player).then(r => {
             if (r.selection == 0) main(player)

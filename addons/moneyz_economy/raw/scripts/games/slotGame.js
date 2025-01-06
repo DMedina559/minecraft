@@ -17,9 +17,9 @@ function spinSlots(chanceWin) {
         }
     }
     return reels;
-};
+}
 
-function playSlots(player, stake) {
+async function playSlots(player, stake) {
     const chanceWin = world.getDynamicProperty("chanceWin");
     const chanceX = parseFloat(world.getDynamicProperty("chanceX"));
 
@@ -50,9 +50,15 @@ function playSlots(player, stake) {
         log(`${player.nameTag} lost ${stake} Moneyz on the slots.`, LOG_LEVELS.INFO);
         player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
     }
-    updateScore(player, winnings, "add");
-    showSlotResults(player, stake, reels, winnings, winType);
-};
+
+    try {
+        await updateScore(player, winnings, "add");
+        showSlotResults(player, stake, reels, winnings, winType);
+    } catch (error) {
+        log(`Error updating winnings for ${player.nameTag}: ${error}`, LOG_LEVELS.ERROR);
+        player.sendMessage("§cAn error occurred while updating your winnings.");
+    }
+}
 
 function showSlotResults(player, stake, reels, winnings, winType) {
     let message = `§l§6[RESULTS]§r\n`;
@@ -77,14 +83,14 @@ function showSlotResults(player, stake, reels, winnings, winType) {
                 chanceMenu(player);
             }
         });
-};
+}
 
-export function startSlotsGame(player) {
+export async function startSlotsGame(player) {
     new ModalFormData()
         .title("§l§6Slot Machine")
         .textField("Enter your stake:", "Enter stake amount here")
         .show(player)
-        .then(response => {
+        .then(async response => {
             if (response.canceled) return;
 
             const stake = parseInt(response.formValues[0], 10);
@@ -93,14 +99,19 @@ export function startSlotsGame(player) {
                 return;
             }
 
-            const playerScore = getScore("Moneyz", player);
-            if (playerScore < stake) {
-                player.sendMessage("§cYou don't have enough Moneyz!");
-                return;
+            try {
+                const playerScore = await getScore("Moneyz", player);
+                if (playerScore < stake) {
+                    player.sendMessage("§cYou don't have enough Moneyz!");
+                    return;
+                }
+                await updateScore(player, stake, "remove");
+                playSlots(player, stake);
+            } catch (error) {
+                log(`Error during stake validation for ${player.nameTag}: ${error}`, LOG_LEVELS.ERROR);
+                player.sendMessage("§cAn error occurred while processing your stake.");
             }
-            updateScore(player, stake, "remove");
-            playSlots(player, stake);
         });
-};
+}
 
 log("slotGame.js loaded", LOG_LEVELS.DEBUG);

@@ -28,74 +28,85 @@ export function moneyzAdmin(player) {
     });
 };
 
-function balanceManage(player) {
+async function balanceManage(player) {
     log(`Player ${player.nameTag} opened the Balance Manage Menu.`, LOG_LEVELS.DEBUG);
 
     const players = [...world.getPlayers()].map(p => {
         return { name: p.nameTag, player: p };
     });
 
-    new ActionFormData()
-        .title(title)
-        .body(`§l§oPlayers Moneyz Balances:\n${players.map(p => `§f${p.name}: §g${getScore('Moneyz', p.name)}`).join('\n')}`)
-        .button('§d§lManage Player Balances\n§r§7[ Click to Manage ]')
-        .button('§4§lBack')
-        .show(player)
-        .then(r => {
-            if (r.selection === 0) {
-                new ModalFormData()
-                    .title(title)
-                    .dropdown('§o§fChoose a Player to Manage', players.map(p => p.name))
-                    .textField('§fEnter the Amount to Adjust:\n', '§oNumbers Only')
-                    .show(player)
-                    .then(({ formValues: [dropdown, textField] }) => {
-                        log(`Player selected: ${players[dropdown].name}`, LOG_LEVELS.DEBUG);
+    try {
+        const playerBalances = await Promise.all(players.map(async (p) => {
+            const balance = await getScore('Moneyz', p.player);
+            return `§f${p.name}: §g${balance}`;
+        }));
 
-                        const selectedPlayer = players[dropdown].player;
-                        log(`Selected Player Object: ${JSON.stringify(selectedPlayer)}`, LOG_LEVELS.DEBUG);
+        new ActionFormData()
+            .title(title)
+            .body(`§l§oPlayers Moneyz Balances:\n${playerBalances.join('\n')}`)
+            .button('§d§lManage Player Balances\n§r§7[ Click to Manage ]')
+            .button('§4§lBack')
+            .show(player)
+            .then(r => {
+                if (r.selection === 0) {
+                    new ModalFormData()
+                        .title(title)
+                        .dropdown('§o§fChoose a Player to Manage', players.map(p => p.name))
+                        .textField('§fEnter the Amount to Adjust:\n', '§oNumbers Only')
+                        .show(player)
+                        .then(({ formValues: [dropdown, textField] }) => {
+                            log(`Player selected: ${players[dropdown].name}`, LOG_LEVELS.DEBUG);
 
-                        const amount = parseInt(textField);
+                            const selectedPlayer = players[dropdown].player;
+                            log(`Selected Player Object: ${JSON.stringify(selectedPlayer)}`, LOG_LEVELS.DEBUG);
 
-                        if (isNaN(amount) || amount < 0) {
-                            player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid number!"}]}`);
-                            log(`Player ${player.nameTag} entered an invalid amount for balance adjustment.`, LOG_LEVELS.WARN);
-                            return;
-                        }
+                            const amount = parseInt(textField);
 
-                        new ActionFormData()
-                            .title(title)
-                            .body(`§l§oManage ${selectedPlayer.nameTag}'s Moneyz`)
-                            .button('§d§lAdd Moneyz')
-                            .button('§d§lSet Moneyz')
-                            .button('§d§lRemove Moneyz')
-                            .button('§4§lCancel')
-                            .show(player)
-                            .then(({ selection }) => {
-                                if (selection === 0) {
-                                    updateScore(selectedPlayer, amount, "add");
-                                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aAdded §l${amount} §r§ato ${selectedPlayer.nameTag}'s Moneyz."}]}`);
-                                    log(`Player ${player.nameTag} added ${amount} Moneyz to ${selectedPlayer.nameTag}.`, LOG_LEVELS.INFO);
-                                } else if (selection === 1) {
-                                    updateScore(selectedPlayer, amount, "set");
-                                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aSet ${selectedPlayer.nameTag}'s Moneyz to §l${amount}."}]}`);
-                                    log(`Player ${player.nameTag} set ${selectedPlayer.nameTag}'s Moneyz to ${amount}.`, LOG_LEVELS.INFO);
-                                } else if (selection === 2) {
-                                    updateScore(selectedPlayer, amount, "remove");
-                                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aRemoved §l${amount} §r§afrom ${selectedPlayer.nameTag}'s Moneyz."}]}`);
-                                    log(`Player ${player.nameTag} removed ${amount} Moneyz from ${selectedPlayer.nameTag}.`, LOG_LEVELS.INFO);
-                                }
-                                moneyzAdmin(player);
-                            });
-                    }).catch(err => {
-                        log(`Error in ModalFormData: ${err}`, LOG_LEVELS.ERROR);
-                    });
-            } else {
-                moneyzAdmin(player);
-            }
-        }).catch(err => {
-            log(`Error in ActionFormData: ${err}`, LOG_LEVELS.ERROR);
-        });
+                            if (isNaN(amount) || amount < 0) {
+                                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid number!"}]}`);
+                                log(`Player ${player.nameTag} entered an invalid amount for balance adjustment.`, LOG_LEVELS.WARN);
+                                return;
+                            }
+
+                            new ActionFormData()
+                                .title(title)
+                                .body(`§l§oManage ${selectedPlayer.nameTag}'s Moneyz`)
+                                .button('§d§lAdd Moneyz')
+                                .button('§d§lSet Moneyz')
+                                .button('§d§lRemove Moneyz')
+                                .button('§4§lCancel')
+                                .show(player)
+                                .then(({ selection }) => {
+                                    if (selection === 0) {
+                                        updateScore(selectedPlayer, amount, "add");
+                                        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aAdded §l${amount} §r§ato ${selectedPlayer.nameTag}'s Moneyz."}]}`);
+                                        log(`Player ${player.nameTag} added ${amount} Moneyz to ${selectedPlayer.nameTag}.`, LOG_LEVELS.INFO);
+                                    } else if (selection === 1) {
+                                        updateScore(selectedPlayer, amount, "set");
+                                        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aSet ${selectedPlayer.nameTag}'s Moneyz to §l${amount}."}]}`);
+                                        log(`Player ${player.nameTag} set ${selectedPlayer.nameTag}'s Moneyz to ${amount}.`, LOG_LEVELS.INFO);
+                                    } else if (selection === 2) {
+                                        updateScore(selectedPlayer, amount, "remove");
+                                        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aRemoved §l${amount} §r§afrom ${selectedPlayer.nameTag}'s Moneyz."}]}`);
+                                        log(`Player ${player.nameTag} removed ${amount} Moneyz from ${selectedPlayer.nameTag}.`, LOG_LEVELS.INFO);
+                                    }
+                                    moneyzAdmin(player);
+                                });
+                        }).catch(err => {
+                            log(`Error in ModalFormData: ${err}`, LOG_LEVELS.ERROR);
+                        });
+                } else {
+                    moneyzAdmin(player);
+                }
+            }).catch(err => {
+                log(`Error in ActionFormData: ${err}`, LOG_LEVELS.ERROR);
+            });
+    } catch (error) {
+        log(`Error retrieving balances: ${error}`, LOG_LEVELS.ERROR);
+        player.sendMessage("§cError retrieving player balances. Check logs.");
+    }
 };
+
 
 function tagManage(player) {
     log(`Player ${player.nameTag} opened the Tag Manage Menu.`, LOG_LEVELS.DEBUG);
