@@ -31,9 +31,7 @@ export function moneyzAdmin(player) {
 async function balanceManage(player) {
     log(`Player ${player.nameTag} opened the Balance Manage Menu.`, LOG_LEVELS.DEBUG);
 
-    const players = [...world.getPlayers()].map(p => {
-        return { name: p.nameTag, player: p };
-    });
+    const players = [...world.getPlayers()].map(p => ({ name: p.nameTag, player: p }));
 
     try {
         const playerBalances = await Promise.all(players.map(async (p) => {
@@ -48,23 +46,36 @@ async function balanceManage(player) {
             .button('§4§lBack')
             .show(player)
             .then(r => {
+                if (!r || r.selection === undefined) {
+                    log("Balance Manage Menu (main) closed.", LOG_LEVELS.INFO, player.nameTag);
+                    return;
+                }
+
                 if (r.selection === 0) {
                     new ModalFormData()
                         .title(title)
                         .dropdown('§o§fChoose a Player to Manage', players.map(p => p.name))
                         .textField('§fEnter the Amount to Adjust:\n', '§oNumbers Only')
                         .show(player)
-                        .then(({ formValues: [dropdown, textField] }) => {
-                            log(`Player selected: ${players[dropdown].name}`, LOG_LEVELS.DEBUG);
+                        .then(({ formValues }) => {
+                            if (!formValues || formValues.length !== 2 || formValues.some(val => val === undefined)) {
+                                log("Balance Manage Menu (player select) closed or invalid input.", LOG_LEVELS.INFO, player.nameTag);
+                                return;
+                            }
 
-                            const selectedPlayer = players[dropdown].player;
-                            log(`Selected Player Object: ${JSON.stringify(selectedPlayer)}`, LOG_LEVELS.DEBUG);
+                            const [dropdownIndex, textField] = formValues;
+
+                            const selectedPlayer = players[dropdownIndex]?.player;
+                            if (!selectedPlayer) {
+                                log("Invalid player selected from dropdown.", LOG_LEVELS.WARN, player.nameTag);
+                                return;
+                            }
 
                             const amount = parseInt(textField);
 
                             if (isNaN(amount) || amount < 0) {
                                 player.runCommandAsync(`playsound note.bassattack @s ~ ~ ~`);
-                                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid number!"}]}`);
+                                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid positive number!"}]}`);
                                 log(`Player ${player.nameTag} entered an invalid amount for balance adjustment.`, LOG_LEVELS.WARN);
                                 return;
                             }
@@ -78,6 +89,10 @@ async function balanceManage(player) {
                                 .button('§4§lCancel')
                                 .show(player)
                                 .then(({ selection }) => {
+                                    if (selection === undefined) {
+                                        log("Balance Manage Menu (action select) closed.", LOG_LEVELS.INFO, player.nameTag);
+                                        return;
+                                    }
                                     if (selection === 0) {
                                         player.runCommandAsync(`playsound random.levelup @s ~ ~ ~`);
                                         updateScore(selectedPlayer, amount, "add");
@@ -94,25 +109,29 @@ async function balanceManage(player) {
                                         player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aRemoved §l${amount} §r§afrom ${selectedPlayer.nameTag}'s Moneyz."}]}`);
                                         log(`Player ${player.nameTag} removed ${amount} Moneyz from ${selectedPlayer.nameTag}.`, LOG_LEVELS.INFO);
                                     }
-                                    moneyzAdmin(player);
+                                })
+                                .catch(err => {
+                                    log(`Error in ActionFormData (action select): ${err}`, LOG_LEVELS.ERROR, err.stack);
                                 });
-                        }).catch(err => {
-                            log(`Error in ModalFormData: ${err}`, LOG_LEVELS.ERROR);
+
+                        })
+                        .catch(err => {
+                            log(`Error in ModalFormData (player select): ${err}`, LOG_LEVELS.ERROR, err.stack);
                         });
                 } else {
                     moneyzAdmin(player);
                 }
-            }).catch(err => {
-                log(`Error in ActionFormData: ${err}`, LOG_LEVELS.ERROR);
+            })
+            .catch(err => {
+                log(`Error in ActionFormData (main menu): ${err}`, LOG_LEVELS.ERROR, err.stack);
             });
     } catch (error) {
-        log(`Error retrieving balances: ${error}`, LOG_LEVELS.ERROR);
+        log(`Error retrieving balances: ${error}`, LOG_LEVELS.ERROR, error.stack);
         player.sendMessage("§cError retrieving player balances. Check logs.");
     }
-};
+}
 
-
-function tagManage(player) {
+async function tagManage(player) {
     log(`Player ${player.nameTag} opened the Tag Manage Menu.`, LOG_LEVELS.DEBUG);
     const players = [...world.getPlayers()];
     const playerTagsList = players.map(p => `${p.nameTag}: §g${p.getTags().join(', ') || 'No Tags'}`).join('\n');
@@ -122,28 +141,49 @@ function tagManage(player) {
         .body(`§l§oPlayers Tags:\n${playerTagsList}`)
         .button('§d§lManage Tags\n§r§7[ Add or Remove ]')
         .button('§4§lBack')
-        .show(player).then(r => {
+        .show(player)
+        .then(r => {
+            if (!r || r.selection === undefined) {
+                log("Tag Manage Menu (main) closed.", LOG_LEVELS.INFO, player.nameTag);
+                return;
+            }
+
             if (r.selection === 0) {
                 new ModalFormData()
                     .title(title)
                     .dropdown('§o§fChoose a Player', players.map(p => p.nameTag))
                     .show(player)
-                    .then(({ formValues: [playerIndex] }) => {
+                    .then(({ formValues }) => {
+                        if (!formValues || formValues[0] === undefined) {
+                            log("Tag Manage Menu (player select) closed or no player selected.", LOG_LEVELS.INFO, player.nameTag);
+                            return;
+                        }
 
+                        const playerIndex = formValues[0];
                         const selectedPlayer = players[playerIndex];
+
+                        if (!selectedPlayer) {
+                            log("Invalid player index.", LOG_LEVELS.WARN, player.nameTag);
+                            return;
+                        }
 
                         new ModalFormData()
                             .title(`§lManage Tags for ${selectedPlayer.nameTag}`)
                             .dropdown('§o§fAction', ['Add Tag', 'Remove Tag'])
                             .textField('§fEnter Tag:', '§oTag')
                             .show(player)
-                            .then(({ formValues: [actionIndex, tag] }) => { 
+                            .then(({ formValues }) => {
+                                if (!formValues || formValues.some(val => val === undefined)) {
+                                    log("Tag Manage Menu (tag action) closed or incomplete input.", LOG_LEVELS.INFO, player.nameTag);
+                                    return;
+                                }
+
+                                const [actionIndex, tag] = formValues;
                                 const trimmedTag = tag.trim();
 
                                 if (trimmedTag === "") {
                                     player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid tag!"}]}`);
                                     log(`Player ${player.nameTag} entered an invalid tag.`, LOG_LEVELS.WARN);
-                                    tagManage(player);
                                     return;
                                 }
 
@@ -163,12 +203,21 @@ function tagManage(player) {
                                 }
 
                                 tagManage(player);
+                            })
+                            .catch(err => {
+                                log(`Error in ModalFormData (tag action): ${err}`, LOG_LEVELS.ERROR, err.stack);
                             });
+                    })
+                    .catch(err => {
+                        log(`Error in ModalFormData (player select): ${err}`, LOG_LEVELS.ERROR, err.stack);
                     });
             } else {
                 moneyzAdmin(player);
             }
+        })
+        .catch(err => {
+            log(`Error in ActionFormData (main menu): ${err}`, LOG_LEVELS.ERROR, err.stack);
         });
-};
+}
 
 log('admin_menu.js loaded', LOG_LEVELS.DEBUG);

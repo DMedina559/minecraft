@@ -1,14 +1,12 @@
 import { world, system } from "@minecraft/server"
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui"
-import { getScore, updateScore, getCurrentUTCDate } from '../utilities.js';
+import { getScore, updateScore } from '../utilities.js';
 import { openRewardsMenu } from './rewards_menu.js';
 import { moneyzAdmin } from './admin_menu.js';
 import { luckyMenu } from './lucky_menu.js';
 import { chanceMenu } from './chance_menu.js';
 import { customShop } from './custom_shop.js';
 import { log, LOG_LEVELS } from '../logger.js';
-
-const title = "§l§1Moneyz Menu";
 
 export function main(player) {
     
@@ -71,17 +69,10 @@ export function main(player) {
 function shops(player) {
 
     const customShopName = world.getDynamicProperty("customShop") || "Custom Shop";
-    const title = "§l§1Shop Menu";
-
-    const playerBalance = getScore('Moneyz', player.nameTag);
-    if (typeof playerBalance !== "number") {
-        player.sendMessage("§cUnable to retrieve your balance.");
-        return;
-    }
 
     new ActionFormData()
-        .title(title)
-        .body(`§fMoneyz Balance: §g${playerBalance}`)
+        .title("§l§1Shop Menu")
+        .body(`§l§o§fMoneyz Balance: §g${getScore('Moneyz', player.nameTag)}`)
         .button("§d§lArmory\n§r§7[ Click to Shop ]")
         .button("§d§lCrafter's Market\n§r§7[ Click to Shop ]")
         .button("§d§lFarmer's Market\n§r§7[ Click to Shop ]")
@@ -121,32 +112,51 @@ const moneyzTransfer = async (player) => {
 
   const players = [...world.getPlayers()];
   new ModalFormData()
-    .title(title)
+    .title("§l§1Send Moneyz")
     .dropdown('§o§fChoose Who to Send Moneyz to!', players.map(p => p.nameTag))
     .textField(`§fEnter the Amount to Send!\n§fMoneyz Balance: §g${await getScore('Moneyz', player.nameTag)}`, `§oNumbers Only`)
     .show(player)
-    .then(async ({ formValues: [dropdown, textField] }) => {
-      const selectedPlayer = players[dropdown];
-
-      if (selectedPlayer === player) {
-        player.runCommandAsync(`playsound note.bassattack @s ~ ~ ~`);
-        log(`${player.nameTag} tried sending Moneyz to self`, LOG_LEVELS.WARN);
-        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cYou Can't Send Moneyz to Yourself"}]}`);
-        moneyzTransfer(player);
+    .then(async (result) => {
+      if (!result || !result.formValues) {
+        log("Money Transfer Menu closed without input.", LOG_LEVELS.INFO, player.nameTag);
         return;
       }
 
+      const [dropdownIndex, textField] = result.formValues;
+
+      if (dropdownIndex === undefined) {
+          log("No player selected", LOG_LEVELS.WARN, player.nameTag);
+          return;
+      }
+
+      const selectedPlayer = players[dropdownIndex];
+
+      if (selectedPlayer === player) {
+          player.runCommandAsync(`playsound note.bassattack @s ~ ~ ~`);
+          log(`${player.nameTag} tried sending Moneyz to self`, LOG_LEVELS.WARN);
+          player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cYou Can't Send Moneyz to Yourself"}]}`);
+          moneyzTransfer(player);
+          return;
+      }
+
       if (textField.includes("-")) {
-        player.runCommandAsync(`playsound note.bassattack @s ~ ~ ~`);
-        log(`${player.nameTag} entered invalid numbers (negative)`, LOG_LEVELS.WARN);
-        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cNumbers Only!"}]}`);
-        moneyzTransfer(player);
-        return;
+          player.runCommandAsync(`playsound note.bassattack @s ~ ~ ~`);
+          log(`${player.nameTag} entered invalid numbers (negative)`, LOG_LEVELS.WARN);
+          player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cNumbers Only!"}]}`);
+          moneyzTransfer(player);
+          return;
       }
 
       const amountToSend = parseInt(textField, 10);
 
       const senderBalance = await getScore('Moneyz', player.nameTag);
+      if (isNaN(amountToSend)) {
+          player.runCommandAsync(`playsound note.bassattack @s ~ ~ ~`);
+          log(`${player.nameTag} entered invalid numbers (NaN)`, LOG_LEVELS.WARN);
+          player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid number!"}]}`);
+          moneyzTransfer(player);
+          return;
+      }
       if (!senderBalance || senderBalance < amountToSend) {
         player.runCommandAsync(`playsound note.bassattack @s ~ ~ ~`);
         log(`${player.nameTag} didn't have enough Moneyz to send`, LOG_LEVELS.WARN);
@@ -176,7 +186,6 @@ const moneyzTransfer = async (player) => {
       log(`Error during Money Transfer Menu: ${error}`, LOG_LEVELS.ERROR, error, error.stack);
     });
 };
-
 
 function Credits(player) {
     new ActionFormData()
