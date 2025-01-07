@@ -33,28 +33,30 @@ world.beforeEvents.playerInteractWithEntity.subscribe((data) => {
         log(`Player object: ${JSON.stringify(player)}`, LOG_LEVELS.DEBUG);
         log(`Target entity object: ${JSON.stringify(targetEntity)}`, LOG_LEVELS.DEBUG);
 
+        const isNpcInteraction = true;
+        
         // Open corresponding menu based on NPC name
         if (npcName === npcCustomShop) {
             data.cancel = true;
-            system.run(() => customShop(player));
+            system.run(() => customShop(player, isNpcInteraction));
         } else if (npcName === npcRewards) {
             data.cancel = true;
-            system.run(() => openRewardsMenu(player));
+            system.run(() => openRewardsMenu(player, isNpcInteraction));
         } else if (npcName === npcLuckyP) {
             data.cancel = true;
-            system.run(() => luckyPurchase(player));
+            system.run(() => luckyPurchase(player, isNpcInteraction));
         } else if (npcName === npc21Game) {
             data.cancel = true;
-            system.run(() => start21Game(player));
+            system.run(() => start21Game(player, isNpcInteraction));
         } else if (npcName === npcTestLuck) {
             data.cancel = true;
-            system.run(() => testYourLuck(player));
+            system.run(() => testYourLuck(player, isNpcInteraction));
         } else if (npcName === npcDiceGame) {
             data.cancel = true;
-            system.run(() => startCrapsGame(player));
+            system.run(() => startCrapsGame(player, isNpcInteraction));
         } else if (npcName === npcSlotsGame) {
             data.cancel = true;
-            system.run(() => startSlotsGame(player));
+            system.run(() => startSlotsGame(player, isNpcInteraction));
         } else {
         
         }

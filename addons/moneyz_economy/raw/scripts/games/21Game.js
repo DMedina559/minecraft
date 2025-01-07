@@ -34,29 +34,33 @@ function displayHand(hand) {
         .join(", ");
 }
 
-export async function start21Game(player) {
+export async function start21Game(player, isNpcInteraction) {
     try {
         const modalForm = new ModalFormData()
             .title("§l§621 Game")
             .textField("Enter your stake:", "Enter stake amount here");
 
         const response = await modalForm.show(player);
-        if (response.canceled) {
+        if (response.canceled && !isNpcInteraction) {
             chanceMenu(player);
             return;
         }
 
         const stake = parseInt(response.formValues[0], 10);
-        if (isNaN(stake) || stake <= 0) {
+        if (isNaN(stake) || stake <= 0 ) {
             player.sendMessage("§cInvalid stake amount.");
-            chanceMenu(player);
+            if (!isNpcInteraction) {
+                chanceMenu(player);
+            };
             return;
         }
 
         const playerScore = await getScore("Moneyz", player);
         if (playerScore < stake) {
             player.sendMessage("§cYou don't have enough Moneyz!");
-            chanceMenu(player);
+            if (!isNpcInteraction) {
+                chanceMenu(player);
+            };
             return;
         }
 
