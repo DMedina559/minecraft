@@ -104,15 +104,19 @@ const ensureWorldPropertiesExist = () => {
 };
 
 // Set Player Moneyz score if they Don't Already
-const ensurePlayerHasMoneyzScore = (player) => {
+const ensurePlayerHasMoneyzScore = async (player) => {
     log(`Checking Moneyz balance for ${player.nameTag}`, LOG_LEVELS.DEBUG);
 
-    const scoreData = getScore('Moneyz', player);
-    if (!scoreData) { 
-        updateScore(player, 0, "set");
-        log(`Initialized Moneyz balance for ${player.nameTag}`, LOG_LEVELS.INFO);
+    const moneyzScore = getScore('Moneyz', player);
+    if (moneyzScore === 0) {
+        const result = await updateScore(player, 0, "set");
+        if (result) {
+            log(`Initialized Moneyz balance for ${player.nameTag}`, LOG_LEVELS.INFO);
+        } else {
+            log(`Failed to initialize Moneyz balance for ${player.nameTag}`, LOG_LEVELS.ERROR);
+        }
     } else {
-        log(`Moneyz balance for ${player.nameTag} is ${scoreData.score}`, LOG_LEVELS.DEBUG);
+        log(`Moneyz balance for ${player.nameTag} is ${moneyzScore}`, LOG_LEVELS.DEBUG);
     }
 };
 
