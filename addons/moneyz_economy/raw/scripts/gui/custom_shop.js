@@ -6,7 +6,7 @@ import { log, LOG_LEVELS } from "../logger.js";
 
 const SHOP_WORLD_PROPERTY_PREFIX = "shopItem_";
 
-export async function customShop(player) {
+export async function customShop(player, isNpcInteraction) {
     log(`Player ${player.nameTag} opened the Custom Shop Menu.`, LOG_LEVELS.DEBUG);
 
     const shopName = world.getDynamicProperty("customShop") || "Custom Shop";
@@ -49,7 +49,7 @@ export async function customShop(player) {
         if (selection >= 0 && selection < shopItems.length) {
             log("shopItems[selection]:", LOG_LEVELS.DEBUG, shopItems[selection]);
             handleShopItemMenu(player, shopItems[selection]);
-        } else if (selection === shopItems.length) {
+        } else if (selection === shopItems.length && !isNpcInteraction) {
             log(`Player ${player.nameTag} went back from shop menu.`, LOG_LEVELS.DEBUG);
             main(player);
         }

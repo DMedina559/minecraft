@@ -4,7 +4,7 @@ import { getScore,  updateScore, getCurrentUTCDate } from '../utilities.js';
 import { main } from './moneyz_menu.js';
 import { log, LOG_LEVELS } from '../logger.js';
 
-export function openRewardsMenu(player) {
+export function openRewardsMenu(player, isNpcInteraction) {
     const rewardValue = world.getDynamicProperty("dailyReward");
     const currentDate = getCurrentUTCDate();
     const lastRedemption = player.getDynamicProperty("lastDailyReward");
@@ -37,8 +37,9 @@ export function openRewardsMenu(player) {
         .then(r => {
             if (r.selection === 0 && lastRedemption !== currentDate) { 
                 dailyRewardLogic(player, rewardValue, currentDate);
+            } else if (!isNpcInteraction){
+                main(player); 
             }
-            main(player); 
         });
 }
 

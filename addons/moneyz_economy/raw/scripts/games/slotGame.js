@@ -19,7 +19,7 @@ function spinSlots(chanceWin) {
     return reels;
 }
 
-async function playSlots(player, stake) {
+async function playSlots(player, stake, isNpcInteraction) {
     const chanceWin = world.getDynamicProperty("chanceWin");
     const chanceX = parseFloat(world.getDynamicProperty("chanceX"));
 
@@ -53,14 +53,14 @@ async function playSlots(player, stake) {
 
     try {
         await updateScore(player, winnings, "add");
-        showSlotResults(player, stake, reels, winnings, winType);
+        showSlotResults(player, stake, reels, winnings, winType, isNpcInteraction);
     } catch (error) {
         log(`Error updating winnings for ${player.nameTag}: ${error}`, LOG_LEVELS.ERROR);
         player.sendMessage("§cAn error occurred while updating your winnings.");
     }
 }
 
-function showSlotResults(player, stake, reels, winnings, winType) {
+function showSlotResults(player, stake, reels, winnings, winType, isNpcInteraction) {
     let message = `§l§6[RESULTS]§r\n`;
     message += `[ ${reels.join(" | ")} ]\n`;
 
@@ -79,13 +79,13 @@ function showSlotResults(player, stake, reels, winnings, winType) {
         .then(response => {
             if (response.selection === 0) {
                 startSlotsGame(player);
-            } else {
+            } else if (!isNpcInteraction) {
                 chanceMenu(player);
             }
         });
 }
 
-export async function startSlotsGame(player) {
+export async function startSlotsGame(player, isNpcInteraction) {
     new ModalFormData()
         .title("§l§6Slot Machine")
         .textField("Enter your stake:", "Enter stake amount here")
@@ -106,7 +106,7 @@ export async function startSlotsGame(player) {
                     return;
                 }
                 await updateScore(player, stake, "remove");
-                playSlots(player, stake);
+                playSlots(player, stake, isNpcInteraction);
             } catch (error) {
                 log(`Error during stake validation for ${player.nameTag}: ${error}`, LOG_LEVELS.ERROR);
                 player.sendMessage("§cAn error occurred while processing your stake.");

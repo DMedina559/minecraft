@@ -4,7 +4,7 @@ import { getScore, getCurrentUTCDate, updateScore } from '../utilities.js';
 import { luckyMenu } from './lucky_menu.js';
 import { log, LOG_LEVELS } from '../logger.js';
 
-export async function luckyPurchase(player) {
+export async function luckyPurchase(player, isNpcInteraction) {
 
     async function canAccessLuckyMenu(player) {
         const lastAccessDate = player.getDynamicProperty("lastLuckyPurchase");
@@ -49,7 +49,7 @@ export async function luckyPurchase(player) {
                         player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
                         player.sendMessage(`§cYou need 150 Moneyz for this purchase\n§6You have ${money} Moneyz`);
                     }
-                } else if (r.selection === 1) {
+                } else if (r.selection === 1 && !isNpcInteraction) {
                     luckyMenu(player);
                 }
             }).catch(err => {
