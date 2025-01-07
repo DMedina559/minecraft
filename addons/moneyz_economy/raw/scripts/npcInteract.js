@@ -20,7 +20,7 @@ world.beforeEvents.playerInteractWithEntity.subscribe((data) => {
 
     const npcCustomShop = world.getDynamicProperty("customShop") || "Custom Shop";
     const npcRewards = world.getDynamicProperty("npcRewards") || "Daily Rewards";
-    const npcLucky = world.getDynamicProperty("npcLucky") || "Lucky Purchase";
+    const npcLuckyP = world.getDynamicProperty("npcLuckyP") || "Lucky Purchase";
     const npc21Game = world.getDynamicProperty("npc21") || "21";
     const npcTestLuck = world.getDynamicProperty("npcTestLuck") || "Test Luck";
     const npcDiceGame = world.getDynamicProperty("npcDice") || "Dice";
@@ -42,7 +42,7 @@ world.beforeEvents.playerInteractWithEntity.subscribe((data) => {
         } else if (npcName === npcRewards) {
             data.cancel = true;
             system.run(() => openRewardsMenu(player, isNpcInteraction));
-        } else if (npcName === npcLucky) {
+        } else if (npcName === npcLuckyP) {
             data.cancel = true;
             system.run(() => luckyPurchase(player, isNpcInteraction));
         } else if (npcName === npc21Game) {
