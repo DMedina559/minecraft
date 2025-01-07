@@ -129,6 +129,7 @@ const moneyzTransfer = async (player) => {
       const selectedPlayer = players[dropdown];
 
       if (selectedPlayer === player) {
+        player.runCommandAsync(`playsound note.bassattack @s ~ ~ ~`);
         log(`${player.nameTag} tried sending Moneyz to self`, LOG_LEVELS.WARN);
         player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cYou Can't Send Moneyz to Yourself"}]}`);
         moneyzTransfer(player);
@@ -136,6 +137,7 @@ const moneyzTransfer = async (player) => {
       }
 
       if (textField.includes("-")) {
+        player.runCommandAsync(`playsound note.bassattack @s ~ ~ ~`);
         log(`${player.nameTag} entered invalid numbers (negative)`, LOG_LEVELS.WARN);
         player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cNumbers Only!"}]}`);
         moneyzTransfer(player);
@@ -146,6 +148,7 @@ const moneyzTransfer = async (player) => {
 
       const senderBalance = await getScore('Moneyz', player.nameTag);
       if (!senderBalance || senderBalance < amountToSend) {
+        player.runCommandAsync(`playsound note.bassattack @s ~ ~ ~`);
         log(`${player.nameTag} didn't have enough Moneyz to send`, LOG_LEVELS.WARN);
         player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cYou Don't Have Enough Moneyz"}]}`);
         moneyzTransfer(player);
@@ -155,13 +158,16 @@ const moneyzTransfer = async (player) => {
       try {
         await updateScore(player, amountToSend, "remove");
 
+        player.runCommandAsync(`playsound random.levelup @s ~ ~ ~`);
         player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aSent §l${selectedPlayer.nameTag} §r§2${amountToSend} Moneyz"}]}`);
         selectedPlayer.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§l${player.nameTag} §r§aSent You §2${amountToSend} Moneyz"}]}`);
 
         await updateScore(selectedPlayer, amountToSend, "add");
+        selectedPlayer.runCommandAsync(`playsound random.levelup @s ~ ~ ~`);
 
         log(`${player.nameTag} sent ${amountToSend} Moneyz to ${selectedPlayer.nameTag}`, LOG_LEVELS.INFO);
       } catch (error) {
+        player.runCommandAsync(`playsound note.bassattack @s ~ ~ ~`);
         log(`Error during Moneyz transfer: ${error}`, LOG_LEVELS.ERROR, player.nameTag);
         player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cAn error occurred during the transfer."}]}`);
       }

@@ -20,6 +20,9 @@ export function moneyzSettings(player) {
     buttons.push('§d§lChance Game Settings\n§r§7[ Set Chance Settings ]');
     actions.push(() => chanceSettings(player));
 
+    buttons.push('§d§lCustom Shop Name\n§r§7[ Set Shop Name ]');
+    actions.push(() => customShopSettings(player));
+
     if (world.getDynamicProperty('syncPlayers') === "true") {
       buttons.push(`§d§lManage Auto Tags\n§r§7[ Click to Manage ]`);
       actions.push(() => toggleAutoTags(player));
@@ -196,6 +199,39 @@ function setChanceValue(player, propertyName) {
         system.run(() => moneyzSettings(player));
     });
 };
+
+function customShopSettings(player) {
+    log(`Player ${player.nameTag} opened the Custom Shop Name Menu.`, LOG_LEVELS.DEBUG);
+
+    const currentShopName = world.getDynamicProperty("customShop") || "Custom Shop";
+
+    const form = new ModalFormData()
+        .title("§l§1Custom Shop Name")
+        .textField(`Current Custom Shop Name: ${currentShopName}\nEnter a new Custom Shop Name:`, currentShopName);
+
+    form.show(player).then(response => {
+        if (!response.canceled) {
+            const newValue = response.formValues[0]?.trim();
+
+            if (!newValue || newValue.length === 0) {
+                log(`Invalid input for custom shop name. Received: ${newValue}`, LOG_LEVELS.WARN);
+                player.sendMessage("§cInvalid value! Please enter a valid shop name.");
+                customShopSettings(player);
+                return;
+            }
+
+            world.setDynamicProperty("customShop", newValue);
+            log(`Custom shop name set to: ${newValue}`, LOG_LEVELS.INFO);
+            player.sendMessage(`§aCustom Shop name has been set to: ${newValue}`);
+        } else {
+            log(`Player ${player.nameTag} canceled the Custom Shop Name Menu.`, LOG_LEVELS.DEBUG);
+        }
+    }).catch(error => {
+        log("Error showing customShopSettings menu:", LOG_LEVELS.ERROR, error);
+        player.sendMessage("§cAn error occurred while setting the custom shop name.");
+    });
+}
+
 
 function showLogLevelMenu(player) {
     log(`Player ${player.nameTag} opened the Log Settings Menu.`, LOG_LEVELS.DEBUG);

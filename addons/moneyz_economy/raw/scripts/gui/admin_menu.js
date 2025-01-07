@@ -63,6 +63,7 @@ async function balanceManage(player) {
                             const amount = parseInt(textField);
 
                             if (isNaN(amount) || amount < 0) {
+                                player.runCommandAsync(`playsound note.bassattack @s ~ ~ ~`);
                                 player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid number!"}]}`);
                                 log(`Player ${player.nameTag} entered an invalid amount for balance adjustment.`, LOG_LEVELS.WARN);
                                 return;
@@ -78,14 +79,17 @@ async function balanceManage(player) {
                                 .show(player)
                                 .then(({ selection }) => {
                                     if (selection === 0) {
+                                        player.runCommandAsync(`playsound random.levelup @s ~ ~ ~`);
                                         updateScore(selectedPlayer, amount, "add");
                                         player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aAdded §l${amount} §r§ato ${selectedPlayer.nameTag}'s Moneyz."}]}`);
                                         log(`Player ${player.nameTag} added ${amount} Moneyz to ${selectedPlayer.nameTag}.`, LOG_LEVELS.INFO);
                                     } else if (selection === 1) {
+                                        player.runCommandAsync(`playsound random.levelup @s ~ ~ ~`);
                                         updateScore(selectedPlayer, amount, "set");
                                         player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aSet ${selectedPlayer.nameTag}'s Moneyz to §l${amount}."}]}`);
                                         log(`Player ${player.nameTag} set ${selectedPlayer.nameTag}'s Moneyz to ${amount}.`, LOG_LEVELS.INFO);
                                     } else if (selection === 2) {
+                                        player.runCommandAsync(`playsound random.levelup @s ~ ~ ~`);
                                         updateScore(selectedPlayer, amount, "remove");
                                         player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aRemoved §l${amount} §r§afrom ${selectedPlayer.nameTag}'s Moneyz."}]}`);
                                         log(`Player ${player.nameTag} removed ${amount} Moneyz from ${selectedPlayer.nameTag}.`, LOG_LEVELS.INFO);

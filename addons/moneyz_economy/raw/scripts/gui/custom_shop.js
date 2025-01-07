@@ -136,7 +136,6 @@ async function handleShopItemMenu(player, shopItem) {
 }
 
 async function handleBuy(player, shopItem) {
-    log("Inside handleBuy:", LOG_LEVELS.DEBUG);
     log("Shop Item in handleBuy:", LOG_LEVELS.DEBUG, JSON.stringify(shopItem, null, 2));
 
     const { itemName, buyAmount, buyCost, buyData } = shopItem;
@@ -185,7 +184,6 @@ async function handleBuy(player, shopItem) {
 }
 
 async function handleSell(player, shopItem) {
-    log("Inside handleSell:", LOG_LEVELS.DEBUG);
     log("Shop Item in handleSell:", LOG_LEVELS.DEBUG, JSON.stringify(shopItem, null, 2));
 
     const { itemName, sellAmount, sellCost, sellData } = shopItem;
@@ -196,40 +194,39 @@ async function handleSell(player, shopItem) {
             return;
         }
 
-        const clearCommand = sellData !== 0 ? `clear @s ${String(itemName)} ${String(sellData)} ${String(sellAmount)}` : `clear @s ${String(itemName)} 0 ${String(sellAmount)}`;
-        log("Clear Command:", LOG_LEVELS.DEBUG, clearCommand);
+        const hasItemCheck = sellData !== 0
+            ? `@s[hasitem={item=${itemName},data=${sellData},quantity=${sellAmount}..}]`
+            : `@s[hasitem={item=${itemName},quantity=${sellAmount}..}]`;
 
-        const clearResult = await player.runCommandAsync(clearCommand);
-        log("Clear Result:", LOG_LEVELS.DEBUG, clearResult);
+        const hasNoItemCheck = sellData !== 0
+            ? `@s[hasitem={item=${itemName},data=${sellData},quantity=!${sellAmount}..}]`
+            : `@s[hasitem={item=${itemName},quantity=!${sellAmount}..}]`;
 
-        if (clearResult && clearResult.successCount !== undefined) {
-            const clearedCount = parseInt(clearResult.successCount, 10) || 0;
-            log(`Cleared ${clearedCount} ${itemName} for player.`, LOG_LEVELS.DEBUG);
+        const soundCommand = `execute as ${hasItemCheck} run playsound random.levelup @s ~ ~ ~`;
+        const giveMoneyCommand = `execute as ${hasItemCheck} run scoreboard players add @s Moneyz ${sellCost}`;
+        const successMessageCommand = `execute as ${hasItemCheck} run tell @s §aSold ${sellAmount} ${itemName} for ${sellCost} Moneyz!`;
+        const clearItemCommand = `execute as ${hasItemCheck} run clear @s ${itemName} ${sellData !== 0 ? sellData : 0} ${sellAmount}`;
 
-            if (clearedCount < sellAmount) {
-                await player.runCommandAsync(`playsound note.bassattack @s ~ ~ ~`);
-                await player.runCommandAsync(`tell @s §cYou don't have enough ${String(itemName)} to sell. You only had ${clearedCount}`);
-                return;
-            }
+        const noItemSound = `execute as ${hasNoItemCheck} run playsound note.bassattack @s ~ ~ ~`;
+        const noItemMessage = `execute as ${hasNoItemCheck} run tell @s §cYou don't have enough ${itemName} to sell.`;
 
-            const addMoneyResult = await updateScore(player, sellCost);
-            log("Money added result:", LOG_LEVELS.DEBUG, addMoneyResult);
+        try {
+            await player.runCommandAsync(noItemSound);
+            await player.runCommandAsync(noItemMessage);
+            await player.runCommandAsync(soundCommand);
+            await player.runCommandAsync(giveMoneyCommand);
+            await player.runCommandAsync(successMessageCommand);
+            await player.runCommandAsync(clearItemCommand);
 
-            if (!addMoneyResult) {
-                log("Error adding Moneyz.", LOG_LEVELS.ERROR);
-                player.sendMessage("§cThere was an error adding your Moneyz. Please contact an admin.");
-                return;
-            }
+            log(`${player.nameTag} attempted to sell ${sellAmount} ${itemName}.`, LOG_LEVELS.INFO);
 
-            await player.runCommandAsync(`playsound random.levelup @s ~ ~ ~`);
-            await player.runCommandAsync(`tell @s §aSold ${String(sellAmount)} ${String(itemName)} for ${String(sellCost)} Moneyz!`);
-            log(`${player.nameTag} sold ${String(sellAmount)} ${String(itemName)} for ${sellCost} Moneyz.`, LOG_LEVELS.INFO);
-        } else {
-            log(`Invalid result from clear command: ${JSON.stringify(clearResult)}`, LOG_LEVELS.ERROR, player.nameTag);
-            player.sendMessage("§cError processing sell (item clearing). Check logs.");
+        } catch (error) {
+            log("Error in handleSell:", LOG_LEVELS.ERROR, error);
+            player.sendMessage("§cError processing sell. Check logs.");
         }
+
     } catch (error) {
-        log("Error in handleSell:", LOG_LEVELS.ERROR, error);
+        log("Outer Error in handleSell:", LOG_LEVELS.ERROR, error);
         player.sendMessage("§cError processing sell. Check logs.");
     }
 }
