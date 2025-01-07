@@ -12,7 +12,7 @@ export function luckyMenu(player) {
     const form = new ActionFormData();
     form.title("§l§1Feeling Lucky?");
     
-    form.body(`§l§o§fWelcome §g${player.nameTag}§f!\nTest your Luck with a\nLucky Purchase or Chance Game\n§fMoneyz Balance: §g${getScore('Moneyz', player.nameTag)}`);
+    form.body(`§l§o§fWelcome §g${player.nameTag}§f!\nTest your Luck\nChoose an Option Belown§fMoneyz Balance: §g${getScore('Moneyz', player.nameTag)}`);
     
     const buttons = [];
     const actions = [];
