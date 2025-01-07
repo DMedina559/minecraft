@@ -2,6 +2,7 @@ import { world, system } from "@minecraft/server"
 import { main } from './gui/moneyz_menu.js';
 import { convertTagsToProperties, updateWorldProperties } from './convertTags.js';
 import { log, LOG_LEVELS, setLogLevelFromWorldProperty } from './logger.js';
+import "./npcInteract.js"; 
 
 // Use World Property for Log Level
 setLogLevelFromWorldProperty()
