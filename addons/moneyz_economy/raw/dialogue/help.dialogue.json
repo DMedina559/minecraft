@@ -313,7 +313,7 @@
 			      { "text": "§6dailyReward§r: The amount of Moneyz given as a daily reward. (Number)\n" },
 			      { "text": "§6chanceX§r: The multiplier for Chance Games winnings. (Number)\n" },
 			      { "text": "§6chanceWin§r: The chance (1-100) of winning in Chance Games. (Number, 1-100)\n" },
-			      { "text": "§6logLevels§r: Controls the logging level for debugging. (Default: WARN. DEBUG, INFO, WARN, ERROR)\n\n" },
+			      { "text": "§6logLevels§r: Controls the logging level for debugging. (Text, DEBUG, INFO, WARN, ERROR. Default: WARN.)\n\n" },
 
 			      { "text": "§lCustom Shop Properties:\n§rThese World Properties allow admins to create custom shops.\n\n" },
 			      { "text": "§6customShop§r: Sets the name of your custom shop. (Text)\n" },
