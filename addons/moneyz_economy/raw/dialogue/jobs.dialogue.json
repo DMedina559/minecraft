@@ -201,10 +201,6 @@
 					{
 						"name": "Pg. 2",
 						"commands": ["/dialogue open @s @initiator jobs_help_2"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator jobs"]
 					}
 				]
 			},
@@ -231,10 +227,6 @@
 					{
 						"name": "Back",
 						"commands": ["/dialogue open @s @initiator jobs_help"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator jobs"]
 					}
 				]
 			},
@@ -279,10 +271,6 @@
 					{
 						"name": "Back",
 						"commands": ["/dialogue open @s @initiator jobs_help"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator jobs"]
 					}
 				]
 			},
@@ -309,10 +297,6 @@
 					{
 						"name": "Back",
 						"commands": ["/dialogue open @s @initiator jobs_help"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator jobs"]
 					}
 				]
 			},
@@ -339,10 +323,6 @@
 					{
 						"name": "Back",
 						"commands": ["/dialogue open @s @initiator jobs_help"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator jobs"]
 					}
 				]
 			},
@@ -369,10 +349,6 @@
 					{
 						"name": "Back",
 						"commands": ["/dialogue open @s @initiator jobs_help"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator jobs"]
 					}
 				]
 			},
@@ -405,10 +381,6 @@
 					{
 						"name": "Back",
 						"commands": ["/dialogue open @s @initiator jobs_help"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator jobs"]
 					}
 				]
 			},
@@ -441,10 +413,6 @@
 					{
 						"name": "Back",
 						"commands": ["/dialogue open @s @initiator jobs_help"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator jobs"]
 					}
 				]
 			},
@@ -486,10 +454,6 @@
 					{
 						"name": "Back",
 						"commands": ["/dialogue open @s @initiator jobs_help"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator jobs"]
 					}
 				]
 			},
@@ -516,10 +480,6 @@
 					{
 						"name": "Back",
 						"commands": ["/dialogue open @s @initiator jobs_help"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator jobs"]
 					}
 				]
 			},
@@ -549,10 +509,6 @@
 					{
 						"name": "Back",
 						"commands": ["/dialogue open @s @initiator jobs_help"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator jobs"]
 					}
 				]
 			},
@@ -579,10 +535,6 @@
 					{
 						"name": "Back",
 						"commands": ["/dialogue open @s @initiator jobs_help"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator jobs"]
 					}
 				]
 			},
@@ -609,10 +561,6 @@
 					{
 						"name": "Back",
 						"commands": ["/dialogue open @s @initiator jobs_help"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator jobs"]
 					}
 				]
 			},
@@ -657,10 +605,6 @@
 					{
 						"name": "Back",
 						"commands": ["/dialogue open @s @initiator jobs_help"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator jobs"]
 					}
 				]
 			},
@@ -768,10 +712,6 @@
 					{
 						"name": "Pg. 2",
 						"commands": ["/dialogue open @s @initiator jobs_apply_2"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator jobs"]
 					}
 				]
 			},
@@ -879,10 +819,6 @@
 					{
 						"name": "Pg. 2",
 						"commands": ["/dialogue open @s @initiator jobs_quit_2"]
-					},
-					{
-						"name": "Main Menu",
-						"commands": ["/dialogue open @s @initiator jobs"]
 					}
 				]
 			}
