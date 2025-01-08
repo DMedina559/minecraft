@@ -47,7 +47,7 @@
 			            { "text": "§lWhat Is Moneyz?\n§rMoneyz is a §6Scoreboard §rsystem that allows Players to purchase and sell items from §6NPC Shops.\n\n" },
 			            { "text": "§lWhat are Resources?\n§r§6Resources §rare various ores Players can §6mine. See §6Banks §rfor more info.\n\n" },
 			            { "text": "§lHow can Players earn Moneyz?\n§rPlayers earn Moneyz by §6applying for jobs §ror §6exchanging Resources §rat §6ATM NPCs. See §6Banks §rfor more info.\n\n" },
-			            { "text": "§lCan Players turn Moneyz back into Resources?\n§r§6Yes! §rPlayers can use an §6ATM NPC §rto §6exchange Moneyz §rfor Resources. See §6Banks §rfor more info.\n\n" },
+			            { "text": "§lCan Players turn Moneyz back into Resources?\n§r§6Yes! §rPlayers can use an §6ATM NPC §rto §6exchange Moneyz §rfor Resources.\n\n" },
 			            { "text": "§lCan Players sell items?\n§r§6Yes! §rPlayers can §6go to the shop §rof the items they're selling. See a §6Shop NPC §rfor more info.\n\n" },
 			            { "text": "§lHow can Players see what items are available?\n§rPlayers can §6see a Help NPC or go to the Shop §rto see all §6items and their prices.\n\n" },
 			            { "text": "§lCan Players send Moneyz to other Players?\n§r§6Yes! §rPlayers can send Moneyz §6through the Moneyz Menu. See §6Moneyz Menu §rfor more info.\n\n" },
@@ -112,10 +112,10 @@
 			        "rawtext": [
 			            { "text": "§lWhat is the Bank for?\n§rBanks allow players to exchange resources (like iron or copper) for Moneyz with 'ATM' NPCs.\n" },
 			            { "text": "§lWhat is an ATM NPC?\n§rATM NPCs let players exchange resources for Moneyz and vice versa.\n\n" },
+			            { "text": "§lWhat Resources are used for Moneyz?\n§rThe following resources are used in for Moneyz currency:\n- Netherite Ingot = 1000 Moneyz\n- Emerald = 100 Moneyz\n- Diamond = 75 Moneyz\n- Iron Ingot = 50 Moneyz\n- Gold Ingot = 25 Moneyz\n- Copper Ingot = 10 Moneyz\n- Coal = 5 Moneyz\n\n" },
 			            { "text": "§lExchanging Multiple Resources?\n§rPlayers can exchange 1 resource at a time. Bankers can help with larger exchanges.\n\n" },
 			            { "text": "§rExample:\n§rTrade 1 Gold (25 Moneyz) and 1 Diamond (75 Moneyz) for 1 Emerald (100 Moneyz).\n" },
-			            { "text": "§rThis lets players exchange resources more efficiently.\n\n" },
-			            { "text": "§lSee an §6ATM NPC §r§ofor the exchange rate between Moneyz and Resource.\n" }
+			            { "text": "§rThis lets players exchange resources more efficiently.\n\n" }
 			        ]
 			    },
 			    "buttons": [
