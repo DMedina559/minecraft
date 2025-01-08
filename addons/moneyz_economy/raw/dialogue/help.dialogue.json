@@ -321,7 +321,7 @@
 			      { "text": "§rValue format:\n§ritemname,amount,cost,data,saleamount,salecost,saledata\n" },
 			      { "text": "§rExample:\n§rshopItem_diamond=diamond,1,100,0,1,80,0\n§rThis would allow players to buy 1 diamond for 100 Moneyz and sell 1 diamond for 80 Moneyz.\n" },
 			      { "text": "§r- itemname: The item ID (e.g., diamond, zvortex:moneyz_menu).\n" },
-			      { "text": "§r- amount: The quantity of the item bought/sold.\n" },
+			      { "text": "§r- amount: The quantity of the item bought.\n" },
 			      { "text": "§r- cost: The Moneyz cost to buy.\n" },
 			      { "text": "§r- data: The item's data value (usually 0).\n" },
 			      { "text": "§r- saleamount: The quantity of the item sold.\n" },
