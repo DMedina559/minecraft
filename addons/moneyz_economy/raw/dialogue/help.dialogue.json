@@ -5,13 +5,7 @@
 			{
 			  "scene_tag": "help",
 			  "npc_name": "Help",
-			  "text": {
-			    "rawtext": [
-			      { "text": "Welcome to Moneyz Economy Help!\n\n" },
-			      { "text": "§lTIP:\n§rThe Moneyz Menu is your central hub for managing your finances and accessing key features. Craft it using one of each resource.\n\n" },
-			      { "text": "Choose a topic below for more information:\n" }
-			    ]
-			  },
+			  "text": "Welcome to Moneyz Economy Help!\n\n§lTIP:\n§rThe Moneyz Menu is your central hub for managing your finances and accessing key features. Craft it using one of each resource.\n\nChoose a topic below for more information:\n",
 			  "buttons": [
 			    { 
 			    	"name": "General", 
@@ -112,7 +106,7 @@
 			        "rawtext": [
 			            { "text": "§lWhat is the Bank for?\n§rBanks allow players to exchange resources (like iron or copper) for Moneyz with 'ATM' NPCs.\n" },
 			            { "text": "§lWhat is an ATM NPC?\n§rATM NPCs let players exchange resources for Moneyz and vice versa.\n\n" },
-			            { "text": "§lWhat Resources are used for Moneyz?\n§rThe following resources are used in for Moneyz currency:\n- Netherite Ingot = 1000 Moneyz\n- Emerald = 100 Moneyz\n- Diamond = 75 Moneyz\n- Iron Ingot = 50 Moneyz\n- Gold Ingot = 25 Moneyz\n- Copper Ingot = 10 Moneyz\n- Coal = 5 Moneyz\n\n" },
+			            { "text": "§lWhat Resources are used for Moneyz?\n§rThe following resources are used for Moneyz currency:\n- Netherite Ingot = 1000 Moneyz\n- Emerald = 100 Moneyz\n- Diamond = 75 Moneyz\n- Iron Ingot = 50 Moneyz\n- Gold Ingot = 25 Moneyz\n- Copper Ingot = 10 Moneyz\n- Coal = 5 Moneyz\n\n" },
 			            { "text": "§lExchanging Multiple Resources?\n§rPlayers can exchange 1 resource at a time. Bankers can help with larger exchanges.\n\n" },
 			            { "text": "§rExample:\n§rTrade 1 Gold (25 Moneyz) and 1 Diamond (75 Moneyz) for 1 Emerald (100 Moneyz).\n" },
 			            { "text": "§rThis lets players exchange resources more efficiently.\n\n" }
@@ -190,7 +184,7 @@
 			      { "text": "§lNPC Setup:\n§r- Place a §6Help NPC§r in a central location for easy access to information.\n§r- It is highly recommended to use §6dialogue commands§r for setting up shops. This ensures your shops automatically update with new items and bypasses the 6-button limit. Use §6/dialogue open @s @initiator {dialogue}§r or §6/dialogue change @e[type=npc,r=5,c=1] {dialogue}§r.\n§r- Use §6/function setup/{SHOP}§r for quick setup of pre-configured NPCs.\n\n" },
 			      { "text": "§lEssential Structures:\n§r- §lTown Hall/Employment Office:§r Required for players to interview, apply for, and quit jobs.\n§r- §lBank Building:§r Required for setting up Bank NPCs for exchanges, worker payments, and resource trading.\n§r- §lReal Estate Office:§r Required for setting up Real Estate NPCs for property management.\n§r- §lWorkshop NPCs:§r Ensure they have §l1 block of air space on all 4 sides§r for proper interaction as they summon blocks.\n§r- §lHotel:§r Required for the Hotel Owner job.\n\n"},
 			      { "text": "§lWorld Properties:\n§rConfigure World Properties like §6dailyReward§r, §6chanceX§r, §6chanceWin§r, auto tagging settings and §6logLevels§r to fine-tune your economy. See the Properties help section for details.\n\n" },
-			        { "text": "§lMoneyz Menu:\n§rEncourage players to use the Moneyz Menu as a central hub for accessing shops, ATMs, sending money, and other features.\n\n" },
+			      { "text": "§lMoneyz Menu:\n§rEncourage players to use the Moneyz Menu as a central hub for accessing shops, ATMs, sending money, and other features.\n\n" },
 			      { "text": "§lTesting:\n§rAfter setting up your economy, thoroughly test all features (shops, jobs, chance games, lucky purchases, etc.) to ensure everything is working as intended.\n" }
 			    ]
 			  },
