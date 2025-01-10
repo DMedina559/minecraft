@@ -17,7 +17,7 @@ export function moneyzAdmin(player) {
         .button(`§d§lManage Properties\n§r§7[ Click to Manage ]`)
         .button(`§d§lManage Tags\n§r§7[ Click to Manage ]`)
         .button(`§d§lSettings\n§r§7[ Click to Manage ]`)
-        .button(`§4§lBack`);
+        .button(`§c§lBack`);
 
     form.show(player).then(r => {
         if (r.selection === 0) balanceManage(player);
@@ -43,7 +43,7 @@ async function balanceManage(player) {
             .title(title)
             .body(`§l§oPlayers Moneyz Balances:\n${playerBalances.join('\n')}`)
             .button('§d§lManage Player Balances\n§r§7[ Click to Manage ]')
-            .button('§4§lBack')
+            .button('§c§lBack')
             .show(player)
             .then(r => {
                 if (!r || r.selection === undefined) {
@@ -86,7 +86,7 @@ async function balanceManage(player) {
                                 .button('§d§lAdd Moneyz')
                                 .button('§d§lSet Moneyz')
                                 .button('§d§lRemove Moneyz')
-                                .button('§4§lCancel')
+                                .button('§c§lCancel')
                                 .show(player)
                                 .then(({ selection }) => {
                                     if (selection === undefined) {
@@ -140,7 +140,7 @@ async function tagManage(player) {
         .title(title)
         .body(`§l§oPlayers Tags:\n${playerTagsList}`)
         .button('§d§lManage Tags\n§r§7[ Add or Remove ]')
-        .button('§4§lBack')
+        .button('§c§lBack')
         .show(player)
         .then(r => {
             if (!r || r.selection === undefined) {

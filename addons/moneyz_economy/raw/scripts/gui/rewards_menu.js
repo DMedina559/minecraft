@@ -32,7 +32,7 @@ export function openRewardsMenu(player, isNpcInteraction) {
         form.button("§a§lClaim Rewards"); 
     }
 
-    form.button("§4§lBack")
+    form.button("§c§lBack")
         .show(player)
         .then(r => {
             if (r.selection === 0 && lastRedemption !== currentDate) { 

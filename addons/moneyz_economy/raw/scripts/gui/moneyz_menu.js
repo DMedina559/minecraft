@@ -6,6 +6,7 @@ import { moneyzAdmin } from './admin_menu.js';
 import { luckyMenu } from './lucky_menu.js';
 import { chanceMenu } from './chance_menu.js';
 import { customShop } from './custom_shop.js';
+import { giveQuest } from './quest_menu.js';
 import { log, LOG_LEVELS } from '../logger.js';
 
 export function main(player) {
@@ -33,6 +34,11 @@ export function main(player) {
         actions.push(() => moneyzTransfer(player));
     }
     
+    if (player.getDynamicProperty('moneyzQuest') === "true") {
+        buttons.push('§d§lQuest\n§r§7[ Click to View ]');
+        actions.push(() => giveQuest(player));
+    }
+
     if (player.getDynamicProperty('moneyzDaily') === "true") {
         buttons.push('§d§lDaily Reward\n§r§7[ Click to Redeem ]');
         actions.push(() => openRewardsMenu(player));
@@ -54,7 +60,7 @@ export function main(player) {
     buttons.push('§d§lCredits\n§r§7[ Click to View ]');
     actions.push(() => Credits(player));
 
-    buttons.push('§4§lExit Menu');
+    buttons.push('§c§lExit Menu');
     actions.push(() => { /* exit action, no specific function needed */ });
     
     buttons.forEach(button => form.button(button));
@@ -80,7 +86,7 @@ function shops(player) {
         .button("§d§lPet Shop\n§r§7[ Click to Shop ]")
         .button("§d§lWorkshop\n§r§7[ Click to Shop ]")
         .button(`§d§l${customShopName}\n§r§7[ Click to Shop ]`)
-        .button("§4§lBack")
+        .button("§c§lBack")
         .show(player)
         .then(r => {
             if (r.selection === 0) {
@@ -191,7 +197,7 @@ function Credits(player) {
     new ActionFormData()
         .title('§l§1Credits')
         .body(`\n§l§5Creator: §dZVortex11325\n§5Link: §dlinktr.ee/dmedina559\n§5Version: §d1.9.0`)
-        .button(`§4§lBack`)
+        .button(`§c§lBack`)
         .show(player).then(r => {
             if (r.selection == 0) main(player)
         })

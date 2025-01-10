@@ -48,7 +48,7 @@ export function moneyzSettings(player) {
     buttons.push(`§d§lLog Level\n§r§7[ ${logLevel} ]`);
     actions.push(() => showLogLevelMenu(player));
 
-    buttons.push('§4§lBack');
+    buttons.push('§c§lBack');
     actions.push(() => moneyzAdmin(player));
 
     buttons.forEach(button => form.button(button));
@@ -74,7 +74,7 @@ function toggleAutoTags(player) {
         .button('§d§lToggle moneyzDaily')
         .button('§d§lToggle moneyzLucky')
         .button('§d§lToggle moneyzChance')
-        .button('§4§lBack')
+        .button('§c§lBack')
         .show(player).then(({ selection }) => {
             if (selection >= 0 && selection < options.length) {
                 const selectedTag = options[selection];

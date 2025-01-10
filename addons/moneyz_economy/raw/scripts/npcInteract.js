@@ -1,6 +1,7 @@
 import { world, system } from "@minecraft/server";
 import { customShop } from "./gui/custom_shop.js";
 import { openRewardsMenu } from "./gui/rewards_menu.js";
+import { giveQuest } from "./gui/quest_menu.js";
 import { luckyPurchase } from './gui/lucky_purchase.js';
 import { testYourLuck } from "./games/randomNum.js";
 import { start21Game } from "./games/21Game.js";
@@ -25,9 +26,10 @@ world.beforeEvents.playerInteractWithEntity.subscribe((data) => {
     const npcTestLuck = world.getDynamicProperty("npcTestLuck") || "Test Luck";
     const npcDiceGame = world.getDynamicProperty("npcDice") || "Dice";
     const npcSlotsGame = world.getDynamicProperty("npcSlots") || "Slots";
+    const npcQuest = world.getDynamicProperty("npcQuest") || "Quest Giver";
 
     const npcName = targetEntity.nameTag ? targetEntity.nameTag : "Unnamed NPC";
-    log(`Interacted with NPC: ${npcName}`, LOG_LEVELS.INFO);
+    //log(`Interacted with NPC: ${npcName}`, LOG_LEVELS.INFO);
 
     if (targetEntity.typeId === "minecraft:npc") {
         log(`Player object: ${JSON.stringify(player)}`, LOG_LEVELS.DEBUG);
@@ -57,6 +59,9 @@ world.beforeEvents.playerInteractWithEntity.subscribe((data) => {
         } else if (npcName === npcSlotsGame) {
             data.cancel = true;
             system.run(() => startSlotsGame(player, isNpcInteraction));
+        } else if (npcName === npcQuest) {
+            data.cancel = true;
+            system.run(() => giveQuest(player, isNpcInteraction));
         } else {
         
         }
