@@ -21,7 +21,7 @@ export function chanceMenu(player) {
     .button("§d§l21")
     .button("§d§lDice Game")
     .button("§d§lSlots")
-    .button("§4§lBack")
+    .button("§c§lBack")
     .show(player)
     .then((response) => {
       if (response.selection === 0) {

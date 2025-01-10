@@ -85,6 +85,7 @@ const ensureWorldPropertiesExist = () => {
         { name: 'chanceWin', defaultValue: '0' },
         { name: 'syncPlayers', defaultValue: 'true' },
         { name: 'moneyzATM', defaultValue: 'true' },
+        { name: 'moneyzQuest', defaultValue: 'true' },
         { name: 'moneyzSend', defaultValue: 'true' },
         { name: 'oneLuckyPurchase', defaultValue: 'true' },
         { name: 'moneyzShop', defaultValue: 'false' },
@@ -130,6 +131,7 @@ const syncPlayerPropertiesWithWorld = (player) => {
         const properties = [
             { name: 'moneyzATM', defaultValue: 'true' },
             { name: 'moneyzSend', defaultValue: 'true' },
+            { name: 'moneyzQuest', defaultValue: 'true' },
             { name: 'moneyzShop', defaultValue: 'false' },
             { name: 'moneyzDaily', defaultValue: 'false' },
             { name: 'moneyzLucky', defaultValue: 'false' },

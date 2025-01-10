@@ -33,7 +33,7 @@ export async function customShop(player, isNpcInteraction) {
             log(`Button for item ${shopItem.itemName} added to form.`, LOG_LEVELS.DEBUG);
         });
 
-        form.button("§4§lBack");
+        form.button("§c§lBack");
 
         const response = await form.show(player);
 

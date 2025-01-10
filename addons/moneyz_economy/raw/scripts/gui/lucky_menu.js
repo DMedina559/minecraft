@@ -27,7 +27,7 @@ export function luckyMenu(player) {
         actions.push(() => chanceMenu(player));
     }
 
-    buttons.push('§4§lBack');
+    buttons.push('§c§lBack');
     actions.push(() => main(player));
     
     buttons.forEach(button => form.button(button));

@@ -22,7 +22,7 @@ export async function luckyPurchase(player, isNpcInteraction) {
             .title("§l§1Lucky Purchase")
             .body("§l§o§fMake a Lucky Purchase for 150 Moneyz!")
             .button("§a§lMake Purchase")
-            .button("§4§lBack")
+            .button("§c§lBack")
             .show(player).then(async r => {
                 if (r.selection === 0) {
                     const currentDate = getCurrentUTCDate();
@@ -59,7 +59,7 @@ export async function luckyPurchase(player, isNpcInteraction) {
         new ActionFormData()
             .title("§l§cLucky Purchase Restricted")
             .body("§cYou have already made your Lucky Purchase today.\n§7Try again tomorrow!")
-            .button("§4§lBack")
+            .button("§c§lBack")
             .show(player);
     }
 }
