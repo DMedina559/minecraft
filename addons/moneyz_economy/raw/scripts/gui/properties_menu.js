@@ -150,9 +150,16 @@ function modifyPlayerProperties(player, selectedPlayer) {
 
             const [keyField, valueField] = formValues;
 
-            if (keyField.trim() === "" || valueField.trim() === "") {
-                log(`${player.nameTag} entered empty key or value for property modification.`, LOG_LEVELS.WARN);
-                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cBoth key and value must be provided!"}]}`);
+            if (keyField.trim() === "") {
+                log(`${player.nameTag} entered empty key for property modification.`, LOG_LEVELS.WARN);
+                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cA key must be provided!"}]}`);
+                return;
+            }
+
+            if ( valueField.trim() === "") {
+                log(`${player.nameTag} cleared ${keyField} property.`, LOG_LEVELS.INFO);
+                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cProperty Cleared!"}]}`);
+                selectedPlayer.setDynamicProperty(keyField.trim(), null);
                 return;
             }
 
@@ -287,9 +294,15 @@ function modifyWorldProperties(player) {
 
             const [keyField, valueField] = result.formValues;
 
-            if (keyField.trim() === "" || valueField.trim() === "") {
-                log(`${player.nameTag} entered empty key or value for world property modification.`, LOG_LEVELS.WARN);
-                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cBoth key and value must be provided!"}]}`);
+            if (keyField.trim() === "") {
+                log(`${player.nameTag} entered empty key for world property modification.`, LOG_LEVELS.WARN);
+                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cA key must be provided!"}]}`);
+                return;
+            }
+            if (valueField.trim() === "") {
+                log(`${player.nameTag} cleared ${keyField.trim()} property.`, LOG_LEVELS.INFO);
+                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cCleared property!"}]}`);
+                world.setDynamicProperty(keyField.trim(), null);
                 return;
             }
 
