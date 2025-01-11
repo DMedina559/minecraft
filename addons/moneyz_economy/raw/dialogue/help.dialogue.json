@@ -176,7 +176,7 @@
 			      { "text": "§rYou can also use §6/give @p spawn_egg 1 51§r or §6/summon npc ~ ~ ~§r to spawn NPCs.\n\n" },
 			      { "text": "§lQuick NPC Setup:\n§rFor quick setup of pre-configured NPCs, use the command §6/function setup/{SHOP}§r. Replace {SHOP} with one of the following:\n§6armory§r, §6atm§r, §6banker§r, §6craftershop§r, §6farmers_market§r, §6help§r, §6hotel§r, §6library§r, §6petshop§r, §6realtor§r, §6universal§r, §6workshop§r.\n§rExample: §6/function setup/petshop§r will summon a pre-configured Pet Shop NPC.\n\n"},
 			      { "text": "§lAvailable Dialogues (for §6/dialogue open§r and §6/dialogue change§r):\n§6armory§r, §6armory_buy§r, §6armory_sell§r, §6atm§r, §6banker§r, §6craftershop§r, §6crafter_buy§r, §6crafter_sell§r, §6farmers_market§r, §6farmer_buy§r, §6farmer_sell§r, §6help§r, §6hotel§r, §6jobs§r, §6library§r, §6library_buy§r, §6library_sell§r, §6petshop§r, §6petshop_buy§r, §6petshop_sell§r, §6realtor§r, §6universal§r, §6workshop§r, §6workshop_buy§r, §6workshop_sell§r\n\n"},
-			      { "text": "§lAdvanced NPC Customization:\n§rYou can summon NPCs that directly open specific menus using world properties and the §6/summon§r command. The format is:\n§6/summon minecraft:npc ~ ~ ~ ~ ~ undefined \"NAME\"\n§rWhere §6'Name'§r is the name of the §6NPC§r to open the menu. You can customize these names with the following World Properties:\n§r- §6customShop§r: Sets the name for the Custom Shop menu (Default: Custom Shop).\n§r- §6npcRewards§r: Sets the name for the Daily Rewards menu (Default: Daily Rewards).\n§r- §6npcLuckyP§r: Sets the name for the Lucky Purchase menu (Default: Lucky Purchase).\n§r- §6npc21Game§r: Sets the name for the 21 (Blackjack) game (Default: 21).\n§r- §6npcTestLuck§r: Sets the name for the Test Your Luck game (Default: Test Luck).\n§r- §6npcDiceGame§r: Sets the name for the Dice Game (Default: Dice).\n§r- §6npcSlotsGame§r: Sets the name for the Slots game (Default: Slots).\n§rExample: §6/summon minecraft:npc ~ ~ ~ ~ ~ undefined \"My Special Shop\"§r will open the Custom Shop if the §6customShop§r property is set to §6\"My Special Shop\"§r.\n\n"},
+			      { "text": "§lAdvanced NPC Customization:\n§rYou can summon NPCs that directly open specific menus using world properties and the §6/summon§r command. The format is:\n§6/summon minecraft:npc ~ ~ ~ ~ ~ undefined \"NAME\"\n§rWhere §6'Name'§r is the name of the §6NPC§r to open the menu. You can customize these names with the following World Properties:\n§r- §6customShop§r: Sets the name for the Custom Shop menu (Default: Custom Shop).\n§r- §6npcQuest§r: Sets the name for the Quest menu (Default: Quest Giver).\n§r- §6npcRewards§r: Sets the name for the Daily Rewards menu (Default: Daily Rewards).\n§r- §6npcLuckyP§r: Sets the name for the Lucky Purchase menu (Default: Lucky Purchase).\n§r- §6npc21Game§r: Sets the name for the 21 (Blackjack) game (Default: 21).\n§r- §6npcTestLuck§r: Sets the name for the Test Your Luck game (Default: Test Luck).\n§r- §6npcDiceGame§r: Sets the name for the Dice Game (Default: Dice).\n§r- §6npcSlotsGame§r: Sets the name for the Slots game (Default: Slots).\n§rExample: §6/summon minecraft:npc ~ ~ ~ ~ ~ undefined \"My Special Shop\"§r will open the Custom Shop if the §6customShop§r property is set to §6\"My Special Shop\"§r.\n\n"},
 			      { "text": "§lAuto Tagging:\n§rPlayers can automatically be granted properties when they join the world. This is controlled via world properties. See the Properties help section for more details.\n\n"},
 			      { "text": "§lTips for NPC Commands:\n§r- You don't need '/' for NPC commands in the dialogue editor.\n§r- Use autocomplete in chat for command suggestions.\n\n" },
 			      { "text": "§lWhere can I find pre-built worlds using Moneyz?\n§rCheck out MountainSide Villages by ZVortex11325.\n\n" },
@@ -229,7 +229,7 @@
 			    "rawtext": [
 			      { "text": "§lWhat is the Admin Menu?\n§rThe Admin Menu, accessed through the Moneyz Menu by players with the §6moneyzAdmin§r tag, provides tools for managing the Moneyz economy.\n\n" },
 			      { "text": "§lAdmin Functions:\n§r- Manage Player Moneyz Balance (View, Add, Remove, Set)\n- Manage Player Tags (View, Add, Remove)\n- Manage Player Properties (View, Set, Remove)\n- Manage World Properties (View, Set, Remove)\n- Access Settings for the Moneyz Behavior Pack\n\n" },
-			      { "text": "§lSettings Menu:\n§rWithin the Admin Menu, the Settings Menu allows you to configure:\n§r- Daily Reward Amount\n§r- Chance Games Settings (chanceX, chanceWin)\n§r- Set Custom Shop Name\n§r- Auto Tag Settings\n§r- Log Level (logLevels)\n" }
+			      { "text": "§lSettings Menu:\n§rWithin the Admin Menu, the Settings Menu allows you to configure:\n§r- Daily Reward Amount\n§r- Chance Games Settings (chanceX, chanceWin)\n§r- Set Custom Shop Name\n§r- Auto Tag Settings\n§r- Set Patrol Location\n§r- Log Level (logLevels)\n" }
 			    ]
 			  },
 			  "buttons": [
@@ -338,10 +338,17 @@
 			      { "text": "§6chanceX§r: The multiplier for Chance Games winnings. (Number)\n" },
 			      { "text": "§6chanceWin§r: The chance (1-100) of winning in Chance Games. (Number, 1-100)\n" },
 			      { "text": "§6patrolLocation§r: Sets the patrol location for the patrol quest. (Number, x,y,z,radius,minutes)\n" },
+			      { "text": "§6npcRewards§r: The name of the NPC used to open the Rewards Menu. (Text)\n" },
+			      { "text": "§6npcLuckyP§r: The name of the NPC used to open the Lucky Purchase Menu. (Text)\n" },
+			      { "text": "§6npcQuest§r: The name of the NPC used to open the Quest Menu. (Text)\n" },
+			      { "text": "§6npc21§r: The name of the NPC used to open the 21 Game. (Text)\n" },
+			      { "text": "§6npcTestLuck§r: The name of the NPC used to open the Test Your Luck Game. (Text)\n" },
+			      { "text": "§6npcDice§r: The name of the NPC used to open the Dice Game. (Text)\n" },
+			      { "text": "§6npcSlota§r: The name of the NPC used to open the Slots Game. (Text)\n" },
 			      { "text": "§6logLevels§r: Controls the logging level for debugging. (Text, DEBUG, INFO, WARN, ERROR. Default: WARN.)\n\n" },
 
 			      { "text": "§lCustom Shop Properties:\n§rThese World Properties allow admins to create custom shops.\n\n" },
-			      { "text": "§6customShop§r: Sets the name of your custom shop. (Text)\n" },
+			      { "text": "§6customShop§r: Sets the name of your custom shop. Also used for the name of the NPC used to open the shop (Text)\n" },
 			      { "text": "§6shopItem_itemname§r: Defines an item for sale in the custom shop. Replace 'itemname' with a unique identifier for the item (no spaces).\n" },
 			      { "text": "§rValue format:\n§ritemname,amount,cost,data,saleamount,salecost,saledata\n" },
 			      { "text": "§rExample:\n§rshopItem_diamond=diamond,1,100,0,1,80,0\n§rThis would allow players to buy 1 diamond for 100 Moneyz and sell 1 diamond for 80 Moneyz.\n" },
