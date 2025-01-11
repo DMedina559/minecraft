@@ -18,18 +18,37 @@
 			    { 
 			    	"name": "Jobs", 
 			    	"commands": ["/dialogue open @s @initiator jobs_help"] 
-			     },
+			    },
 			    { 
-			    	"name": "Lucky Menu", 
-			    	"commands": ["/dialogue open @s @initiator help_luckyMenu"] 
+			    	"name": "Quest", 
+			    	"commands": ["/dialogue open @s @initiator help_quests"] 
 			    },
 			    { 
 			    	"name": "Daily Rewards", 
 			    	"commands": ["/dialogue open @s @initiator help_daily_rewards"] 
 			    },
 			    { 
+			    	"name": "Pg. 2", 
+			    	"commands": ["/dialogue open @s @initiator help_2"] 
+			    }
+			  ]
+			},
+			{
+			  "scene_tag": "help_2",
+			  "npc_name": "Help",
+			  "text": "Welcome to Moneyz Economy Help!\n\n§lTIP:\n§rThe Moneyz Menu is your central hub for managing your finances and accessing key features. Craft it using one of each resource.\n\nChoose a topic below for more information:\n",
+			  "buttons": [
+			    { 
+			    	"name": "Lucky Menu", 
+			    	"commands": ["/dialogue open @s @initiator help_luckyMenu"] 
+			    },
+			    { 
 			    	"name": "Admin", 
 			    	"commands": ["/dialogue open @s @initiator[tag=moneyzAdmin] help_admin", "/tell @initiator[tag=!moneyzAdmin] You're not a moneyzAdmin!"] 
+			    },
+			    { 
+			    	"name": "Pg. 1", 
+			    	"commands": ["/dialogue open @s @initiator help"] 
 			    }
 			  ]
 			},
@@ -89,6 +108,10 @@
 		        	"name": "Daily Rewards", 
 		        	"commands": ["/dialogue open @s @initiator help_daily_rewards"] 
 		        },
+		        { 
+			    	"name": "Admin", 
+			    	"commands": ["/dialogue open @s @initiator[tag=moneyzAdmin] help_admin", "/tell @initiator[tag=!moneyzAdmin] You're not a moneyzAdmin!"] 
+			    },
 			    { 
 			    	"name": "Back", 
 			    	"commands": ["/dialogue open @s @initiator help_moneyz"] 
@@ -205,7 +228,7 @@
 			  "text": {
 			    "rawtext": [
 			      { "text": "§lWhat is the Admin Menu?\n§rThe Admin Menu, accessed through the Moneyz Menu by players with the §6moneyzAdmin§r tag, provides tools for managing the Moneyz economy.\n\n" },
-			      { "text": "§lAdmin Functions:\n§r- Manage Player Moneyz Balance (View, Add, Remove, Set)\n- Manage Player Tags (View, Add, Remove)\n- Manage Player Properties (View, Set)\n- Manage World Properties (View, Set, Clear)\n- Customize aspects of the Moneyz Behavior Pack\n\n" },
+			      { "text": "§lAdmin Functions:\n§r- Manage Player Moneyz Balance (View, Add, Remove, Set)\n- Manage Player Tags (View, Add, Remove)\n- Manage Player Properties (View, Set, Remove)\n- Manage World Properties (View, Set, Remove)\n- Access Settings for the Moneyz Behavior Pack\n\n" },
 			      { "text": "§lSettings Menu:\n§rWithin the Admin Menu, the Settings Menu allows you to configure:\n§r- Daily Reward Amount\n§r- Chance Games Settings (chanceX, chanceWin)\n§r- Set Custom Shop Name\n§r- Auto Tag Settings\n§r- Log Level (logLevels)\n" }
 			    ]
 			  },
@@ -299,13 +322,14 @@
 			  "npc_name": "Properties",
 			  "text": {
 			    "rawtext": [
-			      { "text": "§lPlayer Properties:\n§rThese properties control individual player access to features. Admins can set these for online players.\n\n" },
+			      { "text": "§lPlayer Properties:\n§rThese properties control individual player access to features in the Moneyz Menu. Admins can set these for online players.\n\n" },
 			      { "text": "§6moneyzShop§r: Allows access to regular shops in the Moneyz Menu. (true/false)\n" },
 			      { "text": "§6moneyzATM§r: Allows access to ATM functions in the Moneyz Menu. (true/false)\n" },
 			      { "text": "§6moneyzSend§r: Allows players to send Moneyz to other players. (true/false)\n" },
 			      { "text": "§6moneyzLucky§r: Allows access to Lucky Purchases (true/false)\n" },
 			      { "text": "§6moneyzChance§r: Allows players to play Chance Games. (true/false)\n" },
 			      { "text": "§6moneyzDaily§r: Allows players to claim a daily reward. (true/false)\n" },
+			      { "text": "§6moneyzQuest§r: Allows access to Quest (true/false)\n" },
 			      { "text": "§6lastLuckyPurchase§r: Stores the last date a player made a lucky purchase. (YYYY-MM-DD)(UTC timezone)\n" },
 			      { "text": "§6lastDailyReward§r: Stores the last date a player claimed a daily reward. (YYYY-MM-DD)(UTC timezone)\n\n" },
 
@@ -313,6 +337,7 @@
 			      { "text": "§6dailyReward§r: The amount of Moneyz given as a daily reward. (Number)\n" },
 			      { "text": "§6chanceX§r: The multiplier for Chance Games winnings. (Number)\n" },
 			      { "text": "§6chanceWin§r: The chance (1-100) of winning in Chance Games. (Number, 1-100)\n" },
+			      { "text": "§6patrolLocation§r: Sets the patrol location for the patrol quest. (Number, x,y,z,radius,minutes)\n" },
 			      { "text": "§6logLevels§r: Controls the logging level for debugging. (Text, DEBUG, INFO, WARN, ERROR. Default: WARN.)\n\n" },
 
 			      { "text": "§lCustom Shop Properties:\n§rThese World Properties allow admins to create custom shops.\n\n" },
@@ -339,6 +364,30 @@
 			    	"commands": ["/dialogue open @s @initiator help"] 
 			    }
 			  ]
+			},
+			{
+			    "scene_tag": "help_quests",
+			    "npc_name": "Quests Help",
+			    "text": {
+			        "rawtext": [
+			            { "text": "§lWhat are Quests?\n§rQuests are tasks given to players by NPCs or the Moneyz Menu, offering rewards upon completion\n\n" },
+			            { "text": "§lTypes of Quests:\n§r- §6Slay Quests: §7Defeat a number of mobs.\n" },
+			            { "text": "§r- §6Farm Quests: §7Plant an amount of crops.\n" },
+			            { "text": "§r- §6Mine Quests: §7Mine a specific number of resources.\n" },
+			            { "text": "§r- §6Patrol Quests: §7Patrol a certain area for a set amount of time.\n" },
+			            { "text": "§r- §6Maintain Balance Quests: §7Maintain a certain amount of Moneyz for a set amount of time.\n" },
+			            { "text": "§lHow to Accept Quests:\n§rTalk to a Quest Giver NPC. They will present you with available quests. Select one to accept it.\nYou can also see quest in the Moneyz Menu.\n\n" },
+			            { "text": "§lHow to Track Progress:\n§rQuest progress is usually displayed through chat messages. Pay attention to the messages you receive.\n\n" },
+			            { "text": "§lAbandoning Quests:\n§rYou can abandon a quest by talking to the Quest Giver NPC again or through the Moneyz Menu.\n\n" },
+			            { "text": "§lRewards:\n§rQuests offer various amount of Moneyz, plus bonuses.\n" }
+			        ]
+			    },
+			    "buttons": [
+			        {
+			            "name": "Main Menu",
+			            "commands": ["/dialogue open @s @initiator help"]
+			        }
+			    ]
 			}
 		]
 	}

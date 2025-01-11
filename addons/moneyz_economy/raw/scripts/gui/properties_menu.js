@@ -128,7 +128,7 @@ function modifyPlayerProperties(player, selectedPlayer) {
     .concat(["§aAdd New Property"]);
 
   new ModalFormData()
-    .title(`§l§fModify ${selectedPlayer.nameTag} Properties`)
+    .title(`§l§1${selectedPlayer.nameTag} Properties`)
     .dropdown("§oSelect Property or Add New", options)
     .textField("§fEnter Property Key (required for new):", "§oProperty Key")
     .textField("§fEnter Property Value (leave empty to remove):", "§oProperty Value")
@@ -287,7 +287,7 @@ function modifyWorldProperties(player) {
     const options = worldPropertyIds.map(id => `§f${id}`).concat(["§aAdd New Property"]);
 
     new ModalFormData()
-        .title("§d§lModify World Properties")
+        .title("§l§1Modify World Properties")
         .dropdown("§oSelect Property or Add New", options)
         .textField("§fEnter Property Key (required for new):", "§oProperty Key")
         .textField("§fEnter Property Value (leave empty to remove):", "§oProperty Value")

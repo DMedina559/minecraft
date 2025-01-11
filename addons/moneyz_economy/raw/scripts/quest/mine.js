@@ -1,5 +1,4 @@
 import { world, system } from "@minecraft/server";
-import { ActionFormData } from "@minecraft/server-ui";
 import { updateScore, getCurrentUTCDate } from '../utilities.js';
 import { getActiveQuest, completeQuest } from '../gui/quest_menu.js';
 import { log, LOG_LEVELS } from '../logger.js';
@@ -31,7 +30,7 @@ world.beforeEvents.playerBreakBlock.subscribe(event => {
                     completeQuest(player, activeQuest);
                 } else {
                     player.setDynamicProperty("activeQuest", JSON.stringify(activeQuest));
-                    player.sendMessage(`§eYou still need to mine ${activeQuest.objective.count} more ${blockTypes.join(", ")}.`);
+                    player.sendMessage(`§eYou still need to mine ${activeQuest.objective.count} more ${blockTypes.map(type => type.replace("minecraft:", "").replace(/_/g, " ").replace(/\b\w/g, char => char.toUpperCase())).join(", ")}.`);
                 }
 
                 if (ORE_BREAK_REWARDS[brokenBlock.typeId]) {
@@ -43,9 +42,12 @@ world.beforeEvents.playerBreakBlock.subscribe(event => {
                 const blockPosition = brokenBlock.location;
                 const positionString = `${blockPosition.x} ${blockPosition.y} ${blockPosition.z}`;
                 player.runCommandAsync(`setblock ${positionString} minecraft:air replace`);
+                log(`Placed air at:`, LOG_LEVELS.DEBUG, positionString);
             }
         }
     }
 }, {
     blockTypes: Object.keys(ORE_BREAK_REWARDS)
 });
+
+log('mine.js loaded', LOG_LEVELS.DEBUG);
