@@ -407,3 +407,22 @@
 8. Revamped logging throughout the pack .js Files
 9. Cleaned up .js files
 10. Updated dependencies to latest versions
+
+# 1.10.0
+1. Added Quest
+    - Quest allow Players to complete simple task to earn some Moneyz in their balance
+    - There are 3 diifferent Quest per day
+      - Players can do 1 of each quest per day
+    - Requires moneyzQuest property set to true to access in Moneyz Menu
+    - More info in help dialogue
+2. Added Custom Shop
+    - Admins can add any item to the custom shop using world properties
+      - This allows items form other addons aswell
+    - Admins can learn more in the help dialogue
+3. Admins can now setup NPCs to open specific js menus
+    - Admins can learn more in the help dialogue
+4. Reworked Help Dialogue
+    - Run `/dialogue change @e[type=npc,r=5,c=1] help` while standing next to your Help NPC to update
+5. Reworked World/Player Property Menus
+    - It's now possible to remove indivial properties from players/world
+6. Some interactions now give sound feedback in throughout the js files

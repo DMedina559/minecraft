@@ -49,6 +49,8 @@ Do this for all your shops and now you have a working economy in your world.
 > [!TIP]
 > Alternatively you can run `/dialogue change @e[type=npc,r=5,c=1] {dialogue}` in chat while standing next to an NPC to set up a pre-configured dialogue and command buttons
 
+You can also run `/function setup/{shop}` to quickly spawn a preconfigured NPC.
+
 ### Available dialogues `dialogue open @s @initiator {dialogue}`: 
 
 `armory`: Armor Weapon Tools Shop, supports `{armory_buy|sell}` [^1]
@@ -102,6 +104,7 @@ The Moneyz Menus allows Players direct access to:
 - ATM Services [^2]
 - Send Moneyz [^2]
 - Daily Rewards [^10][^11]
+- Quest [^12]
 - Feeling Lucky Menu [^10]
   - Lucky Purchase [^11]
   - Chance Minigames [^11]
@@ -121,6 +124,9 @@ The Moneyz Menus allows Players direct access to:
 - Help
 - Credits
 
+### Custom Shop
+It is possible to add custom items to a Custom Shop. World Owner/Admins can choose any item to add, and any price they choose! [^12]
+
 ### Send Moneyz to other Players!
 Moneyz Economy allows Players to send Moneyz directly to other Players straight from the Moneyz Menu.
 Just select a Player from the dropdown menu and enter an amount to send. [^2][^3]
@@ -128,8 +134,19 @@ Just select a Player from the dropdown menu and enter an amount to send. [^2][^3
 ### Set Daily Rewards!
 Moneyz Economy allows Players to redeem a set amount of Moneyz to their Balance! World Owners/Admins can set the dailyReward world property to any number which represents the amount of Moneyz a Player will get daily. After a Player redeems the Daily Reward they will get the Player Property lastDailyReward set to the current date in UTC YYYY-MM-DD format. [^10][^11]
 
+### Daily Quest
+Players are able to complete simple task to earn moneyz in their balance. [^12][^13]
+
+Challenges include:
+- Mine a number of resources
+- Harvest a number of crops
+- Slay some hostile mobs
+- Slaughter a few farm animals
+- Maintain a balance of Moneyz for an amount of time
+- Patrol a set location for a set amount of time
+
 ### Feeling Lucky?
-Moneyz Economy allows Players to access the Lucky Menu. With the Lucky Menu a Player can make a Lucky Purchse or play Chance Mini Games.[^10][^11]
+Moneyz Economy allows Players to access the Lucky Menu. With the Lucky Menu a Player can make a Lucky Purchase or play Chance Mini Games.[^10][^11]
 
 A Lucky Purchase lets the Player to make a purchase once a day in the Moneyz Menu that'll give them random items at different values from the various shops. After the Player makes a Lucky Purchase they will get the Player Property lastLuckyPurchase set to the current date in UTC YYYY-MM-DD format. The once a day limit can be disabled in the Settings Menu.
 
@@ -141,28 +158,12 @@ Chance Games allows a Player to put an amount of Moneyz at stake for a chance to
 ### Help Dialogue
 Moneyz Economy comes with various help documentation to help all players setup and use Moneyz easily. [^7]
 
-Help Dialogues allow players to get help with:
- - General
-   - Explains what Moneyz is
-   - Explains the Bank System
-   - Explains the Real Estate system
-   - Explains the Selling aspect
-   - Explains the Set Up process
-   - Explains the Moneyz Menu
- - Shops
-   - Details all items and prices available at the Shops
- - Check Balance
-   - Allows players to check their Moneyz balance if they don't have a Moneyz Menu item or if no scoreboard display is set up
- - Jobs
-   - Explains the various aspects of each job such as pay and responsibilities
-
-
 > [!IMPORTANT]
 > World Owners/Admins should setup an NPC with the help dialogue in a general area for all players to get help with Moneyz. [^4]
 
 To setup a Help NPC run `/dialogue change @e[type=npc,r=5,c=1] help` in chat while standing next to an NPC to set up a pre-configured NPC, or set up an NPC with `dialogue open @s @initiator help`
 
-The Help Dialogue includes tips for World Owners/Admins settings up their shops, and allows players to check their Moneyz balance or the available items and prices in any shop.
+The Help Dialogue includes valuable info/tip for World Owners/Admins settings up their shops, and allows players using the economy.
 
 ## Dialogue VS Function
 It is recommended to use the `dialogue` commands as this will allow NPC shops to automatically update with new items. `function` commands should only be used for manually selecting items to be sold/purchased. [^4]
@@ -197,3 +198,5 @@ https://www.youtube.com/watch?v=6sjZkGPCF5A
 [^9]: Requires 1.8.0+
 [^10]: Requires 1.9.0+
 [^11]: Disabled by Default
+[^12]: Requires 1.10.0+
+[^13]: Some Quest require a world difficulty of Easy or higher
