@@ -20,7 +20,7 @@ The `@minecraft/server-admin` module is only available on dedicated servers.
 
 #### Install Dedicated Server:
 
-You have a few options to install the deicated server:
+You have a few options to install the dedicated server:
 
 - Direct Download:
 
@@ -48,8 +48,8 @@ This method also supports auto updates/backups, but only supports Ubuntu/Debian 
 
 ### - Beta API Experiment:
 
-The behavior pack requires a world with the `Beta APIs` experiment enabled.
-This experiment is required for the server-admin module on the dedicated server.
+The behavior pack requires a world with the `Beta APIs` experiment to be enabled.
+This experiment is required for the `@minecraft/server-admin` module on the dedicated server.
 
 ## Instructions:
 
@@ -67,18 +67,16 @@ This experiment is required for the server-admin module on the dedicated server.
 ### Step 3: Enable Module Permissions
 
 - Create a subfolder in the `config` directory of the `dedicated server` using the behavior pack's script module `UUID` (`21261991-a854-4f99-9720-f495978a06b7`).
-- Create a new file names `permissions.json` file within the subfolder to allow access to the `@minecraft/server-admin` module:
+- Create a new file named `permissions.json` within the subfolder to allow access to the `@minecraft/server-admin` module:
 
 /server/config/21261991-a854-4f99-9720-f495978a06b7/permissions.json:
 
 ```
 {
   "allowed_modules": [
-    "@minecraft/server-gametest",
     "@minecraft/server",
     "@minecraft/server-ui",
-    "@minecraft/server-admin",
-    "@minecraft/server-editor"
+    "@minecraft/server-admin"
   ]
 }
 ```
@@ -87,7 +85,7 @@ This experiment is required for the server-admin module on the dedicated server.
 - Start the Bedrock Dedicated Server and ensure everything loads correctly by checking the server logs.
 You should see this message `[Scripting] Transfer UI loaded!` and no errors related to any modules or `@minecraft/server-admin`
 
-Join the server and obtain a `Compass` item. If everything is installed correctly you should be able to `use item` to open the menu.
+Join the server and obtain a `Compass` item. If everything is installed correctly you should be able to use item to open the menu.
   
 Now you should be able to use a compass item to open the Transfer UI. Here you can enter the server IP and Port you wish to join.
 
