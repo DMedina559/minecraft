@@ -1,57 +1,9 @@
 import { world, system, ItemStack, ItemTypes, EntityComponentTypes } from "@minecraft/server";
+import { LOOT_POOLS } from "./loot_pools.js";
 import { log, LOG_LEVELS } from "./logger.js";
 
-const LOOT_POOLS = {
-    potions: {
-        min: 1,
-        max: 3,
-        items: [
-            { typeId: "minecraft:potion", min: 1, max: 2, weight: 5 },
-            { typeId: "minecraft:lingering_potion", min: 1, max: 1, weight: 3 },
-            { typeId: "minecraft:splash_potion", min: 1, max: 3, weight: 2 },
-        ],
-    },
-    food: {
-        min: 2,
-        max: 5,
-        items: [
-            { typeId: "minecraft:apple", min: 1, max: 4, weight: 6 },
-            { typeId: "minecraft:bread", min: 1, max: 3, weight: 4 },
-            { typeId: "minecraft:cooked_beef", min: 2, max: 5, weight: 5 },
-        ],
-    },
-    armor: {
-        min: 1,
-        max: 2,
-        items: [
-            { typeId: "minecraft:diamond_helmet", min: 1, max: 1, weight: 4, enchantable: true },
-            { typeId: "minecraft:iron_chestplate", min: 1, max: 1, weight: 3, enchantable: true },
-            { typeId: "minecraft:netherite_boots", min: 1, max: 1, weight: 2, enchantable: true },
-        ],
-    },
-    weapons: {
-        min: 1,
-        max: 2,
-        items: [
-            { typeId: "minecraft:diamond_sword", min: 1, max: 1, weight: 5, enchantable: true },
-            { typeId: "minecraft:bow", min: 1, max: 2, weight: 3, enchantable: true },
-            { typeId: "minecraft:crossbow", min: 1, max: 1, weight: 2, enchantable: true },
-        ],
-    },
-    other: {
-        min: 2,
-        max: 4,
-        items: [
-            { typeId: "minecraft:emerald", min: 1, max: 5, weight: 5 },
-            { typeId: "minecraft:diamond", min: 1, max: 3, weight: 3 },
-            { typeId: "minecraft:gold_ingot", min: 2, max: 6, weight: 4 },
-        ],
-    },
-};
+const COOLDOWN_SECONDS = world.getDynamicProperty("npcCooldown") || "300";
 
-const COOLDOWN_SECONDS = 300; // Cooldown duration
-
-// Event handler for NPC interaction
 world.beforeEvents.playerInteractWithEntity.subscribe((data) => {
     const player = data.player;
     const targetEntity = data.target;
@@ -59,7 +11,7 @@ world.beforeEvents.playerInteractWithEntity.subscribe((data) => {
     if (!player || !targetEntity || targetEntity.typeId !== "minecraft:npc") return;
 
     handleLootInteraction(player);
-    data.cancel = true; // Prevent further interaction
+    data.cancel = true;
 });
 
 function handleLootInteraction(player) {
@@ -73,21 +25,48 @@ function handleLootInteraction(player) {
         return;
     }
 
-    const loot = generateLoot();
-    distributeLoot(player, loot);
+    const poolCount = getRandomInRange(3, 6);
+    const selectedPools = selectMultiplePools(LOOT_POOLS, poolCount);
+
+    selectedPools.forEach((selectedPool) => {
+        const loot = generateLoot(selectedPool);
+        distributeLoot(player, loot);
+        log(`${player.nameTag} received loot from pool: ${selectedPool.name}.`, LOG_LEVELS.INFO);
+    });
 
     player.setDynamicProperty(cooldownKey, now);
     player.sendMessage("§aYou received your loot!");
-    log(`${player.nameTag} received loot.`, LOG_LEVELS.INFO);
 }
 
-function generateLoot() {
-    const loot = {};
+function selectMultiplePools(pools, count) {
+    const weightedPool = createWeightedPool(pools);
+    const selectedPools = [];
 
-    for (const category in LOOT_POOLS) {
-        const pool = LOOT_POOLS[category];
+    for (let i = 0; i < count; i++) {
+        if (weightedPool.length === 0) break;
+
+        const randomIndex = Math.floor(Math.random() * weightedPool.length);
+        selectedPools.push(weightedPool.splice(randomIndex, 1)[0]);
+    }
+
+    return selectedPools;
+}
+
+function selectRandomPool(pools) {
+    const weightedPool = createWeightedPool(pools);
+    return weightedPool[Math.floor(Math.random() * weightedPool.length)];
+}
+
+function generateLoot(pool) {
+    const loot = [];
+
+    if (pool.subPools) {
+        const subPool = selectRandomSubPool(pool.subPools);
+        const itemCount = getRandomInRange(subPool.min, subPool.max);
+        loot.push(...selectRandomItems(subPool.items, itemCount));
+    } else {
         const itemCount = getRandomInRange(pool.min, pool.max);
-        loot[category] = selectRandomItems(pool.items, itemCount);
+        loot.push(...selectRandomItems(pool.items, itemCount));
     }
 
     return loot;
@@ -101,35 +80,37 @@ function distributeLoot(player, loot) {
         return;
     }
 
-    for (const category in loot) {
-        loot[category].forEach((item) => {
-            const itemType = ItemTypes.get(item.typeId);
-            if (!itemType) {
-                log(`Invalid item type: ${item.typeId}`, LOG_LEVELS.ERROR);
-                return;
+    loot.forEach((item) => {
+        const itemType = ItemTypes.get(item.typeId);
+        if (!itemType) {
+            log(`Invalid item type: ${item.typeId}`, LOG_LEVELS.ERROR);
+            return;
+        }
+
+        const itemStack = new ItemStack(itemType, item.quantity);
+
+        system.run(() => {
+            try {
+                inventory.addItem(itemStack);
+                log(`Gave ${item.quantity}x ${item.typeId} to ${player.nameTag}.`, LOG_LEVELS.INFO);
+
+                //if (item.enchantable) {
+                //    enchantItem(itemStack);
+                //}
+            } catch (error) {
+                log(`Error adding ${item.typeId} to inventory: ${error}`, LOG_LEVELS.ERROR);
             }
-
-            const itemStack = new ItemStack(itemType, item.quantity);
-
-            system.run(() => {
-                try {
-                    inventory.addItem(itemStack);
-                    log(`Gave ${item.quantity}x ${item.typeId} to ${player.nameTag}.`, LOG_LEVELS.INFO);
-
-                    //if (item.enchantable) {
-                    //    enchantItem(itemStack);
-                    //}
-                } catch (error) {
-                    log(`Error adding ${item.typeId} to inventory: ${error}`, LOG_LEVELS.ERROR);
-                }
-            });
         });
-    }
+    });
 }
-
 
 //function enchantItem(itemStack) {
 //}
+
+function selectRandomSubPool(subPools) {
+    const weightedPool = createWeightedPool(subPools);
+    return weightedPool[Math.floor(Math.random() * weightedPool.length)];
+}
 
 function selectRandomItems(poolItems, count) {
     const weightedPool = createWeightedPool(poolItems);
@@ -158,4 +139,4 @@ function getRandomInRange(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-log("Loot system initialized successfully.", LOG_LEVELS.DEBUG);
+log("PVP NPC loaded.", LOG_LEVELS.DEBUG);
