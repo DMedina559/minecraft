@@ -1,12 +1,10 @@
 import { world, system } from "@minecraft/server";
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
-import { getScore, updateScore, getRandomInt } from '../utilities.js';
-import { chanceMenu } from '../gui/chance_menu.js';
-import { log, LOG_LEVELS } from '../logger.js';
+import { getScore, updateScore, getRandomInt } from "../utilities.js";
+import { chanceMenu } from "../gui/chance_menu.js";
+import { log, LOG_LEVELS } from "../logger.js";
 
 const CARD_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10];
-const ACE_HIGH = 11;
-const ACE_LOW = 1;
 
 function getRandomCard() {
     return CARD_VALUES[Math.floor(Math.random() * CARD_VALUES.length)];
@@ -47,20 +45,16 @@ export async function start21Game(player, isNpcInteraction) {
         }
 
         const stake = parseInt(response.formValues[0], 10);
-        if (isNaN(stake) || stake <= 0 ) {
+        if (isNaN(stake) || stake <= 0) {
             player.sendMessage("§cInvalid stake amount.");
-            if (!isNpcInteraction) {
-                chanceMenu(player);
-            };
+            if (!isNpcInteraction) chanceMenu(player);
             return;
         }
 
         const playerScore = await getScore("Moneyz", player);
         if (playerScore < stake) {
             player.sendMessage("§cYou don't have enough Moneyz!");
-            if (!isNpcInteraction) {
-                chanceMenu(player);
-            };
+            if (!isNpcInteraction) chanceMenu(player);
             return;
         }
 
@@ -76,9 +70,9 @@ async function startGameRound(player, stake) {
     try {
         const playerHand = [getRandomCard(), getRandomCard()];
         const dealerHand = [getRandomCard(), getRandomCard()];
-        const chanceX = world.getDynamicProperty("chanceX");
+        const chanceX = world.getDynamicProperty("chanceX") || 1;
 
-        log(`Initial hands - Player: ${displayHand(playerHand)}; Dealer: ${displayHand([dealerHand[0]])} (showing only the first card).`, LOG_LEVELS.DEBUG );
+        log(`Initial hands - Player: ${displayHand(playerHand)}; Dealer: ${displayHand([dealerHand[0]])} (showing only the first card).`, LOG_LEVELS.DEBUG);
 
         await continue21Game(player, stake, playerHand, dealerHand, chanceX);
     } catch (error) {
@@ -118,28 +112,44 @@ async function continue21Game(player, stake, playerHand, dealerHand, chanceX) {
             await continue21Game(player, stake, playerHand, dealerHand, chanceX);
         } else {
             log(`${player.nameTag} stands.`, LOG_LEVELS.DEBUG);
-
-            const winChance = world.getDynamicProperty("chanceWin") || 0;
-
-            while (calculateHandValue(dealerHand) < 17) {
-                const dealerValue = calculateHandValue(dealerHand);
-
-                if (getRandomInt(1, 100) <= winChance && dealerValue < playerValue) {
-                    log(`Dealer forced to stop hitting due to win chance.`, LOG_LEVELS.DEBUG);
-                    break;
-                }
-
-                dealerHand.push(getRandomCard());
-                log(`Dealer hits. New hand: ${displayHand(dealerHand)} (Value: ${calculateHandValue(dealerHand)})`, LOG_LEVELS.DEBUG);
-            }
-
-            const dealerValue = calculateHandValue(dealerHand);
-            const playerWon = playerValue <= 21 && (dealerValue > 21 || playerValue > dealerValue);
-
-            await endGame(player, stake, playerHand, dealerHand, chanceX, playerWon ? "§aYou win!" : "§cYou lose!");
+            await dealerTurn(player, stake, playerHand, dealerHand, chanceX);
         }
     } catch (error) {
         log(`Error in game continuation: ${error}`, LOG_LEVELS.ERROR);
+    }
+}
+
+async function dealerTurn(player, stake, playerHand, dealerHand, chanceX) {
+    try {
+        const playerValue = calculateHandValue(playerHand);
+        const chanceWin = world.getDynamicProperty("chanceWin") || 50;
+
+        while (calculateHandValue(dealerHand) < 17) {
+            const dealerValue = calculateHandValue(dealerHand);
+
+            const shouldStop = getRandomInt(1, 100) <= chanceWin;
+            if (shouldStop && dealerValue < playerValue) {
+                log(`Dealer stops hitting due to chanceWin (${chanceWin}%).`, LOG_LEVELS.DEBUG);
+                break;
+            }
+
+            dealerHand.push(getRandomCard());
+            log(`Dealer hits. New hand: ${displayHand(dealerHand)} (Value: ${calculateHandValue(dealerHand)})`, LOG_LEVELS.DEBUG);
+        }
+
+        const dealerValue = calculateHandValue(dealerHand);
+        const playerWins = 
+            playerValue <= 21 && (dealerValue > 21 || playerValue > dealerValue);
+
+        const forcedWin = !playerWins && getRandomInt(1, 100) <= chanceWin;
+
+        if (forcedWin) {
+            log(`Player forced to win due to chanceWin (${chanceWin}%).`, LOG_LEVELS.DEBUG);
+        }
+
+        await endGame(player, stake, playerHand, dealerHand, chanceX, playerWins || forcedWin ? "§aYou win!" : "§cYou lose!");
+    } catch (error) {
+        log(`Error during dealer turn: ${error}`, LOG_LEVELS.ERROR);
     }
 }
 
@@ -149,10 +159,7 @@ async function endGame(player, stake, playerHand, dealerHand, chanceX, winMessag
         const dealerValue = calculateHandValue(dealerHand);
         let message = `Your hand: ${displayHand(playerHand)} (${playerValue})\nDealer's hand: ${displayHand(dealerHand)} (${dealerValue})\n`;
 
-        log(
-            `Final hands - Player: ${displayHand(playerHand)} (Value: ${playerValue}); Dealer: ${displayHand(dealerHand)} (Value: ${dealerValue})`,
-            LOG_LEVELS.DEBUG
-        );
+        log(`Final hands - Player: ${displayHand(playerHand)} (Value: ${playerValue}); Dealer: ${displayHand(dealerHand)} (Value: ${dealerValue})`, LOG_LEVELS.DEBUG);
 
         if (winMessage) message += winMessage + "\n";
 
