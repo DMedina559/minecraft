@@ -29,6 +29,13 @@ export const QUEST_DATA = [
 //        tags: ["cop"]
     },
     {
+        description: "Eliminate 50 Hostile Mobs",
+        property: "Slay15",
+        objective: { type: "slay", entityTypes: Object.keys(MOB_REWARDS), count: 50 },
+        reward: { type: "Moneyz", amount: 1500 },
+//        tags: ["cop"]
+    },
+    {
         description: "Patrol the Area (200 Blocks)",
         property: "Patrol200",
         objective: { type: "location", minAreaCovered: 200 },

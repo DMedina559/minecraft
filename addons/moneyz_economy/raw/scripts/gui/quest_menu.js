@@ -138,17 +138,53 @@ function showQuitConfirmation(player, activeQuest, isNpcInteraction) {
         });
 }
 
-function getRandomQuests(quests, count) {
+const WORLD_SEED_PROPERTY = "dailyQuestSeed";
+const WORLD_SEED_DATE_PROPERTY = "lastQuestSeedDate";
+
+function getDailySeed() {
+    let seed = world.getDynamicProperty(WORLD_SEED_PROPERTY);
+    let seedDate = world.getDynamicProperty(WORLD_SEED_DATE_PROPERTY);
+
     const currentDate = getCurrentUTCDate();
-    const seed = currentDate.split('-').join('');
-    
-    function seededRandom(index) {
-        const hash = (parseInt(seed) + index) * 9301 + 49297;
-        return (hash % 233280) / 233280;
+
+    if (seed === undefined || seedDate === undefined || seedDate !== currentDate) {
+        seed = Math.random().toString(36).substring(2, 15);
+        world.setDynamicProperty(WORLD_SEED_PROPERTY, seed);
+        world.setDynamicProperty(WORLD_SEED_DATE_PROPERTY, currentDate);
+    }
+    return seed;
+}
+
+function getRandomQuests(quests, count) {
+    const seed = getDailySeed();
+
+    function seededRandom(input) {
+        let hash = 0;
+        const combined = seed + input;
+        for (let i = 0; i < combined.length; i++) {
+            hash = (hash << 5) - hash + combined.charCodeAt(i);
+            hash |= 0;
+        }
+        return Math.abs(hash % 233280) / 233280;
     }
 
+    function hashCode(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = (hash << 5) - hash + str.charCodeAt(i);
+            hash |= 0;
+        }
+        return hash;
+    }
+
+    const shuffledQuests = [...quests].sort((a, b) => {
+        const hashA = seededRandom(hashCode(a.property));
+        const hashB = seededRandom(hashCode(b.property));
+        return hashA - hashB;
+    });
+
     const questsByType = {};
-    quests.forEach((quest) => {
+    shuffledQuests.forEach((quest) => {
         if (!questsByType[quest.objective.type]) {
             questsByType[quest.objective.type] = [];
         }
@@ -156,16 +192,19 @@ function getRandomQuests(quests, count) {
     });
 
     const selectedQuests = [];
-    Object.keys(questsByType).forEach((type, index) => {
+    Object.keys(questsByType).forEach((type) => {
         const typeQuests = questsByType[type];
-        const randomIndex = Math.floor(seededRandom(index) * typeQuests.length);
-        selectedQuests.push(typeQuests[randomIndex]);
-    });
+        let bestQuest = null;
+        let bestRandom = -1;
 
-    selectedQuests.sort((a, b) => {
-        const hashA = seededRandom(a.description.length);
-        const hashB = seededRandom(b.description.length);
-        return hashA - hashB;
+        typeQuests.forEach(quest => {
+            const random = seededRandom(hashCode(quest.property));
+            if (random > bestRandom) {
+                bestRandom = random;
+                bestQuest = quest;
+            }
+        });
+        selectedQuests.push(bestQuest);
     });
 
     return selectedQuests.slice(0, count);
@@ -201,12 +240,15 @@ export function completeQuest(player, activeQuest) {
         const reward = activeQuest.reward;
 
         if (reward.type === "Moneyz") {
+            player.runCommandAsync(`playsound random.levelup @s ~ ~ ~`);
             updateScore(player, reward.amount, "add");
             player.sendMessage(`§aYou completed the quest and earned ${reward.amount} Moneyz!`);
         } else if (reward.type === "item") {
+            player.runCommandAsync(`playsound random.levelup @s ~ ~ ~`);
             player.runCommandAsync(`give @s ${reward.itemStack.typeId} ${reward.itemStack.amount}`);
             player.sendMessage(`§aYou completed the quest and earned ${reward.itemStack.amount} ${reward.itemStack.typeId.replace("minecraft:", "")}!`);
         } else if (reward.type === "experience") {
+            player.runCommandAsync(`playsound random.levelup @s ~ ~ ~`);
             player.runCommandAsync(`xp ${reward.amount} @s`);
             player.sendMessage(`§aYou completed the quest and earned ${reward.amount} Experience!`);
         }
