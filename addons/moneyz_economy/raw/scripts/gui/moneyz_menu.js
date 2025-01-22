@@ -196,7 +196,7 @@ const moneyzTransfer = async (player) => {
 function Credits(player) {
     new ActionFormData()
         .title('§l§1Credits')
-        .body(`\n§l§5Creator: §dZVortex11325\n§5Link: §dlinktr.ee/dmedina559\n§5Version: §d1.9.0`)
+        .body(`\n§l§5Creator: §dZVortex11325\n§5Link: §dlinktr.ee/dmedina559\n§5Version: §d1.10.1`)
         .button(`§c§lBack`)
         .show(player).then(r => {
             if (r.selection == 0) main(player)
