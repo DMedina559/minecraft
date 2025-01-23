@@ -1,8 +1,8 @@
 {
     "format_version": 2,
     "header": {
-        "description": "Transfer UI",
-        "name": "Transfer to Custom Servers in game with a custom UI. Dedicated Servers only!\nBy: ZVortex11325\nLink: https://linktr.ee/dmedina559\nVersion: 1.0.0",
+        "description": "Transfer to Custom Servers in game with a custom UI. Dedicated Servers only!\nBy: ZVortex11325\nLink: https://linktr.ee/dmedina559\nVersion: 1.0.0",
+        "name": "Transfer UI",
         "uuid": "63439426-8efe-4f66-8c21-0be8a6cac032",
         "min_engine_version": [ 1, 21, 50 ],
         "version": [1, 0, 0]
