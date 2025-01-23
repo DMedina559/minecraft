@@ -1,8 +1,8 @@
 {
     "format_version": 2,
     "header": {
-        "description": "NPC PVP",
-        "name": "Use NPCs for PvP loot!\nBy: ZVortex11325\nLink: https://linktr.ee/dmedina559\nVersion: 1.0.0",
+        "description": "Use NPCs for PvP loot!\nBy: ZVortex11325\nLink: https://linktr.ee/dmedina559\nVersion: 1.0.0",
+        "name": "PvP NPC",
         "uuid": "46fa69c9-d5e7-421f-ac12-8b3ebcaf430e",
         "min_engine_version": [ 1, 21, 50 ],
         "version": [1, 0, 0]

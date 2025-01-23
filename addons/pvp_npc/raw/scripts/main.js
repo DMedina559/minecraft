@@ -2,7 +2,7 @@ import { world, system, ItemStack, ItemTypes, EntityComponentTypes } from "@mine
 import { LOOT_POOLS } from "./loot_pools.js";
 import { log, LOG_LEVELS } from "./logger.js";
 
-const COOLDOWN_SECONDS = world.getDynamicProperty("npcCooldown") || "300";
+const COOLDOWN_SECONDS = world.getDynamicProperty("npcCooldown") || "90";
 
 world.beforeEvents.playerInteractWithEntity.subscribe((data) => {
     const player = data.player;
