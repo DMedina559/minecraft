@@ -6,7 +6,7 @@ execute as @initiator[scores={Moneyz=..4}] run tellraw @s {"rawtext": [{"text": 
 
 execute as @initiator[scores={Moneyz=5..}] run tell @s §aYou can buy 15 Netherrack!
 
-execute as @initiator[scores={Moneyz=5..}] run give @s netherrack 16
+execute as @initiator[scores={Moneyz=5..}] run give @s netherrack 15
 
 execute as @initiator[scores={Moneyz=5..}] run tell @s §aPurchased 15 Netherrack!
 
