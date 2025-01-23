@@ -1,7 +1,7 @@
 # Downloading Addons
-To download any content from this respitory click on the desired file you want and click on "Download Raw File"
+Download Moneyz Economy from the following link:
 
-If on Mobile, after clicking on the desired files tap the 3 dot menu in the top corner and press Download.
+https://mcpedl.com/moneyz-economy/
 
 # Moneyz Economy
 Moneyz Economy is a function pack for Minecraft Bedrock, that allows you to buy/sell items, apply for jobs and much more. Money Economy is also used in the world MountainSide Villages 1.4.0+

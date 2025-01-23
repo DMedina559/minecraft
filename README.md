@@ -2,6 +2,8 @@
 
 Minecraft Projects shared on Planet Minecraft and MCPEDL
 
+https://www.curseforge.com/members/zvortex11325/projects
+
 https://www.planetminecraft.com/member/zvortex11325
 
 https://mcpedl.com/user/zvortex11325/

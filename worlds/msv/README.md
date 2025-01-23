@@ -1,9 +1,9 @@
 # Downloading Worlds
-To download any content from this respitory click on the desired file you want and click on "Download Raw File"
+Download MountainSide Villages from the following link:
 
-If on Mobile, after clicking on the desired files tap the 3 dot menu in the top corner and press Download.
+https://mcpedl.com/mountainside-villages/
 
-<sub> Note: To use Moneyz in version 1.1.0 and above you need to enable the included MSV Economy behavior pack.<sub>
+<sub> Note: To use Moneyz in version 1.1.0 and above you need to enable the included Moneyz Economy behavior pack.<sub>
 
 
 # MountainSide Villages: A Vast World Awaits
