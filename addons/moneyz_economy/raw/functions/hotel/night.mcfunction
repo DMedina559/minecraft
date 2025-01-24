@@ -14,4 +14,4 @@ execute as @initiator[tag=hotelown] run tell @a[tag=hotel] §cDon't forget to ch
 
 execute as @initiator[tag=hotelown] run tell @a[tag=hoteldeluxe] §aPayed 50 Moneyz for Hotel deluxe room
 
-execute as @initiator[tag=hotelown] run tell @a[tag=hotel] §cDon't forget to check out
+execute as @initiator[tag=hotelown] run tell @a[tag=hoteldeluxe] §cDon't forget to check out
