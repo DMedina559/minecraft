@@ -42,7 +42,7 @@ sudo apt install wget
 Download the script to your desired folder
 
 ```
-wget -P /path/to/your/directory https://github.com/DMedina559/minecraft/blob/main/scripts/bedrock-server-manager.sh
+wget -P /path/to/your/directory https://raw.githubusercontent.com/DMedina559/minecraft/main/scripts/bedrock-server-manager.sh
 ```
 Its recommened to download the server to a folder just for the minecraft servers
 
