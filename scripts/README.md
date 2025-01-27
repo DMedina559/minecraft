@@ -26,7 +26,9 @@ The script ensures the installation of required dependencies:
 
 `curl, jq, unzip, systemd, screen`
 
-Users must have `sudo` permissions for `systemd` commands to work (Start/Stop/Restart server), and for required packages to be installed.
+Users must have `sudo` permissions for installing required packages. Other functions such as installs/updates, send-command, and modify properties dont require `sudo` permissions.
+
+The script assumes your installation has `sudo` installed.
 
 ### Usage
 
@@ -42,7 +44,9 @@ sudo apt install wget
 Download the script to your desired folder
 
 ```
-wget -P /path/to/your/directory https://raw.githubusercontent.com/DMedina559/minecraft/main/scripts/bedrock-server-manager.sh
+wget -P /path/to/your/directory https://raw.githubusercontent.com/DMedina559/minecraft/main/scripts/bedrock-server-manager.sh # Downloads the script to the path you choose
+
+chmod +x /path/to/your/directory/bedrock-server-manager.sh # Makes the script executable IMPORTANT
 ```
 Its recommened to download the server to a folder just for the minecraft servers
 
@@ -50,18 +54,45 @@ For example:
 
 `/home/user/minecraft-servers/`
 
-When using the script the sctipt will create a `./bedrock_server_manager` folder in its current folder. This is where servers will be installed to and where the script will look when managing various server aspects.
+The script will create a `./bedrock_server_manager` folder in its current folder. This is where servers will be installed to and where the script will look when managing various server aspects.
 
 #### Run the script:
 
-```
-bash /path/to/script/bedrock-server-manager.sh main #To open the main menu
-```
-or
+
+Open Main Menu:
 
 ```
-bash /path/to/script/bedrock-server-manager.sh help #To print supported commands
+bash /path/to/script/bedrock-server-manager.sh {command}
 ```
+
+##### Available commands:
+
+<sub>When interacting with the script, server_name is the name of the servers folder (the name you chose durring the first step of instalation)</sub>
+
+```
+  send-command   -- Send a command to a running server
+    --server <server_name>    Specify the server name
+    --command <command>       The command to send to the server (must be in quotations)
+
+  update-server  -- Update a server to a specified version
+    --server <server_name>    Specify the server name
+
+  backup-server  -- Back up the server's worlds
+    --server <server_name>    Specify the server name
+
+  start-server   -- Start the server
+    --server <server_name>    Specify the server name
+
+  stop-server    -- Stop the server
+    --server <server_name>    Specify the server name
+
+  restart-server -- Restart the server
+    --server <server_name>    Specify the server name
+
+  main           -- Open the main menu
+      
+```
+
 ### Disclaimer:
 
 This script has only been tested on the following linux distros:

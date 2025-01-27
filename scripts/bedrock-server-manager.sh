@@ -4,7 +4,7 @@
 # COPYRIGHT ZVORTEX11325 2025
 # You may download and use this content for personal, non-commercial use. Any other use, including reproduction, or redistribution is prohibited without prior written permission.
 # Author: ZVortex11325
-# Version 1.0.0
+# Version 1.0.1
 
 set -eo pipefail
 
@@ -49,7 +49,7 @@ setup_prerequisites() {
 setup_prerequisites
 
 # Default configuration
-: "${BASE_DIR:="$(dirname "${BASH_SOURCE[0]}")/bedrock_server_manager"}"
+: "${BASE_DIR:="$(realpath "$(dirname "${BASH_SOURCE[0]}")")/bedrock_server_manager"}"
 : "${PACKAGE_BACKUP_KEEP:=3}"           # Number of backups to retain
 : "${DEFAULT_PORT:=19132}"              # Default IPv4 port
 : "${DEFAULT_IPV6_PORT:=19133}"         # Default IPv6 port (required for Bedrock)
@@ -300,10 +300,15 @@ download_bedrock_server() {
         cp "$backup_dir/server.properties" "$server_dir/server.properties" 2>/dev/null
 
         # Restart the server after the update (if it was running)
-        if systemctl is-active --quiet "$server_name"; then
-        restart_server "$server_name"
+        if systemctl --user is-active --quiet "$server_name"; then
+          msg_info "Restarting user server '$server_name'..."
+          if ! systemctl --user restart "$server_name"; then
+              msg_error "Failed to restart user service '$server_name'."
+              return 1
+          fi
+          msg_ok "User server '$server_name' restarted successfully."
         else
-        msg_ok "Server '$server_name' updated successfully, but was not running, so no restart needed."
+          msg_info "User server '$server_name' is not currently running."
         fi
 
     else
@@ -313,6 +318,12 @@ download_bedrock_server() {
             return 1
         fi
     fi
+
+    real_user=$(id -u)
+    real_group=$(id -g)
+    msg_ok "Setting folder permissions to $real_user:$real_group"
+    # Change ownership of extracted files to the real user/group
+    chown -R "$real_user":"$real_group" "$server_dir"
 
     msg_ok "Installed Bedrock server version: ${actual_version%.}"
     return 0
@@ -355,7 +366,7 @@ delete_server() {
   local server_name
   read -p "Enter the name of the server to delete: " server_name
   local server_dir="$BASE_DIR/$server_name"
-  local service_file="/etc/systemd/system/$server_name.service"
+  local service_file="$HOME/.config/systemd/user/$server_name.service"
 
   # Check if the server directory exists
   if [[ ! -d $server_dir ]]; then
@@ -371,17 +382,17 @@ delete_server() {
   fi
 
   # Stop the server if it's running
-  if systemctl is-active --quiet "$server_name"; then
+  if systemctl --user is-active --quiet "$server_name"; then
     msg_info "Stopping server '$server_name' before deletion..."
-    sudo systemctl stop "$server_name"
+    systemctl --user stop "$server_name"
   fi
 
   # Remove the systemd service file
-  if [[ -f $service_file ]]; then
-    msg_info "Removing systemd service for '$server_name'"
-    sudo systemctl disable "$server_name"
-    sudo rm -f "$service_file"
-    sudo systemctl daemon-reload
+  if [[ -f "$service_file" ]]; then
+    msg_info "Removing user systemd service for '$server_name'"
+    systemctl --user disable "$server_name"
+    rm -f "$service_file"
+    systemctl --user daemon-reload
   fi
 
   # Remove the server directory
@@ -395,17 +406,10 @@ delete_server() {
 create_systemd_service() {
   local server_name="$1"
   local server_dir="$BASE_DIR/$server_name"
-  local service_file="/etc/systemd/system/$server_name.service"
+  local service_file="$HOME/.config/systemd/user/$server_name.service"
 
-  # Get the directory of the current script
-  local script_dir
-  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-  # Get current user and group dynamically
-  local user
-  local group
-  user=$(whoami)  # Get the current logged-in user
-  group=$(id -gn "$user")  # Get the group name associated with the current user
+  # Ensure the user's systemd directory exists
+  mkdir -p "$HOME/.config/systemd/user"
 
   # Check if the service file already exists
   if [[ -f "$service_file" ]]; then
@@ -415,17 +419,15 @@ create_systemd_service() {
 
   # Create the systemd service file dynamically
   msg_info "Creating systemd service for '$server_name'"
-  cat <<EOF | sudo tee "$service_file" > /dev/null
+  cat <<EOF > "$service_file"
 [Unit]
 Description=Minecraft Bedrock Server: $server_name
 After=network.target
 
 [Service]
 Type=forking
-WorkingDirectory=$(dirname "${BASH_SOURCE[0]}")
+WorkingDirectory=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
 Environment="PATH=/usr/bin:/bin:/usr/sbin:/sbin"
-User=$user
-Group=$group
 ExecStart=/bin/bash -c "truncate -s 0 ./bedrock_server_manager/$server_name/server_output.txt && /usr/bin/screen -dmS $server_name -L -Logfile ./bedrock_server_manager/$server_name/server_output.txt bash -c 'cd ./bedrock_server_manager/$server_name && ./bedrock_server'"
 ExecStop=/usr/bin/screen -S $server_name -X quit
 ExecReload=/bin/bash -c "truncate -s 0 ./bedrock_server_manager/$server_name/server_output.txt && /usr/bin/screen -S $server_name -X quit && /usr/bin/screen -dmS $server_name -L -Logfile ./bedrock_server_manager/$server_name/server_output.txt bash -c 'cd ./bedrock_server_manager/$server_name && ./bedrock_server'"
@@ -435,19 +437,24 @@ StartLimitIntervalSec=500
 StartLimitBurst=3
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
 EOF
 
   # Reload systemd to register the new service
-  msg_info "Reloading systemd daemon"
-  sudo systemctl daemon-reload
+  msg_info "Reloading user systemd daemon"
+  systemctl --user daemon-reload
 
   # Enable the service to start on boot
   msg_info "Enabling service for '$server_name'"
-  sudo systemctl enable "$server_name"
+  systemctl --user enable "$server_name"
+
+  # Run linger command
+  msg_info "Enabling lingering for user"
+  sudo loginctl enable-linger $(whoami)
 
   msg_ok "Systemd service created for '$server_name'"
 }
+
 
 # Configures common server properties interactively
 configure_server_properties() {
@@ -466,9 +473,23 @@ configure_server_properties() {
   read -p "Enter server name [Default: $SERVER_NAME]: " input_server_name
   input_server_name=${input_server_name:-$SERVER_NAME}
 
-  # Ask for level name inside the configure_server_properties function
-  read -p "Enter level name [Default: $LEVEL_NAME]: " input_level_name
-  input_level_name=${input_level_name:-$LEVEL_NAME}
+  # Ask for level name inside the configure_server_properties function (used for world folder name)
+  while true; do
+    read -p "Enter level name [Default: $LEVEL_NAME]: " input_level_name
+
+    # Check if input_level_name is empty (user pressed Enter)
+    if [[ -z "$input_level_name" ]]; then
+      input_level_name="$LEVEL_NAME"  # Use default value
+      break
+    fi
+
+    # Check if input_level_name contains only alphanumeric characters, hyphens, and underscores
+    if [[ "$input_level_name" =~ ^[[:alnum:]_-]+$ ]]; then
+      break  # Exit the loop if the name is valid
+    else
+      echo "Invalid level name. Only alphanumeric characters, hyphens, and underscores are allowed."
+    fi
+  done
 
   read -p "Enter gamemode [Default: $GAMEMODE]: " input_gamemode
   input_gamemode=${input_gamemode:-$GAMEMODE}
@@ -639,10 +660,13 @@ send_command() {
 
 # Ask to start the server after installation
 prompt_start_server() {
-  local server_name=$1
+  local server_name="$1"
   read -p "Do you want to start the server '$server_name' now? (y/N): " start_choice
   if [[ ${start_choice,,} == "y" ]]; then
-    systemctl start "$server_name"
+    if ! systemctl --user start "$server_name"; then
+        msg_error "Failed to start user service '$server_name'."
+        return 1
+    fi
     msg_ok "Server '$server_name' started."
   else
     msg_info "Server '$server_name' not started."
@@ -652,25 +676,34 @@ prompt_start_server() {
 # Restart server
 restart_server() {
   local server_name="$1"
-  msg_info "Restarting server '$server_name' using systemd..."
-  sudo systemctl restart "$server_name"
-  msg_ok "Server '$server_name' restarted."
+  msg_info "Restarting user server '$server_name' using systemd..."
+    if ! systemctl --user restart "$server_name"; then
+        msg_error "Failed to restart user service '$server_name'."
+        return 1
+    fi
+  msg_ok "User server '$server_name' restarted."
 }
 
 # Start server
 start_server() {
   local server_name="$1"
-  msg_info "Starting server '$server_name' using systemd..."
-  sudo systemctl start "$server_name"
-  msg_ok "Server '$server_name' started."
+  msg_info "Starting user server '$server_name' using systemd..."
+    if ! systemctl --user start "$server_name"; then
+        msg_error "Failed to start user service '$server_name'."
+        return 1
+    fi
+  msg_ok "User server '$server_name' started."
 }
 
 # Stop server
 stop_server() {
   local server_name="$1"
-  msg_info "Stopping server '$server_name' using systemd..."
-  sudo systemctl stop "$server_name"
-  msg_ok "Server '$server_name' stopped."
+  msg_info "Stopping user server '$server_name' using systemd..."
+    if ! systemctl --user stop "$server_name"; then
+        msg_error "Failed to stop user service '$server_name'."
+        return 1
+    fi
+  msg_ok "User server '$server_name' stopped."
 }
 
 # Attach to screen
@@ -701,7 +734,17 @@ main_menu() {
 
     case $choice in
       1) # Install a new server
-        read -p "Enter server folder name: " server_name
+        while true; do
+          read -p "Enter server folder name: " server_name
+
+          # Check if server_name contains only alphanumeric characters, hyphens, and underscores
+          if [[ "$server_name" =~ ^[[:alnum:]_-]+$ ]]; then
+            break  # Exit the loop if the name is valid
+          else
+            echo "Invalid server folder name. Only alphanumeric characters, hyphens, and underscores are allowed."
+          fi
+        done
+
         read -p "Enter server version (e.g., LATEST or PREVIEW): " version
 
         # Use default directory (./bedrock_server_manager/)
@@ -1032,7 +1075,7 @@ case "$1" in
     echo "Available commands:"
     echo "  send-command   -- Send a command to a running server"
     echo "    --server <server_name>    Specify the server name"
-    echo "    --command <command>       The command to send to the server"
+    echo "    --command <command>       The command to send to the server (must be in quotations)"
     echo
     echo "  update-server  -- Update a server to a specified version"
     echo "    --server <server_name>    Specify the server name"
@@ -1051,7 +1094,7 @@ case "$1" in
     echo
     echo "  main           -- Open the main menu"
     echo
-    echo "Version: 1.0.0"
+    echo "Version: 1.0.1"
     echo "Credits: ZVortex11325"
     exit 1
     ;;
