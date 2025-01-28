@@ -4,7 +4,7 @@
 # COPYRIGHT ZVORTEX11325 2025
 # You may download and use this content for personal, non-commercial use. Any other use, including reproduction, or redistribution is prohibited without prior written permission.
 # Author: ZVortex11325
-# Version 1.0.1
+# Version 1.0.2
 
 set -eo pipefail
 
@@ -402,6 +402,38 @@ delete_server() {
   msg_ok "Server '$server_name' deleted successfully."
 }
 
+enable_user_lingering() {
+  # Check if lingering is already enabled
+  if loginctl show-user $(whoami) -p Linger | grep -q "Linger=yes"; then
+    msg_info "Lingering is already enabled for $(whoami)"
+    return 0
+  fi
+
+  while true; do
+    read -r -p "Do you want to enable lingering for user $(whoami)? This is required for user services to start after logout. (y/N): " response
+    response="${response,,}" # Convert to lowercase
+
+    case "$response" in
+      yes|y)
+        msg_info "Attempting to enable lingering for user $(whoami)"
+        if ! sudo loginctl enable-linger $(whoami); then
+          msg_warn "Failed to enable lingering for $(whoami). User services might not start after logout. Check sudo permissions if this is a problem."
+          return 0 # Continue even if it fails
+        fi
+        msg_ok "Lingering enabled for $(whoami)"
+        return 0
+        ;;
+      no|n|"") # Empty input is treated as "no"
+        msg_info "Lingering not enabled. User services will not start after logout."
+        return 0
+        ;;
+      *)
+        msg_warn "Invalid input. Please answer 'yes' or 'no'."
+        ;; # Loop again
+    esac
+  done
+}
+
 # Make server systemd service
 create_systemd_service() {
   local server_name="$1"
@@ -428,6 +460,7 @@ After=network.target
 Type=forking
 WorkingDirectory=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
 Environment="PATH=/usr/bin:/bin:/usr/sbin:/sbin"
+ExecStartPre=/bin/bash -c "./bedrock-server-manager.sh update-server --server $server_name"
 ExecStart=/bin/bash -c "truncate -s 0 ./bedrock_server_manager/$server_name/server_output.txt && /usr/bin/screen -dmS $server_name -L -Logfile ./bedrock_server_manager/$server_name/server_output.txt bash -c 'cd ./bedrock_server_manager/$server_name && ./bedrock_server'"
 ExecStop=/usr/bin/screen -S $server_name -X quit
 ExecReload=/bin/bash -c "truncate -s 0 ./bedrock_server_manager/$server_name/server_output.txt && /usr/bin/screen -S $server_name -X quit && /usr/bin/screen -dmS $server_name -L -Logfile ./bedrock_server_manager/$server_name/server_output.txt bash -c 'cd ./bedrock_server_manager/$server_name && ./bedrock_server'"
@@ -449,8 +482,7 @@ EOF
   systemctl --user enable "$server_name"
 
   # Run linger command
-  msg_info "Enabling lingering for user"
-  sudo loginctl enable-linger $(whoami)
+  enable_user_lingering
 
   msg_ok "Systemd service created for '$server_name'"
 }
@@ -1094,7 +1126,7 @@ case "$1" in
     echo
     echo "  main           -- Open the main menu"
     echo
-    echo "Version: 1.0.1"
+    echo "Version: 1.0.2"
     echo "Credits: ZVortex11325"
     exit 1
     ;;
