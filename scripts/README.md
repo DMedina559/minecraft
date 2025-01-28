@@ -26,11 +26,9 @@ The script ensures the installation of required dependencies:
 
 `curl, jq, unzip, systemd, screen`
 
-Users must have `sudo` permissions for installing required packages. Other functions such as installs/updates, send-command, and modify properties dont require `sudo` permissions.
+Users need `sudo` permissions for installing these packages for the first time, and for enabling the optional `loginctl enable-linger` command. 
 
-The script assumes your installation has `sudo` installed.
-
-### Usage
+The script assumes your installation has `sudo` installed for these two instances.
 
 #### Install wget if its not already:
 
@@ -38,6 +36,9 @@ The script assumes your installation has `sudo` installed.
 sudo apt update
 sudo apt install wget
 ```
+
+
+### Usage
 
 #### Download the script:
 
@@ -57,9 +58,6 @@ For example:
 The script will create a `./bedrock_server_manager` folder in its current folder. This is where servers will be installed to and where the script will look when managing various server aspects.
 
 #### Run the script:
-
-
-Open Main Menu:
 
 ```
 bash /path/to/script/bedrock-server-manager.sh {command}
@@ -89,8 +87,29 @@ bash /path/to/script/bedrock-server-manager.sh {command}
   restart-server -- Restart the server
     --server <server_name>    Specify the server name
 
+  update-script -- Redownload script from github
+
   main           -- Open the main menu
       
+```
+
+###### Examples:
+
+Open Main Menu:
+
+```
+bash /path/to/script/bedrock-server-manager.sh main
+```
+
+Send Command:
+```
+bash /path/to/script/bedrock-server-manager.sh send-command --server server_name --command "tell @a hello"
+```
+
+Update Server:
+
+```
+bash /path/to/script/bedrock-server-manager.sh update-server --server server_name
 ```
 
 ### Disclaimer:

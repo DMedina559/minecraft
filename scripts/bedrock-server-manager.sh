@@ -4,7 +4,9 @@
 # COPYRIGHT ZVORTEX11325 2025
 # You may download and use this content for personal, non-commercial use. Any other use, including reproduction, or redistribution is prohibited without prior written permission.
 # Author: ZVortex11325
-# Version 1.0.2
+# Version 1.0.3
+
+SCRIPTVERSION=$(grep -m 1 "^# Version" "$0" | sed -E 's/^# Version[[:space:]]+([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
 
 set -eo pipefail
 
@@ -15,8 +17,6 @@ msg_error() { echo -e "\033[1;31m[ERROR]\033[0m $1"; }
 
 # Dependencies Check
 setup_prerequisites() {
-  msg_info "Checking and installing required packages (curl, jq, unzip, systemd, screen)..."
-
   # List of required packages
   local packages=("curl" "jq" "unzip" "systemd" "screen")
 
@@ -24,29 +24,61 @@ setup_prerequisites() {
   if command -v apt-get &>/dev/null; then
     package_manager="apt-get"
     install_command="apt-get install -y"
-  elif command -v yum &>/dev/null; then
-    package_manager="yum"
-    install_command="yum install -y"
   else
     msg_error "Unsupported package manager. Please manually install: ${packages[*]}"
     exit 1
   fi
 
-  # Install missing packages
+  # Check if any packages are missing
+  local missing_packages=()
   for pkg in "${packages[@]}"; do
     if ! command -v "$pkg" &>/dev/null; then
-      msg_info "Installing $pkg..."
-      sudo $install_command "$pkg"
-    else
-      # Suppress messages for already installed packages
-      :
+      missing_packages+=("$pkg")
     fi
   done
 
-  msg_ok "All required packages are installed"
+  # If no packages are missing, skip installation
+  if [ ${#missing_packages[@]} -eq 0 ]; then
+    #msg_info "All required packages are already installed."
+    return 0
+  fi
+
+  # Loop until the user provides a valid answer
+  while true; do
+    # Prompt user for installation
+    echo "The following packages are missing: ${missing_packages[*]}"
+    read -p "Would you like to install them? (y/n): " user_response
+
+    # Convert to lowercase and check the response
+    user_response=$(echo "$user_response" | tr '[:upper:]' '[:lower:]')
+
+    if [[ "$user_response" =~ ^(y|yes)$ ]]; then
+      msg_info "Installing missing packages: ${missing_packages[*]}..."
+      sudo $install_command "${missing_packages[@]}"
+      msg_ok "All required packages are now installed."
+      break  # Exit the loop after successful installation
+    elif [[ "$user_response" =~ ^(n|no)$ ]]; then
+      msg_error "Missing packages are required to proceed. Exiting..."
+      exit 1
+    else
+      msg_error "Invalid response. Please answer with 'y', 'yes', 'n', or 'no'."
+    fi
+  done
 }
 
 setup_prerequisites
+
+# Function to download the updated script and restart it
+update_script() {
+
+  msg_info "Redownloading script..."
+
+  local script_url="https://raw.githubusercontent.com/DMedina559/minecraft/main/scripts/bedrock-server-manager.sh"
+
+  wget -q -O "$(realpath "$(dirname "${BASH_SOURCE[0]}")")/bedrock-server-manager.sh" "$script_url"
+
+  msg_info "Done."
+}
 
 # Default configuration
 : "${BASE_DIR:="$(realpath "$(dirname "${BASH_SOURCE[0]}")")/bedrock_server_manager"}"
@@ -86,7 +118,6 @@ backup_server() {
   # Check if the worlds directory exists
   if [[ -d "$server_dir/worlds" ]]; then
     # Backup the worlds directory
-    #msg_info "Backing up worlds directory to $backup_file"
     if ! tar -czf "$backup_file" -C "$server_dir" worlds; then
       msg_error "Backup of worlds failed!"
       return 1
@@ -97,7 +128,6 @@ backup_server() {
   fi
 
   # Backup critical files (allowlist.json, permissions.json, server.properties)
-  #msg_info "Backing up server files..."
   cp "$server_dir/allowlist.json" "$backup_dir/allowlist.json" 2>/dev/null
   cp "$server_dir/permissions.json" "$backup_dir/permissions.json" 2>/dev/null
   cp "$server_dir/server.properties" "$backup_dir/server.properties" 2>/dev/null
@@ -126,6 +156,10 @@ update_server() {
   local server_dir="$BASE_DIR/$server_name"
 
   msg_info "Starting update process for server: $server_name"
+
+  if systemctl --user is-active --quiet "$server_name"; then
+    $(realpath "$(dirname "${BASH_SOURCE[0]}")")/bedrock-server-manager.sh send-command --server $server_name --command "tell @a Checking for server updates.."
+  fi
 
   # Check if the server directory exists
   if [[ ! -d "$server_dir" ]]; then
@@ -282,6 +316,26 @@ download_bedrock_server() {
     fi
     msg_info "Downloaded Bedrock server ZIP to: $zip_file"
 
+    # Check if server is running
+    if [[ "$in_update" == true ]]; then
+        msg_info "Checking if server is running"
+        if systemctl --user is-active --quiet "$server_name"; then
+          msg_info "Stopping '$server_name'..."
+          $(realpath "$(dirname "${BASH_SOURCE[0]}")")/bedrock-server-manager.sh send-command --server $server_name --command "tell @a Updating server.."
+          $(realpath "$(dirname "${BASH_SOURCE[0]}")")/bedrock-server-manager.sh send-command --server $server_name --command "tell @a Shutting down server in 10 seconds.."
+          sleep 10
+          if ! systemctl --user stop "$server_name"; then
+              msg_error "Failed to stop '$server_name'."
+              return 1
+          fi
+          msg_ok "Server '$server_name' stoped successfully."
+          local was_running
+          was_running=true
+        else
+          msg_info "Server '$server_name' is not currently running."
+        fi
+    fi
+
     # Extract files based on whether it's an update or fresh install
     if [[ "$in_update" == true ]]; then
         msg_info "Backing up server before update..."
@@ -299,16 +353,16 @@ download_bedrock_server() {
         cp "$backup_dir/permissions.json" "$server_dir/permissions.json" 2>/dev/null
         cp "$backup_dir/server.properties" "$server_dir/server.properties" 2>/dev/null
 
-        # Restart the server after the update (if it was running)
-        if systemctl --user is-active --quiet "$server_name"; then
-          msg_info "Restarting user server '$server_name'..."
-          if ! systemctl --user restart "$server_name"; then
-              msg_error "Failed to restart user service '$server_name'."
+        # Start the server after the update (if it was running)
+        if [[ "$was_running" == true ]]; then
+          msg_info "Starting server '$server_name'..."
+          if ! systemctl --user start "$server_name"; then
+              msg_error "Failed to start server: '$server_name'."
               return 1
           fi
-          msg_ok "User server '$server_name' restarted successfully."
+          msg_ok "Server '$server_name' started successfully."
         else
-          msg_info "User server '$server_name' is not currently running."
+          msg_info "Skip starting server '$server_name'."
         fi
 
     else
@@ -410,7 +464,7 @@ enable_user_lingering() {
   fi
 
   while true; do
-    read -r -p "Do you want to enable lingering for user $(whoami)? This is required for user services to start after logout. (y/N): " response
+    read -r -p "Do you want to enable lingering for user $(whoami)? This is required for servers to start after logout. (y/N): " response
     response="${response,,}" # Convert to lowercase
 
     case "$response" in
@@ -486,7 +540,6 @@ EOF
 
   msg_ok "Systemd service created for '$server_name'"
 }
-
 
 # Configures common server properties interactively
 configure_server_properties() {
@@ -592,20 +645,6 @@ modify_server_properties() {
   fi
 }
 
-# Configure permissions.json
-#configure_permissions() {
-#  local server_dir=$1
-#  msg_info "Configuring permissions.json"
-
-#  jq -n --arg ops "$OPS" --arg members "$MEMBERS" --arg visitors "$VISITORS" '[ 
-#    [$ops | split(",") | map({permission: "operator", xuid: .})],
-#    [$members | split(",") | map({permission: "member", xuid: .})],
-#    [$visitors | split(",") | map({permission: "visitor", xuid: .})]
-#  ] | flatten' > "$server_dir/permissions.json"
-#
-#  msg_ok "Configured permissions.json"
-#}
-
 # Configure allowlist.json
 configure_allowlist() {
   local server_dir=$1
@@ -696,7 +735,7 @@ prompt_start_server() {
   read -p "Do you want to start the server '$server_name' now? (y/N): " start_choice
   if [[ ${start_choice,,} == "y" ]]; then
     if ! systemctl --user start "$server_name"; then
-        msg_error "Failed to start user service '$server_name'."
+        msg_error "Failed to start server: '$server_name'."
         return 1
     fi
     msg_ok "Server '$server_name' started."
@@ -708,34 +747,42 @@ prompt_start_server() {
 # Restart server
 restart_server() {
   local server_name="$1"
-  msg_info "Restarting user server '$server_name' using systemd..."
+  msg_info "Restarting server '$server_name' using systemd..."
+    if systemctl --user is-active --quiet "$server_name"; then
+      $(realpath "$(dirname "${BASH_SOURCE[0]}")")/bedrock-server-manager.sh send-command --server $server_name --command "tell @a Restarting server in 10 seconds.."
+    fi
+    sleep 10
     if ! systemctl --user restart "$server_name"; then
-        msg_error "Failed to restart user service '$server_name'."
+        msg_error "Failed to restart server: '$server_name'."
         return 1
     fi
-  msg_ok "User server '$server_name' restarted."
+  msg_ok "Server '$server_name' restarted."
 }
 
 # Start server
 start_server() {
   local server_name="$1"
-  msg_info "Starting user server '$server_name' using systemd..."
+  msg_info "Starting server '$server_name' using systemd..."
     if ! systemctl --user start "$server_name"; then
-        msg_error "Failed to start user service '$server_name'."
+        msg_error "Failed to start server: '$server_name'."
         return 1
     fi
-  msg_ok "User server '$server_name' started."
+  msg_ok "Server '$server_name' started."
 }
 
 # Stop server
 stop_server() {
   local server_name="$1"
-  msg_info "Stopping user server '$server_name' using systemd..."
+  msg_info "Stopping server '$server_name' using systemd..."
+    if systemctl --user is-active --quiet "$server_name"; then
+      $(realpath "$(dirname "${BASH_SOURCE[0]}")")/bedrock-server-manager.sh send-command --server $server_name --command "tell @a Shutting down server in 10 seconds.."
+    fi
+    sleep 10
     if ! systemctl --user stop "$server_name"; then
-        msg_error "Failed to stop user service '$server_name'."
+        msg_error "Failed to stop server: '$server_name'."
         return 1
     fi
-  msg_ok "User server '$server_name' stopped."
+  msg_ok "Server '$server_name' stopped."
 }
 
 # Attach to screen
@@ -1100,6 +1147,12 @@ case "$1" in
     exit 0
     ;;
 
+  update-script)
+    # Update the script
+    update_script
+    exit 0
+    ;;
+
   help | *)
     # Print usage for all available commands automatically if no valid command or help argument is passed
     echo "Usage: $0 <command> [options]"
@@ -1124,9 +1177,13 @@ case "$1" in
     echo "  restart-server -- Restart the server"
     echo "    --server <server_name>    Specify the server name"
     echo
+    echo "  update-script  -- Redownload script from github"
+    echo
     echo "  main           -- Open the main menu"
     echo
-    echo "Version: 1.0.2"
+    echo "  update-script  -- Redownloads script from github"
+    echo
+    echo "Version: $SCRIPTVERSION"
     echo "Credits: ZVortex11325"
     exit 1
     ;;
