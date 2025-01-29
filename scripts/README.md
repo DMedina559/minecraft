@@ -20,6 +20,8 @@ Command-Line Tools: Send game commands, start, stop, and restart servers directl
 
 Interactive Menu: Access a user-friendly interface to manage servers without manually typing commands.
 
+Install/Update Content: Easily import .mcworld/.mcpack files into your server. (You can only update existing addons already applied to the world)
+
 ### Prerequisites
 
 The script ensures the installation of required dependencies:
@@ -55,7 +57,7 @@ For example:
 
 `/home/user/minecraft-servers/`
 
-The script will create a `./bedrock_server_manager` folder in its current folder. This is where servers will be installed to and where the script will look when managing various server aspects.
+The script will create `./bedrock_server_manager`, `./content/worlds`, and `./content/addons` folders in its current folder. This is where servers will be installed to and where the script will look when managing various server aspects.
 
 #### Run the script:
 
@@ -111,6 +113,15 @@ Update Server:
 ```
 bash /path/to/script/bedrock-server-manager.sh update-server --server server_name
 ```
+
+
+### Install Content:
+
+With the bedrock-server-manager.sh script you can easily import .mcworld and .mcpack files into your server. The script will look in `./content/worlds` and `./content/addons` respectively. 
+
+For .mcworlds the script will scan the server.properties files for the `level-name` and extract the file to that folder.
+
+For .mcpacks the script will extract them to a tmp folder and scan the manifest.json, looking for the pack type, name, version, and uuid. The script will then move the pack to it respective world folder (resource_packs, or behaviour_packs) with the name+verison used as the folder name, and the script will update the `world_resource_packs.json` and `world_resource_packs.json` as needed with the packs uuid and version. The script cannot install new addons to the server but can update existing ones (you'll just have to manually remove the old addons folder)
 
 ### Disclaimer:
 

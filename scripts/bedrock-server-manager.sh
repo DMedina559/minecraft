@@ -4,15 +4,17 @@
 # COPYRIGHT ZVORTEX11325 2025
 # You may download and use this content for personal, non-commercial use. Any other use, including reproduction, or redistribution is prohibited without prior written permission.
 # Author: ZVortex11325
-# Version 1.0.3
+# Version 1.1.0
 
 SCRIPTVERSION=$(grep -m 1 "^# Version" "$0" | sed -E 's/^# Version[[:space:]]+([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+SCRIPTDIR=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
 
 set -eo pipefail
 
 # Helper functions for colorful messages
 msg_info() { echo -e "\033[1;34m[INFO]\033[0m $1"; }
 msg_ok() { echo -e "\033[1;32m[OK]\033[0m $1"; }
+msg_warn() { echo -e "\033[1;33m[WARN]\033[0m $1"; }
 msg_error() { echo -e "\033[1;31m[ERROR]\033[0m $1"; }
 
 # Dependencies Check
@@ -25,7 +27,7 @@ setup_prerequisites() {
     package_manager="apt-get"
     install_command="apt-get install -y"
   else
-    msg_error "Unsupported package manager. Please manually install: ${packages[*]}"
+    msg_error "Unsupported package manager. Are you running a debian based systrem?"
     exit 1
   fi
 
@@ -61,7 +63,7 @@ setup_prerequisites() {
       msg_error "Missing packages are required to proceed. Exiting..."
       exit 1
     else
-      msg_error "Invalid response. Please answer with 'y', 'yes', 'n', or 'no'."
+      msg_warn "Invalid response. Please answer with 'y', 'yes', 'n', or 'no'."
     fi
   done
 }
@@ -75,13 +77,13 @@ update_script() {
 
   local script_url="https://raw.githubusercontent.com/DMedina559/minecraft/main/scripts/bedrock-server-manager.sh"
 
-  wget -q -O "$(realpath "$(dirname "${BASH_SOURCE[0]}")")/bedrock-server-manager.sh" "$script_url"
+  wget -q -O "$SCRIPTDIR/bedrock-server-manager.sh" "$script_url"
 
-  msg_info "Done."
+  msg_ok "Done."
 }
 
 # Default configuration
-: "${BASE_DIR:="$(realpath "$(dirname "${BASH_SOURCE[0]}")")/bedrock_server_manager"}"
+: "${BASE_DIR:="$SCRIPTDIR/bedrock_server_manager"}"
 : "${PACKAGE_BACKUP_KEEP:=3}"           # Number of backups to retain
 : "${DEFAULT_PORT:=19132}"              # Default IPv4 port
 : "${DEFAULT_IPV6_PORT:=19133}"         # Default IPv6 port (required for Bedrock)
@@ -98,6 +100,11 @@ update_script() {
 : "${RENDER_DISTANCE:=12}"              # Default render distance
 : "${TICK_DISTANCE:=4}"                 # Default render distance
 
+# Make folders if they don't exist
+mkdir -p $BASE_DIR
+mkdir -p $SCRIPTDIR/content/worlds
+mkdir -p $SCRIPTDIR/content/addons
+
 # Back up a server's worlds and critical configuration files
 backup_server() {
   local server_dir="$1"
@@ -109,6 +116,17 @@ backup_server() {
   # Generate timestamp and define backup file for worlds
   timestamp=$(date +"%Y%m%d_%H%M%S")
   backup_file="$backup_dir/worlds_backup_$timestamp.tar.gz"
+
+  # Stop the server if it's running
+  if systemctl --user is-active --quiet "$server_name"; then
+    msg_info "Stopping '$server_name' for backup..."
+    $SCRIPTDIR/bedrock-server-manager.sh send-command --server "$server_name" --command "tell @a Running server backup.."
+    stop_server $server_name
+    msg_ok "Server '$server_name' stopped successfully."
+    local was_running=true
+  else
+    msg_info "Server '$server_name' is not currently running."
+  fi
 
   msg_info "Running backup"
 
@@ -132,6 +150,15 @@ backup_server() {
   cp "$server_dir/permissions.json" "$backup_dir/permissions.json" 2>/dev/null
   cp "$server_dir/server.properties" "$backup_dir/server.properties" 2>/dev/null
   msg_ok "Critical files backed up to $backup_dir"
+
+  # Start the server after the world is installed (if it was running)
+  if [[ "$was_running" == true ]]; then
+    msg_info "Starting server '$server_name'..."
+    start_server $server_name
+    msg_ok "Server '$server_name' started successfully."
+  else
+    msg_info "Skipping server start."
+  fi
 
   # Prune old backups (keeping a defined number of backups)
   msg_info "Pruning old backups..."
@@ -158,12 +185,12 @@ update_server() {
   msg_info "Starting update process for server: $server_name"
 
   if systemctl --user is-active --quiet "$server_name"; then
-    $(realpath "$(dirname "${BASH_SOURCE[0]}")")/bedrock-server-manager.sh send-command --server $server_name --command "tell @a Checking for server updates.."
+    $SCRIPTDIR/bedrock-server-manager.sh send-command --server $server_name --command "tell @a Checking for server updates.."
   fi
 
   # Check if the server directory exists
-  if [[ ! -d "$server_dir" ]]; then
-    msg_error "Server '$server_name' does not exist in $BASE_DIR."
+  if [[ ! -f "$server_dir/bedrock_server" ]]; then
+    msg_error "bedrock_server not found in $server_dir."
     return 1
   fi
 
@@ -321,14 +348,8 @@ download_bedrock_server() {
         msg_info "Checking if server is running"
         if systemctl --user is-active --quiet "$server_name"; then
           msg_info "Stopping '$server_name'..."
-          $(realpath "$(dirname "${BASH_SOURCE[0]}")")/bedrock-server-manager.sh send-command --server $server_name --command "tell @a Updating server.."
-          $(realpath "$(dirname "${BASH_SOURCE[0]}")")/bedrock-server-manager.sh send-command --server $server_name --command "tell @a Shutting down server in 10 seconds.."
-          sleep 10
-          if ! systemctl --user stop "$server_name"; then
-              msg_error "Failed to stop '$server_name'."
-              return 1
-          fi
-          msg_ok "Server '$server_name' stoped successfully."
+          $SCRIPTDIR/bedrock-server-manager.sh send-command --server $server_name --command "tell @a Updating server..."
+          stop_server $server_name
           local was_running
           was_running=true
         else
@@ -356,10 +377,7 @@ download_bedrock_server() {
         # Start the server after the update (if it was running)
         if [[ "$was_running" == true ]]; then
           msg_info "Starting server '$server_name'..."
-          if ! systemctl --user start "$server_name"; then
-              msg_error "Failed to start server: '$server_name'."
-              return 1
-          fi
+          start_server $server_name
           msg_ok "Server '$server_name' started successfully."
         else
           msg_info "Skip starting server '$server_name'."
@@ -375,7 +393,7 @@ download_bedrock_server() {
 
     real_user=$(id -u)
     real_group=$(id -g)
-    msg_ok "Setting folder permissions to $real_user:$real_group"
+    msg_info "Setting folder permissions to $real_user:$real_group"
     # Change ownership of extracted files to the real user/group
     chown -R "$real_user":"$real_group" "$server_dir"
 
@@ -423,34 +441,34 @@ delete_server() {
   local service_file="$HOME/.config/systemd/user/$server_name.service"
 
   # Check if the server directory exists
-  if [[ ! -d $server_dir ]]; then
-    msg_error "Server '$server_name' does not exist at $server_dir"
+  if [[ ! -f "$server_dir/bedrock_server" ]]; then
+    msg_error "bedrock_server not found in $server_dir."
     return 1
   fi
 
   # Confirm deletion
   read -p "Are you sure you want to delete the server '$server_name'? This action is irreversible! (y/N): " confirm
-  if [[ ${confirm,,} != "y" ]]; then
+  if [[ ! "${confirm,,}" =~ ^(y|yes)$ ]]; then
     msg_info "Server deletion canceled."
     return 0
   fi
 
   # Stop the server if it's running
   if systemctl --user is-active --quiet "$server_name"; then
-    msg_info "Stopping server '$server_name' before deletion..."
-    systemctl --user stop "$server_name"
+    msg_warn "Stopping server '$server_name' before deletion..."
+    stop_server $server_name
   fi
 
   # Remove the systemd service file
   if [[ -f "$service_file" ]]; then
-    msg_info "Removing user systemd service for '$server_name'"
+    msg_warn "Removing user systemd service for '$server_name'"
     systemctl --user disable "$server_name"
     rm -f "$service_file"
     systemctl --user daemon-reload
   fi
 
   # Remove the server directory
-  msg_info "Deleting server directory: $server_dir"
+  msg_warn "Deleting server directory: $server_dir"
   rm -rf "$server_dir" || { msg_error "Failed to delete server directory."; return 1; }
 
   msg_ok "Server '$server_name' deleted successfully."
@@ -512,7 +530,7 @@ After=network.target
 
 [Service]
 Type=forking
-WorkingDirectory=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
+WorkingDirectory=$SCRIPTDIR
 Environment="PATH=/usr/bin:/bin:/usr/sbin:/sbin"
 ExecStartPre=/bin/bash -c "./bedrock-server-manager.sh update-server --server $server_name"
 ExecStart=/bin/bash -c "truncate -s 0 ./bedrock_server_manager/$server_name/server_output.txt && /usr/bin/screen -dmS $server_name -L -Logfile ./bedrock_server_manager/$server_name/server_output.txt bash -c 'cd ./bedrock_server_manager/$server_name && ./bedrock_server'"
@@ -554,60 +572,74 @@ configure_server_properties() {
     return 1
   fi
 
-  # Prompt user for server properties
-  read -p "Enter server name [Default: $SERVER_NAME]: " input_server_name
-  input_server_name=${input_server_name:-$SERVER_NAME}
+  # Read existing properties from the server.properties file
+  local current_server_name
+  local current_level_name
+  local current_gamemode
+  local current_difficulty
+  local current_allow_cheats
+  local current_port
+  local current_port_v6
+  local current_lan_visibility
+  local current_allow_list
+  local current_max_players
+  local current_permission_level
+  local current_render_distance
+  local current_tick_distance
 
-  # Ask for level name inside the configure_server_properties function (used for world folder name)
-  while true; do
-    read -p "Enter level name [Default: $LEVEL_NAME]: " input_level_name
+  current_server_name=$(grep "^server-name=" "$server_properties" | cut -d'=' -f2)
+  current_level_name=$(grep "^level-name=" "$server_properties" | cut -d'=' -f2)
+  current_gamemode=$(grep "^gamemode=" "$server_properties" | cut -d'=' -f2)
+  current_difficulty=$(grep "^difficulty=" "$server_properties" | cut -d'=' -f2)
+  current_allow_cheats=$(grep "^allow-cheats=" "$server_properties" | cut -d'=' -f2)
+  current_port=$(grep "^server-port=" "$server_properties" | cut -d'=' -f2)
+  current_port_v6=$(grep "^server-portv6=" "$server_properties" | cut -d'=' -f2)
+  current_lan_visibility=$(grep "^enable-lan-visibility=" "$server_properties" | cut -d'=' -f2)
+  current_allow_list=$(grep "^allow-list=" "$server_properties" | cut -d'=' -f2)
+  current_max_players=$(grep "^max-players=" "$server_properties" | cut -d'=' -f2)
+  current_permission_level=$(grep "^default-player-permission-level=" "$server_properties" | cut -d'=' -f2)
+  current_render_distance=$(grep "^view-distance=" "$server_properties" | cut -d'=' -f2)
+  current_tick_distance=$(grep "^tick-distance=" "$server_properties" | cut -d'=' -f2)
 
-    # Check if input_level_name is empty (user pressed Enter)
-    if [[ -z "$input_level_name" ]]; then
-      input_level_name="$LEVEL_NAME"  # Use default value
-      break
-    fi
+  # Prompt user for server properties with current values as defaults
+  read -p "Enter server name [Default: ${current_server_name:-$SERVER_NAME}]: " input_server_name
+  input_server_name=${input_server_name:-${current_server_name:-$SERVER_NAME}}
 
-    # Check if input_level_name contains only alphanumeric characters, hyphens, and underscores
-    if [[ "$input_level_name" =~ ^[[:alnum:]_-]+$ ]]; then
-      break  # Exit the loop if the name is valid
-    else
-      echo "Invalid level name. Only alphanumeric characters, hyphens, and underscores are allowed."
-    fi
-  done
+  read -p "Enter level name [Default: ${current_level_name:-$LEVEL_NAME}]: " input_level_name
+  input_level_name=${input_level_name:-${current_level_name:-$LEVEL_NAME}}
 
-  read -p "Enter gamemode [Default: $GAMEMODE]: " input_gamemode
-  input_gamemode=${input_gamemode:-$GAMEMODE}
+  read -p "Enter gamemode [Default: ${current_gamemode:-$GAMEMODE}]: " input_gamemode
+  input_gamemode=${input_gamemode:-${current_gamemode:-$GAMEMODE}}
 
-  read -p "Enter difficulty [Default: $DIFFICULTY]: " input_difficulty
-  input_difficulty=${input_difficulty:-$DIFFICULTY}
+  read -p "Enter difficulty [Default: ${current_difficulty:-$DIFFICULTY}]: " input_difficulty
+  input_difficulty=${input_difficulty:-${current_difficulty:-$DIFFICULTY}}
 
-  read -p "Allow cheats [Default: $ALLOW_CHEATS]: " input_allow_cheats
-  input_allow_cheats=${input_allow_cheats:-$ALLOW_CHEATS}
+  read -p "Allow cheats [Default: ${current_allow_cheats:-$ALLOW_CHEATS}]: " input_allow_cheats
+  input_allow_cheats=${input_allow_cheats:-${current_allow_cheats:-$ALLOW_CHEATS}}
 
-  read -p "Enter IPV4 Port [Default: $DEFAULT_PORT]: " input_port
-  input_port=${input_port:-$DEFAULT_PORT}
+  read -p "Enter IPV4 Port [Default: ${current_port:-$DEFAULT_PORT}]: " input_port
+  input_port=${input_port:-${current_port:-$DEFAULT_PORT}}
 
-  read -p "Enter IPV6 Port [Default: $DEFAULT_IPV6_PORT]: " input_port_v6
-  input_port_v6=${input_port_v6:-$DEFAULT_IPV6_PORT}
+  read -p "Enter IPV6 Port [Default: ${current_port_v6:-$DEFAULT_IPV6_PORT}]: " input_port_v6
+  input_port_v6=${input_port_v6:-${current_port_v6:-$DEFAULT_IPV6_PORT}}
 
-  read -p "Enable LAN Visibility [Default: $LAN_VISIBILITY]: " input_lan_visibility
-  input_lan_visibility=${input_lan_visibility:-$LAN_VISIBILITY}
+  read -p "Enable LAN Visibility [Default: ${current_lan_visibility:-$LAN_VISIBILITY}]: " input_lan_visibility
+  input_lan_visibility=${input_lan_visibility:-${current_lan_visibility:-$LAN_VISIBILITY}}
 
-  read -p "Enable allow list [Default: $ALLOW_LIST]: " input_allow_list
-  input_allow_list=${input_max_players:-$ALLOW_LIST}
+  read -p "Enable allow list [Default: ${current_allow_list:-$ALLOW_LIST}]: " input_allow_list
+  input_allow_list=${input_allow_list:-${current_allow_list:-$ALLOW_LIST}}
 
-  read -p "Enter max players [Default: $MAX_PLAYERS]: " input_max_players
-  input_max_players=${input_max_players:-$MAX_PLAYERS}
+  read -p "Enter max players [Default: ${current_max_players:-$MAX_PLAYERS}]: " input_max_players
+  input_max_players=${input_max_players:-${current_max_players:-$MAX_PLAYERS}}
 
-  read -p "Default permission level [Default: $PERMISSION_LEVEL]: " input_permission_level
-  input_permission_level=${input_permission_level:-$PERMISSION_LEVEL}
+  read -p "Default permission level [Default: ${current_permission_level:-$PERMISSION_LEVEL}]: " input_permission_level
+  input_permission_level=${input_permission_level:-${current_permission_level:-$PERMISSION_LEVEL}}
 
-  read -p "Default render distance [Default: $RENDER_DISTANCE]: " input_render_distance
-  input_render_distance=${input_render_distance:-$RENDER_DISTANCE}
+  read -p "Default render distance [Default: ${current_render_distance:-$RENDER_DISTANCE}]: " input_render_distance
+  input_render_distance=${input_render_distance:-${current_render_distance:-$RENDER_DISTANCE}}
 
-  read -p "Default tick distance [Default: $TICK_DISTANCE]: " input_tick_distance
-  input_tick_distance=${input_tick_distance:-$TICK_DISTANCE}
+  read -p "Default tick distance [Default: ${current_tick_distance:-$TICK_DISTANCE}]: " input_tick_distance
+  input_tick_distance=${input_tick_distance:-${current_tick_distance:-$TICK_DISTANCE}}
 
   # Update or add the properties in server.properties
   modify_server_properties "$server_properties" "server-name" "$input_server_name"
@@ -618,7 +650,7 @@ configure_server_properties() {
   modify_server_properties "$server_properties" "server-port" "$input_port"
   modify_server_properties "$server_properties" "server-portv6" "$input_port_v6"
   modify_server_properties "$server_properties" "enable-lan-visibility" "$input_lan_visibility"
-  modify_server_properties "$server_properties" "allow-list" "$ALLOW_LIST"
+  modify_server_properties "$server_properties" "allow-list" "$input_allow_list"
   modify_server_properties "$server_properties" "max-players" "$input_max_players"
   modify_server_properties "$server_properties" "default-player-permission-level" "$input_permission_level"
   modify_server_properties "$server_properties" "view-distance" "$input_render_distance"
@@ -637,11 +669,11 @@ modify_server_properties() {
   if grep -q "^$property_name=" "$server_properties"; then
     # If it exists, update the value
     sed -i "s/^$property_name=.*/$property_name=$property_value/" "$server_properties"
-    msg_info "Updated $property_name to $property_value"
+    msg_ok "Updated $property_name to $property_value"
   else
     # If it doesn't exist, append the property to the end of the file
     echo "$property_name=$property_value" >> "$server_properties"
-    msg_info "Added $property_name with value $property_value"
+    msg_ok "Added $property_name with value $property_value"
   fi
 }
 
@@ -657,7 +689,7 @@ configure_allowlist() {
   # Load existing players from allowlist.json if the file exists and is not empty
   if [[ -f "$allowlist_file" && -s "$allowlist_file" ]]; then
     existing_players=$(jq -r '.[] | .name' "$allowlist_file")
-    msg_info "Loaded existing players from allowlist.json."
+    msg_ok "Loaded existing players from allowlist.json."
   else
     msg_info "No existing allowlist.json found. A new one will be created."
   fi
@@ -680,11 +712,14 @@ configure_allowlist() {
 
     # Ask if the player should ignore the player limit
     read -p "Should this player ignore the player limit? (y/N): " ignore_limit
+
+    ignore_limit="${ignore_limit,,}"
+
     case "$ignore_limit" in
-      yes|y|Y)
+      yes|y)
         new_players+=("{\"ignoresPlayerLimit\":true,\"name\":\"$player_name\"}")
         ;;
-      no|n|N)
+      no|n)
         new_players+=("{\"ignoresPlayerLimit\":false,\"name\":\"$player_name\"}")
         ;;
       *)
@@ -724,64 +759,74 @@ send_command() {
     screen -S "$server_name" -X stuff "$command^M"  # ^M simulates Enter key
     msg_ok "Command '$command' sent to server '$server_name'."
   else
-    msg_error "Server '$server_name' is not running in a screen session."
-    return 1
-  fi
-}
-
-# Ask to start the server after installation
-prompt_start_server() {
-  local server_name="$1"
-  read -p "Do you want to start the server '$server_name' now? (y/N): " start_choice
-  if [[ ${start_choice,,} == "y" ]]; then
-    if ! systemctl --user start "$server_name"; then
-        msg_error "Failed to start server: '$server_name'."
-        return 1
-    fi
-    msg_ok "Server '$server_name' started."
-  else
-    msg_info "Server '$server_name' not started."
+    msg_warn "Server '$server_name' is not running in a screen session."
   fi
 }
 
 # Restart server
 restart_server() {
   local server_name="$1"
+
+  if ! systemctl --user is-active --quiet "$server_name"; then
+    msg_warn "Server '$server_name' is not running. Starting it instead."
+    start_server "$server_name"
+    return $?
+  fi
+
   msg_info "Restarting server '$server_name' using systemd..."
-    if systemctl --user is-active --quiet "$server_name"; then
-      $(realpath "$(dirname "${BASH_SOURCE[0]}")")/bedrock-server-manager.sh send-command --server $server_name --command "tell @a Restarting server in 10 seconds.."
-    fi
-    sleep 10
-    if ! systemctl --user restart "$server_name"; then
-        msg_error "Failed to restart server: '$server_name'."
-        return 1
-    fi
+  
+  # Send restart warning if the server is running
+  $SCRIPTDIR/bedrock-server-manager.sh send-command --server "$server_name" --command "tell @a Restarting server in 10 seconds.."
+  
+  sleep 10
+
+  if ! systemctl --user restart "$server_name"; then
+    msg_error "Failed to restart server: '$server_name'."
+    return 1
+  fi
+
   msg_ok "Server '$server_name' restarted."
 }
 
 # Start server
 start_server() {
   local server_name="$1"
+  
+  if systemctl --user is-active --quiet "$server_name"; then
+    msg_warn "Server '$server_name' is already running."
+    return 0
+  fi
+
   msg_info "Starting server '$server_name' using systemd..."
-    if ! systemctl --user start "$server_name"; then
-        msg_error "Failed to start server: '$server_name'."
-        return 1
-    fi
+  if ! systemctl --user start "$server_name"; then
+    msg_error "Failed to start server: '$server_name'."
+    return 1
+  fi
+
   msg_ok "Server '$server_name' started."
 }
 
 # Stop server
 stop_server() {
   local server_name="$1"
+
+  if ! systemctl --user is-active --quiet "$server_name"; then
+    msg_warn "Server '$server_name' is not running."
+    return 0
+  fi
+
   msg_info "Stopping server '$server_name' using systemd..."
-    if systemctl --user is-active --quiet "$server_name"; then
-      $(realpath "$(dirname "${BASH_SOURCE[0]}")")/bedrock-server-manager.sh send-command --server $server_name --command "tell @a Shutting down server in 10 seconds.."
-    fi
-    sleep 10
-    if ! systemctl --user stop "$server_name"; then
-        msg_error "Failed to stop server: '$server_name'."
-        return 1
-    fi
+  
+  # Send shutdown warning if the server is running
+  $SCRIPTDIR/bedrock-server-manager.sh send-command --server "$server_name" --command "tell @a Shutting down server in 10 seconds.."
+  
+  sleep 10
+
+  if ! systemctl --user stop "$server_name"; then
+    msg_error "Failed to stop server: '$server_name'."
+    return 1
+  fi
+
   msg_ok "Server '$server_name' stopped."
 }
 
@@ -794,9 +839,308 @@ attach_console() {
     msg_info "Attaching to server '$server_name' console..."
     screen -r "$server_name"
   else
-    msg_error "Server '$server_name' is not running in a screen session."
+    msg_warn "Server '$server_name' is not running in a screen session."
+  fi
+}
+
+# Install world to server
+extract_worlds() {
+  local server_name="$1"
+  
+  # Path to the content/worlds folder and the server directory
+  local content_dir="$SCRIPTDIR/content/worlds"
+  local server_dir="$SCRIPTDIR/bedrock_server_manager/$server_name"
+  local server_properties="$server_dir/server.properties"
+
+  # Check if server.properties exists
+  if [[ ! -f "$server_properties" ]]; then
+    msg_error "server.properties not found in $server_dir"
     return 1
   fi
+  
+  # Get the world name from the server.properties file
+  local world_name
+  world_name=$(grep "^level-name=" "$server_properties" | sed -E 's/^level-name=([a-zA-Z0-9_ -]+)$/\1/')
+
+  # If we couldn't find the world name, return an error
+  if [[ -z "$world_name" ]]; then
+    msg_error "Could not find level-name in server.properties"
+    return 1
+  fi
+
+  msg_info "World name from server.properties: $world_name"
+  
+  # Directory to extract worlds
+  local extract_dir="$server_dir/worlds/$world_name"
+  mkdir -p "$extract_dir"
+  
+  # Get a list of all .mcworld files (which are actually .zip files)
+  local mcworld_files=("$content_dir"/*.mcworld)
+  
+  # If no .mcworld files found, return an error
+  if [[ ${#mcworld_files[@]} -eq 0 ]]; then
+    msg_warn "No .mcworld files found in $content_dir"
+    return 0
+  fi
+
+  # Create an array with just the base file names (without full paths)
+  local file_names=()
+  for file in "${mcworld_files[@]}"; do
+    file_names+=("$(basename "$file")")
+  done
+
+  # Set custom prompt for select
+  PS3="Select a world to install (1-${#file_names[@]}): "
+
+  # Loop until the user selects a valid file
+  while true; do
+    # Show a menu of available .mcworld files to install (display only file names)
+    echo "Available worlds to install:"
+    select mcworld_file in "${file_names[@]}"; do
+      if [[ -z "$mcworld_file" ]]; then
+        msg_warn "Invalid selection. Please choose a valid option."
+        break
+      fi
+
+      # Notify players that the current world will be deleted
+      msg_warn "Installing a new world will DELETE the existing world!"
+      while true; do
+        read -p "Are you sure you want to proceed? (YES/no): " confirm_choice
+        case "${confirm_choice,,}" in
+          yes|y) break ;;   # Proceed with world installation
+          no|n) 
+            msg_warn "World installation canceled."
+            return 0 ;;   # Exit function without installing
+          *) msg_warn "Invalid input. Please type 'YES' to proceed or 'NO' to cancel." ;;
+        esac
+      done
+
+      # Stop the server if it's running
+      if systemctl --user is-active --quiet "$server_name"; then
+        msg_info "Stopping '$server_name'..."
+        stop_server $server_name
+        msg_ok "Server '$server_name' stopped successfully."
+        local was_running=true
+      else
+        msg_info "Server '$server_name' is not currently running."
+      fi
+
+      # Find the full path of the selected file
+      local selected_file="${mcworld_files[${REPLY}-1]}"
+
+      msg_info "Installing world from $mcworld_file..."
+
+      # Remove existing world folder content
+      msg_warn "Removing existing world folder..."
+      rm -rf "$extract_dir"/*
+
+      # Extract the new world
+      msg_info "Extracting new world..."
+      unzip -o "$selected_file" -d "$extract_dir" &>/dev/null
+      msg_ok "World installed at: $extract_dir"
+
+      # Start the server after the world is installed (if it was running)
+      if [[ "$was_running" == true ]]; then
+        msg_info "Starting server '$server_name'..."
+        start_server $server_name
+        msg_ok "Server '$server_name' started successfully."
+      else
+        msg_info "Skipping server start."
+      fi
+      
+      # Exit the loop after successful installation
+      return 0
+    done
+  done
+}
+
+# Install addon to server
+install_addons() {
+  local server_name="$1"
+  
+  # Directories
+  local addon_dir="$SCRIPTDIR/content/addons"
+  local server_dir="$SCRIPTDIR/bedrock_server_manager/$server_name"
+  local server_properties="$server_dir/server.properties"
+
+  # Check if server.properties exists
+  if [[ ! -f "$server_properties" ]]; then
+    msg_warn "server.properties not found in $server_dir"
+    return 1
+  fi
+  
+  # Get the world name from the server.properties file
+  local world_name
+  world_name=$(grep "^level-name=" "$server_properties" | sed -E 's/^level-name=([a-zA-Z0-9_ -]+)$/\1/')
+
+  # If we couldn't find the world name, return an error
+  if [[ -z "$world_name" ]]; then
+    msg_error "Could not find level-name in server.properties"
+    return 1
+  fi
+
+  msg_info "World name from server.properties: $world_name"
+
+  local behavior_dir="$server_dir/worlds/$world_name/behavior_packs"
+  local resource_dir="$server_dir/worlds/$world_name/resource_packs"
+  local behavior_json="$server_dir/worlds/$world_name/world_behavior_packs.json"
+  local resource_json="$server_dir/worlds/$world_name/world_resource_packs.json"
+  local world_folder="$server_dir/worlds/$world_name"
+
+  # Create directories if they don't exist
+  mkdir -p "$behavior_dir" "$resource_dir"
+
+  ## Collect .mcaddon and .mcpack files using globbing
+  local addon_files=()
+  #addon_files+=("$addon_dir"/*.mcaddon)
+  addon_files+=("$addon_dir"/*.mcpack)
+
+  # If no addons found, return an error
+  if [[ ${#addon_files[@]} -eq 0 ]]; then
+    msg_warn "No .mcaddon or .mcpack files found in $addon_dir"
+    return 0
+  fi
+
+  # Show selection menu
+  PS3="Select an addon to install (1-${#addon_files[@]}): "
+  while true; do
+    echo "Available addons to install:"
+    select addon_file in "${addon_files[@]}"; do
+      if [[ -z "$addon_file" ]]; then
+        msg_error "Invalid selection. Please choose a valid option."
+        break
+      fi
+
+      msg_info "Processing addon: $(basename "$addon_file")"
+      
+      # Extract addon name (strip file extension)
+      local addon_name
+      addon_name=$(basename "$addon_file" | sed -E 's/\.(mcaddon|mcpack)$//')
+
+      # If it's a .mcaddon, extract it
+      if [[ "$addon_file" == *.mcaddon ]]; then
+        local temp_dir
+        temp_dir=$(mktemp -d)
+
+        msg_info "Extracting $(basename "$addon_file")..."
+
+        # Unzip the .mcaddon file to a temporary directory
+        unzip -o "$addon_file" -d "$temp_dir" &>/dev/null
+
+        # Handle contents of the .mcaddon file
+        # Check for the existence of .mcpack or .mcworld files inside the .mcaddon
+        for world_file in "$temp_dir"/*.mcworld; do
+          if [[ -f "$world_file" ]]; then
+            msg_info "Processing .mcworld file: $world_file"
+            extract_worlds "$server_name" "$world_file"
+          fi
+        done
+
+        # Handle .mcpack files (behavior or resource packs)
+        for pack_file in "$temp_dir"/*.mcpack; do
+          if [[ -f "$pack_file" ]]; then
+            msg_info "Processing .mcpack file: $pack_file"
+            # Extract pack name and version from the .mcpack (manifest.json inside)
+            pack_name=$(basename "$pack_file" | sed -E "s/\.(mcpack)$//")
+            pack_version=$(unzip -p "$pack_file" "manifest.json" | jq -r ".header.version | join(\".\")")
+            formatted_pack_name=$(echo "$pack_name" | tr "[:upper:]" "[:lower:]" | tr " " "_")
+            
+            # Ensure the correct behavior and resource directories are created relative to world directory
+            addon_behavior_dir="$behavior_dir/$formatted_pack_name"_"$pack_version"
+            addon_resource_dir="$resource_dir/$formatted_pack_name"_"$pack_version"
+            mkdir -p "$addon_behavior_dir" "$addon_resource_dir"
+
+            # Copy the files from .mcpack
+            unzip -o "$pack_file" -d "$temp_dir"
+            cp -r "$temp_dir"/* "$addon_behavior_dir"
+            update_pack_json "$behavior_json" "$(jq -r '.header.uuid' "$pack_file")" "$pack_version"
+          fi
+        done
+
+        rm -rf "$temp_dir"
+        msg_ok "$(basename "$addon_file") extracted and installed."
+
+      # If it's a .mcpack, process the manifest
+      elif [[ "$addon_file" == *.mcpack ]]; then
+        local temp_dir
+        temp_dir=$(mktemp -d)
+        msg_info "Extracting $(basename "$addon_file")..."
+        unzip -o "$addon_file" -d "$temp_dir" &>/dev/null
+        
+        # Parse the manifest.json
+        if [[ -f "$temp_dir/manifest.json" ]]; then
+          local pack_type
+          pack_type=$(jq -r '.modules[0].type' "$temp_dir/manifest.json")
+          local uuid
+          uuid=$(jq -r '.header.uuid' "$temp_dir/manifest.json")
+          local version
+          version=$(jq -r '.header.version | join(".")' "$temp_dir/manifest.json")
+          local addon_name_from_manifest
+          addon_name_from_manifest=$(jq -r '.header.name' "$temp_dir/manifest.json")
+          local formatted_addon_name
+          formatted_addon_name=$(echo "$addon_name_from_manifest" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
+
+          # Combine addon name and version to create folder name
+          local addon_behavior_dir="$behavior_dir/$formatted_addon_name"_"$version"
+          local addon_resource_dir="$resource_dir/$formatted_addon_name"_"$version"
+          mkdir -p "$addon_behavior_dir" "$addon_resource_dir"
+          
+          # Handle copying files
+          if [[ "$pack_type" == "data" ]]; then
+            msg_info "Installing behavior pack to $addon_behavior_dir"
+            cp -r "$temp_dir"/* "$addon_behavior_dir"
+            update_pack_json "$behavior_json" "$uuid" "$version" "$addon_name_from_manifest"
+          elif [[ "$pack_type" == "resources" ]]; then
+            msg_info "Installing resource pack to $addon_resource_dir"
+            cp -r "$temp_dir"/* "$addon_resource_dir"
+            update_pack_json "$resource_json" "$uuid" "$version" "$addon_name_from_manifest"
+          else
+            msg_error "Unknown pack type: $pack_type"
+          fi
+        else
+          msg_error "manifest.json not found in $(basename "$addon_file")"
+        fi
+
+        rm -rf "$temp_dir"
+      fi
+
+      return 0
+    done
+  done
+}
+
+# Helper function to update pack JSON files
+update_pack_json() {
+  local json_file="$1"
+  local uuid="$2"
+  local version="$3"
+
+  msg_info "Updating $json_file with UUID: $uuid and Version: $version"
+
+  # If the JSON file doesn't exist, create it
+  [[ ! -f "$json_file" ]] && echo "[]" > "$json_file"
+
+  # Read existing JSON and check for duplicates
+  local updated_json
+  updated_json=$(jq --arg uuid "$uuid" --arg version "$version" '
+    . as $packs
+    | if any(.uuid == $uuid) then
+        map(if .uuid == $uuid then
+          if .version | split(".") | map(tonumber) < ($version | split(".") | map(tonumber)) then
+            {uuid: $uuid, version: $version}
+          else
+            . 
+          end
+        else
+          . 
+        end)
+      else
+        . + [{uuid: $uuid, version: $version}]
+      end' "$json_file")
+
+  # Write updated JSON back to the file
+  echo "$updated_json" > "$json_file"
+  msg_ok "Updated $json_file with UUID $uuid and version $version."
 }
 
 # Main menu
@@ -805,10 +1149,11 @@ main_menu() {
     echo
     echo -e "\033[1;34mBedrock Server Manager\033[0m"
     echo "1) Install a new server"
-    echo "2) Manage an existing server"
-    echo "3) Send command to a server"
-    echo "4) Attach to server console"
-    echo "5) Exit"
+    echo "2) Install content"
+    echo "3) Manage an existing server"
+    echo "4) Send command to a server"
+    echo "5) Attach to server console"
+    echo "6) Exit"
     read -p "Select an option [1-5]: " choice
 
     case $choice in
@@ -846,11 +1191,11 @@ main_menu() {
         while true; do
           read -p "Configure allow-list? (y/N): " allowlist_response
           case "$allowlist_response" in
-            yes|y|Y)
+            yes|y)
               configure_allowlist "$server_dir"
               break
               ;;
-            no|n|N|"")
+            no|n|"")
               msg_info "Skipping allow-list configuration."
               break
               ;;
@@ -863,37 +1208,58 @@ main_menu() {
         # Create a systemd service for the server
         create_systemd_service "$server_name"
 
-        # Ask to start the server
-        prompt_start_server "$server_name"
+        # Ask if server should be started
+        while true; do
+          read -p "Do you want to start the server '$server_name' now? (y/N): " start_choice
+          start_choice="${start_choice,,}"
+          case "$start_choice" in
+            yes|y)
+              start_server "$server_name"
+              break
+              ;;
+            no|n|"")
+              msg_info "Server '$server_name' not started."
+              break
+              ;;
+            *)
+              msg_warn "Invalid input. Please answer 'yes' or 'no'."
+              ;;
+          esac
+        done 
+
         ;;
 
-      2) # Manage an existing server
+      2) # Install content to server
+        install_content
+        ;;
+
+      3) # Manage an existing server
         manage_server
         ;;
 
-      3) # Send a command
+      4) # Send a command
         read -p "Enter server name: " server_name
         read -p "Enter command: " command
         send_command "$server_name" "$command"
         ;;
 
-      4) # Attach to server console
+      5) # Attach to server console
         read -p "Enter server name: " server_name
         attach_console "$server_name"
         ;;
 
-      5) # Exit
+      6) # Exit
         exit 0
         ;;
 
       *)
-        msg_error "Invalid choice"
+        msg_warn "Invalid choice"
         ;;
     esac
   done
 }
 
-# Main menu
+# Manage server
 manage_server() {
   while true; do
     echo
@@ -901,11 +1267,11 @@ manage_server() {
     echo "1) Update an existing server"
     echo "2) Start a server"
     echo "3) Stop a server"
-    echo "4) Edit a server's properties"
-    echo "5) Configure a server's allow-list"
-    echo "6) Restart a server"
-    echo "7) Backup a server"
-    echo "8) Delete a server"
+    echo "4) Restart a server"
+    echo "5) Backup a server"
+    echo "6) Delete a server"
+    echo "7) Edit a server's properties"
+    echo "8) Configure a server's allow-list"
     echo "9) Back"
     read -p "Select an option [1-8]: " choice
 
@@ -926,7 +1292,21 @@ manage_server() {
         stop_server "$server_name"
         ;;
 
-      4) # Edit server properties
+      4) # Restart a server
+        read -p "Enter server name: " server_name
+        restart_server "$server_name"
+        ;;
+
+      5) # Backup a server
+        read -p "Enter server name: " server_name
+        backup_server "$BASE_DIR/$server_name"
+        ;;
+
+      6) # Delete a server
+        delete_server
+        ;;
+
+      7) # Edit server properties
         read -p "Enter server name: " server_name
 
         # Use default directory (./bedrock_server_manager/)
@@ -935,7 +1315,7 @@ manage_server() {
         configure_server_properties "$server_dir" "$server_name"
         ;;
 
-      5) # Configure server allowlist
+      8) # Configure server allowlist
         read -p "Enter server name: " server_name
 
         # Use default directory (./bedrock_server_manager/)
@@ -944,26 +1324,46 @@ manage_server() {
         configure_allowlist "$server_dir"
         ;;  
 
-      6) # Restart a server
-        read -p "Enter server name: " server_name
-        restart_server "$server_name"
-        ;;
-
-      7) # Backup a server
-        read -p "Enter server name: " server_name
-        backup_server "$BASE_DIR/bedrock_server_manager/$server_name"
-        ;;
-
-      8) # Delete a server
-        delete_server
-        ;;
 
       9) # Back
         main_menu
         ;;
 
       *)
-        msg_error "Invalid choice"
+        msg_warn "Invalid choice"
+        ;;
+    esac
+  done
+}
+
+# Install content menu
+install_content() {
+  while true; do
+    echo
+    echo -e "\033[1;34mBedrock Server Manager\033[0m"
+    echo "1) Install world"
+    echo "2) Install addon (updates already installed addons only)"
+    echo "3) Back"
+    read -p "Select an option [1-3]: " choice
+
+    case $choice in
+
+      1) # Install .mcworld to server
+        read -p "Enter server name: " server_name
+        extract_worlds "$server_name"
+        ;;
+
+      2) # Install .mcpack/.mcaddon to sever
+        read -p "Enter server name: " server_name
+        install_addons "$server_name"
+        ;;
+
+      3) # Back
+        main_menu
+        ;;
+
+      *)
+        msg_warn "Invalid choice"
         ;;
     esac
   done
