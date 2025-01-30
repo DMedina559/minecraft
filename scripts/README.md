@@ -62,7 +62,7 @@ The script will create `./bedrock_server_manager`, `./content/worlds`, and `./co
 #### Run the script:
 
 ```
-bash /path/to/script/bedrock-server-manager.sh {command}
+bash /path/to/script/bedrock-server-manager.sh <command>
 ```
 
 ##### Available commands:
@@ -122,6 +122,30 @@ With the bedrock-server-manager.sh script you can easily import .mcworld and .mc
 For .mcworlds the script will scan the server.properties files for the `level-name` and extract the file to that folder.
 
 For .mcpacks the script will extract them to a tmp folder and scan the manifest.json, looking for the pack type, name, version, and uuid. The script will then move the pack to it respective world folder (resource_packs, or behaviour_packs) with the name+verison used as the folder name, and the script will update the `world_resource_packs.json` and `world_resource_packs.json` as needed with the packs uuid and version. The script cannot install new addons to the server but can update existing ones (you'll just have to manually remove the old addons folder)
+
+### Optional:
+
+For convenient access from any directory, you can create a symbolic link to the bedrock-server-manager.sh script in a directory within your $PATH.
+
+1. Find your $PATH:
+
+`echo $PATH`
+
+This will output a list of directories, similar to:
+
+`/home/USER/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games`
+
+2. Create the symbolic link:
+
+`sudo ln -s /path/to/script/bedrock-server-manager.sh /path/in/your/$PATH/bedrock-server-manager`
+
+Replace /path/to/bedrock-server-manager.sh with the actual path to your script and /path/in/your/$PATH with one of the directories from your $PATH (e.g., /home/USER/bin).
+
+After creating a symlink you can just use the below command without having to cd or specify the script directory
+
+```
+bedrock-server-manager <command>
+```
 
 ### Disclaimer:
 

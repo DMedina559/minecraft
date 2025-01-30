@@ -25,4 +25,8 @@
 2. Added option to import .mcpack files from ./content/addons folder
    - This will only update already installed addons
 3. Stop server before backup
-4. Cleaned up some repetitive code
+4. Use values from server.properties file when reconfiguring server properties
+5. Cleaned up some repetitive code
+
+### 1.1.1
+1. Optimized $SCRIPTDIR variable

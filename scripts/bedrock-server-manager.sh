@@ -4,10 +4,10 @@
 # COPYRIGHT ZVORTEX11325 2025
 # You may download and use this content for personal, non-commercial use. Any other use, including reproduction, or redistribution is prohibited without prior written permission.
 # Author: ZVortex11325
-# Version 1.1.0
+# Version 1.1.1
 
 SCRIPTVERSION=$(grep -m 1 "^# Version" "$0" | sed -E 's/^# Version[[:space:]]+([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
-SCRIPTDIR=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
+SCRIPTDIR=$(dirname "$(realpath "$0")")
 
 set -eo pipefail
 
