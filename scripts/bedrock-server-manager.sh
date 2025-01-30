@@ -4,7 +4,7 @@
 # COPYRIGHT ZVORTEX11325 2025
 # You may download and use this content for personal, non-commercial use. Any other use, including reproduction, or redistribution is prohibited without prior written permission.
 # Author: ZVortex11325
-# Version 1.1.1
+# Version 1.1.2
 
 SCRIPTVERSION=$(grep -m 1 "^# Version" "$0" | sed -E 's/^# Version[[:space:]]+([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
 SCRIPTDIR=$(dirname "$(realpath "$0")")
@@ -108,6 +108,7 @@ mkdir -p $SCRIPTDIR/content/addons
 # Back up a server's worlds and critical configuration files
 backup_server() {
   local server_dir="$1"
+  local in_update="${2:-false}"
   local backup_dir="$server_dir/backups"
   local timestamp
   local backup_file
@@ -117,15 +118,14 @@ backup_server() {
   timestamp=$(date +"%Y%m%d_%H%M%S")
   backup_file="$backup_dir/worlds_backup_$timestamp.tar.gz"
 
-  # Stop the server if it's running
-  if systemctl --user is-active --quiet "$server_name"; then
-    msg_info "Stopping '$server_name' for backup..."
-    $SCRIPTDIR/bedrock-server-manager.sh send-command --server "$server_name" --command "tell @a Running server backup.."
-    stop_server $server_name
-    msg_ok "Server '$server_name' stopped successfully."
-    local was_running=true
-  else
-    msg_info "Server '$server_name' is not currently running."
+  if [[ "$in_update" == false ]]; then
+    if systemctl --user is-active --quiet "$server_name"; then
+      send_command $server_name "tell @a Running server backup.."
+      stop_server $server_name
+      local was_running=true
+    else
+      msg_info "Server '$server_name' is not currently running."
+    fi
   fi
 
   msg_info "Running backup"
@@ -151,13 +151,13 @@ backup_server() {
   cp "$server_dir/server.properties" "$backup_dir/server.properties" 2>/dev/null
   msg_ok "Critical files backed up to $backup_dir"
 
-  # Start the server after the world is installed (if it was running)
-  if [[ "$was_running" == true ]]; then
-    msg_info "Starting server '$server_name'..."
-    start_server $server_name
-    msg_ok "Server '$server_name' started successfully."
-  else
-    msg_info "Skipping server start."
+  if [[ "$in_update" == false ]]; then
+    # Start the server after the world is installed if not updating
+    if [[ "$was_running" == true ]]; then
+      start_server $server_name
+    else
+      msg_info "Skipping server start."
+    fi
   fi
 
   # Prune old backups (keeping a defined number of backups)
@@ -182,16 +182,16 @@ update_server() {
   local server_name="$1"
   local server_dir="$BASE_DIR/$server_name"
 
-  msg_info "Starting update process for server: $server_name"
-
-  if systemctl --user is-active --quiet "$server_name"; then
-    $SCRIPTDIR/bedrock-server-manager.sh send-command --server $server_name --command "tell @a Checking for server updates.."
-  fi
-
   # Check if the server directory exists
   if [[ ! -f "$server_dir/bedrock_server" ]]; then
     msg_error "bedrock_server not found in $server_dir."
     return 1
+  fi
+
+  msg_info "Starting update process for server: $server_name"
+
+  if systemctl --user is-active --quiet "$server_name"; then
+    send_command $server_name "tell @a Checking for server updates.."
   fi
 
   # Get the installed version
@@ -214,13 +214,13 @@ update_server() {
 
   # Delegate download to `download_bedrock_server`
   local actual_version
-
-  actual_version=$(download_bedrock_server "$server_dir" "$target_version" "$server_name" true "$installed_version" )
+  actual_version=$(download_bedrock_server "$server_dir" "$target_version" "$server_name" true "$installed_version")
 
   if [[ $? -ne 0 ]]; then
     msg_error "Failed to download or extract the Bedrock server."
     return 1
   fi
+  
   msg_ok "Installed server version: $installed_version"
   echo "$actual_version"
 }
@@ -236,6 +236,12 @@ download_bedrock_server() {
     local actual_version
     local download_page="https://www.minecraft.net/en-us/download/server/bedrock"
 
+    msg_info "Checking internet connectivity"
+    # Internet connection test
+    if ! ping -c 1 -W 2 example.com >/dev/null 2>&1; then
+      msg_warn "Connectivity test failed. Can't download server."
+      return 0
+    fi
 
     msg_info "Downloading Bedrock server version: $version"
 
@@ -283,13 +289,6 @@ download_bedrock_server() {
             # Extract the actual version from the download URL
             actual_version=$(echo "$download_url" | grep -oP 'bedrock-server-\K[0-9.]+')
 
-            if [[ "$in_update" == true ]]; then
-                if [[ "${installed_version}" == "${actual_version%.}" ]]; then  
-                  msg_ok "Server '$server_name' is already running the latest version ($installed_version). No update needed."
-                  exit 0
-                fi
-            fi
-
             # If this is a fresh install, create server_output.txt with the resolved version
             if [[ "$in_update" == false ]]; then
                 echo "Version: ${actual_version%.}" > "$server_dir/server_output.txt"
@@ -322,6 +321,13 @@ download_bedrock_server() {
             ;;
     esac
 
+    if [[ "$in_update" == true ]]; then
+        if [[ "${installed_version}" == "${actual_version%.}" ]]; then  
+          msg_ok "Server '$server_name' is already running the latest version ($installed_version). No update needed."
+          return 0
+        fi
+    fi
+
     # Handle version from version.txt and manage '-preview' for URL
     local target_version="$version"
     if [[ "$version" == *"-preview" ]]; then
@@ -347,8 +353,7 @@ download_bedrock_server() {
     if [[ "$in_update" == true ]]; then
         msg_info "Checking if server is running"
         if systemctl --user is-active --quiet "$server_name"; then
-          msg_info "Stopping '$server_name'..."
-          $SCRIPTDIR/bedrock-server-manager.sh send-command --server $server_name --command "tell @a Updating server..."
+          send_command $server_name "tell @a Updating server..."
           stop_server $server_name
           local was_running
           was_running=true
@@ -360,7 +365,7 @@ download_bedrock_server() {
     # Extract files based on whether it's an update or fresh install
     if [[ "$in_update" == true ]]; then
         msg_info "Backing up server before update..."
-        backup_server "$server_dir"
+        backup_server "$server_dir" true
 
         msg_info "Extracting the server files, excluding critical files..."
         if ! unzip -o "$zip_file" -d "$server_dir" -x "worlds/*" "allowlist.json" "permissions.json" "server.properties" > /dev/null 2>&1; then
@@ -373,15 +378,6 @@ download_bedrock_server() {
         cp "$backup_dir/allowlist.json" "$server_dir/allowlist.json" 2>/dev/null
         cp "$backup_dir/permissions.json" "$server_dir/permissions.json" 2>/dev/null
         cp "$backup_dir/server.properties" "$server_dir/server.properties" 2>/dev/null
-
-        # Start the server after the update (if it was running)
-        if [[ "$was_running" == true ]]; then
-          msg_info "Starting server '$server_name'..."
-          start_server $server_name
-          msg_ok "Server '$server_name' started successfully."
-        else
-          msg_info "Skip starting server '$server_name'."
-        fi
 
     else
         msg_info "Extracting server files for fresh installation..."
@@ -398,6 +394,13 @@ download_bedrock_server() {
     chown -R "$real_user":"$real_group" "$server_dir"
 
     msg_ok "Installed Bedrock server version: ${actual_version%.}"
+
+  # Start the server after the update (if it was running)
+  if [[ "$was_running" == true ]]; then
+    start_server $server_name
+  else
+    msg_info "Skip starting server '$server_name'."
+  fi
     return 0
 }
 
@@ -755,7 +758,7 @@ send_command() {
   # Check if the server is running in a screen session
   if screen -list | grep -q "$server_name"; then
     # Send the command to the screen session
-    msg_info "Sending command '$command' to server '$server_name' via screen..."
+    msg_info "Sending command to server '$server_name'..."
     screen -S "$server_name" -X stuff "$command^M"  # ^M simulates Enter key
     msg_ok "Command '$command' sent to server '$server_name'."
   else
@@ -773,11 +776,11 @@ restart_server() {
     return $?
   fi
 
-  msg_info "Restarting server '$server_name' using systemd..."
+  msg_info "Restarting server '$server_name'..."
   
   # Send restart warning if the server is running
-  $SCRIPTDIR/bedrock-server-manager.sh send-command --server "$server_name" --command "tell @a Restarting server in 10 seconds.."
-  
+  send_command $server_name "tell @a Restarting server in 10 seconds.."
+
   sleep 10
 
   if ! systemctl --user restart "$server_name"; then
@@ -797,7 +800,7 @@ start_server() {
     return 0
   fi
 
-  msg_info "Starting server '$server_name' using systemd..."
+  msg_info "Starting server '$server_name'..."
   if ! systemctl --user start "$server_name"; then
     msg_error "Failed to start server: '$server_name'."
     return 1
@@ -815,10 +818,10 @@ stop_server() {
     return 0
   fi
 
-  msg_info "Stopping server '$server_name' using systemd..."
+  msg_info "Stopping server '$server_name'..."
   
   # Send shutdown warning if the server is running
-  $SCRIPTDIR/bedrock-server-manager.sh send-command --server "$server_name" --command "tell @a Shutting down server in 10 seconds.."
+  send_command $server_name "tell @a Shutting down server in 10 seconds.."
   
   sleep 10
 
@@ -917,9 +920,7 @@ extract_worlds() {
 
       # Stop the server if it's running
       if systemctl --user is-active --quiet "$server_name"; then
-        msg_info "Stopping '$server_name'..."
         stop_server $server_name
-        msg_ok "Server '$server_name' stopped successfully."
         local was_running=true
       else
         msg_info "Server '$server_name' is not currently running."
@@ -941,9 +942,7 @@ extract_worlds() {
 
       # Start the server after the world is installed (if it was running)
       if [[ "$was_running" == true ]]; then
-        msg_info "Starting server '$server_name'..."
         start_server $server_name
-        msg_ok "Server '$server_name' started successfully."
       else
         msg_info "Skipping server start."
       fi
@@ -1542,7 +1541,7 @@ case "$1" in
 
   main)
     # Open the main menu
-    msg_info "Opening main menu..."
+    echo "Opening main menu..."
     main_menu
     exit 0
     ;;

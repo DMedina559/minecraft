@@ -30,3 +30,10 @@
 
 ### 1.1.1
 1. Optimized $SCRIPTDIR variable
+
+### 1.1.2
+1. Check for internet before download to prevent server fail to start (pings example.com)
+2. No longer exit when you check for updates with the latest version already installed
+3. Call send_command directly throughout script
+4. Removed duplicate logging when calling certain functions
+5. Backup function now only handles start/stop server if not in update
