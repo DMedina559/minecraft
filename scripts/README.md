@@ -129,7 +129,9 @@ For convenient access from any directory, you can create a symbolic link to the 
 
 1. Find your $PATH:
 
-`echo $PATH`
+```
+echo $PATH
+```
 
 This will output a list of directories, similar to:
 
@@ -137,7 +139,9 @@ This will output a list of directories, similar to:
 
 2. Create the symbolic link:
 
-`sudo ln -s /path/to/script/bedrock-server-manager.sh /path/in/your/$PATH/bedrock-server-manager`
+```
+sudo ln -s /path/to/script/bedrock-server-manager.sh /path/in/your/$PATH/bedrock-server-manager
+```
 
 Replace /path/to/bedrock-server-manager.sh with the actual path to your script and /path/in/your/$PATH with one of the directories from your $PATH (e.g., /home/USER/bin).
 
