@@ -4,7 +4,7 @@
 # COPYRIGHT ZVORTEX11325 2025
 # You may download and use this content for personal, non-commercial use. Any other use, including reproduction, or redistribution is prohibited without prior written permission.
 # Author: ZVortex11325
-# Version 1.1.2
+# Version 1.1.3
 
 SCRIPTVERSION=$(grep -m 1 "^# Version" "$0" | sed -E 's/^# Version[[:space:]]+([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
 SCRIPTDIR=$(dirname "$(realpath "$0")")
@@ -120,7 +120,7 @@ backup_server() {
 
   if [[ "$in_update" == false ]]; then
     if systemctl --user is-active --quiet "$server_name"; then
-      send_command $server_name "tell @a Running server backup.."
+      send_command $server_name "say Running server backup.."
       stop_server $server_name
       local was_running=true
     else
@@ -191,7 +191,7 @@ update_server() {
   msg_info "Starting update process for server: $server_name"
 
   if systemctl --user is-active --quiet "$server_name"; then
-    send_command $server_name "tell @a Checking for server updates.."
+    send_command $server_name "say Checking for server updates.."
   fi
 
   # Get the installed version
@@ -353,7 +353,7 @@ download_bedrock_server() {
     if [[ "$in_update" == true ]]; then
         msg_info "Checking if server is running"
         if systemctl --user is-active --quiet "$server_name"; then
-          send_command $server_name "tell @a Updating server..."
+          send_command $server_name "say Updating server..."
           stop_server $server_name
           local was_running
           was_running=true
@@ -759,7 +759,7 @@ send_command() {
   if screen -list | grep -q "$server_name"; then
     # Send the command to the screen session
     msg_info "Sending command to server '$server_name'..."
-    screen -S "$server_name" -X stuff "$command^M"  # ^M simulates Enter key
+    screen -S "$server_name" -X stuff "$command"^M"" # ^M simulates Enter key
     msg_ok "Command '$command' sent to server '$server_name'."
   else
     msg_warn "Server '$server_name' is not running in a screen session."
@@ -779,7 +779,7 @@ restart_server() {
   msg_info "Restarting server '$server_name'..."
   
   # Send restart warning if the server is running
-  send_command $server_name "tell @a Restarting server in 10 seconds.."
+  send_command $server_name "say Restarting server in 10 seconds.."
 
   sleep 10
 
@@ -821,7 +821,7 @@ stop_server() {
   msg_info "Stopping server '$server_name'..."
   
   # Send shutdown warning if the server is running
-  send_command $server_name "tell @a Shutting down server in 10 seconds.."
+  send_command $server_name "say Shutting down server in 10 seconds.."
   
   sleep 10
 
@@ -1375,15 +1375,27 @@ install_content() {
 case "$1" in
   send-command)
     shift # Remove the first argument (send-command)
+    server_name=""  # Initialize
+    command=""      # Initialize
+
     while [[ $# -gt 0 ]]; do
-      case $1 in
+      case "$1" in
         --server)
-          server_name=$2
+          server_name="$2"
           shift 2
           ;;
         --command)
-          command=$2
-          shift 2
+          shift # Consume --command itself.
+          command="" # Initialize the command part
+          while [[ $# -gt 0 ]]; do
+            if ! [[ "$1" =~ ^-- ]]; then # Regular expression test first
+              command+="$1 "
+              shift
+            else
+              break # Exit the inner loop if an option is found
+            fi
+          done
+          command=${command% } # Remove the last space
           ;;
         *)
           msg_error "Unknown option: $1"
@@ -1394,7 +1406,7 @@ case "$1" in
     done
 
     # Validate inputs
-    if [[ -z $server_name || -z $command ]]; then
+    if [[ -z "$server_name" || -z "$command" ]]; then
       msg_error "Missing required arguments: --server or --command"
       echo "Usage: $0 send-command --server <server_name> --command <command>"
       exit 1

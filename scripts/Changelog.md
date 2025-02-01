@@ -37,3 +37,7 @@
 3. Call send_command directly throughout script
 4. Removed duplicate logging when calling certain functions
 5. Backup function now only handles start/stop server if not in update
+
+### 1.1.3
+1. Better handle send-command arguments
+2. Use say instead of tell
