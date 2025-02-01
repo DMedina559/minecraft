@@ -20,7 +20,7 @@ Command-Line Tools: Send game commands, start, stop, and restart servers directl
 
 Interactive Menu: Access a user-friendly interface to manage servers without manually typing commands.
 
-Install/Update Content: Easily import .mcworld/.mcpack files into your server. (You can only update existing addons already applied to the world)
+Install/Update Content: Easily import .mcworld/.mcpack files into your server.
 
 ### Prerequisites
 
@@ -72,7 +72,7 @@ bash /path/to/script/bedrock-server-manager.sh <command>
 ```
   send-command   -- Send a command to a running server
     --server <server_name>    Specify the server name
-    --command <command>       The command to send to the server (must be in quotations)
+    --command <command>       The command to send to the server (must be in "quotations")
 
   update-server  -- Update a server to a specified version
     --server <server_name>    Specify the server name
@@ -121,8 +121,7 @@ With the bedrock-server-manager.sh script you can easily import .mcworld and .mc
 
 For .mcworlds the script will scan the server.properties files for the `level-name` and extract the file to that folder.
 
-For .mcpacks the script will extract them to a tmp folder and scan the manifest.json, looking for the pack type, name, version, and uuid. The script will then move the pack to it respective world folder (resource_packs, or behaviour_packs) with the name+verison used as the folder name, and the script will update the `world_resource_packs.json` and `world_resource_packs.json` as needed with the packs uuid and version. The script cannot install new addons to the server but can update existing ones (you'll just have to manually remove the old addons folder)
-
+For .mcpacks the script will extract them to a tmp folder and scan the manifest.json, looking for the pack type, name, version, and uuid. The script will then move the pack to it respective world folder (resource_packs, or behaviour_packs) with the name+verison used as the folder name, and the script will update the `world_resource_packs.json` and `world_resource_packs.json` as needed with the packs uuid and version.
 ### Optional:
 
 For convenient access from any directory, you can create a symbolic link to the bedrock-server-manager.sh script in a directory within your $PATH.

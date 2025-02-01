@@ -4,7 +4,7 @@
 # COPYRIGHT ZVORTEX11325 2025
 # You may download and use this content for personal, non-commercial use. Any other use, including reproduction, or redistribution is prohibited without prior written permission.
 # Author: ZVortex11325
-# Version 1.1.3
+# Version 1.1.4
 
 SCRIPTVERSION=$(grep -m 1 "^# Version" "$0" | sed -E 's/^# Version[[:space:]]+([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
 SCRIPTDIR=$(dirname "$(realpath "$0")")
@@ -392,6 +392,7 @@ download_bedrock_server() {
     msg_info "Setting folder permissions to $real_user:$real_group"
     # Change ownership of extracted files to the real user/group
     chown -R "$real_user":"$real_group" "$server_dir"
+    chmod -R u+w "$server_dir"
 
     msg_ok "Installed Bedrock server version: ${actual_version%.}"
 
@@ -938,7 +939,8 @@ extract_worlds() {
       # Extract the new world
       msg_info "Extracting new world..."
       unzip -o "$selected_file" -d "$extract_dir" &>/dev/null
-      msg_ok "World installed at: $extract_dir"
+      chmod -R u+w "$extract_dir"
+      msg_ok "World installed to $server_name"
 
       # Start the server after the world is installed (if it was running)
       if [[ "$was_running" == true ]]; then
@@ -1025,6 +1027,7 @@ install_addons() {
 
         # Unzip the .mcaddon file to a temporary directory
         unzip -o "$addon_file" -d "$temp_dir" &>/dev/null
+        chmod -R u+w "$temp_dir"
 
         # Handle contents of the .mcaddon file
         # Check for the existence of .mcpack or .mcworld files inside the .mcaddon
@@ -1051,6 +1054,7 @@ install_addons() {
 
             # Copy the files from .mcpack
             unzip -o "$pack_file" -d "$temp_dir"
+            chmod -R u+w "$temp_dir"
             cp -r "$temp_dir"/* "$addon_behavior_dir"
             update_pack_json "$behavior_json" "$(jq -r '.header.uuid' "$pack_file")" "$pack_version"
           fi
@@ -1065,6 +1069,7 @@ install_addons() {
         temp_dir=$(mktemp -d)
         msg_info "Extracting $(basename "$addon_file")..."
         unzip -o "$addon_file" -d "$temp_dir" &>/dev/null
+        chmod -R u+w "$temp_dir"
         
         # Parse the manifest.json
         if [[ -f "$temp_dir/manifest.json" ]]; then
@@ -1086,12 +1091,14 @@ install_addons() {
           
           # Handle copying files
           if [[ "$pack_type" == "data" ]]; then
-            msg_info "Installing behavior pack to $addon_behavior_dir"
+            msg_info "Installing behavior pack to $server_name"
             cp -r "$temp_dir"/* "$addon_behavior_dir"
+            chmod -R u+w "$addon_behavior_dir"
             update_pack_json "$behavior_json" "$uuid" "$version" "$addon_name_from_manifest"
           elif [[ "$pack_type" == "resources" ]]; then
-            msg_info "Installing resource pack to $addon_resource_dir"
+            msg_info "Installing resource pack to $server_name"
             cp -r "$temp_dir"/* "$addon_resource_dir"
+            chmod -R u+w "$addon_resource_dir"
             update_pack_json "$resource_json" "$uuid" "$version" "$addon_name_from_manifest"
           else
             msg_error "Unknown pack type: $pack_type"
@@ -1099,8 +1106,25 @@ install_addons() {
         else
           msg_error "manifest.json not found in $(basename "$addon_file")"
         fi
-
         rm -rf "$temp_dir"
+      fi
+
+      # Ask to restart if server is running
+      if systemctl --user is-active --quiet "$server_name"; then
+        while true; do
+          read -p "Do you want to restart the server: $server_name? (YES/no): " confirm_choice
+          case "${confirm_choice,,}" in
+            yes|y) 
+            restart_server "$server_name"
+            break ;;  # Proceed with restart
+            no|n) 
+              msg_warn "Server $server_name not restarted."
+              break ;;   # Exit function without installing
+            *) msg_warn "Invalid input. Please type 'YES' to proceed or 'NO' to cancel." ;;
+          esac
+        done
+      else
+        msg_info "Server '$server_name' is not currently running."
       fi
 
       return 0
@@ -1111,35 +1135,40 @@ install_addons() {
 # Helper function to update pack JSON files
 update_pack_json() {
   local json_file="$1"
-  local uuid="$2"
+  local pack_id="$2"
   local version="$3"
 
-  msg_info "Updating $json_file with UUID: $uuid and Version: $version"
+  msg_info "Updating $json_file with Pack ID: $pack_id and Version: $version"
 
-  # If the JSON file doesn't exist, create it
+  # Ensure JSON file exists
   [[ ! -f "$json_file" ]] && echo "[]" > "$json_file"
 
-  # Read existing JSON and check for duplicates
+  # Convert version string to an array
+  local version_array
+  version_array=$(echo "$version" | awk -F '.' '{print "["$1", "$2", "$3"]"}')
+
+  # Read existing JSON and update
   local updated_json
-  updated_json=$(jq --arg uuid "$uuid" --arg version "$version" '
+  updated_json=$(jq --arg pack_id "$pack_id" --argjson version "$version_array" '
     . as $packs
-    | if any(.uuid == $uuid) then
-        map(if .uuid == $uuid then
-          if .version | split(".") | map(tonumber) < ($version | split(".") | map(tonumber)) then
-            {uuid: $uuid, version: $version}
+    | if any(.pack_id == $pack_id) then
+        map(if .pack_id == $pack_id then
+          if (.version | join(".") | split(".") | map(tonumber)) < ($version | join(".") | split(".") | map(tonumber)) then
+            {pack_id: $pack_id, version: $version}
           else
-            . 
+            .
           end
         else
-          . 
+          .
         end)
       else
-        . + [{uuid: $uuid, version: $version}]
+        . + [{pack_id: $pack_id, version: $version}]
       end' "$json_file")
 
   # Write updated JSON back to the file
   echo "$updated_json" > "$json_file"
-  msg_ok "Updated $json_file with UUID $uuid and version $version."
+  msg_ok "Updated $json_file with Pack ID $pack_id and version $version."
+  return 0
 }
 
 # Main menu
@@ -1341,7 +1370,7 @@ install_content() {
     echo
     echo -e "\033[1;34mBedrock Server Manager\033[0m"
     echo "1) Install world"
-    echo "2) Install addon (updates already installed addons only)"
+    echo "2) Install addon"
     echo "3) Back"
     read -p "Select an option [1-3]: " choice
 

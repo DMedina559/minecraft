@@ -41,3 +41,8 @@
 ### 1.1.3
 1. Better handle send-command arguments
 2. Use say instead of tell
+
+### 1.1.4
+1. Fixed json format for world addon files
+2. Set r/w permissions for extracted worlds/addons
+3. Ask to restart after installing addon
