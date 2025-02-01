@@ -12,7 +12,6 @@ This means if you're able to run a run another minecraft world on another device
 
 ## Requirements:
 
-
 ### - Beta API Experiment:
 
 The behavior pack requires a world with the `Beta APIs` experiment to be enabled.
@@ -24,12 +23,11 @@ This experiment is required for the `@minecraft/server-admin` module on the dedi
 - Use the Minecraft Client to create the world (or import an already made world).
 - Enable the `Beta APIs` experiment in the world settings.
 - Add the Transfer UI Behavior Pack to the world.
-- Load the world to make sure all settings/packs are applied.
 
 ### Step 2: Run the world
 
 - Start the world and ensure everything loads correctly by checking the creator or server logs.
-You should see this message `[Scripting] Transfer UI loaded!` and no errors related to any modules or `@minecraft/server-admin`
+You should see this message `[Scripting] Transfer UI loaded!` and no errors related to `@minecraft/server-admin`
 
 Join the server and obtain a `Compass` item. If everything is installed correctly you should be able to use item to open the menu.
   
@@ -40,13 +38,3 @@ Now you should be able to use a compass item to open the Transfer UI. Here you c
 ### `@minecraft/server-admin`:
 
 https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server-admin/minecraft-server-admin?view=minecraft-bedrock-experimental#transferplayer
-
-### Dedicated Server:
-
-#### Server Config:
-
-- https://learn.microsoft.com/en-us/minecraft/creator/documents/scriptingservers?view=minecraft-bedrock-experimental#the-bedrock-dedicated-server-configuration-system
-
-#### Module Permisions:
-
-- https://learn.microsoft.com/en-us/minecraft/creator/documents/scriptingservers?view=minecraft-bedrock-experimental#enable-differentiated-module-permissions
