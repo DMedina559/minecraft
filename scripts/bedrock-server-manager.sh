@@ -4,23 +4,68 @@
 # COPYRIGHT ZVORTEX11325 2025
 # You may download and use this content for personal, non-commercial use. Any other use, including reproduction, or redistribution is prohibited without prior written permission.
 # Author: ZVortex11325
-# Version 1.1.4
-
-SCRIPTVERSION=$(grep -m 1 "^# Version" "$0" | sed -E 's/^# Version[[:space:]]+([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
-SCRIPTDIR=$(dirname "$(realpath "$0")")
+# Version 1.2.0
 
 set -eo pipefail
 
+# Default configuration
+SCRIPTVERSION=$(grep -m 1 "^# Version" "$0" | sed -E 's/^# Version[[:space:]]+([0-9]+\.[0-9]+\.[0-9]+).*/\1/') # Get script version from top line
+SCRIPTDIR=$(dirname "$(realpath "$0")") # Current full path the script is in
+SCRIPTDIRECT=$SCRIPTDIR/bedrock-server-manager.sh
+
+: "${BASE_DIR:="$SCRIPTDIR/bedrock_server_manager"}" # Default folder for servers
+: "${PACKAGE_BACKUP_KEEP:=3}"           # Number of backups to retain
+: "${DEFAULT_PORT:=19132}"              # Default IPv4 port
+: "${DEFAULT_IPV6_PORT:=19133}"         # Default IPv6 port (required for Bedrock)
+: "${ALLOW_CHEATS:=false}"              # Default cheats setting
+: "${MAX_PLAYERS:=8}"                   # Default maximum players
+: "${ONLINE_MODE:=true}"                # Default online mode setting
+: "${DIFFICULTY:=normal}"               # Default difficulty setting
+: "${GAMEMODE:=survival}"               # Default gamemode
+: "${LEVEL_NAME:=world}"                # Default level name
+: "${SERVER_NAME:='Bedrock Server'}"    # Default server name
+: "${LAN_VISIBILITY:=true}"             # Default lan visibility
+: "${ALLOW_LIST:=false}"                # Default allow-list
+: "${PERMISSION_LEVEL:=member}"         # Default permission level
+: "${RENDER_DISTANCE:=12}"              # Default render distance
+: "${TICK_DISTANCE:=4}"                 # Default render distance
+
+# Define color codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+MAGENTA='\033[0;35m'
+CYAN='\033[0;36m'
+WHITE='\033[0;37m'
+GOLD='\033[0;33m'
+DARK_GREEN='\033[0;32m'
+LIGHT_BLUE='\033[0;36m'
+PINK='\033[0;95m'
+LIGHT_PINK='\033[0;35m'
+GRAY='\033[0;90m'
+RESET='\033[0m'
+
 # Helper functions for colorful messages
-msg_info() { echo -e "\033[1;34m[INFO]\033[0m $1"; }
-msg_ok() { echo -e "\033[1;32m[OK]\033[0m $1"; }
-msg_warn() { echo -e "\033[1;33m[WARN]\033[0m $1"; }
-msg_error() { echo -e "\033[1;31m[ERROR]\033[0m $1"; }
+msg_info() { echo -e "${CYAN}[INFO]${RESET} $1"; }
+msg_ok() { echo -e "${GREEN}[OK]${RESET} $1"; }
+msg_warn() { echo -e "${YELLOW}[WARN]${RESET} $1"; }
+msg_error() { echo -e "${RED}[ERROR]${RESET} $1"; }
+
+# Function to handle Ctrl+C
+handle_interrupt() {
+    echo -e "\nExiting..."
+    clear
+    exit 1 
+}
+
+# Trap SIGINT (Ctrl+C) and call the function
+trap handle_interrupt SIGINT
 
 # Dependencies Check
 setup_prerequisites() {
   # List of required packages
-  local packages=("curl" "jq" "unzip" "systemd" "screen")
+  local packages=("curl" "jq" "unzip" "systemd" "screen" "zip")
 
   # Detect package manager
   if command -v apt-get &>/dev/null; then
@@ -63,12 +108,17 @@ setup_prerequisites() {
       msg_error "Missing packages are required to proceed. Exiting..."
       exit 1
     else
-      msg_warn "Invalid response. Please answer with 'y', 'yes', 'n', or 'no'."
+      msg_warn "Invalid input. Please answer 'yes' or 'no'."
     fi
   done
 }
 
 setup_prerequisites
+
+# Make folders if they don't exist
+mkdir -p $BASE_DIR
+mkdir -p $SCRIPTDIR/content/worlds
+mkdir -p $SCRIPTDIR/content/addons
 
 # Function to download the updated script and restart it
 update_script() {
@@ -82,111 +132,411 @@ update_script() {
   msg_ok "Done."
 }
 
-# Default configuration
-: "${BASE_DIR:="$SCRIPTDIR/bedrock_server_manager"}"
-: "${PACKAGE_BACKUP_KEEP:=3}"           # Number of backups to retain
-: "${DEFAULT_PORT:=19132}"              # Default IPv4 port
-: "${DEFAULT_IPV6_PORT:=19133}"         # Default IPv6 port (required for Bedrock)
-: "${ALLOW_CHEATS:=false}"              # Default cheats setting
-: "${MAX_PLAYERS:=8}"                   # Default maximum players
-: "${ONLINE_MODE:=true}"                # Default online mode setting
-: "${DIFFICULTY:=normal}"               # Default difficulty setting
-: "${GAMEMODE:=survival}"               # Default gamemode
-: "${LEVEL_NAME:=world}"                # Default level name
-: "${SERVER_NAME:='Bedrock Server'}"    # Default server name
-: "${LAN_VISIBILITY:=true}"             # Default lan visibility
-: "${ALLOW_LIST:=false}"                # Default allow-list
-: "${PERMISSION_LEVEL:=member}"         # Default permission level
-: "${RENDER_DISTANCE:=12}"              # Default render distance
-: "${TICK_DISTANCE:=4}"                 # Default render distance
+get_server_name() {
+    while true; do
+        read -p "Enter server name (or type 'exit' to cancel): " server_name
 
-# Make folders if they don't exist
-mkdir -p $BASE_DIR
-mkdir -p $SCRIPTDIR/content/worlds
-mkdir -p $SCRIPTDIR/content/addons
+        if [[ "$server_name" == "exit" ]]; then
+            msg_ok "Operation canceled."
+            return 1
+        fi
 
-# Back up a server's worlds and critical configuration files
-backup_server() {
-  local server_dir="$1"
-  local in_update="${2:-false}"
-  local backup_dir="$server_dir/backups"
-  local timestamp
-  local backup_file
-  local backups_to_keep
+        # Define the expected server directory path
+        server_dir="$BASE_DIR/$server_name"
 
-  # Generate timestamp and define backup file for worlds
-  timestamp=$(date +"%Y%m%d_%H%M%S")
-  backup_file="$backup_dir/worlds_backup_$timestamp.tar.gz"
+        # Check if the server directory exists and contains bedrock_server
+        if [[ ! -f "$server_dir/bedrock_server" ]]; then
+            msg_error "'bedrock_server' not found in $server_dir."
+            echo "Please enter a valid server name or type 'exit' to cancel."
+        else
+            msg_ok "Server '$server_name' found."
+            return 0
+        fi
+    done
+}
 
-  if [[ "$in_update" == false ]]; then
-    if systemctl --user is-active --quiet "$server_name"; then
-      send_command $server_name "say Running server backup.."
-      stop_server $server_name
-      local was_running=true
+# Function to view current cron jobs and present options for next actions
+cron_scheduler() {
+    clear
+    local server_name=$1
+    echo -e "${MAGENTA}Bedrock Server Manager${RESET} - ${PINK}Cron Scheduler${RESET}"
+    echo -e "You can schedule various server task."
+    echo -e "Current scheduled cron jobs for ${YELLOW}${server_name}${RESET}:"
+
+    # Try to get the cron jobs
+    cron_jobs=$(echo "$(crontab -l 2>&1)")
+
+    cron_jobs=$(echo "$cron_jobs" | sed -n "/--server $server_name/p")
+
+    if [ -z "$cron_jobs" ] || [ "$cron_jobs" = "" ]; then
+      cron_jobs="undefined"
+    fi
+
+    # Check if there was "no crontab for user" or empty output
+    if [ -z "$cron_jobs" ] || [ "$cron_jobs" = "" ] || [[ "$cron_jobs" == *"no crontab for"* ]] || [[ "$cron_jobs" == undefined ]]; then
+        echo -e "${YELLOW}No scheduled cron jobs found.${RESET}"
     else
-      msg_info "Server '$server_name' is not currently running."
+      
+        # Loop through cron jobs and display them in readable format
+        echo "$cron_jobs" | while IFS= read -r cron_job; do
+
+            # Use awk to split the line, but handle the command separately
+            minute=$(echo "$cron_job" | awk '{print $1}')
+            hour=$(echo "$cron_job" | awk '{print $2}')
+            day=$(echo "$cron_job" | awk '{print $3}')
+            month=$(echo "$cron_job" | awk '{print $4}')
+            weekday=$(echo "$cron_job" | awk '{print $5}')
+            command=$(echo "$cron_job" | cut -d' ' -f6-) # Get everything from the 6th field onwards
+
+            # Convert to readable format
+            convert_to_readable_schedule "$month" "$day" "$hour" "$minute" "$weekday"
+            echo -e "${GREEN}Cron job${RESET}: ${YELLOW}${cron_job}${RESET}"
+            echo -e "${GREEN}Readable schedule${RESET}: ${YELLOW}${schedule_time}${RESET}"
+            echo -e "${GREEN}Command${RESET}: ${YELLOW}${command}${RESET}"
+            echo ""
+        done
+        
     fi
-  fi
 
-  msg_info "Running backup"
+    # Ask user what to do next
+    while true; do
+        echo "What would you like to do next?"
+        echo "1) Add Job"
+        echo "2) Modify Job"
+        echo "3) Delete Job"
+        echo "4) Back"
+        read -p "Enter the number (1-4): " choice
+        case $choice in
+            1) add_cron_job "$server_name" ;;
+            2) modify_cron_job "$server_name" ;;
+            3) delete_cron_job "$server_name" ;;
+            4) return 0 ;;
+            *) msg_warn "Invalid choice. Please try again." ;;
+        esac
+    done
+}
 
-  # Ensure backup directory exists
-  mkdir -p "$backup_dir"
+# Function to add a new cron job
+add_cron_job() {
+    local server_name=$1
+    local command=""
 
-  # Check if the worlds directory exists
-  if [[ -d "$server_dir/worlds" ]]; then
-    # Backup the worlds directory
-    if ! tar -czf "$backup_file" -C "$server_dir" worlds; then
-      msg_error "Backup of worlds failed!"
-      return 1
+    # Prompt user for cron job details
+    echo "Choose the command for '$server_name':"
+    echo "1) Update Server"
+    echo "2) Backup Server"
+    echo "3) Start Server"
+    echo "4) Stop Server"
+    echo "5) Restart Server"
+    while true; do
+        read -p "Enter the number (1-5): " choice
+
+        case $choice in
+            1) command="$SCRIPTDIRECT update-server --server $server_name" ; break ;;
+            2) command="$SCRIPTDIRECT backup-server --server $server_name" ; break ;;
+            3) command="$SCRIPTDIRECT start-server --server $server_name" ; break ;;
+            4) command="$SCRIPTDIRECT stop-server --server $server_name" ; break ;;
+            5) command="$SCRIPTDIRECT restart-server --server $server_name" ; break ;;
+            *) msg_warn "Invalid choice, please try again." ;;
+        esac
+    done
+
+    # Get cron timing details with validation
+    while true; do
+        read -p "Month (1-12 or *): " month
+        validate_cron_input "$month" 1 12 || continue
+        read -p "Day of Month (1-31 or *): " day
+        read -p "Hour (0-23): " hour
+        validate_cron_input "$hour" 0 23 || continue
+        read -p "Minute (0-59): " minute
+        validate_cron_input "$minute" 0 59 || continue
+        read -p "Day of Week (0-7, 0 or 7 for Sunday or *): " weekday
+        validate_cron_input "$weekday" 0 7 || continue
+        break
+    done
+
+    # Convert to readable format
+    convert_to_readable_schedule "$month" "$day" "$hour" "$minute" "$weekday"
+    echo "Your cron job will run with the following schedule:"
+    echo -e "${GREEN}Cron format${RESET}: ${YELLOW}${minute} ${hour} ${day} ${month} ${weekday}${RESET}"
+    echo -e "${GREEN}Readable format${RESET}: ${YELLOW}${schedule_time}${RESET}"
+    echo -e "${GREEN}Command${RESET}: ${YELLOW}${command}${RESET}"
+    echo
+
+    while true; do
+        read -p "Do you want to add this job? (y/n): " confirm
+        confirm="${confirm,,}"  # Convert to lowercase
+        case "$confirm" in
+            yes|y)
+                # Improved cron command handling:
+                if crontab -l 2>/dev/null | grep -q . ; then # Check if crontab exists
+                  (crontab -l; echo "$minute $hour $day $month $weekday $command") | crontab -
+                else
+                  echo "$minute $hour $day $month $weekday $command" | crontab - # Add to empty crontab
+                fi
+
+                msg_ok "Cron job added successfully!"
+                break
+                ;;
+            no|n|"")
+                msg_info "Cron job not added."
+                break
+                ;;
+            *)
+                msg_warn "Invalid input. Please answer 'yes' or 'no'."
+                ;;
+        esac
+    done
+}
+
+# Function to modify an existing cron job
+modify_cron_job() {
+    local server_name=$1
+
+    echo "Current scheduled cron jobs for '$server_name':"
+
+    cron_jobs_array=()
+    index=1
+
+    while IFS= read -r line; do
+        if [[ "$line" == *"--server $server_name"* ]]; then
+            cron_jobs_array+=("$line")
+            echo "$index) $line"
+            ((index++))
+        fi
+    done < <(crontab -l 2>/dev/null)
+
+    if [[ ${#cron_jobs_array[@]} -eq 0 ]]; then
+        echo "No scheduled cron jobs found to modify."
+        return
     fi
-    msg_ok "Worlds backup created: $backup_file"
-  else
-    msg_info "Worlds directory does not exist. Skipping worlds backup."
-  fi
 
-  # Backup critical files (allowlist.json, permissions.json, server.properties)
-  cp "$server_dir/allowlist.json" "$backup_dir/allowlist.json" 2>/dev/null
-  cp "$server_dir/permissions.json" "$backup_dir/permissions.json" 2>/dev/null
-  cp "$server_dir/server.properties" "$backup_dir/server.properties" 2>/dev/null
-  msg_ok "Critical files backed up to $backup_dir"
+    # Get user input to select the job to modify
+    read -p "Enter the number of the job you want to modify: " job_number
 
-  if [[ "$in_update" == false ]]; then
-    # Start the server after the world is installed if not updating
-    if [[ "$was_running" == true ]]; then
-      start_server $server_name
+    if ! [[ "$job_number" =~ ^[0-9]+$ ]] || (( job_number < 1 || job_number > ${#cron_jobs_array[@]} )); then
+        msg_warn "Invalid selection. No matching cron job found."
+        return
+    fi
+
+    job_to_modify="${cron_jobs_array[$((job_number - 1))]}"
+
+    # Extract the command part of the cron job (everything after the time fields)
+    job_command=$(echo "$job_to_modify" | awk '{for (i=6; i<=NF; i++) printf $i " "; print ""}')
+
+    # Get new cron timing details with validation
+    echo "Modify the timing details for this cron job:"
+    while true; do
+        read -p "Month (1-12 or *): " month
+        validate_cron_input "$month" 1 12 || continue
+        read -p "Day of Month (1-31 or *): " day
+        validate_cron_input "$day" 1 31 || continue
+        read -p "Hour (0-23): " hour
+        validate_cron_input "$hour" 0 23 || continue
+        read -p "Minute (0-59): " minute
+        validate_cron_input "$minute" 0 59 || continue
+        read -p "Day of Week (0-7, 0 or 7 for Sunday or *): " weekday
+        validate_cron_input "$weekday" 0 7 || continue
+        break
+    done
+
+    # Convert to readable format
+    convert_to_readable_schedule "$month" "$day" "$hour" "$minute" "$weekday"
+    echo "Your modified cron job will run with the following schedule:"
+    echo "Cron format: $minute $hour $day $month $weekday"
+    echo "Readable format: $schedule_time"
+    echo "Command: $job_command"
+    echo
+
+    # Confirm before modifying cron job
+    while true; do
+        read -p "Do you want to modify this job? (y/n): " confirm
+        confirm="${confirm,,}"  # Convert to lowercase
+        case "$confirm" in
+            yes|y)
+                temp_cron=$(mktemp)
+                crontab -l 2>/dev/null | awk -v job="$job_to_modify" '$0 != job' > "$temp_cron"
+                echo "$minute $hour $day $month $weekday $job_command" >> "$temp_cron"
+                crontab "$temp_cron"
+                rm "$temp_cron"
+                msg_ok "Cron job modified successfully!"
+                break
+                ;;
+            no|n|"")
+                msg_info "Cron job not modified."
+                break
+                ;;
+            *)
+                msg_warn "Invalid input. Please answer 'yes' or 'no'."
+                ;;
+        esac
+    done
+}
+
+# Function to delete an existing cron job
+delete_cron_job() {
+    local server_name=$1
+
+    echo "Current scheduled cron jobs for '$server_name':"
+
+    cron_jobs_array=()
+    index=1
+
+    while IFS= read -r line; do
+        if [[ "$line" == *"--server $server_name"* ]]; then
+            cron_jobs_array+=("$line")
+            echo "$index) $line"
+            ((index++))
+        fi
+    done < <(crontab -l 2>/dev/null)
+
+    if [[ ${#cron_jobs_array[@]} -eq 0 ]]; then
+        echo "No scheduled cron jobs found to delete."
+        return
+    fi
+
+    read -p "Enter the number of the job you want to delete: " job_number
+
+    if ! [[ "$job_number" =~ ^[0-9]+$ ]] || (( job_number < 1 || job_number > ${#cron_jobs_array[@]} )); then
+        msg_warn "Invalid selection. No matching cron job found."
+        return
+    fi
+
+    job_to_delete="${cron_jobs_array[$((job_number - 1))]}"
+
+    # Confirm before deleting cron job
+    while true; do
+        read -p "Are you sure you want to delete this cron job? (y/n): " confirm_delete
+        confirm_delete="${confirm_delete,,}"  # Convert to lowercase
+        case "$confirm_delete" in
+            yes|y)
+                temp_cron=$(mktemp)
+                crontab -l 2>/dev/null | awk -v job="$job_to_delete" '$0 != job' > "$temp_cron"
+                crontab "$temp_cron"
+                rm "$temp_cron"
+                msg_ok "Cron job deleted successfully!"
+                break
+                ;;
+            no|n|"")
+                msg_info "Cron job not deleted."
+                break
+                ;;
+            *)
+                msg_warn "Invalid input. Please answer 'yes' or 'no'."
+                ;;
+        esac
+    done
+}
+
+# Function to validate cron input (minute, hour, day, month, weekday)
+validate_cron_input() {
+    local value=$1
+    local min=$2
+    local max=$3
+
+    if [[ "$value" == "*" ]] || ([[ "$value" =~ ^[0-9]+$ ]] && [ "$value" -ge "$min" ] && [ "$value" -le "$max" ]); then
+        return 0
     else
-      msg_info "Skipping server start."
+        msg_warn "Invalid input. Please enter a value between $min and $max, or '*' for any."
+        return 1
     fi
-  fi
+}
 
-  # Prune old backups (keeping a defined number of backups)
-  msg_info "Pruning old backups..."
-  backups_to_keep=$((PACKAGE_BACKUP_KEEP + 1))
-  find "$backup_dir" -maxdepth 1 -name "worlds_backup_*.tar.gz" -type f | sort -r | tail -n "+$backups_to_keep" | while read -r old_backup; do
-    msg_info "Removing old backup: $old_backup"
-    rm -f "$old_backup" || msg_error "Failed to remove $old_backup"
-  done
+# Function to convert cron format to readable schedule
+convert_to_readable_schedule() {
+    local month=$1
+    local day=$2
+    local hour=$3
+    local minute=$4
+    local weekday=$5
 
-  # Clean up old configuration backups
-  find "$backup_dir" -maxdepth 1 -name "allowlist.json" -type f | sort -r | tail -n "+$backups_to_keep" | while read -r old_backup; do
-    msg_info "Removing old config backup: $old_backup"
-    rm -f "$old_backup" || msg_error "Failed to remove $old_backup"
-  done
+    if [ "$day" == "*" ] && [ "$weekday" == "*" ]; then
+        schedule_time="Daily at $hour:$minute"
+    elif [ "$day" != "*" ] && [ "$weekday" == "*" ] && [ "$month" == "*" ]; then
+        schedule_time="Monthly on day $day at $hour:$minute"
+    elif [ "$day" == "*" ] && [ "$weekday" != "*" ]; then
+        week_days=("Sunday" "Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday")
+        schedule_time="Weekly on ${week_days[$weekday]} at $hour:$minute"
+    else
+        schedule_time="Next run at $(date -d "$month/$day $hour:$minute" +"%m/%d/%Y %H:%M")"
+    fi
+}
 
-  msg_ok "Backup complete and old backups pruned"
+install_new_server() {
+    while true; do
+        read -p "Enter server folder name: " server_name
+
+        # Check if server_name contains only alphanumeric characters, hyphens, and underscores
+        if [[ "$server_name" =~ ^[[:alnum:]_-]+$ ]]; then
+            break  # Exit the loop if the name is valid
+        else
+            msg_warn "Invalid server folder name. Only alphanumeric characters, hyphens, and underscores are allowed."
+        fi
+    done
+
+    read -p "Enter server version (e.g., LATEST or PREVIEW): " version
+
+    # Use default directory
+    local server_dir="$BASE_DIR/$server_name"
+
+    # Create the server directory if it doesn't exist
+    mkdir -p "$server_dir"
+
+    # Save the target version input directly to version.txt
+    echo "$version" > "$server_dir/version.txt"
+    msg_info "Saved target version '$version' to version.txt"
+
+    # Install the server
+    download_bedrock_server "$server_dir" "$version"
+
+    # Configure the server properties after installation
+    configure_server_properties "$server_dir" "$server_name"
+
+    # Ask if allow-list should be configured
+    while true; do
+        read -p "Configure allow-list? (y/n): " allowlist_response
+        case "$allowlist_response" in
+            yes|y)
+                configure_allowlist "$server_dir"
+                break
+                ;;
+            no|n|"")
+                msg_info "Skipping allow-list configuration."
+                break
+                ;;
+            *)
+                msg_warn "Invalid input. Please answer 'yes' or 'no'."
+                ;;
+        esac
+    done 
+
+    # Create a systemd service for the server
+    create_systemd_service "$server_name"
+
+    # Ask if server should be started
+    while true; do
+        read -p "Do you want to start the server '$server_name' now? (y/n): " start_choice
+        start_choice="${start_choice,,}"
+        case "$start_choice" in
+            yes|y)
+                start_server "$server_name"
+                break
+                ;;
+            no|n|"")
+                msg_info "Server '$server_name' not started."
+                break
+                ;;
+            *)
+                msg_warn "Invalid input. Please answer 'yes' or 'no'."
+                ;;
+        esac
+    done 
 }
 
 # Updates a server
 update_server() {
   local server_name="$1"
   local server_dir="$BASE_DIR/$server_name"
-
-  # Check if the server directory exists
-  if [[ ! -f "$server_dir/bedrock_server" ]]; then
-    msg_error "bedrock_server not found in $server_dir."
-    return 1
-  fi
 
   msg_info "Starting update process for server: $server_name"
 
@@ -328,6 +678,19 @@ download_bedrock_server() {
         fi
     fi
 
+    # Remove old downloads before downloading a new one
+    msg_info "Cleaning up old Bedrock server downloads..."
+
+    download_files=("$server_dir/.downloads/bedrock_server_"*.zip)
+
+    # Check if any files exist before attempting deletion
+    if [[ -e "${download_files[0]}" ]]; then
+        ls -t "${download_files[@]}" 2>/dev/null | tail -n +3 | xargs -r rm -f
+        msg_ok "Old server downloads deleted."
+    else
+        msg_info "No old server downloads found."
+    fi
+
     # Handle version from version.txt and manage '-preview' for URL
     local target_version="$version"
     if [[ "$version" == *"-preview" ]]; then
@@ -342,7 +705,7 @@ download_bedrock_server() {
     msg_info "Resolved download URL: $download_url"
 
     # Download the server file
-    local zip_file="$server_dir/.downloads/bedrock_server.zip"
+    local zip_file="$server_dir/.downloads/bedrock_server_${actual_version%.}.zip"
     if ! curl -fsSL -o "$zip_file" -A "zvortex11325/bedrock-server-manager" "$download_url"; then
         msg_error "Failed to download Bedrock server from $download_url"
         return 1
@@ -408,14 +771,7 @@ download_bedrock_server() {
 # Gets the installed version of a server
 get_installed_version() {
   local server_dir="$1"
-  local server_binary="$server_dir/bedrock_server"
   local log_file="$server_dir/server_output.txt"
-
-  # Ensure the server binary exists
-  if [[ ! -f $server_binary ]]; then
-    msg_error "Server binary not found in $server_dir"
-    return 1
-  fi
 
   # Ensure the log file exists
   if [[ ! -f $log_file ]]; then
@@ -437,6 +793,83 @@ get_installed_version() {
   fi
 }
 
+# Back up a server's worlds and critical configuration files
+backup_server() {
+  local server_name="$1"
+  local server_dir="$BASE_DIR/$server_name"
+  local in_update="${2:-false}"
+  local backup_dir="$server_dir/backups"
+  local timestamp
+  local backup_file
+  local backups_to_keep
+  
+  # Extract world folder name from server.properties
+  local world_folder
+  world_folder=$(grep -E '^level-name=' "$server_dir/server.properties" | cut -d'=' -f2)
+  
+  if [[ -z "$world_folder" ]]; then
+    msg_error "Failed to determine world folder from server.properties!"
+    return 1
+  fi
+
+  # Generate timestamp and define backup file for worlds
+  timestamp=$(date +"%Y%m%d_%H%M%S")
+  backup_name="${world_folder}_backup_$timestamp.mcworld"
+  backup_file="$backup_dir/$backup_name"
+
+  if [[ "$in_update" == false ]]; then
+    if systemctl --user is-active --quiet "$server_name"; then
+      send_command $server_name "say Running server backup.."
+      stop_server $server_name
+      local was_running=true
+    else
+      msg_info "Server '$server_name' is not currently running."
+    fi
+  fi
+
+  msg_info "Running backup"
+
+  # Ensure backup directory exists
+  mkdir -p "$backup_dir"
+
+  # Check if the world directory exists
+  if [[ -d "$server_dir/worlds/$world_folder" ]]; then
+    # Backup the world contents into a .mcworld file
+    if ! (cd "$server_dir/worlds/$world_folder" && zip -r "$backup_file" . > /dev/null 2>&1); then
+      msg_error "Backup of world failed!"
+      return 1
+    fi
+    msg_ok "World backup created: $backup_name"
+  else
+    msg_info "World directory does not exist. Skipping world backup."
+  fi
+
+  # Backup critical files (allowlist.json, permissions.json, server.properties)
+  cp "$server_dir/allowlist.json" "$backup_dir/allowlist.json" 2>/dev/null
+  cp "$server_dir/permissions.json" "$backup_dir/permissions.json" 2>/dev/null
+  cp "$server_dir/server.properties" "$backup_dir/server.properties" 2>/dev/null
+  msg_ok "Critical files backed up to $backup_dir"
+
+  if [[ "$in_update" == false ]]; then
+    # Start the server after the world is installed if not updating
+    if [[ "$was_running" == true ]]; then
+      start_server $server_name
+    else
+      msg_info "Skipping server start."
+    fi
+  fi
+
+  # Prune old backups (keeping a defined number of backups)
+  msg_info "Pruning old backups..."
+  backups_to_keep=$((PACKAGE_BACKUP_KEEP + 1))
+  find "$backup_dir" -maxdepth 1 -name "${world_folder}_backup_*.mcworld" -type f | sort -r | tail -n "+$backups_to_keep" | while read -r old_backup; do
+    msg_info "Removing old backup: $old_backup"
+    rm -f "$old_backup" || msg_error "Failed to remove $old_backup"
+  done
+
+  msg_ok "Backup complete and old backups pruned"
+}
+
 # Delete a Bedrock server
 delete_server() {
   local server_name
@@ -444,14 +877,8 @@ delete_server() {
   local server_dir="$BASE_DIR/$server_name"
   local service_file="$HOME/.config/systemd/user/$server_name.service"
 
-  # Check if the server directory exists
-  if [[ ! -f "$server_dir/bedrock_server" ]]; then
-    msg_error "bedrock_server not found in $server_dir."
-    return 1
-  fi
-
   # Confirm deletion
-  read -p "Are you sure you want to delete the server '$server_name'? This action is irreversible! (y/N): " confirm
+  read -p "Are you sure you want to delete the server '$server_name'? This action is irreversible! (y/n): " confirm
   if [[ ! "${confirm,,}" =~ ^(y|yes)$ ]]; then
     msg_info "Server deletion canceled."
     return 0
@@ -486,7 +913,7 @@ enable_user_lingering() {
   fi
 
   while true; do
-    read -r -p "Do you want to enable lingering for user $(whoami)? This is required for servers to start after logout. (y/N): " response
+    read -r -p "Do you want to enable lingering for user $(whoami)? This is required for servers to start after logout. (y/n): " response
     response="${response,,}" # Convert to lowercase
 
     case "$response" in
@@ -552,15 +979,137 @@ EOF
   # Reload systemd to register the new service
   msg_info "Reloading user systemd daemon"
   systemctl --user daemon-reload
-
+  
   # Enable the service to start on boot
-  msg_info "Enabling service for '$server_name'"
-  systemctl --user enable "$server_name"
+  while true; do
+    read -r -p "Do you want to autostart the server $server_name. (y/n): " response
+    response="${response,,}" # Convert to lowercase
+
+    case "$response" in
+      yes|y)
+        msg_info "Enabling systemd service for $server_name"
+        if ! systemctl --user enable "$server_name"; then
+          msg_warn "Failed to enable systemd service for $server_name."
+          break # Continue even if it fails
+        fi
+        msg_ok "Systemd service enabled for $server_name."
+        break
+        ;;
+      no|n|"") # Empty input is treated as "no"
+        msg_info "Systemd service not enabled for $server_name."
+        break
+        ;;
+      *)
+        msg_warn "Invalid input. Please answer 'yes' or 'no'."
+        ;; # Loop again
+    esac
+  done
 
   # Run linger command
   enable_user_lingering
 
   msg_ok "Systemd service created for '$server_name'"
+}
+
+# Function to check if a service exists
+check_service_exists() {
+  local service_name=$1
+  if ! systemctl --user list-units --type=service | grep -q "$service_name"; then
+    msg_error "Service $service_name does not exist."
+    exit 1
+  fi
+}
+
+# Function to enable the service
+enable_service() {
+  local server_name=$1
+  check_service_exists "$server_name"
+  
+  # Check if the service is already enabled
+  if systemctl is-enabled --user "$server_name" &> /dev/null; then
+    echo "Service $server_name is already enabled."
+    return 0
+  fi
+
+  # Enable the server with systemctl
+  systemctl --user enable "$server_name"
+  if [[ $? -eq 0 ]]; then
+    echo "Server $server_name enabled successfully."
+  else
+    msg_error "Failed to enable $server_name."
+    exit 1
+  fi
+}
+
+# Function to disable the service
+disable_service() {
+  local server_name=$1
+  check_service_exists "$server_name"
+
+  # Check if the service is already disabled
+  if ! systemctl is-enabled --user "$server_name" &> /dev/null; then
+    echo "Service $server_name is already disabled."
+    return 0
+  fi
+
+  # Disable the server with systemctl
+  systemctl --user disable "$server_name"
+  if [[ $? -eq 0 ]]; then
+    echo "Server $server_name disabled successfully."
+  else
+    msg_error "Failed to disable $server_name."
+    exit 1
+  fi
+}
+
+# Function to monitor system resource usage of a systemd service
+monitor_service_usage() {
+    local service_name="$1"
+
+    if [[ -z "$service_name" ]]; then
+        echo "Usage: monitor_service_usage <service_name>"
+        return 1
+    fi
+
+    # Check if the service exists before proceeding (user-level services)
+    check_service_exists "$service_name" || return 1
+
+    echo "Monitoring resource usage for service: $service_name"
+    echo "Type 'exit' or 'done' to stop."
+
+    while true; do
+        # Get the main PID of the user service
+        local pid
+        pid=$(systemctl --user show -p MainPID --value "$service_name" 2>/dev/null)
+
+        if [[ -z "$pid" || "$pid" -le 0 ]]; then
+            echo "Service '$service_name' is not running or does not exist."
+            return 1
+        fi
+
+        # Get CPU and Memory usage for the PID
+        local cpu mem
+        read cpu mem <<< $(ps -p "$pid" -o %cpu,%mem --no-headers)
+
+        # Clear screen and display output
+        clear
+        echo "---------------------------------"
+        echo " Monitoring: $service_name "
+        echo "---------------------------------"
+        echo "PID:          $pid"
+        echo "CPU Usage:    $cpu%"
+        echo "Memory Usage: $mem%"
+        echo "---------------------------------"
+        echo "Press CTRL + C to exit"
+
+        # Check for user input in the background
+        #read -p "Command: " user_input
+        #if [[ "$user_input" == "exit" || "$user_input" == "done" ]]; then
+        #    echo "Stopping monitoring..."
+        #    break
+        #fi
+        sleep 1
+    done
 }
 
 # Configures common server properties interactively
@@ -745,105 +1294,13 @@ configure_allowlist() {
 
     # Save the updated allowlist to the file
     mv "$updated_allowlist" "$allowlist_file"
+    # Stop the server if it's running
+    if systemctl --user is-active --quiet "$server_name"; then
+    send_command $server_name "allowlist reload"
+    fi
     msg_ok "Updated allowlist.json with ${#new_players[@]} new players."
   else
     msg_info "No new players were added. Existing allowlist.json was not modified."
-  fi
-}
-
-# Send commands to server
-send_command() {
-  local server_name="$1"
-  local command="$2"
-
-  # Check if the server is running in a screen session
-  if screen -list | grep -q "$server_name"; then
-    # Send the command to the screen session
-    msg_info "Sending command to server '$server_name'..."
-    screen -S "$server_name" -X stuff "$command"^M"" # ^M simulates Enter key
-    msg_ok "Command '$command' sent to server '$server_name'."
-  else
-    msg_warn "Server '$server_name' is not running in a screen session."
-  fi
-}
-
-# Restart server
-restart_server() {
-  local server_name="$1"
-
-  if ! systemctl --user is-active --quiet "$server_name"; then
-    msg_warn "Server '$server_name' is not running. Starting it instead."
-    start_server "$server_name"
-    return $?
-  fi
-
-  msg_info "Restarting server '$server_name'..."
-  
-  # Send restart warning if the server is running
-  send_command $server_name "say Restarting server in 10 seconds.."
-
-  sleep 10
-
-  if ! systemctl --user restart "$server_name"; then
-    msg_error "Failed to restart server: '$server_name'."
-    return 1
-  fi
-
-  msg_ok "Server '$server_name' restarted."
-}
-
-# Start server
-start_server() {
-  local server_name="$1"
-  
-  if systemctl --user is-active --quiet "$server_name"; then
-    msg_warn "Server '$server_name' is already running."
-    return 0
-  fi
-
-  msg_info "Starting server '$server_name'..."
-  if ! systemctl --user start "$server_name"; then
-    msg_error "Failed to start server: '$server_name'."
-    return 1
-  fi
-
-  msg_ok "Server '$server_name' started."
-}
-
-# Stop server
-stop_server() {
-  local server_name="$1"
-
-  if ! systemctl --user is-active --quiet "$server_name"; then
-    msg_warn "Server '$server_name' is not running."
-    return 0
-  fi
-
-  msg_info "Stopping server '$server_name'..."
-  
-  # Send shutdown warning if the server is running
-  send_command $server_name "say Shutting down server in 10 seconds.."
-  
-  sleep 10
-
-  if ! systemctl --user stop "$server_name"; then
-    msg_error "Failed to stop server: '$server_name'."
-    return 1
-  fi
-
-  msg_ok "Server '$server_name' stopped."
-}
-
-# Attach to screen
-attach_console() {
-  local server_name="$1"
-
-  # Check if the server is running in a screen session
-  if screen -list | grep -q "$server_name"; then
-    msg_info "Attaching to server '$server_name' console..."
-    screen -r "$server_name"
-  else
-    msg_warn "Server '$server_name' is not running in a screen session."
   fi
 }
 
@@ -909,13 +1366,13 @@ extract_worlds() {
       # Notify players that the current world will be deleted
       msg_warn "Installing a new world will DELETE the existing world!"
       while true; do
-        read -p "Are you sure you want to proceed? (YES/no): " confirm_choice
+        read -p "Are you sure you want to proceed? (y/n): " confirm_choice
         case "${confirm_choice,,}" in
           yes|y) break ;;   # Proceed with world installation
           no|n) 
             msg_warn "World installation canceled."
             return 0 ;;   # Exit function without installing
-          *) msg_warn "Invalid input. Please type 'YES' to proceed or 'NO' to cancel." ;;
+          *) msg_warn "Invalid input. Please answer 'yes' or 'no'." ;;
         esac
       done
 
@@ -1112,7 +1569,7 @@ install_addons() {
       # Ask to restart if server is running
       if systemctl --user is-active --quiet "$server_name"; then
         while true; do
-          read -p "Do you want to restart the server: $server_name? (YES/no): " confirm_choice
+          read -p "Do you want to restart the server: $server_name? (y/n): " confirm_choice
           case "${confirm_choice,,}" in
             yes|y) 
             restart_server "$server_name"
@@ -1120,7 +1577,7 @@ install_addons() {
             no|n) 
               msg_warn "Server $server_name not restarted."
               break ;;   # Exit function without installing
-            *) msg_warn "Invalid input. Please type 'YES' to proceed or 'NO' to cancel." ;;
+            *) msg_warn "Invalid input. Please answer 'yes' or 'no'." ;;
           esac
         done
       else
@@ -1171,98 +1628,127 @@ update_pack_json() {
   return 0
 }
 
+# Attach to screen
+attach_console() {
+  local server_name="$1"
+
+  # Check if the server is running in a screen session
+  if screen -list | grep -q "$server_name"; then
+    msg_info "Attaching to server '$server_name' console..."
+    screen -r "$server_name"
+  else
+    msg_warn "Server '$server_name' is not running in a screen session."
+  fi
+}
+
+# Send commands to server
+send_command() {
+  local server_name="$1"
+  local command="$2"
+
+  # Check if the server is running in a screen session
+  if screen -list | grep -q "$server_name"; then
+    # Send the command to the screen session
+    msg_info "Sending command to server '$server_name'..."
+    screen -S "$server_name" -X stuff "$command"^M"" # ^M simulates Enter key
+    msg_ok "Command '$command' sent to server '$server_name'."
+  else
+    msg_warn "Server '$server_name' is not running in a screen session."
+  fi
+}
+
+# Restart server
+restart_server() {
+  local server_name="$1"
+
+  if ! systemctl --user is-active --quiet "$server_name"; then
+    msg_warn "Server '$server_name' is not running. Starting it instead."
+    start_server "$server_name"
+    return $?
+  fi
+
+  msg_info "Restarting server '$server_name'..."
+  
+  # Send restart warning if the server is running
+  send_command $server_name "say Restarting server in 10 seconds.."
+
+  sleep 10
+
+  if ! systemctl --user restart "$server_name"; then
+    msg_error "Failed to restart server: '$server_name'."
+    return 1
+  fi
+
+  msg_ok "Server '$server_name' restarted."
+}
+
+# Start server
+start_server() {
+  local server_name="$1"
+  
+  if systemctl --user is-active --quiet "$server_name"; then
+    msg_warn "Server '$server_name' is already running."
+    return 0
+  fi
+
+  msg_info "Starting server '$server_name'..."
+  if ! systemctl --user start "$server_name"; then
+    msg_error "Failed to start server: '$server_name'."
+    return 1
+  fi
+
+  msg_ok "Server '$server_name' started."
+}
+
+# Stop server
+stop_server() {
+  local server_name="$1"
+
+  if ! systemctl --user is-active --quiet "$server_name"; then
+    msg_warn "Server '$server_name' is not running."
+    return 0
+  fi
+
+  msg_info "Stopping server '$server_name'..."
+  
+  # Send shutdown warning if the server is running
+  send_command $server_name "say Shutting down server in 10 seconds.."
+  
+  sleep 10
+
+  if ! systemctl --user stop "$server_name"; then
+    msg_error "Failed to stop server: '$server_name'."
+    return 1
+  fi
+
+  msg_ok "Server '$server_name' stopped."
+}
+
 # Main menu
 main_menu() {
+    clear
   while true; do
     echo
-    echo -e "\033[1;34mBedrock Server Manager\033[0m"
-    echo "1) Install a new server"
-    echo "2) Install content"
-    echo "3) Manage an existing server"
-    echo "4) Send command to a server"
-    echo "5) Attach to server console"
+    echo -e "${MAGENTA}Bedrock Server Manager${RESET}"
+    echo "1) Install New Server"
+    echo "2) Manage Existing Server"
+    echo "3) Install Content"
+    echo "4) Send Command to Server"
+    echo "5) Advanced"
     echo "6) Exit"
-    read -p "Select an option [1-5]: " choice
+    read -p "Select an option [1-6]: " choice
 
     case $choice in
       1) # Install a new server
-        while true; do
-          read -p "Enter server folder name: " server_name
-
-          # Check if server_name contains only alphanumeric characters, hyphens, and underscores
-          if [[ "$server_name" =~ ^[[:alnum:]_-]+$ ]]; then
-            break  # Exit the loop if the name is valid
-          else
-            echo "Invalid server folder name. Only alphanumeric characters, hyphens, and underscores are allowed."
-          fi
-        done
-
-        read -p "Enter server version (e.g., LATEST or PREVIEW): " version
-
-        # Use default directory (./bedrock_server_manager/)
-        local server_dir="$BASE_DIR/$server_name"
-
-        # Create the server directory if it doesn't exist
-        mkdir -p "$server_dir"
-
-        # Save the target version input directly to version.txt
-        echo "$version" > "$server_dir/version.txt"
-        msg_info "Saved target version '$version' to version.txt"
-
-        # Install the server
-        download_bedrock_server "$server_dir" "$version"
-
-        # Configure the server properties after installation
-        configure_server_properties "$server_dir" "$server_name"
-
-        # Ask if allow-list should be configured
-        while true; do
-          read -p "Configure allow-list? (y/N): " allowlist_response
-          case "$allowlist_response" in
-            yes|y)
-              configure_allowlist "$server_dir"
-              break
-              ;;
-            no|n|"")
-              msg_info "Skipping allow-list configuration."
-              break
-              ;;
-            *)
-              msg_warn "Invalid input. Please answer 'yes' or 'no'."
-              ;;
-          esac
-        done 
-
-        # Create a systemd service for the server
-        create_systemd_service "$server_name"
-
-        # Ask if server should be started
-        while true; do
-          read -p "Do you want to start the server '$server_name' now? (y/N): " start_choice
-          start_choice="${start_choice,,}"
-          case "$start_choice" in
-            yes|y)
-              start_server "$server_name"
-              break
-              ;;
-            no|n|"")
-              msg_info "Server '$server_name' not started."
-              break
-              ;;
-            *)
-              msg_warn "Invalid input. Please answer 'yes' or 'no'."
-              ;;
-          esac
-        done 
-
+        install_new_server
         ;;
 
-      2) # Install content to server
-        install_content
-        ;;
-
-      3) # Manage an existing server
+      2) # Manage an existing server
         manage_server
+        ;;
+
+      3) # Install content to server
+        install_content
         ;;
 
       4) # Send a command
@@ -1271,12 +1757,12 @@ main_menu() {
         send_command "$server_name" "$command"
         ;;
 
-      5) # Attach to server console
-        read -p "Enter server name: " server_name
-        attach_console "$server_name"
+      5) # Advanced menu
+        advanced_menu
         ;;
 
       6) # Exit
+        clear
         exit 0
         ;;
 
@@ -1289,72 +1775,67 @@ main_menu() {
 
 # Manage server
 manage_server() {
+  clear
   while true; do
     echo
-    echo -e "\033[1;34mBedrock Server Manager\033[0m"
-    echo "1) Update an existing server"
-    echo "2) Start a server"
-    echo "3) Stop a server"
-    echo "4) Restart a server"
-    echo "5) Backup a server"
-    echo "6) Delete a server"
-    echo "7) Edit a server's properties"
-    echo "8) Configure a server's allow-list"
-    echo "9) Back"
-    read -p "Select an option [1-8]: " choice
+    echo -e "${MAGENTA}Bedrock Server Manager${RESET} - ${LIGHTPINK}Manage Server${RESET}"
+    echo "1) Update Server"
+    echo "2) Backup Server"
+    echo "3) Start Server"
+    echo "4) Stop Server"
+    echo "5) Restart Server"
+    echo "6) Delete Server"
+    echo "7) Back"
+    read -p "Select an option [1-7]: " choice
 
     case $choice in
 
       1) # Update an existing server
-        read -p "Enter server name: " server_name
-        update_server "$server_name"
+        if get_server_name; then
+            update_server "$server_name"
+        else
+            echo "Update canceled."
+        fi
         ;;
 
-      2) # Start a server
-        read -p "Enter server name: " server_name
-        start_server "$server_name"
+      2) # Backup a server
+        if get_server_name; then
+            backup_server "$server_name"
+        else
+            echo "Backup canceled."
+        fi
         ;;
 
-      3) # Stop a server
-        read -p "Enter server name: " server_name
-        stop_server "$server_name"
+      3) # Start a server
+        if get_server_name; then
+            start_server "$server_name"
+        else
+            echo "Start canceled."
+        fi
         ;;
 
-      4) # Restart a server
-        read -p "Enter server name: " server_name
-        restart_server "$server_name"
+      4) # Stop a server
+        if get_server_name; then
+            stop_server "$server_name"
+        else
+            echo "Stop canceled."
+        fi
         ;;
 
-      5) # Backup a server
-        read -p "Enter server name: " server_name
-        backup_server "$BASE_DIR/$server_name"
+      5) # Restart a server
+        if get_server_name; then
+            restart_server "$server_name"
+        else
+            echo "Restart canceled."
+        fi
         ;;
 
       6) # Delete a server
         delete_server
         ;;
 
-      7) # Edit server properties
-        read -p "Enter server name: " server_name
-
-        # Use default directory (./bedrock_server_manager/)
-        local server_dir="$BASE_DIR/$server_name"
-
-        configure_server_properties "$server_dir" "$server_name"
-        ;;
-
-      8) # Configure server allowlist
-        read -p "Enter server name: " server_name
-
-        # Use default directory (./bedrock_server_manager/)
-        local server_dir="$BASE_DIR/$server_name"
-
-        configure_allowlist "$server_dir"
-        ;;  
-
-
-      9) # Back
-        main_menu
+      7) # Back
+        return 0
         ;;
 
       *)
@@ -1366,28 +1847,106 @@ manage_server() {
 
 # Install content menu
 install_content() {
+  clear
   while true; do
     echo
-    echo -e "\033[1;34mBedrock Server Manager\033[0m"
-    echo "1) Install world"
-    echo "2) Install addon"
+    echo -e "${MAGENTA}Bedrock Server Manager${RESET} - ${PINK}Install Content${RESET}"
+    echo "1) Import World"
+    echo "2) Import Addon"
     echo "3) Back"
     read -p "Select an option [1-3]: " choice
 
     case $choice in
 
       1) # Install .mcworld to server
-        read -p "Enter server name: " server_name
-        extract_worlds "$server_name"
+        if get_server_name; then
+            extract_worlds "$server_name"
+        else
+            echo "Import canceled."
+        fi
         ;;
 
       2) # Install .mcpack/.mcaddon to sever
-        read -p "Enter server name: " server_name
-        install_addons "$server_name"
+        if get_server_name; then
+            install_addons "$server_name"
+        else
+            echo "Import canceled."
+        fi
         ;;
 
       3) # Back
-        main_menu
+        return 0
+        ;;
+
+      *)
+        msg_warn "Invalid choice"
+        ;;
+    esac
+  done
+}
+
+# Advanced menu
+advanced_menu() {
+  clear
+  while true; do
+    echo
+    echo -e "${MAGENTA}Bedrock Server Manager${RESET} - ${PINK}Advanced Menu${RESET}"
+    echo "1) Configure Server Properties"
+    echo "2) Configure Allowlist"
+    echo "3) Attach to Server Console"
+    echo "4) Schedule Server Task"
+    echo "5) View Server Resource Usage"
+    echo "6) Back"
+    read -p "Select an option [1-6]: " choice
+
+    case $choice in
+
+      1) # Edit server properties
+        if get_server_name; then
+            # Use default directory
+            local server_dir="$BASE_DIR/$server_name"
+            configure_server_properties "$server_dir" "$server_name"
+        else
+            echo "Configuration canceled."
+        fi
+        ;;
+
+      2) # Configure server allowlist
+        if get_server_name; then
+            # Use default directory
+            local server_dir="$BASE_DIR/$server_name"
+            configure_allowlist "$server_dir"
+        else
+            echo "Configuration canceled."
+        fi
+        ;;  
+
+      3) # Attach to server console
+        if get_server_name; then
+            attach_console "$server_name"
+        else
+            echo "Attach canceled."
+        fi
+        ;;
+
+      4) # Schedule task for server
+        if get_server_name; then
+            cron_scheduler "$server_name"
+        else
+            echo "Schedule canceled."
+        fi
+        ;;
+
+      5) # View resource usage for server
+        if get_server_name; then
+            monitor_service_usage "$server_name"
+        else
+            echo "Monitoring canceled."
+        fi
+        ;;
+
+      6) # Back
+        return 0
         ;;
 
       *)
@@ -1402,6 +1961,14 @@ install_content() {
 
 # Parse commands
 case "$1" in
+
+  main)
+    # Open the main menu
+    echo "Opening main menu..."
+    main_menu
+    exit 0
+    ;;
+
   send-command)
     shift # Remove the first argument (send-command)
     server_name=""  # Initialize
@@ -1580,11 +2147,56 @@ case "$1" in
     exit 0
     ;;
 
-  main)
-    # Open the main menu
-    echo "Opening main menu..."
-    main_menu
-    exit 0
+  enable-server)
+    shift # Remove the first argument (enable-server)
+    while [[ $# -gt 0 ]]; do
+      case $1 in
+        --server)
+          server_name=$2
+          shift 2
+          ;;
+        *)
+          msg_error "Unknown option: $1"
+          echo "Usage: $0 enable-server --server <server_name>"
+          exit 1
+          ;;
+      esac
+    done
+
+    # Validate input
+    if [[ -z $server_name ]]; then
+      msg_error "Missing required argument: --server"
+      echo "Usage: $0 enable-server --server <server_name>"
+      exit 1
+    fi
+
+    enable_service "$server_name"
+    ;;
+    
+  disable-server)
+    shift # Remove the first argument (disable-server)
+    while [[ $# -gt 0 ]]; do
+      case $1 in
+        --server)
+          server_name=$2
+          shift 2
+          ;;
+        *)
+          msg_error "Unknown option: $1"
+          echo "Usage: $0 disable-server --server <server_name>"
+          exit 1
+          ;;
+      esac
+    done
+
+    # Validate input
+    if [[ -z $server_name ]]; then
+      msg_error "Missing required argument: --server"
+      echo "Usage: $0 disable-server --server <server_name>"
+      exit 1
+    fi
+
+    disable_service "$server_name"
     ;;
 
   update-script)
@@ -1598,9 +2210,12 @@ case "$1" in
     echo "Usage: $0 <command> [options]"
     echo
     echo "Available commands:"
+    echo
+    echo "  main           -- Open the main menu"
+    echo
     echo "  send-command   -- Send a command to a running server"
     echo "    --server <server_name>    Specify the server name"
-    echo "    --command <command>       The command to send to the server (must be in quotations)"
+    echo "    --command <command>       The command to send to the server (must be in 'quotations')"
     echo
     echo "  update-server  -- Update a server to a specified version"
     echo "    --server <server_name>    Specify the server name"
@@ -1617,11 +2232,13 @@ case "$1" in
     echo "  restart-server -- Restart the server"
     echo "    --server <server_name>    Specify the server name"
     echo
+    echo "  enable-server  -- Enable server autostart"
+    echo "    --server <server_name>    Specify the server name"
+    echo
+    echo "  disable-server -- Disable server autostart"
+    echo "    --server <server_name>    Specify the server name"
+    echo
     echo "  update-script  -- Redownload script from github"
-    echo
-    echo "  main           -- Open the main menu"
-    echo
-    echo "  update-script  -- Redownloads script from github"
     echo
     echo "Version: $SCRIPTVERSION"
     echo "Credits: ZVortex11325"

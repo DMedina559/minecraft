@@ -22,6 +22,10 @@ Interactive Menu: Access a user-friendly interface to manage servers without man
 
 Install/Update Content: Easily import .mcworld/.mcpack files into your server.
 
+Automate Various Server Task: Quickly create cron task to automate task such as backup-server or restart-server.
+
+View Resource Usage: View how much CPU and RAM your server is using.
+
 ### Prerequisites
 
 The script ensures the installation of required dependencies:
@@ -70,6 +74,8 @@ bash /path/to/script/bedrock-server-manager.sh <command>
 <sub>When interacting with the script, server_name is the name of the servers folder (the name you chose durring the first step of instalation)</sub>
 
 ```
+  main           -- Open the main menu
+  
   send-command   -- Send a command to a running server
     --server <server_name>    Specify the server name
     --command <command>       The command to send to the server (must be in "quotations")
@@ -89,9 +95,13 @@ bash /path/to/script/bedrock-server-manager.sh <command>
   restart-server -- Restart the server
     --server <server_name>    Specify the server name
 
-  update-script -- Redownload script from github
+  enable-server  -- Enable server autostart
+    --server <server_name>    Specify the server name
+ 
+  disable-server -- Disable server autostart
+    --server <server_name>    Specify the server name
 
-  main           -- Open the main menu
+  update-script -- Redownload script from github
       
 ```
 
@@ -134,7 +144,9 @@ echo $PATH
 
 This will output a list of directories, similar to:
 
-`/home/USER/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games`
+```
+/home/USER/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+```
 
 2. Create the symbolic link:
 
@@ -142,7 +154,7 @@ This will output a list of directories, similar to:
 sudo ln -s /path/to/script/bedrock-server-manager.sh /path/in/your/$PATH/bedrock-server-manager
 ```
 
-Replace /path/to/bedrock-server-manager.sh with the actual path to your script and /path/in/your/$PATH with one of the directories from your $PATH (e.g., /home/USER/bin).
+Replace /path/to/script/bedrock-server-manager.sh with the actual path to your script and /path/in/your/$PATH with one of the directories from your $PATH (e.g., /home/USER/bin).
 
 After creating a symlink you can just use the below command without having to cd or specify the script directory
 

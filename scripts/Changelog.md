@@ -23,7 +23,6 @@
 ### 1.1.0
 1. Added option to import .mcworld files from ./content/worlds folder
 2. Added option to import .mcpack files from ./content/addons folder
-   - This will only update already installed addons
 3. Stop server before backup
 4. Use values from server.properties file when reconfiguring server properties
 5. Cleaned up some repetitive code
@@ -46,3 +45,20 @@
 1. Fixed json format for world addon files
 2. Set r/w permissions for extracted worlds/addons
 3. Ask to restart after installing addon
+
+### 1.2.0
+1. Added enable-server and disable-server commands
+   - Enable or disable systemd autostart service
+2. Added interactive cron scheduler
+   - You can view add modify delete cron jobs for your servers to automatically run certain script commands such as update-server at scheduled times
+3. Backup now makes .mcworld files instead of a .tar.gz file
+   - Added zip as required package
+   - Fixed backups not working
+4. View resource usage for server
+5. Standardized yes/no prompts
+6. Use allowlist reload command when updating allowlist and server is running
+7. Rearranged code blocks to a more logical order
+   - Centralized/Validate server name before call function
+8. Add version to server download file
+9. Rearranged menus
+   - Added Advanced Menu
