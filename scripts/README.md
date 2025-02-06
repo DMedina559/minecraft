@@ -1,5 +1,8 @@
 # Scripts
 
+- [Bedrock Server Manager](#bedrock-server-manager)
+- [Moneyz Economy Function Creator](#moneyz-economy-function-creator)
+
 ## Bedrock Server Manager
 
 Bedrock Server Manager is a comprehensive Bash script designed for installing, managing, and maintaining Minecraft Bedrock Dedicated Servers with ease.
