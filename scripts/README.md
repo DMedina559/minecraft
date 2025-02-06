@@ -168,6 +168,12 @@ This script has only been tested on the following linux distros:
 
 - Debian
 
+## Moneyz Economy Function Creator
+
+Moneyz Economy Function Creator is bash script used to quickly create basic Moneyz Economy buy/sell function files for the Moneyz Economy Behavior Pack. 
+
+Automatically create functions in bulk with a ./items.txt
+
 # License
 
-These script are provided for personal, non-commercial use only. Redistribution or modification requires prior written permission.
+These scripts are provided for personal, non-commercial use only. Redistribution or modification requires prior written permission.
