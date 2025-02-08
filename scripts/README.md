@@ -33,7 +33,7 @@ View Resource Usage: View how much CPU and RAM your server is using.
 
 The script ensures the installation of required dependencies:
 
-`curl, jq, unzip, systemd, screen`
+`curl, jq, unzip, systemd, screen, zip`
 
 Users need `sudo` permissions for installing these packages for the first time, and for enabling the optional `loginctl enable-linger` command. 
 
@@ -134,7 +134,7 @@ With the bedrock-server-manager.sh script you can easily import .mcworld and .mc
 
 For .mcworlds the script will scan the server.properties files for the `level-name` and extract the file to that folder.
 
-For .mcpacks the script will extract them to a tmp folder and scan the manifest.json, looking for the pack type, name, version, and uuid. The script will then move the pack to it respective world folder (resource_packs, or behaviour_packs) with the name+verison used as the folder name, and the script will update the `world_resource_packs.json` and `world_resource_packs.json` as needed with the packs uuid and version.
+For .mcpacks the script will extract them to a tmp folder and scan the manifest.json, looking for the pack type, name, version, and uuid. The script will then move the pack to it respective world folder (resource_packs, or behaviour_packs) with the name+verison used as the folder name, and the script will update the `world_behavior_packs.json` and `world_resource_packs.json` as needed with the packs uuid and version.
 ### Optional:
 
 For convenient access from any directory, you can create a symbolic link to the bedrock-server-manager.sh script in a directory within your $PATH.
@@ -157,7 +157,7 @@ This will output a list of directories, similar to:
 sudo ln -s /path/to/script/bedrock-server-manager.sh /path/in/your/$PATH/bedrock-server-manager
 ```
 
-Replace /path/to/script/bedrock-server-manager.sh with the actual path to your script and /path/in/your/$PATH with one of the directories from your $PATH (e.g., /home/USER/bin).
+Replace `/path/to/script/bedrock-server-manager.sh` with the actual path to your script and `/path/in/your/$PATH` with one of the directories from your `$PATH` (e.g., `/home/USER/bin`).
 
 After creating a symlink you can just use the below command without having to cd or specify the script directory
 

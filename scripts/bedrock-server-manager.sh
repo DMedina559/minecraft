@@ -4,7 +4,7 @@
 # COPYRIGHT ZVORTEX11325 2025
 # You may download and use this content for personal, non-commercial use. Any other use, including reproduction, or redistribution is prohibited without prior written permission.
 # Author: ZVortex11325
-# Version 1.2.0
+# Version 1.2.1
 
 set -eo pipefail
 
@@ -53,14 +53,14 @@ msg_warn() { echo -e "${YELLOW}[WARN]${RESET} $1"; }
 msg_error() { echo -e "${RED}[ERROR]${RESET} $1"; }
 
 # Function to handle Ctrl+C
-handle_interrupt() {
-    echo -e "\nExiting..."
-    clear
-    exit 1 
-}
+#handle_interrupt() {
+#    echo -e "\nExiting..."
+#    clear
+#    exit 1 
+#}
 
 # Trap SIGINT (Ctrl+C) and call the function
-trap handle_interrupt SIGINT
+#trap handle_interrupt SIGINT
 
 # Dependencies Check
 setup_prerequisites() {
@@ -132,6 +132,7 @@ update_script() {
   msg_ok "Done."
 }
 
+# Validate server exist
 get_server_name() {
     while true; do
         read -p "Enter server name (or type 'exit' to cancel): " server_name
@@ -146,7 +147,7 @@ get_server_name() {
 
         # Check if the server directory exists and contains bedrock_server
         if [[ ! -f "$server_dir/bedrock_server" ]]; then
-            msg_error "'bedrock_server' not found in $server_dir."
+            msg_warn "'bedrock_server' not found in $server_dir."
             echo "Please enter a valid server name or type 'exit' to cancel."
         else
             msg_ok "Server '$server_name' found."
@@ -872,8 +873,7 @@ backup_server() {
 
 # Delete a Bedrock server
 delete_server() {
-  local server_name
-  read -p "Enter the name of the server to delete: " server_name
+  local server_name="$1"
   local server_dir="$BASE_DIR/$server_name"
   local service_file="$HOME/.config/systemd/user/$server_name.service"
 
@@ -894,7 +894,7 @@ delete_server() {
   if [[ -f "$service_file" ]]; then
     msg_warn "Removing user systemd service for '$server_name'"
     systemctl --user disable "$server_name"
-    rm -f "$service_file"
+    rm -f "$service_file" > /dev/null 2>&1
     systemctl --user daemon-reload
   fi
 
@@ -948,9 +948,29 @@ create_systemd_service() {
 
   # Check if the service file already exists
   if [[ -f "$service_file" ]]; then
-    msg_error "Service file for '$server_name' already exists at $service_file"
-    return 1
+    msg_warn "Reconfiguring service file for '$server_name' at $service_file"
   fi
+
+  # Ask user if they want to enable auto-update on start
+  local autoupdate=""
+  while true; do
+    read -r -p "Do you want to enable auto-update on start for $server_name? (y/n): " response
+    response="${response,,}" # Convert to lowercase
+    case "$response" in
+      yes|y)
+        autoupdate="ExecStartPre=/bin/bash -c \"./bedrock-server-manager.sh update-server --server $server_name\""
+        msg_info "Auto-update enabled on start."
+        break
+        ;;
+      no|n|"")
+        msg_info "Auto-update disabled on start."
+        break
+        ;;
+      *)
+        msg_warn "Invalid input. Please answer 'yes' or 'no'."
+        ;;
+    esac
+  done
 
   # Create the systemd service file dynamically
   msg_info "Creating systemd service for '$server_name'"
@@ -963,7 +983,7 @@ After=network.target
 Type=forking
 WorkingDirectory=$SCRIPTDIR
 Environment="PATH=/usr/bin:/bin:/usr/sbin:/sbin"
-ExecStartPre=/bin/bash -c "./bedrock-server-manager.sh update-server --server $server_name"
+$autoupdate
 ExecStart=/bin/bash -c "truncate -s 0 ./bedrock_server_manager/$server_name/server_output.txt && /usr/bin/screen -dmS $server_name -L -Logfile ./bedrock_server_manager/$server_name/server_output.txt bash -c 'cd ./bedrock_server_manager/$server_name && ./bedrock_server'"
 ExecStop=/usr/bin/screen -S $server_name -X quit
 ExecReload=/bin/bash -c "truncate -s 0 ./bedrock_server_manager/$server_name/server_output.txt && /usr/bin/screen -S $server_name -X quit && /usr/bin/screen -dmS $server_name -L -Logfile ./bedrock_server_manager/$server_name/server_output.txt bash -c 'cd ./bedrock_server_manager/$server_name && ./bedrock_server'"
@@ -980,28 +1000,32 @@ EOF
   msg_info "Reloading user systemd daemon"
   systemctl --user daemon-reload
   
-  # Enable the service to start on boot
+  # Ask user if they want to enable the service to start on boot
   while true; do
-    read -r -p "Do you want to autostart the server $server_name. (y/n): " response
+    read -r -p "Do you want to autostart the server $server_name? (y/n): " response
     response="${response,,}" # Convert to lowercase
-
     case "$response" in
       yes|y)
         msg_info "Enabling systemd service for $server_name"
-        if ! systemctl --user enable "$server_name"; then
+        if ! systemctl --user enable "$server_name" > /dev/null 2>&1; then
           msg_warn "Failed to enable systemd service for $server_name."
           break # Continue even if it fails
         fi
         msg_ok "Systemd service enabled for $server_name."
         break
         ;;
-      no|n|"") # Empty input is treated as "no"
-        msg_info "Systemd service not enabled for $server_name."
+      no|n|"")
+        msg_info "Disabling systemd service for $server_name"
+        if systemctl --user disable "$server_name" > /dev/null 2>&1; then
+          msg_ok "Systemd service disabled for $server_name."
+        else
+          msg_info "Service $server_name was not enabled or does not exist."
+        fi
         break
         ;;
       *)
         msg_warn "Invalid input. Please answer 'yes' or 'no'."
-        ;; # Loop again
+        ;;
     esac
   done
 
@@ -1016,7 +1040,7 @@ check_service_exists() {
   local service_name=$1
   if ! systemctl --user list-units --type=service | grep -q "$service_name"; then
     msg_error "Service $service_name does not exist."
-    exit 1
+    return 1
   fi
 }
 
@@ -1034,10 +1058,10 @@ enable_service() {
   # Enable the server with systemctl
   systemctl --user enable "$server_name"
   if [[ $? -eq 0 ]]; then
-    echo "Server $server_name enabled successfully."
+    echo "Autostart for $server_name enabled successfully."
   else
     msg_error "Failed to enable $server_name."
-    exit 1
+    return 0
   fi
 }
 
@@ -1058,7 +1082,7 @@ disable_service() {
     echo "Server $server_name disabled successfully."
   else
     msg_error "Failed to disable $server_name."
-    exit 1
+    return 0
   fi
 }
 
@@ -1075,39 +1099,38 @@ monitor_service_usage() {
     check_service_exists "$service_name" || return 1
 
     echo "Monitoring resource usage for service: $service_name"
-    echo "Type 'exit' or 'done' to stop."
 
     while true; do
-        # Get the main PID of the user service
-        local pid
-        pid=$(systemctl --user show -p MainPID --value "$service_name" 2>/dev/null)
+        
+        trap 'clear; return 0' SIGINT
 
-        if [[ -z "$pid" || "$pid" -le 0 ]]; then
-            echo "Service '$service_name' is not running or does not exist."
-            return 1
+        # Get the PID of the 'screen' process that is running the Bedrock server
+        local screen_pid
+        screen_pid=$(pgrep -f "$service_name" | grep -v "screen" | head -n 1)  # Get the server's process
+        screen_pid=$((screen_pid + 1)) # +1 to get the server's child process
+
+        if [[ -z "$screen_pid" ]]; then
+            echo "No running instance found for service '$service_name'."
+            return 0
         fi
 
-        # Get CPU and Memory usage for the PID
-        local cpu mem
-        read cpu mem <<< $(ps -p "$pid" -o %cpu,%mem --no-headers)
-
+        # Get CPU and Memory usage for the child Bedrock server process
+        local cpu mem cmd uptime
+        read cpu mem cmd uptime <<< $(top -b -n 1 -p "$screen_pid" | awk 'NR>7 {print $9, $10, $12, $11}' | head -n 1) 
         # Clear screen and display output
         clear
         echo "---------------------------------"
-        echo " Monitoring: $service_name "
+        echo " Monitoring:  $service_name "
         echo "---------------------------------"
-        echo "PID:          $pid"
+        echo "PID:          $screen_pid"
         echo "CPU Usage:    $cpu%"
         echo "Memory Usage: $mem%"
+        #echo "Command:      $cmd"
+        echo "Uptime:       $uptime"
         echo "---------------------------------"
         echo "Press CTRL + C to exit"
 
-        # Check for user input in the background
-        #read -p "Command: " user_input
-        #if [[ "$user_input" == "exit" || "$user_input" == "done" ]]; then
-        #    echo "Stopping monitoring..."
-        #    break
-        #fi
+        # Wait before refreshing the display
         sleep 1
     done
 }
@@ -1751,10 +1774,13 @@ main_menu() {
         install_content
         ;;
 
-      4) # Send a command
-        read -p "Enter server name: " server_name
-        read -p "Enter command: " command
-        send_command "$server_name" "$command"
+      4) # Send a command       
+        if get_server_name; then
+            read -p "Enter command: " command
+            send_command "$server_name" "$command"
+        else
+            echo "Send command canceled."
+        fi
         ;;
 
       5) # Advanced menu
@@ -1831,8 +1857,13 @@ manage_server() {
         ;;
 
       6) # Delete a server
-        delete_server
+        if get_server_name; then
+            delete_server "$server_name"
+        else
+            echo "Delete canceled."
+        fi
         ;;
+        
 
       7) # Back
         return 0
@@ -1896,7 +1927,8 @@ advanced_menu() {
     echo "3) Attach to Server Console"
     echo "4) Schedule Server Task"
     echo "5) View Server Resource Usage"
-    echo "6) Back"
+    echo "6) Reconfigure Systemd Service"
+    echo "7) Back"
     read -p "Select an option [1-6]: " choice
 
     case $choice in
@@ -1945,7 +1977,15 @@ advanced_menu() {
         fi
         ;;
 
-      6) # Back
+      6) # Reconfigure server systemd file
+        if get_server_name; then
+            create_systemd_service "$server_name"
+        else
+            echo "Configuration canceled."
+        fi
+        ;;
+
+      7) # Back
         return 0
         ;;
 

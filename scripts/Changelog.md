@@ -62,3 +62,8 @@
 8. Add version to server download file
 9. Rearranged menus
    - Added Advanced Menu
+
+### 1.2.1
+1. Added option to enable/disable update on start to systemd flow
+   - Added Reconfigure Systemd Service option
+2. Fixed Resource Usage page
