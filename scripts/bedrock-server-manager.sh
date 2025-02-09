@@ -4,7 +4,7 @@
 # COPYRIGHT ZVORTEX11325 2025
 # You may download and use this content for personal, non-commercial use. Any other use, including reproduction, or redistribution is prohibited without prior written permission.
 # Author: ZVortex11325
-# Version 1.2.1
+# Version 1.3.0
 
 set -eo pipefail
 
@@ -13,7 +13,7 @@ SCRIPTVERSION=$(grep -m 1 "^# Version" "$0" | sed -E 's/^# Version[[:space:]]+([
 SCRIPTDIR=$(dirname "$(realpath "$0")") # Current full path the script is in
 SCRIPTDIRECT=$SCRIPTDIR/bedrock-server-manager.sh
 
-: "${BASE_DIR:="$SCRIPTDIR/bedrock_server_manager"}" # Default folder for servers
+: "${BASE_DIR:="$SCRIPTDIR/servers"}" # Default folder for servers
 : "${PACKAGE_BACKUP_KEEP:=3}"           # Number of backups to retain
 : "${DEFAULT_PORT:=19132}"              # Default IPv4 port
 : "${DEFAULT_IPV6_PORT:=19133}"         # Default IPv6 port (required for Bedrock)
@@ -51,16 +51,6 @@ msg_info() { echo -e "${CYAN}[INFO]${RESET} $1"; }
 msg_ok() { echo -e "${GREEN}[OK]${RESET} $1"; }
 msg_warn() { echo -e "${YELLOW}[WARN]${RESET} $1"; }
 msg_error() { echo -e "${RED}[ERROR]${RESET} $1"; }
-
-# Function to handle Ctrl+C
-#handle_interrupt() {
-#    echo -e "\nExiting..."
-#    clear
-#    exit 1 
-#}
-
-# Trap SIGINT (Ctrl+C) and call the function
-#trap handle_interrupt SIGINT
 
 # Dependencies Check
 setup_prerequisites() {
@@ -154,6 +144,12 @@ get_server_name() {
             return 0
         fi
     done
+}
+
+# Get the world name from server.properties
+get_world_name() {
+  local server_properties="$1"
+  grep -E '^level-name=' "$server_properties" | cut -d'=' -f2
 }
 
 # Function to view current cron jobs and present options for next actions
@@ -456,13 +452,14 @@ convert_to_readable_schedule() {
     elif [ "$day" != "*" ] && [ "$weekday" == "*" ] && [ "$month" == "*" ]; then
         schedule_time="Monthly on day $day at $hour:$minute"
     elif [ "$day" == "*" ] && [ "$weekday" != "*" ]; then
-        week_days=("Sunday" "Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday")
+        week_days=("Sunday" "Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday" "Sunday")
         schedule_time="Weekly on ${week_days[$weekday]} at $hour:$minute"
     else
         schedule_time="Next run at $(date -d "$month/$day $hour:$minute" +"%m/%d/%Y %H:%M")"
     fi
 }
 
+# Function to install a new server
 install_new_server() {
     while true; do
         read -p "Enter server folder name: " server_name
@@ -541,7 +538,7 @@ update_server() {
 
   msg_info "Starting update process for server: $server_name"
 
-  if systemctl --user is-active --quiet "$server_name"; then
+  if systemctl --user is-active --quiet "bedrock-${server_name}"; then
     send_command $server_name "say Checking for server updates.."
   fi
 
@@ -598,7 +595,7 @@ download_bedrock_server() {
 
     # Ensure the server directory exists
     mkdir -p "$server_dir"
-    mkdir -p "$server_dir/.downloads"
+    mkdir -p "$SCRIPTDIR/.downloads"
 
     # Function to fetch and extract the correct download URL
     lookup_version() {
@@ -682,7 +679,7 @@ download_bedrock_server() {
     # Remove old downloads before downloading a new one
     msg_info "Cleaning up old Bedrock server downloads..."
 
-    download_files=("$server_dir/.downloads/bedrock_server_"*.zip)
+    download_files=("$SCRIPTDIR/.downloads/bedrock_server_"*.zip)
 
     # Check if any files exist before attempting deletion
     if [[ -e "${download_files[0]}" ]]; then
@@ -706,7 +703,7 @@ download_bedrock_server() {
     msg_info "Resolved download URL: $download_url"
 
     # Download the server file
-    local zip_file="$server_dir/.downloads/bedrock_server_${actual_version%.}.zip"
+    local zip_file="$SCRIPTDIR/.downloads/bedrock_server_${actual_version%.}.zip"
     if ! curl -fsSL -o "$zip_file" -A "zvortex11325/bedrock-server-manager" "$download_url"; then
         msg_error "Failed to download Bedrock server from $download_url"
         return 1
@@ -716,7 +713,7 @@ download_bedrock_server() {
     # Check if server is running
     if [[ "$in_update" == true ]]; then
         msg_info "Checking if server is running"
-        if systemctl --user is-active --quiet "$server_name"; then
+        if systemctl --user is-active --quiet "bedrock-${server_name}"; then
           send_command $server_name "say Updating server..."
           stop_server $server_name
           local was_running
@@ -729,7 +726,7 @@ download_bedrock_server() {
     # Extract files based on whether it's an update or fresh install
     if [[ "$in_update" == true ]]; then
         msg_info "Backing up server before update..."
-        backup_server "$server_dir" true
+        backup_server "$server_name" true
 
         msg_info "Extracting the server files, excluding critical files..."
         if ! unzip -o "$zip_file" -d "$server_dir" -x "worlds/*" "allowlist.json" "permissions.json" "server.properties" > /dev/null 2>&1; then
@@ -738,7 +735,7 @@ download_bedrock_server() {
         fi
 
         msg_info "Restoring critical files from backup..."
-        local backup_dir="$server_dir/backups"
+        local backup_dir="$SCRIPTDIR/backups/$server_name/"
         cp "$backup_dir/allowlist.json" "$server_dir/allowlist.json" 2>/dev/null
         cp "$backup_dir/permissions.json" "$server_dir/permissions.json" 2>/dev/null
         cp "$backup_dir/server.properties" "$server_dir/server.properties" 2>/dev/null
@@ -794,117 +791,6 @@ get_installed_version() {
   fi
 }
 
-# Back up a server's worlds and critical configuration files
-backup_server() {
-  local server_name="$1"
-  local server_dir="$BASE_DIR/$server_name"
-  local in_update="${2:-false}"
-  local backup_dir="$server_dir/backups"
-  local timestamp
-  local backup_file
-  local backups_to_keep
-  
-  # Extract world folder name from server.properties
-  local world_folder
-  world_folder=$(grep -E '^level-name=' "$server_dir/server.properties" | cut -d'=' -f2)
-  
-  if [[ -z "$world_folder" ]]; then
-    msg_error "Failed to determine world folder from server.properties!"
-    return 1
-  fi
-
-  # Generate timestamp and define backup file for worlds
-  timestamp=$(date +"%Y%m%d_%H%M%S")
-  backup_name="${world_folder}_backup_$timestamp.mcworld"
-  backup_file="$backup_dir/$backup_name"
-
-  if [[ "$in_update" == false ]]; then
-    if systemctl --user is-active --quiet "$server_name"; then
-      send_command $server_name "say Running server backup.."
-      stop_server $server_name
-      local was_running=true
-    else
-      msg_info "Server '$server_name' is not currently running."
-    fi
-  fi
-
-  msg_info "Running backup"
-
-  # Ensure backup directory exists
-  mkdir -p "$backup_dir"
-
-  # Check if the world directory exists
-  if [[ -d "$server_dir/worlds/$world_folder" ]]; then
-    # Backup the world contents into a .mcworld file
-    if ! (cd "$server_dir/worlds/$world_folder" && zip -r "$backup_file" . > /dev/null 2>&1); then
-      msg_error "Backup of world failed!"
-      return 1
-    fi
-    msg_ok "World backup created: $backup_name"
-  else
-    msg_info "World directory does not exist. Skipping world backup."
-  fi
-
-  # Backup critical files (allowlist.json, permissions.json, server.properties)
-  cp "$server_dir/allowlist.json" "$backup_dir/allowlist.json" 2>/dev/null
-  cp "$server_dir/permissions.json" "$backup_dir/permissions.json" 2>/dev/null
-  cp "$server_dir/server.properties" "$backup_dir/server.properties" 2>/dev/null
-  msg_ok "Critical files backed up to $backup_dir"
-
-  if [[ "$in_update" == false ]]; then
-    # Start the server after the world is installed if not updating
-    if [[ "$was_running" == true ]]; then
-      start_server $server_name
-    else
-      msg_info "Skipping server start."
-    fi
-  fi
-
-  # Prune old backups (keeping a defined number of backups)
-  msg_info "Pruning old backups..."
-  backups_to_keep=$((PACKAGE_BACKUP_KEEP + 1))
-  find "$backup_dir" -maxdepth 1 -name "${world_folder}_backup_*.mcworld" -type f | sort -r | tail -n "+$backups_to_keep" | while read -r old_backup; do
-    msg_info "Removing old backup: $old_backup"
-    rm -f "$old_backup" || msg_error "Failed to remove $old_backup"
-  done
-
-  msg_ok "Backup complete and old backups pruned"
-}
-
-# Delete a Bedrock server
-delete_server() {
-  local server_name="$1"
-  local server_dir="$BASE_DIR/$server_name"
-  local service_file="$HOME/.config/systemd/user/$server_name.service"
-
-  # Confirm deletion
-  read -p "Are you sure you want to delete the server '$server_name'? This action is irreversible! (y/n): " confirm
-  if [[ ! "${confirm,,}" =~ ^(y|yes)$ ]]; then
-    msg_info "Server deletion canceled."
-    return 0
-  fi
-
-  # Stop the server if it's running
-  if systemctl --user is-active --quiet "$server_name"; then
-    msg_warn "Stopping server '$server_name' before deletion..."
-    stop_server $server_name
-  fi
-
-  # Remove the systemd service file
-  if [[ -f "$service_file" ]]; then
-    msg_warn "Removing user systemd service for '$server_name'"
-    systemctl --user disable "$server_name"
-    rm -f "$service_file" > /dev/null 2>&1
-    systemctl --user daemon-reload
-  fi
-
-  # Remove the server directory
-  msg_warn "Deleting server directory: $server_dir"
-  rm -rf "$server_dir" || { msg_error "Failed to delete server directory."; return 1; }
-
-  msg_ok "Server '$server_name' deleted successfully."
-}
-
 enable_user_lingering() {
   # Check if lingering is already enabled
   if loginctl show-user $(whoami) -p Linger | grep -q "Linger=yes"; then
@@ -941,7 +827,7 @@ enable_user_lingering() {
 create_systemd_service() {
   local server_name="$1"
   local server_dir="$BASE_DIR/$server_name"
-  local service_file="$HOME/.config/systemd/user/$server_name.service"
+  local service_file="$HOME/.config/systemd/user/bedrock-${server_name}.service"
 
   # Ensure the user's systemd directory exists
   mkdir -p "$HOME/.config/systemd/user"
@@ -984,9 +870,9 @@ Type=forking
 WorkingDirectory=$SCRIPTDIR
 Environment="PATH=/usr/bin:/bin:/usr/sbin:/sbin"
 $autoupdate
-ExecStart=/bin/bash -c "truncate -s 0 ./bedrock_server_manager/$server_name/server_output.txt && /usr/bin/screen -dmS $server_name -L -Logfile ./bedrock_server_manager/$server_name/server_output.txt bash -c 'cd ./bedrock_server_manager/$server_name && ./bedrock_server'"
-ExecStop=/usr/bin/screen -S $server_name -X quit
-ExecReload=/bin/bash -c "truncate -s 0 ./bedrock_server_manager/$server_name/server_output.txt && /usr/bin/screen -S $server_name -X quit && /usr/bin/screen -dmS $server_name -L -Logfile ./bedrock_server_manager/$server_name/server_output.txt bash -c 'cd ./bedrock_server_manager/$server_name && ./bedrock_server'"
+ExecStart=/bin/bash -c "truncate -s 0 ./servers/$server_name/server_output.txt && /usr/bin/screen -dmS bedrock-${server_name} -L -Logfile ./servers/$server_name/server_output.txt bash -c 'cd ./servers/$server_name && ./bedrock_server'"
+ExecStop=/usr/bin/screen -S bedrock-${server_name} -X quit
+ExecReload=/bin/bash -c "truncate -s 0 ./servers/$server_name/server_output.txt && /usr/bin/screen -S bedrock-${server_name} -X quit && /usr/bin/screen -dmS bedrock-${server_name} -L -Logfile ./servers/$server_name/server_output.txt bash -c 'cd ./servers/$server_name && ./bedrock_server'"
 Restart=always
 RestartSec=10
 StartLimitIntervalSec=500
@@ -1007,20 +893,12 @@ EOF
     case "$response" in
       yes|y)
         msg_info "Enabling systemd service for $server_name"
-        if ! systemctl --user enable "$server_name" > /dev/null 2>&1; then
-          msg_warn "Failed to enable systemd service for $server_name."
-          break # Continue even if it fails
-        fi
-        msg_ok "Systemd service enabled for $server_name."
+        enable_service $server_name
         break
         ;;
       no|n|"")
         msg_info "Disabling systemd service for $server_name"
-        if systemctl --user disable "$server_name" > /dev/null 2>&1; then
-          msg_ok "Systemd service disabled for $server_name."
-        else
-          msg_info "Service $server_name was not enabled or does not exist."
-        fi
+        disable_service $server_name
         break
         ;;
       *)
@@ -1037,9 +915,11 @@ EOF
 
 # Function to check if a service exists
 check_service_exists() {
-  local service_name=$1
-  if ! systemctl --user list-units --type=service | grep -q "$service_name"; then
-    msg_error "Service $service_name does not exist."
+  local service_name="$1"
+  local service_file="$HOME/.config/systemd/user/bedrock-${service_name}.service"
+
+  if [[ ! -f "$service_file" ]]; then
+    msg_error "Service file for '$service_name' does not exist."
     return 1
   fi
 }
@@ -1050,13 +930,13 @@ enable_service() {
   check_service_exists "$server_name"
   
   # Check if the service is already enabled
-  if systemctl is-enabled --user "$server_name" &> /dev/null; then
+  if systemctl is-enabled --user "bedrock-${server_name}" &> /dev/null; then
     echo "Service $server_name is already enabled."
     return 0
   fi
 
   # Enable the server with systemctl
-  systemctl --user enable "$server_name"
+  systemctl --user enable "bedrock-${server_name}"
   if [[ $? -eq 0 ]]; then
     echo "Autostart for $server_name enabled successfully."
   else
@@ -1071,13 +951,13 @@ disable_service() {
   check_service_exists "$server_name"
 
   # Check if the service is already disabled
-  if ! systemctl is-enabled --user "$server_name" &> /dev/null; then
+  if ! systemctl is-enabled --user "bedrock-${server_name}" &> /dev/null; then
     echo "Service $server_name is already disabled."
     return 0
   fi
 
   # Disable the server with systemctl
-  systemctl --user disable "$server_name"
+  systemctl --user disable "bedrock-${server_name}"
   if [[ $? -eq 0 ]]; then
     echo "Server $server_name disabled successfully."
   else
@@ -1106,7 +986,7 @@ monitor_service_usage() {
 
         # Get the PID of the 'screen' process that is running the Bedrock server
         local screen_pid
-        screen_pid=$(pgrep -f "$service_name" | grep -v "screen" | head -n 1)  # Get the server's process
+        screen_pid=$(pgrep -f "bedrock-${service_name}" | grep -v "screen" | head -n 1)  # Get the server's process
         screen_pid=$((screen_pid + 1)) # +1 to get the server's child process
 
         if [[ -z "$screen_pid" ]]; then
@@ -1318,7 +1198,7 @@ configure_allowlist() {
     # Save the updated allowlist to the file
     mv "$updated_allowlist" "$allowlist_file"
     # Stop the server if it's running
-    if systemctl --user is-active --quiet "$server_name"; then
+    if systemctl --user is-active --quiet "bedrock-${server_name}"; then
     send_command $server_name "allowlist reload"
     fi
     msg_ok "Updated allowlist.json with ${#new_players[@]} new players."
@@ -1327,13 +1207,13 @@ configure_allowlist() {
   fi
 }
 
-# Install world to server
+# Select .mcworld menu
 extract_worlds() {
   local server_name="$1"
-  
+
   # Path to the content/worlds folder and the server directory
   local content_dir="$SCRIPTDIR/content/worlds"
-  local server_dir="$SCRIPTDIR/bedrock_server_manager/$server_name"
+  local server_dir="$BASE_DIR/$server_name"
   local server_properties="$server_dir/server.properties"
 
   # Check if server.properties exists
@@ -1341,10 +1221,10 @@ extract_worlds() {
     msg_error "server.properties not found in $server_dir"
     return 1
   fi
-  
+
   # Get the world name from the server.properties file
   local world_name
-  world_name=$(grep "^level-name=" "$server_properties" | sed -E 's/^level-name=([a-zA-Z0-9_ -]+)$/\1/')
+  world_name=$(get_world_name "$server_properties")
 
   # If we couldn't find the world name, return an error
   if [[ -z "$world_name" ]]; then
@@ -1353,18 +1233,14 @@ extract_worlds() {
   fi
 
   msg_info "World name from server.properties: $world_name"
-  
-  # Directory to extract worlds
-  local extract_dir="$server_dir/worlds/$world_name"
-  mkdir -p "$extract_dir"
-  
+
   # Get a list of all .mcworld files (which are actually .zip files)
   local mcworld_files=("$content_dir"/*.mcworld)
-  
-  # If no .mcworld files found, return an error
+
+  # If no .mcworld files found, return a message and exit (no error)
   if [[ ${#mcworld_files[@]} -eq 0 ]]; then
     msg_warn "No .mcworld files found in $content_dir"
-    return 0
+    return 0 # Not an error, just no worlds to install
   fi
 
   # Create an array with just the base file names (without full paths)
@@ -1391,57 +1267,80 @@ extract_worlds() {
       while true; do
         read -p "Are you sure you want to proceed? (y/n): " confirm_choice
         case "${confirm_choice,,}" in
-          yes|y) break ;;   # Proceed with world installation
-          no|n) 
+          yes|y) break ;;    # Proceed with world installation
+          no|n)
             msg_warn "World installation canceled."
-            return 0 ;;   # Exit function without installing
+            return 0 ;;    # Exit function without installing
           *) msg_warn "Invalid input. Please answer 'yes' or 'no'." ;;
         esac
       done
 
-      # Stop the server if it's running
-      if systemctl --user is-active --quiet "$server_name"; then
-        stop_server $server_name
-        local was_running=true
-      else
-        msg_info "Server '$server_name' is not currently running."
-      fi
-
       # Find the full path of the selected file
       local selected_file="${mcworld_files[${REPLY}-1]}"
 
-      msg_info "Installing world from $mcworld_file..."
-
-      # Remove existing world folder content
-      msg_warn "Removing existing world folder..."
-      rm -rf "$extract_dir"/*
-
-      # Extract the new world
-      msg_info "Extracting new world..."
-      unzip -o "$selected_file" -d "$extract_dir" &>/dev/null
-      chmod -R u+w "$extract_dir"
-      msg_ok "World installed to $server_name"
-
-      # Start the server after the world is installed (if it was running)
-      if [[ "$was_running" == true ]]; then
-        start_server $server_name
-      else
-        msg_info "Skipping server start."
-      fi
-      
-      # Exit the loop after successful installation
-      return 0
+      # Call the install_world function to handle the extraction and server management
+      install_world "$server_name" "$selected_file"
+      return 0 # Exit extract_worlds after successful install_world
     done
   done
 }
 
-# Install addon to server
+# Install world to server
+install_world() {
+  local server_name="$1"
+  local selected_file="$2"
+  local from_addon="${3:-false}"
+  local server_dir="$BASE_DIR/$server_name"
+  local server_properties="$server_dir/server.properties"
+
+  # Get the world name from server.properties
+  local world_name
+  world_name=$(get_world_name "$server_properties")
+  local extract_dir="$server_dir/worlds/$world_name"
+
+    # Check if server is running when not frmo addon
+    if [[ "$from_addon" == false ]]; then
+        msg_info "Checking if server is running"
+        if systemctl --user is-active --quiet "bedrock-${server_name}"; then
+          send_command $server_name "say Updating server..."
+          stop_server $server_name
+          local was_running
+          was_running=true
+        else
+          msg_info "Server '$server_name' is not currently running."
+        fi
+    fi
+
+  msg_info "Installing world $(basename "$selected_file")..."
+
+  # Remove existing world folder content
+  msg_warn "Removing existing world folder..."
+  rm -rf "$extract_dir"/*
+
+  # Extract the new world
+  msg_info "Extracting new world..."
+  unzip -o "$selected_file" -d "$extract_dir" &>/dev/null
+  chmod -R u+w "$extract_dir"
+  msg_ok "World installed to $server_name"
+
+  # Start the server after the world is installed if not from addon
+  if [[ "$from_addon" == false ]]; then
+      if [[ "$was_running" == true ]]; then
+        start_server $server_name
+      else
+        msg_info "Skip starting server '$server_name'."
+      fi
+  fi
+  return 0
+}
+
+# Select .mcaddon/.mcpack menu
 install_addons() {
   local server_name="$1"
-  
+
   # Directories
   local addon_dir="$SCRIPTDIR/content/addons"
-  local server_dir="$SCRIPTDIR/bedrock_server_manager/$server_name"
+  local server_dir="$BASE_DIR/$server_name"
   local server_properties="$server_dir/server.properties"
 
   # Check if server.properties exists
@@ -1449,10 +1348,10 @@ install_addons() {
     msg_warn "server.properties not found in $server_dir"
     return 1
   fi
-  
+
   # Get the world name from the server.properties file
   local world_name
-  world_name=$(grep "^level-name=" "$server_properties" | sed -E 's/^level-name=([a-zA-Z0-9_ -]+)$/\1/')
+  world_name=$(get_world_name "$server_properties")
 
   # If we couldn't find the world name, return an error
   if [[ -z "$world_name" ]]; then
@@ -1462,19 +1361,25 @@ install_addons() {
 
   msg_info "World name from server.properties: $world_name"
 
+  # Set up addon and world directories
   local behavior_dir="$server_dir/worlds/$world_name/behavior_packs"
   local resource_dir="$server_dir/worlds/$world_name/resource_packs"
   local behavior_json="$server_dir/worlds/$world_name/world_behavior_packs.json"
   local resource_json="$server_dir/worlds/$world_name/world_resource_packs.json"
-  local world_folder="$server_dir/worlds/$world_name"
 
   # Create directories if they don't exist
   mkdir -p "$behavior_dir" "$resource_dir"
 
-  ## Collect .mcaddon and .mcpack files using globbing
+  # Collect .mcaddon and .mcpack files using globbing
   local addon_files=()
-  #addon_files+=("$addon_dir"/*.mcaddon)
-  addon_files+=("$addon_dir"/*.mcpack)
+  # Check for .mcaddon files
+  if compgen -G "$addon_dir/*.mcaddon" > /dev/null; then
+    addon_files+=("$addon_dir"/*.mcaddon)
+  fi
+  # Check for .mcpack files
+  if compgen -G "$addon_dir/*.mcpack" > /dev/null; then
+    addon_files+=("$addon_dir"/*.mcpack)
+  fi
 
   # If no addons found, return an error
   if [[ ${#addon_files[@]} -eq 0 ]]; then
@@ -1483,133 +1388,179 @@ install_addons() {
   fi
 
   # Show selection menu
+  show_addon_selection_menu $server_name "${addon_files[@]}"
+}
+
+# Show the addon selection menu
+show_addon_selection_menu() {
+  local server_name="$1"
+  shift
+  local addon_files=("$@")
   PS3="Select an addon to install (1-${#addon_files[@]}): "
-  while true; do
-    echo "Available addons to install:"
-    select addon_file in "${addon_files[@]}"; do
-      if [[ -z "$addon_file" ]]; then
-        msg_error "Invalid selection. Please choose a valid option."
-        break
-      fi
-
-      msg_info "Processing addon: $(basename "$addon_file")"
-      
-      # Extract addon name (strip file extension)
-      local addon_name
-      addon_name=$(basename "$addon_file" | sed -E 's/\.(mcaddon|mcpack)$//')
-
-      # If it's a .mcaddon, extract it
-      if [[ "$addon_file" == *.mcaddon ]]; then
-        local temp_dir
-        temp_dir=$(mktemp -d)
-
-        msg_info "Extracting $(basename "$addon_file")..."
-
-        # Unzip the .mcaddon file to a temporary directory
-        unzip -o "$addon_file" -d "$temp_dir" &>/dev/null
-        chmod -R u+w "$temp_dir"
-
-        # Handle contents of the .mcaddon file
-        # Check for the existence of .mcpack or .mcworld files inside the .mcaddon
-        for world_file in "$temp_dir"/*.mcworld; do
-          if [[ -f "$world_file" ]]; then
-            msg_info "Processing .mcworld file: $world_file"
-            extract_worlds "$server_name" "$world_file"
-          fi
-        done
-
-        # Handle .mcpack files (behavior or resource packs)
-        for pack_file in "$temp_dir"/*.mcpack; do
-          if [[ -f "$pack_file" ]]; then
-            msg_info "Processing .mcpack file: $pack_file"
-            # Extract pack name and version from the .mcpack (manifest.json inside)
-            pack_name=$(basename "$pack_file" | sed -E "s/\.(mcpack)$//")
-            pack_version=$(unzip -p "$pack_file" "manifest.json" | jq -r ".header.version | join(\".\")")
-            formatted_pack_name=$(echo "$pack_name" | tr "[:upper:]" "[:lower:]" | tr " " "_")
-            
-            # Ensure the correct behavior and resource directories are created relative to world directory
-            addon_behavior_dir="$behavior_dir/$formatted_pack_name"_"$pack_version"
-            addon_resource_dir="$resource_dir/$formatted_pack_name"_"$pack_version"
-            mkdir -p "$addon_behavior_dir" "$addon_resource_dir"
-
-            # Copy the files from .mcpack
-            unzip -o "$pack_file" -d "$temp_dir"
-            chmod -R u+w "$temp_dir"
-            cp -r "$temp_dir"/* "$addon_behavior_dir"
-            update_pack_json "$behavior_json" "$(jq -r '.header.uuid' "$pack_file")" "$pack_version"
-          fi
-        done
-
-        rm -rf "$temp_dir"
-        msg_ok "$(basename "$addon_file") extracted and installed."
-
-      # If it's a .mcpack, process the manifest
-      elif [[ "$addon_file" == *.mcpack ]]; then
-        local temp_dir
-        temp_dir=$(mktemp -d)
-        msg_info "Extracting $(basename "$addon_file")..."
-        unzip -o "$addon_file" -d "$temp_dir" &>/dev/null
-        chmod -R u+w "$temp_dir"
-        
-        # Parse the manifest.json
-        if [[ -f "$temp_dir/manifest.json" ]]; then
-          local pack_type
-          pack_type=$(jq -r '.modules[0].type' "$temp_dir/manifest.json")
-          local uuid
-          uuid=$(jq -r '.header.uuid' "$temp_dir/manifest.json")
-          local version
-          version=$(jq -r '.header.version | join(".")' "$temp_dir/manifest.json")
-          local addon_name_from_manifest
-          addon_name_from_manifest=$(jq -r '.header.name' "$temp_dir/manifest.json")
-          local formatted_addon_name
-          formatted_addon_name=$(echo "$addon_name_from_manifest" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
-
-          # Combine addon name and version to create folder name
-          local addon_behavior_dir="$behavior_dir/$formatted_addon_name"_"$version"
-          local addon_resource_dir="$resource_dir/$formatted_addon_name"_"$version"
-          mkdir -p "$addon_behavior_dir" "$addon_resource_dir"
-          
-          # Handle copying files
-          if [[ "$pack_type" == "data" ]]; then
-            msg_info "Installing behavior pack to $server_name"
-            cp -r "$temp_dir"/* "$addon_behavior_dir"
-            chmod -R u+w "$addon_behavior_dir"
-            update_pack_json "$behavior_json" "$uuid" "$version" "$addon_name_from_manifest"
-          elif [[ "$pack_type" == "resources" ]]; then
-            msg_info "Installing resource pack to $server_name"
-            cp -r "$temp_dir"/* "$addon_resource_dir"
-            chmod -R u+w "$addon_resource_dir"
-            update_pack_json "$resource_json" "$uuid" "$version" "$addon_name_from_manifest"
-          else
-            msg_error "Unknown pack type: $pack_type"
-          fi
-        else
-          msg_error "manifest.json not found in $(basename "$addon_file")"
-        fi
-        rm -rf "$temp_dir"
-      fi
-
-      # Ask to restart if server is running
-      if systemctl --user is-active --quiet "$server_name"; then
-        while true; do
-          read -p "Do you want to restart the server: $server_name? (y/n): " confirm_choice
-          case "${confirm_choice,,}" in
-            yes|y) 
-            restart_server "$server_name"
-            break ;;  # Proceed with restart
-            no|n) 
-              msg_warn "Server $server_name not restarted."
-              break ;;   # Exit function without installing
-            *) msg_warn "Invalid input. Please answer 'yes' or 'no'." ;;
-          esac
-        done
-      else
-        msg_info "Server '$server_name' is not currently running."
-      fi
-
-      return 0
+    addon_names=()
+    for addon_file in "${addon_files[@]}"; do
+      addon_names+=("$(basename "$addon_file")")  # Extract file name from path
     done
+    while true; do
+      echo "Available addons to install:"
+      select addon_name in "${addon_names[@]}"; do
+        if [[ -z "$addon_name" ]]; then
+          msg_error "Invalid selection. Please choose a valid option."
+          break
+        fi
+
+        # Find the full path of the selected file
+        addon_file=$(realpath "$addon_dir/$addon_name")
+
+        msg_info "Processing addon: $addon_name"
+
+        # Check if server is running
+        if systemctl --user is-active --quiet "bedrock-${server_name}"; then
+          send_command $server_name "say Updating server..."
+          stop_server $server_name
+          local was_running
+          was_running=true
+        else
+          msg_info "Server '$server_name' is not currently running."
+        fi
+
+        process_addon "$addon_file" "$server_name"
+
+        if [[ "$was_running" == true ]]; then
+          start_server $server_name
+        else
+          msg_info "Skip starting server '$server_name'."
+        fi
+        break
+    done
+    break
   done
+}
+
+# Process the selected addon
+process_addon() {
+  local addon_file="$1"
+  local server_name="$2"
+  
+  # Extract addon name (strip file extension)
+  local addon_name
+  addon_name=$(basename "$addon_file" | sed -E 's/\.(mcaddon|mcpack)$//')
+
+  # If it's a .mcaddon, extract it
+  if [[ "$addon_file" == *.mcaddon ]]; then
+    process_mcaddon "$addon_file" "$server_name"
+  
+  # If it's a .mcpack, process it
+  elif [[ "$addon_file" == *.mcpack ]]; then
+    process_mcpack "$addon_file" "$server_name"
+  fi
+}
+
+# Process .mcaddon file
+process_mcaddon() {
+  local addon_file="$1"
+  local server_name="$2"
+
+  local temp_dir
+  temp_dir=$(mktemp -d)
+
+  msg_info "Extracting $(basename "$addon_file")..."
+
+  # Unzip the .mcaddon file to a temporary directory
+  unzip -o "$addon_file" -d "$temp_dir" &>/dev/null
+  chmod -R u+w "$temp_dir"
+
+  # Handle contents of the .mcaddon file
+  process_mcaddon_files "$temp_dir" "$server_name"
+  
+  rm -rf "$temp_dir"
+  msg_ok "$(basename "$addon_file") extracted and installed."
+}
+
+# Process files inside the .mcaddon
+process_mcaddon_files() {
+  local temp_dir="$1"
+  local server_name="$2"
+
+  # Process .mcworld files
+  for world_file in "$temp_dir"/*.mcworld; do
+    if [[ -f "$world_file" ]]; then
+      msg_info "Processing .mcworld file: "$(basename "$world_file")""
+      install_world "$server_name" "$world_file" true
+    fi
+  done
+
+  # Process .mcpack files
+  for pack_file in "$temp_dir"/*.mcpack; do
+    if [[ -f "$pack_file" ]]; then
+      msg_info "Processing .mcpack file: "$(basename "$world_file")""
+      process_mcpack "$pack_file" "$server_name"
+    fi
+  done
+}
+
+# Process .mcpack file
+process_mcpack() {
+  local pack_file="$1"
+  local server_name="$2"
+  local temp_dir
+  temp_dir=$(mktemp -d)
+
+  msg_info "Extracting $(basename "$pack_file")..."
+
+  # Unzip the .mcpack file to a temporary directory
+  unzip -o "$pack_file" -d "$temp_dir" &>/dev/null
+  chmod -R u+w "$temp_dir"
+
+  # Parse the manifest.json and process the pack
+  process_manifest "$temp_dir" "$server_name" "$pack_file"
+  
+  rm -rf "$temp_dir"
+}
+
+# Process manifest.json and handle the pack
+process_manifest() {
+  local temp_dir="$1"
+  local server_name="$2"
+  local pack_file="$3"
+
+  if [[ -f "$temp_dir/manifest.json" ]]; then
+    local pack_type
+    pack_type=$(jq -r '.modules[0].type' "$temp_dir/manifest.json")
+    local uuid
+    uuid=$(jq -r '.header.uuid' "$temp_dir/manifest.json")
+    local version
+    version=$(jq -r '.header.version | join(".")' "$temp_dir/manifest.json")
+    local addon_name_from_manifest
+    addon_name_from_manifest=$(jq -r '.header.name' "$temp_dir/manifest.json")
+    local formatted_addon_name
+    formatted_addon_name=$(echo "$addon_name_from_manifest" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
+
+    # Combine addon name and version to create folder name
+    local addon_behavior_dir="$behavior_dir/$formatted_addon_name"_"$version"
+    local addon_resource_dir="$resource_dir/$formatted_addon_name"_"$version"
+
+    # Handle copying files based on pack type
+    if [[ "$pack_type" == "data" ]]; then
+      msg_info "Installing behavior pack to $server_name"
+      mkdir -p "$addon_behavior_dir"
+      cp -r "$temp_dir"/* "$addon_behavior_dir"
+      chmod -R u+w "$addon_behavior_dir"
+      update_pack_json "$behavior_json" "$uuid" "$version" "$addon_name_from_manifest"
+      msg_ok "Installed "$(basename "$pack_file")" to $server_name."
+    elif [[ "$pack_type" == "resources" ]]; then
+      msg_info "Installing resource pack to $server_name"
+      mkdir -p "$addon_resource_dir"
+      cp -r "$temp_dir"/* "$addon_resource_dir"
+      chmod -R u+w "$addon_resource_dir"
+      update_pack_json "$resource_json" "$uuid" "$version" "$addon_name_from_manifest"
+      msg_ok "Installed "$(basename "$pack_file")" to $server_name."
+    else
+      msg_error "Unknown pack type: $pack_type"
+    fi
+  else
+    msg_error "manifest.json not found in $(basename "$pack_file")"
+  fi
 }
 
 # Helper function to update pack JSON files
@@ -1618,7 +1569,7 @@ update_pack_json() {
   local pack_id="$2"
   local version="$3"
 
-  msg_info "Updating $json_file with Pack ID: $pack_id and Version: $version"
+  msg_info "Updating "$(basename "$json_file")"."
 
   # Ensure JSON file exists
   [[ ! -f "$json_file" ]] && echo "[]" > "$json_file"
@@ -1647,7 +1598,7 @@ update_pack_json() {
 
   # Write updated JSON back to the file
   echo "$updated_json" > "$json_file"
-  msg_ok "Updated $json_file with Pack ID $pack_id and version $version."
+  msg_ok "Updated "$(basename "$json_file")"."
   return 0
 }
 
@@ -1656,9 +1607,9 @@ attach_console() {
   local server_name="$1"
 
   # Check if the server is running in a screen session
-  if screen -list | grep -q "$server_name"; then
+  if screen -list | grep -q "bedrock-${server_name}"; then
     msg_info "Attaching to server '$server_name' console..."
-    screen -r "$server_name"
+    screen -r "bedrock-${server_name}"
   else
     msg_warn "Server '$server_name' is not running in a screen session."
   fi
@@ -1670,10 +1621,10 @@ send_command() {
   local command="$2"
 
   # Check if the server is running in a screen session
-  if screen -list | grep -q "$server_name"; then
+  if screen -list | grep -q "bedrock-${server_name}"; then
     # Send the command to the screen session
     msg_info "Sending command to server '$server_name'..."
-    screen -S "$server_name" -X stuff "$command"^M"" # ^M simulates Enter key
+    screen -S "bedrock-${server_name}" -X stuff "$command"^M"" # ^M simulates Enter key
     msg_ok "Command '$command' sent to server '$server_name'."
   else
     msg_warn "Server '$server_name' is not running in a screen session."
@@ -1684,7 +1635,7 @@ send_command() {
 restart_server() {
   local server_name="$1"
 
-  if ! systemctl --user is-active --quiet "$server_name"; then
+  if ! systemctl --user is-active --quiet "bedrock-${server_name}"; then
     msg_warn "Server '$server_name' is not running. Starting it instead."
     start_server "$server_name"
     return $?
@@ -1697,7 +1648,7 @@ restart_server() {
 
   sleep 10
 
-  if ! systemctl --user restart "$server_name"; then
+  if ! systemctl --user restart "bedrock-${server_name}"; then
     msg_error "Failed to restart server: '$server_name'."
     return 1
   fi
@@ -1709,13 +1660,13 @@ restart_server() {
 start_server() {
   local server_name="$1"
   
-  if systemctl --user is-active --quiet "$server_name"; then
+  if systemctl --user is-active --quiet "bedrock-${server_name}"; then
     msg_warn "Server '$server_name' is already running."
     return 0
   fi
 
   msg_info "Starting server '$server_name'..."
-  if ! systemctl --user start "$server_name"; then
+  if ! systemctl --user start "bedrock-${server_name}"; then
     msg_error "Failed to start server: '$server_name'."
     return 1
   fi
@@ -1727,7 +1678,7 @@ start_server() {
 stop_server() {
   local server_name="$1"
 
-  if ! systemctl --user is-active --quiet "$server_name"; then
+  if ! systemctl --user is-active --quiet "bedrock-${server_name}"; then
     msg_warn "Server '$server_name' is not running."
     return 0
   fi
@@ -1739,13 +1690,180 @@ stop_server() {
   
   sleep 10
 
-  if ! systemctl --user stop "$server_name"; then
+  if ! systemctl --user stop "bedrock-${server_name}"; then
     msg_error "Failed to stop server: '$server_name'."
     return 1
   fi
 
   msg_ok "Server '$server_name' stopped."
 }
+
+# Back up a server's worlds and critical configuration files
+backup_server() {
+  local server_name="$1"
+  local server_dir="$BASE_DIR/$server_name"
+  local in_update="${2:-false}"
+  local backup_dir="$SCRIPTDIR/backups/$server_name"
+  local timestamp
+  local backup_file
+  local backups_to_keep
+  local server_properties="$server_dir/server.properties"
+
+  # Extract world folder name from server.properties
+  local world_folder
+  world_folder=$(get_world_name "$server_properties")
+  
+  if [[ -z "$world_folder" ]]; then
+    msg_error "Failed to determine world folder from server.properties!"
+    return 1
+  fi
+
+  # Generate timestamp and define backup file for worlds
+  timestamp=$(date +"%Y%m%d_%H%M%S")
+  backup_name="${world_folder}_backup_$timestamp.mcworld"
+  backup_file="$backup_dir/$backup_name"
+
+  if [[ "$in_update" == false ]]; then
+    if systemctl --user is-active --quiet "bedrock-${server_name}"; then
+      send_command $server_name "say Running server backup.."
+      stop_server $server_name
+      local was_running=true
+    else
+      msg_info "Server '$server_name' is not currently running."
+    fi
+  fi
+
+  msg_info "Running backup"
+
+  # Ensure backup directory exists
+  mkdir -p "$backup_dir"
+
+  # Check if the world directory exists
+  if [[ -d "$server_dir/worlds/$world_folder" ]]; then
+    # Backup the world contents into a .mcworld file
+    if ! (cd "$server_dir/worlds/$world_folder" && zip -r "$backup_file" . > /dev/null 2>&1); then
+      msg_error "Backup of world failed!"
+      return 1
+    fi
+    msg_ok "World backup created: $backup_name"
+  else
+    msg_info "World directory does not exist. Skipping world backup."
+  fi
+
+  # Backup critical files (allowlist.json, permissions.json, server.properties)
+  cp "$server_dir/allowlist.json" "$backup_dir/allowlist.json" 2>/dev/null
+  cp "$server_dir/permissions.json" "$backup_dir/permissions.json" 2>/dev/null
+  cp "$server_dir/server.properties" "$backup_dir/server.properties" 2>/dev/null
+  msg_ok "Critical files backed up to $backup_dir"
+
+  if [[ "$in_update" == false ]]; then
+    # Start the server after the world is installed if not updating
+    if [[ "$was_running" == true ]]; then
+      start_server $server_name
+    else
+      msg_info "Skipping server start."
+    fi
+  fi
+
+  # Prune old backups (keeping a defined number of backups)
+  msg_info "Pruning old backups..."
+  backups_to_keep=$((PACKAGE_BACKUP_KEEP + 1))
+  find "$backup_dir" -maxdepth 1 -name "${world_folder}_backup_*.mcworld" -type f | sort -r | tail -n "+$backups_to_keep" | while read -r old_backup; do
+    msg_info "Removing old backup: $old_backup"
+    rm -f "$old_backup" || msg_error "Failed to remove $old_backup"
+  done
+
+  msg_ok "Backup complete and old backups pruned"
+}
+
+# Delete a Bedrock server
+delete_server() {
+  local server_name="$1"
+  local server_dir="$BASE_DIR/$server_name"
+  local service_file="$HOME/.config/systemd/user/bedrock-${server_name}.service"
+
+  # Confirm deletion
+  read -p "Are you sure you want to delete the server '$server_name'? This action is irreversible! (y/n): " confirm
+  if [[ ! "${confirm,,}" =~ ^(y|yes)$ ]]; then
+    msg_info "Server deletion canceled."
+    return 0
+  fi
+
+  # Stop the server if it's running
+  if systemctl --user is-active --quiet "bedrock-${server_name}"; then
+    msg_warn "Stopping server '$server_name' before deletion..."
+    stop_server $server_name
+  fi
+
+  # Remove the systemd service file
+  if [[ -f "$service_file" ]]; then
+    msg_warn "Removing user systemd service for '$server_name'"
+    disable_service $server_name
+    rm -f "$service_file" > /dev/null 2>&1
+    systemctl --user daemon-reload
+  fi
+
+  # Remove the server directory
+  msg_warn "Deleting server directory: $server_dir"
+  rm -rf "$server_dir" || { msg_error "Failed to delete server directory."; return 1; }
+
+  msg_ok "Server '$server_name' deleted successfully."
+}
+
+migrate_servers() {
+  # Check if the bedrock-server-manager folder exists
+  if [ -d "$SCRIPTDIR/bedrock_server_manager" ]; then
+    # Ask for migration confirmation using a consistent loop
+    while true; do
+      read -r -p "The folder 'bedrock_server_manager' exists. Do you want to migrate it to 'servers'? (y/n): " response
+      response="${response,,}" # Convert to lowercase
+
+      case "$response" in
+        yes|y)
+          msg_info "Attempting to migrate the folder to 'servers'..."
+          # Rename the directory
+          mv "$SCRIPTDIR/bedrock_server_manager"/* "$SCRIPTDIR/servers/"
+          
+          # Loop through each server folder in the new location
+          for server_dir in "$SCRIPTDIR/servers"/*/; do
+            # Extract the server folder name (not the full path)
+            server_name=$(basename "$server_dir")
+            
+            # Delete existing user systemd service for the server
+            msg_info "Attempting to delete existing user systemd service for $server_name..."
+            user_systemd_service="$HOME/.config/systemd/user/$server_name.service"
+            if [ -f "$user_systemd_service" ]; then
+              systemctl --user stop "$server_name.service"
+              systemctl --user disable "$server_name.service"
+              rm -f "$user_systemd_service"
+              msg_ok "Deleted existing user systemd service for $server_name."
+            else
+              msg_info "No existing user systemd service found for $server_name."
+            fi
+
+            # Run the create_systemd_service function with just the server name
+            create_systemd_service "$server_name"
+          done
+          
+          rmdir "$SCRIPTDIR/bedrock_server_manager"
+          msg_ok "Migration complete."
+          return 0
+          ;;
+        no|n|"") # Empty input is treated as "no"
+          msg_info "Migration canceled."
+          exit 0
+          ;;
+        *)
+          msg_warn "Invalid input. Please answer 'yes' or 'no'."
+          ;; # Loop again
+      esac
+    done
+  else
+    msg_warn "'No migration needed"
+  fi
+}
+
+migrate_servers
 
 # Main menu
 main_menu() {

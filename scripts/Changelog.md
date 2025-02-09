@@ -67,3 +67,11 @@
 1. Added option to enable/disable update on start to systemd flow
    - Added Reconfigure Systemd Service option
 2. Fixed Resource Usage page
+
+### 1.3.0
+1. BREAKING CHANGE: Migrate ./bedrock_server_manager to ./servers
+   - The script will try to auto migrate servers+systemd services after the user confirms
+   - Its recommended to take a backup BEFORE updating the script
+2. Moved backups out of server folder to ./backups
+3. Moved server downloads out of server folder to ./.downloads
+4. Added support for .mcaddon file import (import in bulk)

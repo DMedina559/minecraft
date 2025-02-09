@@ -64,7 +64,7 @@ For example:
 
 `/home/user/minecraft-servers/`
 
-The script will create `./bedrock_server_manager`, `./content/worlds`, and `./content/addons` folders in its current folder. This is where servers will be installed to and where the script will look when managing various server aspects.
+The script will create `./server`,`./backups`,`./.downloads` `./content/worlds`, and `./content/addons` folders in its current folder. This is where servers will be installed to and where the script will look when managing various server aspects.
 
 #### Run the script:
 
@@ -104,7 +104,7 @@ bash /path/to/script/bedrock-server-manager.sh <command>
   disable-server -- Disable server autostart
     --server <server_name>    Specify the server name
 
-  update-script -- Redownload script from github
+  update-script  -- Redownload script from github
       
 ```
 
