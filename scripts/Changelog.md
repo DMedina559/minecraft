@@ -75,3 +75,32 @@
 2. Moved backups out of server folder to ./backups
 3. Moved server downloads out of server folder to ./.downloads
 4. Added support for .mcaddon file import (import in bulk)
+
+### 1.4.0
+1. Added list-servers command 
+    - List all servers, their status, and version
+    - Also shows in the menus
+2. Added scan-players command
+    - Scans server_output.txt for players+xuid and saves  it to ./.config/players.json
+    - Used to add players to permissions.json file
+    - Added to cron scheduler
+3. Added add-players command 
+    - Manually adds player+xuid to ./.config/players.json
+4. Save script output to ./.logs/log_{$timestamp}.log
+    - Redirect to file instead of /dev/null when applicable
+5. Refactored backups
+    - You can now choose to backup all files, just export the world to a .mcworld file, or backup an individual config file.
+    - Backup all executed when running backup-server command
+5. Added Restore menu
+    - You can now restore all most recent files, a specific world file, or specific config file
+    - Restore all executed when running update-server command
+6. Moved server configurations such as installed/target version to ./.config/$server_name/config.json
+    - The script will try to migrate existing configs (server name, installed version, and target version) to the new file
+7. Perform validation on server.properties entries
+8. Split most of the bigger functions such as download_server into smaller more modular functions 
+9. Added permissions configuration
+    - You can choose players saved in ./config/players.json to add to a server permissions file
+10. Don't download server if target version is already downloaded
+11. Moved script default values to ./config/script_config.json
+    - Edit this file to set your own servers directory, how many backups and downloads to keep
+12. Moved systemd commands to script, reconfigure systemd configuration to update
