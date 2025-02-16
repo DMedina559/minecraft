@@ -5,7 +5,7 @@
 # Change default config at ./config/script_config.json
 # COPYRIGHT ZVORTEX11325 2025
 # Author: ZVortex11325
-# Version 1.4.0
+# Version 1.4.1
 
 handle_error() {
     local exit_code=$1
@@ -1941,6 +1941,13 @@ update_server() {
         return $(handle_error 25 "$action")  # Invalid server name
     fi
 
+    # Internet connectivity check - Extracted to function check_internet_connectivity
+    if ! check_internet_connectivity; then
+        msg_warn "Internet connectivity check failed. Cannot check for updates."
+        #return $(handle_error 24 "$action")  # Internet connectivity test failed
+        return 0 # Return early
+    fi
+
     msg_info "Starting update process for server: $server_name"
 
     if systemctl --user is-active --quiet "bedrock-${server_name}"; then
@@ -2029,7 +2036,7 @@ download_bedrock_server() {
 
     # Internet connectivity check - Extracted to function check_internet_connectivity
     if ! check_internet_connectivity; then
-        msg_warn "Internet connectivity check failed. Cannot proceed."
+        msg_warn "Internet connectivity check failed. Cannot download server."
         return $(handle_error 24 "$action")  # Internet connectivity test failed
     fi
 

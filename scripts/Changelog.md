@@ -104,3 +104,7 @@
 11. Moved script default values to ./config/script_config.json
     - Edit this file to set your own servers directory, how many backups and downloads to keep
 12. Moved systemd commands to script, reconfigure systemd configuration to update
+
+### 1.4.1
+
+1. Check for internet in update function

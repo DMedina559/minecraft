@@ -78,10 +78,18 @@ bash /path/to/script/bedrock-server-manager.sh <command>
 
 ```
   main           -- Open the main menu
+
+  scan-players   -- Scan server_output.txt for players+xuid and add them to ./config/players.json"
+
+  list-servers   -- List all servers and their status"
+    --loop true               Loops list-server till exit"
+
+  add-players    -- Manually add player:xuid to ./config/players.json"
+    --players '<player1:xuid> <player2:xuid>...'  The player names and xuids to be added (must be in 'quotations')"
   
   send-command   -- Send a command to a running server
     --server <server_name>    Specify the server name
-    --command <command>       The command to send to the server (must be in "quotations")
+    --command '<command>'       The command to send to the server (must be in "quotations")
 
   update-server  -- Update a server to a specified version
     --server <server_name>    Specify the server name
