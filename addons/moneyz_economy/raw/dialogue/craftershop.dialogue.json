@@ -33,6 +33,10 @@
 					{
 						"name": "Flowers",
 						"commands": ["/dialogue open @s @initiator crafter_buy_flowers"]
+					},
+					{
+						"name": "Lights",
+						"commands": ["/dialogue open @s @initiator crafter_buy_lights"]
 					}
 				]
 			},
@@ -900,6 +904,127 @@
 					}
 				]
 			},
+			{
+				"scene_tag": "crafter_buy_lights",
+				"npc_name": "Lights",
+				"text": {
+					"rawtext": [
+						{"text": "§r§lLights:\n"},
+						{"text": "§r25 Torch for 15 Moneyz\n"},
+						{"text": "§r15 Pearlescent Froglight for 45 Moneyz\n"},
+						{"text": "§r15 Verdant Froglight for 45 Moneyz\n"},
+						{"text": "§r15 Ochre Froglight for 45 Moneyz\n"},
+						{"text": "§r20 Glowstone for 30 Moneyz\n"},
+						{"text": "§r10 Lantern for 55 Moneyz\n"},
+						{"text": "§r10 Redstone Lamp for 35 Moneyz\n"},
+						{"text": "§r15 Sea Lantern for 55 Moneyz\n"},
+						{"text": "§r25 Shroomlight for 50 Moneyz\n"},
+						{"text": "§r10 Copper Bulb for 65 Moneyz\n"},
+						{"text": "§r15 End Rod for 125 Moneyz\n"},
+						{"text": "§r40 Candle for 40 Moneyz\n"},
+						{"text": "§r10 Soul Lantern for 45 Moneyz\n"},
+						{"text": "§r15 Soul Torch for 10 Moneyz\n"}
+					]
+				},
+				"buttons": [
+				  {"name": "Torch", "commands": ["/function crafter/light/torch"]},
+				  {"name": "Pearlescent Froglight", "commands": ["/function crafter/light/pearlescent_froglight"]},
+				  {"name": "Verdant Froglight", "commands": ["/function crafter/light/verdant_froglight"]},
+				  {"name": "Ochre Froglight", "commands": ["/function crafter/light/ochre_froglight"]},
+				  {"name": "Glowstone", "commands": ["/function crafter/light/glowstone"]},
+				  {"name": "Pg. 2", "commands": ["/dialogue open @s @initiator crafter_buy_lights_2"]}
+				]
+			},
+			{
+				"scene_tag": "crafter_buy_lights_2",
+				"npc_name": "Lights",
+				"text": {
+					"rawtext": [
+						{"text": "§r§lLights:\n"},
+						{"text": "§r25 Torch for 15 Moneyz\n"},
+						{"text": "§r15 Pearlescent Froglight for 45 Moneyz\n"},
+						{"text": "§r15 Verdant Froglight for 45 Moneyz\n"},
+						{"text": "§r15 Ochre Froglight for 45 Moneyz\n"},
+						{"text": "§r20 Glowstone for 30 Moneyz\n"},
+						{"text": "§r10 Lantern for 55 Moneyz\n"},
+						{"text": "§r10 Redstone Lamp for 35 Moneyz\n"},
+						{"text": "§r15 Sea Lantern for 55 Moneyz\n"},
+						{"text": "§r25 Shroomlight for 50 Moneyz\n"},
+						{"text": "§r10 Copper Bulb for 65 Moneyz\n"},
+						{"text": "§r15 End Rod for 125 Moneyz\n"},
+						{"text": "§r40 Candle for 40 Moneyz\n"},
+						{"text": "§r10 Soul Lantern for 45 Moneyz\n"},
+						{"text": "§r15 Soul Torch for 10 Moneyz\n"}
+					]
+				},
+				"buttons": [
+				  {"name": "Lantern", "commands": ["/function crafter/light/lantern"]},
+				  {"name": "Redstone Lamp", "commands": ["/function crafter/light/redstone_lamp"]},
+				  {"name": "Sea Lantern", "commands": ["/function crafter/light/sea_lantern"]},
+				  {"name": "Shroomlight", "commands": ["/function crafter/light/shroomlight"]},
+				  {"name": "Pg. 1", "commands": ["/dialogue open @s @initiator crafter_buy_lights"]},
+				  {"name": "Pg. 3", "commands": ["/dialogue open @s @initiator crafter_buy_lights_3"]}
+				]
+			},
+			{
+				"scene_tag": "crafter_buy_lights_3",
+				"npc_name": "Lights",
+				"text": {
+					"rawtext": [
+						{"text": "§r§lLights:\n"},
+						{"text": "§r25 Torch for 15 Moneyz\n"},
+						{"text": "§r15 Pearlescent Froglight for 45 Moneyz\n"},
+						{"text": "§r15 Verdant Froglight for 45 Moneyz\n"},
+						{"text": "§r15 Ochre Froglight for 45 Moneyz\n"},
+						{"text": "§r20 Glowstone for 30 Moneyz\n"},
+						{"text": "§r10 Lantern for 55 Moneyz\n"},
+						{"text": "§r10 Redstone Lamp for 35 Moneyz\n"},
+						{"text": "§r15 Sea Lantern for 55 Moneyz\n"},
+						{"text": "§r25 Shroomlight for 50 Moneyz\n"},
+						{"text": "§r10 Copper Bulb for 65 Moneyz\n"},
+						{"text": "§r15 End Rod for 125 Moneyz\n"},
+						{"text": "§r40 Candle for 40 Moneyz\n"},
+						{"text": "§r10 Soul Lantern for 45 Moneyz\n"},
+						{"text": "§r15 Soul Torch for 10 Moneyz\n"}
+					]
+				},
+				"buttons": [
+				  {"name": "Copper Bulb", "commands": ["/function crafter/light/copper_bulb"]},
+				  {"name": "End Rod", "commands": ["/function crafter/light/end_rod"]},
+				  {"name": "Candle", "commands": ["/function crafter/light/candle"]},
+				  {"name": "Soul Lantern", "commands": ["/function crafter/light/soul_lantern"]},
+				  {"name": "Pg. 2", "commands": ["/dialogue open @s @initiator crafter_buy_lights_2"]},
+				  {"name": "Pg. 4", "commands": ["/dialogue open @s @initiator crafter_buy_lights_4"]}
+				]
+			},
+			{
+				"scene_tag": "crafter_buy_lights_4",
+				"npc_name": "Lights",
+				"text": {
+					"rawtext": [
+						{"text": "§r§lLights:\n"},
+						{"text": "§r25 Torch for 15 Moneyz\n"},
+						{"text": "§r15 Pearlescent Froglight for 45 Moneyz\n"},
+						{"text": "§r15 Verdant Froglight for 45 Moneyz\n"},
+						{"text": "§r15 Ochre Froglight for 45 Moneyz\n"},
+						{"text": "§r20 Glowstone for 30 Moneyz\n"},
+						{"text": "§r10 Lantern for 55 Moneyz\n"},
+						{"text": "§r10 Redstone Lamp for 35 Moneyz\n"},
+						{"text": "§r15 Sea Lantern for 55 Moneyz\n"},
+						{"text": "§r25 Shroomlight for 50 Moneyz\n"},
+						{"text": "§r10 Copper Bulb for 65 Moneyz\n"},
+						{"text": "§r15 End Rod for 125 Moneyz\n"},
+						{"text": "§r40 Candle for 40 Moneyz\n"},
+						{"text": "§r10 Soul Lantern for 45 Moneyz\n"},
+						{"text": "§r15 Soul Torch for 10 Moneyz\n"}
+					]
+				},
+				"buttons": [
+				  {"name": "Soul Torch", "commands": ["/function crafter/light/soul_torch"]},
+				  {"name": "Pg. 3", "commands": ["/dialogue open @s @initiator crafter_buy_lights_3"]},
+				  {"name": "Main Menu", "commands": ["/dialogue open @s @initiator craftershop"]}
+				]
+			},
             {
 				"scene_tag": "crafter_sell",
 				"npc_name": "Selling",
@@ -916,6 +1041,10 @@
 					{
 						"name": "Flowers",
 						"commands": ["/dialogue open @s @initiator crafter_sell_flowers"]
+					},
+					{
+						"name": "Lights",
+						"commands": ["/dialogue open @s @initiator crafter_sell_lights"]
 					}
 				]
 			},
@@ -1781,6 +1910,127 @@
 						"name": "Main Menu",
 						"commands": ["/dialogue open @s @initiator craftshop"]
 					}
+				]
+			},
+			{
+				"scene_tag": "crafter_sell_lights",
+				"npc_name": "Lights",
+				"text": {
+					"rawtext": [
+						{"text": "§r§lLights:\n"},
+						{"text": "§r25 Torch for 15 Moneyz\n"},
+						{"text": "§r15 Pearlescent Froglight for 45 Moneyz\n"},
+						{"text": "§r15 Verdant Froglight for 45 Moneyz\n"},
+						{"text": "§r15 Ochre Froglight for 45 Moneyz\n"},
+						{"text": "§r20 Glowstone for 30 Moneyz\n"},
+						{"text": "§r10 Lantern for 55 Moneyz\n"},
+						{"text": "§r10 Redstone Lamp for 35 Moneyz\n"},
+						{"text": "§r15 Sea Lantern for 55 Moneyz\n"},
+						{"text": "§r25 Shroomlight for 50 Moneyz\n"},
+						{"text": "§r10 Copper Bulb for 65 Moneyz\n"},
+						{"text": "§r15 End Rod for 125 Moneyz\n"},
+						{"text": "§r40 Candle for 40 Moneyz\n"},
+						{"text": "§r10 Soul Lantern for 45 Moneyz\n"},
+						{"text": "§r15 Soul Torch for 10 Moneyz\n"}
+					]
+				},
+				"buttons": [
+				  {"name": "Torch", "commands": ["/function crafter/sell/light/torch"]},
+				  {"name": "Pearlescent Froglight", "commands": ["/function crafter/sell/light/pearlescent_froglight"]},
+				  {"name": "Verdant Froglight", "commands": ["/function crafter/sell/light/verdant_froglight"]},
+				  {"name": "Ochre Froglight", "commands": ["/function crafter/sell/light/ochre_froglight"]},
+				  {"name": "Glowstone", "commands": ["/function crafter/sell/light/glowstone"]},
+				  {"name": "Pg. 2", "commands": ["/dialogue open @s @initiator crafter_sell_lights_2"]}
+				]
+			},
+			{
+				"scene_tag": "crafter_sell_lights_2",
+				"npc_name": "Lights",
+				"text": {
+					"rawtext": [
+						{"text": "§r§lLights:\n"},
+						{"text": "§r25 Torch for 15 Moneyz\n"},
+						{"text": "§r15 Pearlescent Froglight for 45 Moneyz\n"},
+						{"text": "§r15 Verdant Froglight for 45 Moneyz\n"},
+						{"text": "§r15 Ochre Froglight for 45 Moneyz\n"},
+						{"text": "§r20 Glowstone for 30 Moneyz\n"},
+						{"text": "§r10 Lantern for 55 Moneyz\n"},
+						{"text": "§r10 Redstone Lamp for 35 Moneyz\n"},
+						{"text": "§r15 Sea Lantern for 55 Moneyz\n"},
+						{"text": "§r25 Shroomlight for 50 Moneyz\n"},
+						{"text": "§r10 Copper Bulb for 65 Moneyz\n"},
+						{"text": "§r15 End Rod for 125 Moneyz\n"},
+						{"text": "§r40 Candle for 40 Moneyz\n"},
+						{"text": "§r10 Soul Lantern for 45 Moneyz\n"},
+						{"text": "§r15 Soul Torch for 10 Moneyz\n"}
+					]
+				},
+				"buttons": [
+				  {"name": "Lantern", "commands": ["/function crafter/sell/light/lantern"]},
+				  {"name": "Redstone Lamp", "commands": ["/function crafter/sell/light/redstone_lamp"]},
+				  {"name": "Sea Lantern", "commands": ["/function crafter/sell/light/sea_lantern"]},
+				  {"name": "Shroomlight", "commands": ["/function crafter/sell/light/shroomlight"]},
+				  {"name": "Pg. 1", "commands": ["/dialogue open @s @initiator crafter_sell_lights"]},
+				  {"name": "Pg. 3", "commands": ["/dialogue open @s @initiator crafter_sell_lights_3"]}
+				]
+			},
+			{
+				"scene_tag": "crafter_sell_lights_3",
+				"npc_name": "Lights",
+				"text": {
+					"rawtext": [
+						{"text": "§r§lLights:\n"},
+						{"text": "§r25 Torch for 15 Moneyz\n"},
+						{"text": "§r15 Pearlescent Froglight for 45 Moneyz\n"},
+						{"text": "§r15 Verdant Froglight for 45 Moneyz\n"},
+						{"text": "§r15 Ochre Froglight for 45 Moneyz\n"},
+						{"text": "§r20 Glowstone for 30 Moneyz\n"},
+						{"text": "§r10 Lantern for 55 Moneyz\n"},
+						{"text": "§r10 Redstone Lamp for 35 Moneyz\n"},
+						{"text": "§r15 Sea Lantern for 55 Moneyz\n"},
+						{"text": "§r25 Shroomlight for 50 Moneyz\n"},
+						{"text": "§r10 Copper Bulb for 65 Moneyz\n"},
+						{"text": "§r15 End Rod for 125 Moneyz\n"},
+						{"text": "§r40 Candle for 40 Moneyz\n"},
+						{"text": "§r10 Soul Lantern for 45 Moneyz\n"},
+						{"text": "§r15 Soul Torch for 10 Moneyz\n"}
+					]
+				},
+				"buttons": [
+				  {"name": "Copper Bulb", "commands": ["/function crafter/sell/light/copper_bulb"]},
+				  {"name": "End Rod", "commands": ["/function crafter/sell/light/end_rod"]},
+				  {"name": "Candle", "commands": ["/function crafter/sell/light/candle"]},
+				  {"name": "Soul Lantern", "commands": ["/function crafter/sell/light/soul_lantern"]},
+				  {"name": "Pg. 2", "commands": ["/dialogue open @s @initiator crafter_sell_lights_2"]},
+				  {"name": "Pg. 4", "commands": ["/dialogue open @s @initiator crafter_sell_lights_4"]}
+				]
+			},
+			{
+				"scene_tag": "crafter_sell_lights_4",
+				"npc_name": "Lights",
+				"text": {
+					"rawtext": [
+						{"text": "§r§lLights:\n"},
+						{"text": "§r25 Torch for 15 Moneyz\n"},
+						{"text": "§r15 Pearlescent Froglight for 45 Moneyz\n"},
+						{"text": "§r15 Verdant Froglight for 45 Moneyz\n"},
+						{"text": "§r15 Ochre Froglight for 45 Moneyz\n"},
+						{"text": "§r20 Glowstone for 30 Moneyz\n"},
+						{"text": "§r10 Lantern for 55 Moneyz\n"},
+						{"text": "§r10 Redstone Lamp for 35 Moneyz\n"},
+						{"text": "§r15 Sea Lantern for 55 Moneyz\n"},
+						{"text": "§r25 Shroomlight for 50 Moneyz\n"},
+						{"text": "§r10 Copper Bulb for 65 Moneyz\n"},
+						{"text": "§r15 End Rod for 125 Moneyz\n"},
+						{"text": "§r40 Candle for 40 Moneyz\n"},
+						{"text": "§r10 Soul Lantern for 45 Moneyz\n"},
+						{"text": "§r15 Soul Torch for 10 Moneyz\n"}
+					]
+				},
+				"buttons": [
+				  {"name": "Soul Torch", "commands": ["/function crafter/sell/light/soul_torch"]},
+				  {"name": "Pg. 3", "commands": ["/dialogue open @s @initiator crafter_sell_lights_3"]},
+				  {"name": "Main Menu", "commands": ["/dialogue open @s @initiator craftershop"]}
 				]
 			}
 		]

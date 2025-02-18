@@ -80,18 +80,18 @@ const ensureWorldPropertiesExist = () => {
     log("Ensuring world properties exist...", LOG_LEVELS.DEBUG);
     const properties = [
         { name: 'logLevel', defaultValue: 'WARN' },
-        { name: 'dailyReward', defaultValue: '0' },
-        { name: 'chanceX', defaultValue: '0' },
-        { name: 'chanceWin', defaultValue: '0' },
+        { name: 'dailyReward', defaultValue: '25' },
+        { name: 'chanceX', defaultValue: '2' },
+        { name: 'chanceWin', defaultValue: '50' },
         { name: 'syncPlayers', defaultValue: 'true' },
         { name: 'moneyzATM', defaultValue: 'true' },
         { name: 'moneyzQuest', defaultValue: 'true' },
         { name: 'moneyzSend', defaultValue: 'true' },
         { name: 'oneLuckyPurchase', defaultValue: 'true' },
-        { name: 'moneyzShop', defaultValue: 'false' },
-        { name: 'moneyzDaily', defaultValue: 'false' },
-        { name: 'moneyzLucky', defaultValue: 'false' },
-        { name: 'moneyzChance', defaultValue: 'false' }        
+        { name: 'moneyzShop', defaultValue: 'true' },
+        { name: 'moneyzDaily', defaultValue: 'true' },
+        { name: 'moneyzLucky', defaultValue: 'true' },
+        { name: 'moneyzChance', defaultValue: 'true' }        
     ];
 
     properties.forEach(prop => {
@@ -132,10 +132,10 @@ const syncPlayerPropertiesWithWorld = (player) => {
             { name: 'moneyzATM', defaultValue: 'true' },
             { name: 'moneyzSend', defaultValue: 'true' },
             { name: 'moneyzQuest', defaultValue: 'true' },
-            { name: 'moneyzShop', defaultValue: 'false' },
-            { name: 'moneyzDaily', defaultValue: 'false' },
-            { name: 'moneyzLucky', defaultValue: 'false' },
-            { name: 'moneyzChance', defaultValue: 'false' }
+            { name: 'moneyzShop', defaultValue: 'true' },
+            { name: 'moneyzDaily', defaultValue: 'true' },
+            { name: 'moneyzLucky', defaultValue: 'true' },
+            { name: 'moneyzChance', defaultValue: 'true' }
         ];
 
         properties.forEach(prop => {

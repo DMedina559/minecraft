@@ -37,6 +37,10 @@
 					{
 						"name": "Plantables",
 						"commands": ["/dialogue open @s @initiator farmer_buy_plantables"]
+					},
+					{
+						"name": "Cooked",
+						"commands": ["/dialogue open @s @initiator farmer_buy_cooked"]
 					}
 				]
 			},
@@ -677,6 +681,52 @@
 				]
 			},
 			{
+				"scene_tag": "farmer_buy_cooked",
+				"npc_name": "Cooked",
+				"text": {
+					"rawtext": [
+						{"text": "§r§lCooked Meats:\n"},
+						{"text": "§r5 Cooked Cod for 25 Moneyz\n"},
+						{"text": "§r5 Cooked Salmon for 30 Moneyz\n"},
+						{"text": "§r5 Cooked Chicken for 35 Moneyz\n"},
+						{"text": "§r5 Cooked Beef for 45 Moneyz\n"},
+						{"text": "§r5 Cooked Porkchop for 25 Moneyz\n"},
+						{"text": "§r5 Cooked Mutton for 30 Moneyz\n"},
+						{"text": "§r5 Cooked Rabbit for 30 Moneyz\n"}
+					]
+				},
+				"buttons": [
+				  {"name": "Cooked Cod", "commands": ["/function farmer/cooked/cooked_cod"]},
+				  {"name": "Cooked Salmon", "commands": ["/function farmer/cooked/cooked_salmon"]},
+				  {"name": "Cooked Chicken", "commands": ["/function farmer/cooked/cooked_chicken"]},
+				  {"name": "Cooked Beef", "commands": ["/function farmer/cooked/cooked_beef"]},
+				  {"name": "Cooked Porkchop", "commands": ["/function farmer/cooked/cooked_porkchop"]},
+				  {"name": "Pg. 2", "commands": ["/dialogue open @s @initiator farmer_buy_cooked_2"]}
+				]
+			},
+			{
+				"scene_tag": "farmer_buy_cooked_2",
+				"npc_name": "Cooked",
+				"text": {
+					"rawtext": [
+						{"text": "§r§lCooked Meats:\n"},
+						{"text": "§r5 Cooked Cod for 25 Moneyz\n"},
+						{"text": "§r5 Cooked Salmon for 30 Moneyz\n"},
+						{"text": "§r5 Cooked Chicken for 35 Moneyz\n"},
+						{"text": "§r5 Cooked Beef for 45 Moneyz\n"},
+						{"text": "§r5 Cooked Porkchop for 25 Moneyz\n"},
+						{"text": "§r5 Cooked Mutton for 30 Moneyz\n"},
+						{"text": "§r5 Cooked Rabbit for 30 Moneyz\n"}
+					]
+				},
+				"buttons": [
+				  {"name": "Cooked Mutton", "commands": ["/function farmer/cooked/cooked_mutton"]},
+				  {"name": "Cooked Rabbit", "commands": ["/function farmer/cooked/cooked_rabbit"]},
+				  {"name": "Pg. 1", "commands": ["/dialogue open @s @initiator farmer_buy_cooked"]},
+				  {"name": "Main Menu", "commands": ["/dialogue open @s @initiator farmers_market"]}
+				]
+			},
+			{
 				"scene_tag": "farmer_sell",
 				"npc_name": "Selling",
 				"text": "What would you like to sell?",
@@ -696,6 +746,10 @@
 					{
 						"name": "Plantables",
 						"commands": ["/dialogue open @s @initiator farmer_sell_plantables"]
+					},
+					{
+						"name": "Cooked",
+						"commands": ["/dialogue open @s @initiator farmer_sell_cooked"]
 					}
 				]
 			},
@@ -1333,6 +1387,52 @@
 						"name": "Main Menu",
 						"commands": ["/dialogue open @s @initiator farmers_market"]
 					}
+				]
+			},
+			{
+				"scene_tag": "farmer_sell_cooked",
+				"npc_name": "Cooked",
+				"text": {
+					"rawtext": [
+						{"text": "§r§lCooked Meats:\n"},
+						{"text": "§r5 Cooked Cod for 25 Moneyz\n"},
+						{"text": "§r5 Cooked Salmon for 30 Moneyz\n"},
+						{"text": "§r5 Cooked Chicken for 35 Moneyz\n"},
+						{"text": "§r5 Cooked Beef for 45 Moneyz\n"},
+						{"text": "§r5 Cooked Porkchop for 25 Moneyz\n"},
+						{"text": "§r5 Cooked Mutton for 30 Moneyz\n"},
+						{"text": "§r5 Cooked Rabbit for 30 Moneyz\n"}
+					]
+				},
+				"buttons": [
+				  {"name": "Cooked Cod", "commands": ["/function farmer/sell/cooked/cooked_cod"]},
+				  {"name": "Cooked Salmon", "commands": ["/function farmer/sell/cooked/cooked_salmon"]},
+				  {"name": "Cooked Chicken", "commands": ["/function farmer/sell/cooked/cooked_chicken"]},
+				  {"name": "Cooked Beef", "commands": ["/function farmer/sell/cooked/cooked_beef"]},
+				  {"name": "Cooked Porkchop", "commands": ["/function farmer/sell/cooked/cooked_porkchop"]},
+				  {"name": "Pg. 2", "commands": ["/dialogue open @s @initiator farmer_sell_cooked_2"]}
+				]
+			},
+			{
+				"scene_tag": "farmer_sell_cooked_2",
+				"npc_name": "Cooked",
+				"text": {
+					"rawtext": [
+						{"text": "§r§lCooked Meats:\n"},
+						{"text": "§r5 Cooked Cod for 25 Moneyz\n"},
+						{"text": "§r5 Cooked Salmon for 30 Moneyz\n"},
+						{"text": "§r5 Cooked Chicken for 35 Moneyz\n"},
+						{"text": "§r5 Cooked Beef for 45 Moneyz\n"},
+						{"text": "§r5 Cooked Porkchop for 25 Moneyz\n"},
+						{"text": "§r5 Cooked Mutton for 30 Moneyz\n"},
+						{"text": "§r5 Cooked Rabbit for 30 Moneyz\n"}
+					]
+				},
+				"buttons": [
+				  {"name": "Cooked Mutton", "commands": ["/function farmer/sell/cooked/cooked_mutton"]},
+				  {"name": "Cooked Rabbit", "commands": ["/function farmer/sell/cooked/cooked_rabbit"]},
+				  {"name": "Pg. 1", "commands": ["/dialogue open @s @initiator farmer_sell_cooked"]},
+				  {"name": "Main Menu", "commands": ["/dialogue open @s @initiator farmers_market"]}
 				]
 			}
 		]

@@ -426,3 +426,16 @@
 5. Reworked World/Player Property Menus
     - It's now possible to remove indivial properties from players/world
 6. Some interactions now give sound feedback in throughout the js files
+
+# 1.10.1
+1. Added Various Cooked meats to Farmer's Market
+2. Added Various Lighting Blocks/Items to Crafter's Markrt
+3. All Moneyz Menu Options are now enabled by default
+4. Quest now uses a seed that can be overried by the World Property dailyQuestSeed
+5. Updated Help NPC setup function
+6. Better handle chanceWin in 21 Game?
+7. Fixed Duplicate Hotel messaging
+8. Fixed Correct Amount of Netherrack
+9. Fixed Pumpkin Buy
+10. Fixed Pumpkin Sell messaging
+11. Fixed Crimson Typos

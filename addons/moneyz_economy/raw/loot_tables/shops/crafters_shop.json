@@ -20,6 +20,24 @@
       ]
     },
     {
+      "rolls": { "min": 1, "max": 1 },
+      "entries": [
+        {"type": "item", "name": "torch", "weight": 20, "functions": [{"function": "set_count", "count": 15}]},
+        {"type": "item", "name": "glowstone", "weight": 20, "functions": [{"function": "set_count", "count": 15}]},
+        {"type": "item", "name": "lantern", "weight": 15, "functions": [{"function": "set_count", "count": 15}]},
+        {"type": "item", "name": "redstone_lamp", "weight": 10, "functions": [{"function": "set_count", "count": 15}]},
+        {"type": "item", "name": "sea_lantern", "weight": 10, "functions": [{"function": "set_count", "count": 15}]},
+        {"type": "item", "name": "copper_bulb", "weight": 10, "functions": [{"function": "set_count", "count": 15}]},
+        {"type": "item", "name": "end_rod", "weight": 5, "functions": [{"function": "set_count", "count": 15}]},
+        {"type": "item", "name": "candle", "weight": 20, "functions": [{"function": "set_count", "count": 15}]},
+        {"type": "item", "name": "soul_lantern", "weight": 15, "functions": [{"function": "set_count", "count": 15}]},
+        {"type": "item", "name": "pearlescent_froglight", "weight": 5, "functions": [{"function": "set_count", "count": 15}]},
+        {"type": "item", "name": "verdant_froglight", "weight": 5, "functions": [{"function": "set_count", "count": 15}]},
+        {"type": "item", "name": "ochre_froglight", "weight": 5, "functions": [{"function": "set_count", "count": 15}]},
+        {"type": "item", "name": "soul_tourch", "weight": 15, "functions": [{"function": "set_count", "count": 10}]}
+      ]
+    },
+    {
       "rolls": { "min": 2, "max": 4 },
       "entries": [
         {"type": "item", "name": "allium", "weight": 5, "functions": [{"function": "set_count", "count": 5}]},
