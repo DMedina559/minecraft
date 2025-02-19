@@ -177,7 +177,10 @@ bedrock-server-manager <command>
 
 This script has only been tested on the following linux distros:
 
-- Debian
+- Debian 12 (bookworm)
+- Ubuntu 24.04
+- Windows 11 (wsl-2)
+  - Ubuntu 24.04
 
 ## Moneyz Economy Function Creator
 

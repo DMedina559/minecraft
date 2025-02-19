@@ -106,5 +106,7 @@
 12. Moved systemd commands to script, reconfigure systemd configuration to update
 
 ### 1.4.1
-
 1. Check for internet in update function
+
+### 1.4.2
+1. Removed writing to version.txt

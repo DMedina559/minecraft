@@ -5,7 +5,7 @@
 # Change default config at ./config/script_config.json
 # COPYRIGHT ZVORTEX11325 2025
 # Author: ZVortex11325
-# Version 1.4.1
+# Version 1.4.2
 
 handle_error() {
     local exit_code=$1
@@ -1823,14 +1823,6 @@ install_new_server() {
         msg_error "Failed to create server directory: $BASE_DIR/$server_name"
         return $(handle_error 16 "$action") # Failed to create directory
     fi
-
-    # Save the target version input directly to version.txt
-    echo "$target_version" > "$BASE_DIR/$server_name/version.txt"
-     if [[ $? -ne 0 ]]; then
-        msg_error "Failed to write target version to version.txt"
-        return $(handle_error 1 "$action") # General Error (file write failed)
-    fi
-    msg_info "Saved target version '$target_version' to version.txt"
 
     # Install the server
     local current_version_output
