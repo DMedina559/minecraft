@@ -5,7 +5,7 @@
 
 ## Bedrock Server Manager
 
-Bedrock Server Manager is a comprehensive Bash script designed for installing, managing, and maintaining Minecraft Bedrock Dedicated Servers with ease.
+Bedrock Server Manager is a comprehensive python script designed for installing, managing, and maintaining Minecraft Bedrock Dedicated Servers with ease. The script is Linux and Windows compatable.
 
 ### Features
 
@@ -17,34 +17,30 @@ Backup Management: Automatically backup worlds and configuration files, with pru
 
 Server Configuration: Easily modify server properties, and allow-list interactively.
 
-Systemd Integration: Automatically generate and manage systemd service files for streamlined server control.
+Auto-Update supported: Automatically update the server with a simple restart.
 
-Command-Line Tools: Send game commands, start, stop, and restart servers directly from the command line.
+Command-Line Tools: Send game commands (Linux only), start, stop, and restart servers directly from the command line.
 
 Interactive Menu: Access a user-friendly interface to manage servers without manually typing commands.
 
 Install/Update Content: Easily import .mcworld/.mcpack files into your server.
 
-Automate Various Server Task: Quickly create cron task to automate task such as backup-server or restart-server.
+Automate Various Server Task: Quickly create cron task to automate task such as backup-server or restart-server (Linux only).
 
 View Resource Usage: View how much CPU and RAM your server is using.
 
 ### Prerequisites
 
-The script ensures the installation of required dependencies:
+This script requires Python 3.10 or later. You also need to install the following Python packages:
 
-`curl, jq, unzip, systemd, screen, zip`
+*   colorama
+*   requests
+*   psutil
 
-Users need `sudo` permissions for installing these packages for the first time, and for enabling the optional `loginctl enable-linger` command. 
+On Linux, you'll also need:
 
-The script assumes your installation has `sudo` installed for these two instances.
-
-#### Install wget if its not already:
-
-```
-sudo apt update
-sudo apt install wget
-```
+*  screen
+*  systemd
 
 
 ### Usage
@@ -54,9 +50,9 @@ sudo apt install wget
 Download the script to your desired folder
 
 ```
-wget -P /path/to/your/directory https://raw.githubusercontent.com/DMedina559/minecraft/main/scripts/bedrock-server-manager.sh # Downloads the script to the path you choose
+curl -o /path/to/your/directory/bedrock-server-manager.py https://raw.githubusercontent.com/DMedina559/minecraft/main/scripts/bedrock-server-manager.py # Downloads the script to the path you choose
 
-chmod +x /path/to/your/directory/bedrock-server-manager.sh # Makes the script executable IMPORTANT
+chmod +x /path/to/your/directory/bedrock-server-manager.py # Makes the script executable IMPORTANT (Linux only)
 ```
 Its recommened to download the server to a folder just for the minecraft servers
 
@@ -64,75 +60,93 @@ For example:
 
 `/home/user/minecraft-servers/`
 
-The script will create `./server`,`./backups`,`./.downloads` `./content/worlds`, and `./content/addons` folders in its current folder. This is where servers will be installed to and where the script will look when managing various server aspects.
+The script will create `./server`,`./backups`,`./.downloads` `./.config`  `./content/worlds`, and `./content/addons` folders in its current folder. This is where servers will be installed to and where the script will look when managing various server aspects.
 
 #### Run the script:
 
 ```
-bash /path/to/script/bedrock-server-manager.sh <command>
+python bedrock-server-manager.py <command> [options]
 ```
 
 ##### Available commands:
 
 <sub>When interacting with the script, server_name is the name of the servers folder (the name you chose durring the first step of instalation)</sub>
 
-```
-  main           -- Open the main menu
+| Command             | Description                                       | Arguments                                                                                                     | Platform      |
+|----------------------|---------------------------------------------------|---------------------------------------------------------------------------------------------------------------|---------------|
+| **main-menu**        | Open Bedrock Server Manager menu                  | None                                                                                                          | All           |
+| **list-servers**     | List all servers and their statuses               | `-l, --loop`: Continuously list servers (optional)                                                          | All           |
+| **get-status**       | Get the status of a specific server               | `-s, --server`: Server name (required)                                                                       | All           |
+| **update-script**    | Update the script                                 | None                                                                                                          | All           |
+| **configure-allowlist** | Configure the allowlist for a server            | `-s, --server`: Server name (required)                                                                       | All           |
+| **configure-permissions**| Configure permissions for a server             | `-s, --server`: Server name (required)                                                                       | All           |
+| **configure-properties**| Configure individual server.properties           | `-s, --server`: Server name (required) <br> `-p, --property`: Name of the property to modify (required) <br> `-v, --value`: New value for the property (required) | All           |
+| **install-server**   | Install a new server                              | None                                                                                                          | All           |
+| **update-server**    | Update an existing server                         | `-s, --server`: Server name (required) <br> `-v, --version`: Server version to install (optional, default: LATEST) | All           |
+| **start-server**     | Start a server                                    | `-s, --server`: Server Name (required)                                                                      | All           |
+| **stop-server**      | Stop a server                                     | `-s, --server`: Server Name (required)                                                                      | All           |
+| **install-world**    | Install a world from a .mcworld file             | `-s, --server`: Server name (required) <br> `-f, --file`: Path to the .mcworld file (optional)             | All           |
+| **install-addon**    | Install an addon (.mcaddon or .mcpack)          | `-s, --server`: Server name (required) <br> `-f, --file`: Path to the .mcaddon or .mcpack file (optional) | All           |
+| **restart-server**   | Restart a server                                  | `-s, --server`: Server name (required)                                                                       | All           |
+| **delete-server**    | Delete a server                                   | `-s, --server`: Server name (required)                                                                       | All           |
+| **backup-server**    | Backup server files                               | `-s, --server`: Server name (required) <br> `-t, --type`: Backup type (required) <br> `-f, --file`: Specific file to backup (optional, for config type) <br> `--no-stop`: Don't stop the server before backup (optional, flag) | All           |
+| **backup-all**       | Restores all newest files (world and configuration files). | `-s, --server`: Server Name (required) <br> `--no-stop`: Don't stop the server before restore (optional, flag) | All           |
+| **restore-server**   | Restore server files from backup                  | `-s, --server`: Server name (required) <br> `-f, --file`: Path to the backup file (required) <br> `-t, --type`: Restore type (required) <br> `--no-stop`: Don't stop the server before restore (optional, flag) | All           |
+| **restore-all**      | Restores all newest files (world and configuration files). | `-s, --server`: Server Name (required) <br> `--no-stop`: Don't stop the server before restore (optional, flag) | All           |
+| **create-service**   | Enable/Disable Auto-Update, Reconfigures Systemd file on Linux                         | `-s, --server`: Server name (required)                                                                       | All     |
+| **scan-players**     | Scan server logs for player data                  | None                                                                                                          | All           |
+| **monitor-usage**    | Monitor server resource usage                     | `-s, --server`: Server name (required)                                                                       | All           |
+| **add-players**      | Manually add player:xuid to players.json        | `-p, --players`: `<player1:xuid> <player2:xuid> ...` (required, nargs='+')                                   | All           |
+| **manage-log-files** | Manages log files                                 | `--log-dir`: The directory containing the log files. (optional, default: LOG_DIR) <br> `--max-files`: The maximum number of log files to keep. (optional, default: 10) <br> `--max-size-mb`: The maximum total size of log files in MB. (optional, default: 15) | All           |
+| **prune-old-backups**| Prunes old backups                                | `-s, --server`: Server Name (required) <br> `-f, --file-name`: Specific file name to prune (optional) <br> `-k, --keep`: How many backups to keep (optional) | All           |
+| **manage-script-config**| Manages the script's configuration file         | `-k, --key`: The configuration key to read or write. (required) <br> `-o, --operation`: read or write (required, choices: ["read", "write"]) <br> `-v, --value`: The value to write (optional, required for 'write') | All           |
+| **manage-server-config**| Manages individual server configuration files    | `-s, --server`: Server Name (required) <br> `-k, --key`: The configuration key to read or write. (required) <br> `-o, --operation`: read or write (required, choices: ["read", "write"]) <br> `-v, --value`: The value to write (optional, required for 'write') | All           |
+| **get-installed-version**| Gets the installed version of a server          | `-s, --server`: Server Name (required)                                                                      | All           |
+| **check-server-status**| Checks the server status by reading server_output.txt | `-s, --server`: Server Name (required)                                                                      | All           |
+| **get-server-status-from-config**| Gets the server status from the server's config.json | `-s, --server`: Server name (required)                                                                       | All           |
+| **update-server-status-in-config**| Updates the server status in the server's config.json | `-s, --server`: Server name (required)                                                                       | All           |
+| **get-world-name**   | Gets the world name from the server.properties     | `-s, --server`: Server name (required)                                                                       | All           |
+| **check-internet**   | Checks for internet connectivity                    | None                                                                                                          | All           |
+| **get-service-status-from-config**| Gets the server status from the server's config.json | `-s, --server`: Server name (required)                                                                       | All           |
 
-  scan-players   -- Scan server_output.txt for players+xuid and add them to ./config/players.json"
 
-  list-servers   -- List all servers and their status"
-    --loop true               Loops list-server till exit"
+## Linux-Specific Commands
 
-  add-players    -- Manually add player:xuid to ./config/players.json"
-    --players '<player1:xuid> <player2:xuid>...'  The player names and xuids to be added (must be in 'quotations')"
-  
-  send-command   -- Send a command to a running server
-    --server <server_name>    Specify the server name
-    --command '<command>'       The command to send to the server (must be in "quotations")
+| Command             | Description                                       | Arguments                                                                                                     |
+|----------------------|---------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| **systemd-start**    | systemd start command (Linux only)                | `-s, --server`: Server name (required)                                                                       | Linux only    |
+| **systemd-stop**     | systemd stop command (Linux only)                 | `-s, --server`: Server name (required)                                                                       | Linux only    |
+| **attach-console**   | Attach to the server console (Linux only)         | `-s, --server`: Server Name (required)                                                                      | Linux only    |
+| **check-service-exists**| Checks if a systemd service file exists (Linux only)| `-s, --server`: Server name (required)                                                                       | Linux only    |
+| **enable-service**   | Enables a systemd service(Linux only)             | `-s, --server`: Server name (required)                                                                       | Linux only    |
+| **disable-service**  | Disables a systemd service (Linux only)            | `-s, --server`: Server name (required)                                                                       | Linux only    |
+| **send-command**     | Sends a command to the server (Linux only)        | `-s, --server`: Server name (required) <br> `-c, --command`: Command to send (required)                        | Linux only    |
 
-  update-server  -- Update a server to a specified version
-    --server <server_name>    Specify the server name
 
-  backup-server  -- Back up the server's worlds
-    --server <server_name>    Specify the server name
+## Windows-Specific Commands
 
-  start-server   -- Start the server
-    --server <server_name>    Specify the server name
-
-  stop-server    -- Stop the server
-    --server <server_name>    Specify the server name
-
-  restart-server -- Restart the server
-    --server <server_name>    Specify the server name
-
-  enable-server  -- Enable server autostart
-    --server <server_name>    Specify the server name
- 
-  disable-server -- Disable server autostart
-    --server <server_name>    Specify the server name
-
-  update-script  -- Redownload script from github
-      
-```
+| Command             | Description                                       | Arguments                                                               |
+|----------------------|---------------------------------------------------|-------------------------------------------------------------------------|
+| **windows-stop**     | Stop a server (Windows only)                      | `-s, --server`: Server name (required)                                |
+| **windows-start**    | Start a server (Windows only)                     | `-s, --server`: Server name (required)                                |
 
 ###### Examples:
 
 Open Main Menu:
 
 ```
-bash /path/to/script/bedrock-server-manager.sh main
+python /path/to/script/bedrock-server-manager.py main
 ```
 
 Send Command:
 ```
-bash /path/to/script/bedrock-server-manager.sh send-command --server server_name --command "tell @a hello"
+python /path/to/script/bedrock-server-manager.py send-command --server server_name --command "tell @a hello"
 ```
 
 Update Server:
 
 ```
-bash /path/to/script/bedrock-server-manager.sh update-server --server server_name
+python /path/to/script/bedrock-server-manager.py update-server --server server_name
 ```
 
 
@@ -145,7 +159,9 @@ For .mcworlds the script will scan the server.properties files for the `level-na
 For .mcpacks the script will extract them to a tmp folder and scan the manifest.json, looking for the pack type, name, version, and uuid. The script will then move the pack to it respective world folder (resource_packs, or behaviour_packs) with the name+verison used as the folder name, and the script will update the `world_behavior_packs.json` and `world_resource_packs.json` as needed with the packs uuid and version.
 ### Optional:
 
-For convenient access from any directory, you can create a symbolic link to the bedrock-server-manager.sh script in a directory within your $PATH.
+
+#### LINUX:
+For convenient access from any directory, you can create a symbolic link to the bedrock-server-manager.py script in a directory within your $PATH.
 
 1. Find your $PATH:
 
@@ -162,10 +178,10 @@ This will output a list of directories, similar to:
 2. Create the symbolic link:
 
 ```
-sudo ln -s /path/to/script/bedrock-server-manager.sh /path/in/your/$PATH/bedrock-server-manager
+sudo ln -s /path/to/script/bedrock-server-manager.py /path/in/your/$PATH/bedrock-server-manager
 ```
 
-Replace `/path/to/script/bedrock-server-manager.sh` with the actual path to your script and `/path/in/your/$PATH` with one of the directories from your `$PATH` (e.g., `/home/USER/bin`).
+Replace `/path/to/script/bedrock-server-manager.py` with the actual path to your script and `/path/in/your/$PATH` with one of the directories from your `$PATH` (e.g., `/home/USER/bin`).
 
 After creating a symlink you can just use the below command without having to cd or specify the script directory
 
@@ -173,14 +189,19 @@ After creating a symlink you can just use the below command without having to cd
 bedrock-server-manager <command>
 ```
 
-### Disclaimer:
-
-This script has only been tested on the following linux distros:
-
+### Tested on these systems:
 - Debian 12 (bookworm)
 - Ubuntu 24.04
-- Windows 11 (wsl-2)
-  - Ubuntu 24.04
+- Windows 11 24H2
+- WSL2
+
+### Platform Differences:
+- Windows suppport has the following limitations such as:
+ - No send-command support
+ - No attach to console support
+ - Doesn't auto restart if crashed
+
+If any of the above limitatoins are a roadblock for you, you might want to look into Windows Subsystem Linux (wsl)
 
 ## Moneyz Economy Function Creator
 
