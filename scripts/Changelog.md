@@ -114,7 +114,7 @@
 ### 2.0.0
 1. Complete rewrite of script in python
 2. Added Windows support
-   - Windows suppport has a few limitations such as:
+   - Windows support has a few limitations such as:
      - No send-command support
      - No attach to console support
      - Doesn't auto restart if crashed
@@ -128,7 +128,7 @@ The switch to python allows cross platform support, standardized processes, and 
 ##### To switch to the new version, follow these steps:
 
 - Replace the bash script with the new python script:
-  - Follow install structuons above
+  - Follow install instructions above
   - Place the .py file in the same folder as the .sh file
   - Delete the old .sh file if wanted
-- Run the script, open the advanced menu then Reonfigure Auto-Update
+- Run the script, open the advanced menu then Reconfigure Auto-Update
