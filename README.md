@@ -50,7 +50,7 @@ The Transfer UI Behavior Pack allows players to transfer to other Minecraft Bedr
 
 ### [Bedrock Server Manager](scripts/README.md#bedrock-server-manager):
 
-Bedrock Server Manager is a comprehensive Bash script designed for installing, managing, and maintaining Minecraft Bedrock Dedicated Servers with ease.
+Bedrock Server Manager is a comprehensive python script designed for installing, managing, and maintaining Minecraft Bedrock Dedicated Servers with ease. This script supports both linux and windows servers.
 
 ### [Moneyz Economy Function Creator](scripts/README.md#moneyz-economy-function-creator):
 

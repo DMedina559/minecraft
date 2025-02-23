@@ -132,3 +132,7 @@ The switch to python allows cross platform support, standardized processes, and 
   - Place the .py file in the same folder as the .sh file
   - Delete the old .sh file if wanted
 - Run the script, open the advanced menu then Reconfigure Auto-Update
+
+### 2.0.1
+
+1. Better handle send-command

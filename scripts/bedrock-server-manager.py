@@ -5,7 +5,7 @@
 # Change default config at ./config/script_config.json
 # COPYRIGHT ZVORTEX11325 2025
 # Author: ZVortex11325
-# Version 2.0.0
+# Version 2.0.1
 # REQUIREMENTS:
 # colorama
 # requests
@@ -6029,7 +6029,7 @@ def main():
     # send-command
     send_command_parser = subparsers.add_parser("send-command", help="Sends a command to the server (Linux only)")
     send_command_parser.add_argument("-s", "--server", help="Server name", required=True)
-    send_command_parser.add_argument("-c", "--command", help="Command to send", required=True)
+    send_command_parser.add_argument("-c", "--command", help="Command to send", required=True, nargs='+') 
 
     # export-world
     export_world_parser = subparsers.add_parser("export-world", help="Exports a world to mcworld")
@@ -6092,7 +6092,7 @@ def main():
         "enable-service": lambda: enable_service(args.server),
         "disable-service": lambda: disable_service(args.server),
         "is-server-running": lambda: print(is_server_running(args.server, base_dir)),
-        "send-command": lambda: send_command(args.server, args.command, config_dir),
+        "send-command": lambda: send_command(args.server, " ".join(args.command), config_dir),
         "export-world": lambda: export_world(args.server, base_dir, script_dir),
         "validate-server": lambda: print(validate_server(args.server, base_dir)),
         "check-internet": lambda: check_internet_connectivity()
