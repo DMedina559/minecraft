@@ -136,3 +136,8 @@ The switch to python allows cross platform support, standardized processes, and 
 ### 2.0.1
 
 1. Better handle send-command
+
+### 2.0.2
+
+1. Revaluated error codes
+2. Ensure write permissions before certain operations such as delete server

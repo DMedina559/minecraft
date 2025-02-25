@@ -74,7 +74,7 @@ python bedrock-server-manager.py <command> [options]
 
 | Command             | Description                                       | Arguments                                                                                                     | Platform      |
 |----------------------|---------------------------------------------------|---------------------------------------------------------------------------------------------------------------|---------------|
-| **main-menu**        | Open Bedrock Server Manager menu                  | None                                                                                                          | All           |
+| **main**        | Open Bedrock Server Manager menu                  | None                                                                                                          | All           |
 | **list-servers**     | List all servers and their statuses               | `-l, --loop`: Continuously list servers (optional)                                                          | All           |
 | **get-status**       | Get the status of a specific server               | `-s, --server`: Server name (required)                                                                       | All           |
 | **update-script**    | Update the script                                 | None                                                                                                          | All           |

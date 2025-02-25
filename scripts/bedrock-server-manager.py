@@ -5,7 +5,7 @@
 # Change default config at ./config/script_config.json
 # COPYRIGHT ZVORTEX11325 2025
 # Author: ZVortex11325
-# Version 2.0.1
+# Version 2.0.2
 # REQUIREMENTS:
 # colorama
 # requests
@@ -152,7 +152,7 @@ def manage_log_files(log_dir=LOG_DIR, max_files=10, max_size_mb=15):
     msg_debug("Log file management completed.")
     return 0
 
-def handle_error(exit_code, action):
+def handle_error(exit_code=1, action=""):
     """Handles errors based on the provided exit code and action.
 
     Args:
@@ -163,37 +163,46 @@ def handle_error(exit_code, action):
     msg_error(f"Error code: {exit_code}")
 
     error_messages = {
-        0:   "",  # Success, no action needed
-        1:   f"{action}: General error occurred.",
-        2:   f"{action}: Missing required argument.",
-        3:   f"{action}: Unsupported package manager.",
-        4:   f"{action}: Missing required packages.",
-        5:   f"{action}: Invalid input.",
-        6:   f"{action}: Server not found.",
-        7:   f"{action}: Server already running.",
-        8:   f"{action}: Server not running.",
-        9:   f"{action}: Failed to install/update server.",
-        10:  f"{action}: Failed to start/stop server.",
-        11:  f"{action}: Failed to configure server properties.",
-        12:  f"{action}: Failed to create systemd service.",
-        13:  f"{action}: Failed to enable/disable service.",
-        14:  f"{action}: Failed to read/write configuration file.",
-        15:  f"{action}: Failed to download or extract files.",
-        16:  f"{action}: Failed to create or remove directories.",
-        17:  f"{action}: Failed to send command to server.",
-        18:  f"{action}: Failed to attach to server console.",
-        19:  f"{action}: Failed to configure allowlist.",
-        20:  f"{action}: Failed to backup server.",
-        21:  f"{action}: Failed to delete server.",
-        22:  f"{action}: Failed to schedule task.",
-        23: f"{action}: Failed to monitor server resource usage.",
-        24: f"{action}: Internet connectivity test failed.",
-        25: f"{action}: Invalid server name.",
-        26: f"{action}: Invalid cron job input.",
-        27: f"{action}: Invalid pack type (for addons).",
-        28: f"{action}: Failed to reload allowlist.",
-        29: f"{action}: Failed to migrate server directories.",
-        255: f"{action}: User exited.",
+        1:   "Unknown Error.",
+        2:   "Missing Required Argument.",
+        4:   "Missing Required Packages.",
+        5:   "Invalid Input.",
+        6:   "Server Not Found.",
+        8:   "Server Not Running.",
+        9:   "Failed to Install/Update Server.",
+        10:  "Failed to Start/Stop Server.",
+        11:  "Failed to Configure Server Properties.",
+        12:  "Failed to Create Service.",
+        13:  "Failed to Enable/Disable Service.",
+        14:  "Failed to Read/Write Configuration File.",
+        15:  "Failed to Download or Extract Files.",
+        16:  "Failed to Create or Remove Directories.",
+        17:  "Failed to Send Command to Server.",
+        18:  "Failed to Attach to Server Console.",
+        20:  "Failed to Backup World.",
+        21:  "Failed to Delete Server.",
+        22:  "Failed to Schedule Task.",
+        23: "Failed to Monitor Server Resource Usage.",
+        24: "Internet Connectivity Test Failed.",
+        25: "Invalid Server Name.",
+        26: "Invalid Cron Job Input.",
+        27: "Invalid Addon Pack Type.",
+        30: "File Operation Failed.",
+        32: "Failed to Backup Config File.",
+
+        # Linux-specific Errors
+        41: "Failed to Reload systemd Daemon.",
+        42: "systemctl Command Not Found.",
+        45: "screen Command Not Found.",
+        46: "pgrep Command Not Found",
+        47: "Failed to set folder permissions",
+
+        # Windows-specific Errors
+        50: "Failed to Start Server Executable.",
+        51: "Failed to Stop Server Process.",
+        55: "Failed to set folder permissions",
+
+        255: "User Exited.",
     }
 
     message = error_messages.get(exit_code, f"{action}: Unknown error ({exit_code}).")
@@ -211,25 +220,25 @@ def handle_error(exit_code, action):
     return exit_code
 
 def setup_prerequisites():
-    """Checks for required command-line tools and provides instructions if missing."""
+    """Checks for required command-line tools (Linux-specific)."""
     action = "setup prerequisites"
-    packages = ["screen", "systemd"] 
-    missing_packages = []
 
-    for pkg in packages:
-        if shutil.which(pkg) is None:
-            missing_packages.append(pkg)
+    if platform.system() == "Linux":
+        packages = ["screen", "systemd"]
+        missing_packages = []
 
-    if not missing_packages:
-        msg_debug("All required packages are already installed.")
-        return 0
+        for pkg in packages:
+            if shutil.which(pkg) is None:
+                missing_packages.append(pkg)
 
-    msg_error(f"The following required packages are missing: {', '.join(missing_packages)}")
+        if not missing_packages:
+            msg_debug("All required packages are already installed.")
+            return 0
 
-    system = platform.system()
-    if system == "Linux":
+        msg_error(f"The following required packages are missing: {', '.join(missing_packages)}")
+
         distro = platform.freedesktop_os_release()['ID_LIKE']
-        if 'debian' in distro or 'ubuntu' in distro:  # Combined Debian/Ubuntu
+        if 'debian' in distro or 'ubuntu' in distro:
             msg_info("To install missing packages on Debian/Ubuntu, run:")
             msg_info("  sudo apt-get update")
             msg_info("  sudo apt-get install -y " + " ".join(missing_packages))
@@ -238,16 +247,18 @@ def setup_prerequisites():
         elif 'arch' in distro:
             msg_info("To install missing packages on Arch Linux, run: sudo pacman -S --noconfirm " + " ".join(missing_packages))
         elif 'suse' in distro:
-             msg_info("To install missing packages on openSUSE/SLES, run: sudo zypper install -y " + " ".join(missing_packages))
+            msg_info("To install missing packages on openSUSE/SLES, run: sudo zypper install -y " + " ".join(missing_packages))
         else:
             msg_warn("Unsupported Linux distribution. Please install the missing packages manually.")
 
-    elif system == "Windows":
-        msg_info("Windows doesn't currently support all script features. You may want to look into Windows Subsystem Linux (wsl).")
-    else:
-        msg_warn("Unsupported operating system.  Please install the missing packages manually.")
+        return handle_error(4, action)
 
-    return handle_error(4, action)
+    elif platform.system() == "Windows":
+        msg_info("Windows doesn't currently support all script features. You may want to look into Windows Subsystem Linux (wsl).")
+        return 0 
+    else:
+        msg_warn("Unsupported operating system.")
+        return 0
 
 def check_internet_connectivity(host="8.8.8.8", port=53, timeout=3):
     """Checks for internet connectivity by attempting a socket connection.
@@ -305,7 +316,7 @@ def update_script(script_path=__file__):
         return 0
     except requests.exceptions.RequestException as e:
         msg_error(f"Failed to download updated script: {e}")
-        return handle_error(1, action)
+        return handle_error(15, action)
 
 def write_config_if_not_exists(config_dir=None):
     """Writes a default configuration file if it doesn't exist or is invalid."""
@@ -447,14 +458,14 @@ def default_config():
 
     if write_config_if_not_exists() != 0:
         msg_error("Failed to write or validate config. Exiting")
-        sys.exit(14) # Exit if this fails.
+        return handle_error(14, action)
 
     config = {} # Store config
 
     base_dir = manage_script_config("BASE_DIR", "read")
     if base_dir is None:
         msg_error("Failed to read BASE_DIR from config. Exiting.")
-        sys.exit(14)
+        return handle_error(14, action)
     config['BASE_DIR'] = base_dir
 
     backup_keep = manage_script_config("BACKUP_KEEP", "read")
@@ -533,7 +544,7 @@ def manage_server_config(server_name, key, operation, value=None, config_dir=Non
     elif operation == "write":
         if value is None:
             msg_error("Error: Value is required for 'write' operation.")
-            return handle_error(5, action)
+            return handle_error(2, action)
 
         current_config[key] = value
         try:
@@ -574,7 +585,7 @@ def validate_server(server_name, base_dir):
 
     if not os.path.exists(os.path.join(server_dir, exe_name)):
         msg_warn(f"'{exe_name}' not found in {server_dir}.")
-        handle_error(1, action)
+        handle_error(6, action)
         return False
 
     msg_debug(f"{server_name} valid")
@@ -624,7 +635,7 @@ def get_installed_version(server_name, config_dir=None):
 
     if not server_name:
         msg_error("No server name provided.")
-        handle_error(2,action)
+        handle_error(25,action)
         return "UNKNOWN"
 
     installed_version = manage_server_config(server_name, "installed_version", "read", config_dir=config_dir)
@@ -802,11 +813,11 @@ def get_world_name(server_name, base_dir):
                     return world_name
     except OSError:
         msg_error("Failed to read server.properties")
-        handle_error(11,action)
+        handle_error(14,action)
         return None #Error
 
     msg_error("Failed to extract world name from server.properties.")
-    handle_error(1,action)
+    handle_error(14,action)
     return None
 
 def list_servers_status(base_dir, config_dir=None):
@@ -979,10 +990,10 @@ def configure_permissions(server_name, xuid, player, permission, base_dir):
         return handle_error(25, action)
     if not xuid:
         msg_error("configure_permissions: xuid is empty.")
-        return handle_error(5, action)
+        return handle_error(2, action)
     if not permission:
         msg_error("configure_permissions: permission is empty.")
-        return handle_error(5, action)
+        return handle_error(2, action)
 
     if not os.path.isdir(server_dir):
         msg_error(f"Server directory not found: {server_dir}")
@@ -1494,7 +1505,7 @@ def prune_old_downloads(download_dir, download_keep):
                         os.remove(file_path)
                     except OSError as e:
                         msg_error(f"Failed to delete old server download: {e}")
-                        return handle_error(1, action)
+                        return handle_error(30, action)
                 msg_ok("Old server downloads deleted.")
             else:
                 msg_debug(f"No old server downloads to delete (keeping {download_keep} most recent).")
@@ -1642,7 +1653,7 @@ def set_server_folder_permissions(server_dir):
             return 0
         except OSError as e:
             msg_error(f"Failed to set server folder permissions: {e}")
-            return handle_error(1, action)
+            return handle_error(47, action)
 
     elif platform.system() == "Windows":
         msg_info("Setting folder permissions for Windows...")
@@ -1662,7 +1673,7 @@ def set_server_folder_permissions(server_dir):
             return 0
         except OSError as e:
             msg_error(f"Failed to set folder permissions on Windows: {e}")
-            return handle_error(1, action)
+            return handle_error(55, action)
 
     else:
         msg_warn("set_server_folder_permissions: Unsupported operating system.")
@@ -1937,7 +1948,7 @@ def update_server(server_name, base_dir, config_dir = None):
     current_version = get_version_from_url(download_url)
     if not current_version:
         msg_error("Failed to extract version from URL.")
-        return handle_error(1, action)
+        return handle_error(15, action)
 
 
     if no_update_needed(server_name, installed_version, current_version, config_dir=config_dir):
@@ -2082,10 +2093,10 @@ WantedBy=default.target
             msg_debug("systemd daemon reloaded.")
         except subprocess.CalledProcessError as e:
             msg_error(f"Failed to reload systemd daemon: {e}")
-            return handle_error(1, action)  # General error
+            return handle_error(41, action)
         except FileNotFoundError:
             msg_error("systemctl command not found.  Is systemd installed?")
-            return handle_error(1, action)  # General error
+            return handle_error(42, action)
         return 0
     except OSError as e:
         msg_error(f"Failed to write systemd service file: {service_file}: {e}")
@@ -2175,7 +2186,7 @@ def _enable_systemd_service(server_name):
           return 0
     except FileNotFoundError:
         msg_error("systemctl command not found, make sure you are on a systemd system")
-        return handle_error(1, action)
+        return handle_error(42, action)
 
     try:
         subprocess.run(["systemctl", "--user", "enable", f"bedrock-{server_name}"], check=True)
@@ -2216,7 +2227,7 @@ def _disable_systemd_service(server_name):
             return 0 # Already disabled.
     except FileNotFoundError:
         msg_error("systemctl command not found, make sure you are on a systemd system")
-        return handle_error(1, action)
+        return handle_error(42, action)
 
     try:
         subprocess.run(["systemctl", "--user", "disable", f"bedrock-{server_name}"], check=True)
@@ -2342,7 +2353,7 @@ def _systemd_start_server(server_name, base_dir):
     except FileNotFoundError:
         msg_error("screen command not found.  Is screen installed?")
         update_server_status_in_config(server_name, base_dir)
-        return handle_error(10, action)
+        return handle_error(45, action)
 
 
     # Wait for the server to start
@@ -2400,7 +2411,7 @@ def _windows_start_server(server_name, base_dir):
     exe_path = os.path.join(base_dir, server_name, "bedrock_server.exe")
     if not os.path.exists(exe_path):
         msg_error(f"Executable not found at: {exe_path}")
-        return handle_error(11, action)
+        return handle_error(6, action)
 
     try:
         # Start the server executable with stdin piped
@@ -2419,7 +2430,7 @@ def _windows_start_server(server_name, base_dir):
     except Exception as e:
         msg_error(f"Failed to start server executable: {e}")
         update_server_status_in_config(server_name, base_dir)
-        return handle_error(10, action)
+        return handle_error(50, action)
 
     time.sleep(5)  # Wait for the server to initialize
 
@@ -2464,10 +2475,10 @@ def start_server(server_name, base_dir):
                 return 0
             else:
                 msg_error(f"Failed to start {service_name}: {result.stderr.strip()}")
-                return 1
+                return 10
         except FileNotFoundError:
             msg_error("systemctl command not found.")
-            return 1
+            return 42
 
     elif platform.system() == "Windows":
         return _windows_start_server(server_name, base_dir)
@@ -2521,10 +2532,10 @@ def _systemd_stop_server(server_name, base_dir):
 
     except FileNotFoundError:
         msg_error("pgrep or screen command not found.")
-        return handle_error(1, action)
+        return handle_error(46, action)
     except Exception as e:
         msg_error(f"An unexpected error occurred: {e}")
-        return handle_error(1, action) # General error
+        return handle_error(1, action)
 
     # Wait for server to stop and update status
     status = "UNKNOWN"
@@ -2585,7 +2596,7 @@ def _windows_stop_server(server_name, base_dir):
     except Exception as e:
         msg_error(f"Failed to stop server process for '{server_name}': {e}")
         update_server_status_in_config(server_name, base_dir)
-        return handle_error(10, action)
+        return handle_error(51, action)
 
     if manage_server_config(server_name, "status", "write", "STOPPED") != 0:
         msg_error("Failed to update server status in config (STOPPED).")
@@ -2840,7 +2851,7 @@ def attach_console(server_name, base_dir):
                 return handle_error(18, action)
             except FileNotFoundError:
                 msg_error("screen command not found. Is screen installed?")
-                return handle_error(18,action)
+                return handle_error(45,action)
         else:
             msg_warn(f"Server '{server_name}' is not running in a screen session.")
             return handle_error(8, action) #Return server not running
@@ -2870,7 +2881,7 @@ def send_command(server_name, command, config_dir = None):
         return handle_error(25, action)
     if not command:
         msg_error("send_command: command is empty.")
-        return handle_error(5, action)
+        return handle_error(2, action)
 
     if platform.system() == "Linux":
         try:
@@ -2886,7 +2897,7 @@ def send_command(server_name, command, config_dir = None):
             return handle_error(17, action)  # Failed to send command
         except FileNotFoundError:
             msg_error("screen command not found. Is screen installed?")
-            return handle_error(1, action)  # General error - screen not found
+            return handle_error(45, action)
 
     elif platform.system() == "Windows":
         msg_info("Windows doesn't currently support all script features. You may want to look into Windows Subsystem Linux (wsl).")
@@ -2941,8 +2952,11 @@ def delete_server(server_name, base_dir, config_dir = None):
             except subprocess.CalledProcessError:
                 msg_error("Failed to reload systemctl daemon")
     elif platform.system() == "Windows":
+        remove_readonly(server_dir)
+        remove_readonly(config_dir)
+    
     # Remove the server directory
-     msg_warn(f"Deleting server directory: {server_dir}")
+    msg_warn(f"Deleting server directory: {server_dir}")
     try:
         shutil.rmtree(server_dir)
     except OSError as e:
@@ -2995,7 +3009,7 @@ def stop_server_if_running(server_name, base_dir):
     action = "stop server if running"
     if not server_name:
        msg_error("stop_server_if_running: server_name is empty.")
-       return False
+       return handle_error(25, action)
 
     msg_info("Checking if server is running")
     if is_server_running(server_name, base_dir):
@@ -3357,7 +3371,7 @@ def backup_server(server_name, backup_type, file_to_backup=None, change_status=T
             prune_old_backups(server_name, file_name, script_dir=script_dir)
         except OSError as e:
             msg_error(f"Failed to copy '{file_to_backup}' to '{backup_dir}': {e}")
-            return handle_error(1, action)
+            return handle_error(32, action)
 
     else:
         msg_error(f"Invalid backup type: {backup_type}")
@@ -3858,7 +3872,7 @@ def install_pack(pack_type, temp_dir, server_name, pack_file, base_dir, script_d
             return 0
         except OSError as e:
             msg_error(f"Failed to copy behavior pack files: {e}")
-            return handle_error(1, action)
+            return handle_error(30, action)
 
     elif pack_type == "resources":
         msg_info(f"Installing resource pack to {server_name}")
@@ -3878,7 +3892,7 @@ def install_pack(pack_type, temp_dir, server_name, pack_file, base_dir, script_d
             return 0
         except OSError as e:
             msg_error(f"Failed to copy resource pack files: {e}")
-            return handle_error(1, action)
+            return handle_error(30, action)
     else:
         msg_error(f"Unknown pack type: {pack_type}")
         return handle_error(27, action)
@@ -4377,7 +4391,7 @@ def get_server_cron_jobs(server_name):
 
     if platform.system() != "Linux":
         msg_warn("Cron jobs are only supported on Linux.")
-        return "undefined"  # Consistent with original script
+        return "undefined"
 
     try:
         result = subprocess.run(["crontab", "-l"], capture_output=True, text=True, check=False)
@@ -5086,10 +5100,10 @@ def add_windows_task(server_name, base_dir, script_direct, config_dir):
             msg_ok(f"Task '{task_name}' added successfully!")
         else:
             msg_error(f"Failed to import task '{task_name}'.")
-            return 1
+            return 53
     else:
         msg_error("Failed to create XML for task.")
-        return 1
+        return 52
     return 0
 
 def create_windows_task_xml(server_name, script_direct, command, command_args, task_name, config_dir, existing_triggers=None):
@@ -5157,7 +5171,7 @@ def create_windows_task_xml(server_name, script_direct, command, command_args, t
         return xml_file_path
     except Exception as e:
         msg_error(f"Error writing XML file: {e}")
-        return None
+        return 52
 
 def import_task_xml(xml_file_path, task_name):
     """Imports the XML file into the Windows Task Scheduler."""
@@ -5457,10 +5471,10 @@ def modify_windows_task(server_name, base_dir, script_direct, config_dir):
                 triggers_element.remove(trigger)
         else:
             msg_error("Could not find triggers element to modify. Aborting.")
-            return 1
+            return handle_error(22, action)
     except (ET.ParseError, FileNotFoundError) as e:
         msg_error(f"Error loading or parsing XML: {e}")
-        return 1
+        return handle_error(22, action)
 
     get_trigger_info(triggers_element)
 
@@ -5471,20 +5485,12 @@ def modify_windows_task(server_name, base_dir, script_direct, config_dir):
     existing_arguments = arguments_element.text if arguments_element is not None else ""
     command_parts = existing_arguments.split()
 
-    if existing_command != "python":
-        msg_warn("Command does not use Python, modify failed")
-        return 1
-
-    if command_parts[0] != script_direct:
-        msg_warn("script directory not matching, modify failed")
-        return 1
-
     command = command_parts[1]
     new_task_name = f"{server_name}_{command.replace('-', '_')}" # Use new name
 
     if delete_task(selected_task_name) != 0:
         msg_error(f"Failed to remove original task '{selected_task_name}' before modification.")
-        return 1
+        return handle_error(22, action)
 
     new_xml_file_path = create_windows_task_xml(server_name, script_direct, command, " ".join(command_parts[2:]), new_task_name, config_dir, existing_triggers=[])
 
@@ -5493,10 +5499,10 @@ def modify_windows_task(server_name, base_dir, script_direct, config_dir):
             msg_ok(f"Task '{new_task_name}' modified successfully!")
         else:
             msg_error(f"Failed to import modified task '{new_task_name}'.")
-            return 1
+            return handle_error(22, action)
     else:
         msg_error("Failed to create modified XML.")
-        return 1
+        return handle_error(22, action)
     return 0
     
 def delete_windows_task(server_name, config_dir):
@@ -5545,10 +5551,10 @@ def delete_windows_task(server_name, config_dir):
                     msg_ok(f"Task XML file '{selected_file_path}' removed.")
                 except OSError as e:
                     msg_error(f"Failed to remove task XML file: {e}")
-                return 0
+                return handle_error(22, action)
             else:
                 msg_error(f"Failed to delete task '{selected_task_name}'.")
-                return 1
+                return handle_error(22, action)
         elif confirm_delete in ("n", "no", ""):
             msg_info("Task deletion cancelled.")
             return 0
@@ -5569,7 +5575,7 @@ def delete_task(task_name):
            # msg_warn(f"Task '{task_name}' not found.") # Don't even warn
             return 0 # Treat as success
         msg_error(f"Failed to delete task '{task_name}': {e.stderr}")
-        return 1 # Other error
+        return handle_error(22, action)
     except Exception as e:
         msg_error(f"An unexpected error occurred while deleting task: {e}")
         return 1
@@ -5807,6 +5813,66 @@ def backup_restore(base_dir, script_dir, config_dir):
             return 0  # Go back to the main menu
         else:
             msg_warn("Invalid choice")
+
+def remove_readonly(path):
+    """Removes the read-only attribute from a file or directory (cross-platform).
+
+    Args:
+        path (str): The path to the file or directory.
+
+    Returns:
+        int: 0 on success, or an error code on failure.  Returns 0 even if
+             the file/directory didn't exist (doesn't treat that as an error).
+    """
+    action = "remove read-only attribute"
+
+    if not os.path.exists(path):
+        # msg_debug(f"Path does not exist, nothing to do: {path}") # Optional debug
+        return 0  # Not an error if it doesn't exist
+
+    msg_info("Ensuring write permissions...")
+    msg_info("This may take a while...")
+
+    if platform.system() == "Windows":
+        try:
+            # Use attrib command on Windows
+            subprocess.run(["attrib", "-R", path], check=True, shell=True, capture_output=True, text=True)
+            msg_ok("Permissions set")
+            return 0
+        except subprocess.CalledProcessError as e:
+            msg_error(f"Failed to remove read-only attribute on Windows: {e.stderr} {e.stdout}")
+            return handle_error(1, action) # General error
+        except FileNotFoundError:
+            msg_error("attrib command not found.") # Should never happen on Windows
+            return handle_error(1, action)
+
+
+    elif platform.system() == "Linux":
+        try:
+            # Use os.chmod on Linux
+            if os.path.isfile(path):
+                os.chmod(path, os.stat(path).st_mode | stat.S_IWUSR) # Add write for owner
+            elif os.path.isdir(path):
+                # Recursively remove read-only for all files and dirs
+                for root, dirs, files in os.walk(path):
+                    for d in dirs:
+                        dir_path = os.path.join(root, d)
+                        os.chmod(dir_path, os.stat(dir_path).st_mode | stat.S_IWUSR)
+                    for f in files:
+                        file_path = os.path.join(root, f)
+                        os.chmod(file_path, os.stat(file_path).st_mode | stat.S_IWUSR)
+            else:
+                msg_warn(f"Unsupported file type: {path}") #Should never happen
+                return handle_error(1, action)
+            msg_ok("Permissions set")
+            return 0 # Success
+        except OSError as e:
+            msg_error(f"Failed to remove read-only attribute on Linux: {e}")
+            return handle_error(1, action)
+
+    else:
+        msg_warn(f"Unsupported operating system in remove_readonly: {platform.system()}")
+        return 1
 
 def main():
     """Main function of the script."""
