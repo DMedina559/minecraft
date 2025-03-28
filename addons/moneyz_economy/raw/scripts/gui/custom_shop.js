@@ -100,7 +100,7 @@ async function handleShopItemMenu(player, shopItem) {
     const form = new ActionFormData();
     form.title(`Shop: ${shopItem.itemName}`);
     form.button(`Buy ${shopItem.buyAmount} for ${shopItem.buyCost} Moneyz`);
-    form.button(`Sell ${shopItem.sellAmount} for ${shopItem.sellAmount} Moneyz`);
+    form.button(`Sell ${shopItem.sellAmount} for ${shopItem.sellCost} Moneyz`);
     form.button("Back");
 
     log(`Displaying shop item menu for ${shopItem.itemName}.`, LOG_LEVELS.DEBUG);
