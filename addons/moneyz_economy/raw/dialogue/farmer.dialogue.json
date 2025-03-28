@@ -233,7 +233,8 @@
 						"commands": ["/function farmer/sugarcane"]
 					},
 					{
-						"name": "Wheat"
+						"name": "Wheat",
+						"commands": ["/function farmer/wheat"]
 					},
 					{
 						"name": "Pg. 2",
@@ -941,7 +942,8 @@
 						"commands": ["/function farmer/sell/sugarcane"]
 					},
 					{
-						"name": "Wheat"
+						"name": "Wheat",
+						"commands": ["/function farmer/sell/wheat"]
 					},
 					{
 						"name": "Pg. 2",
