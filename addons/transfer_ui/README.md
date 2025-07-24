@@ -5,6 +5,7 @@ The Transfer UI Behavior Pack allows players to transfer to other Minecraft Bedr
 ## Features
 - Players interact with a compass to open the transfer menu.
 - Simple and user-friendly interface for entering server IP and port.
+- Potential support for NetherNet transfers.
 
 ### Ideal for PlayStation/Xbox:
 - `Minecraft Bedrock` for `Playstation` and `Xbox` are able to join custom servers that are on the same LAN. 
