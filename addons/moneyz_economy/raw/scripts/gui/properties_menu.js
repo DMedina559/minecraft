@@ -42,16 +42,16 @@ function playerPropertiesMenu(player) {
 
             if (dropdownIndex < 0 || dropdownIndex >= players.length) {
                 log(`Invalid dropdown index: ${dropdownIndex}`, LOG_LEVELS.WARN, player.nameTag);
-                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cInvalid player selected."}]}`);
+                player.runCommand(`tellraw @s {"rawtext":[{"text":"§cInvalid player selected."}]}`);
                 propertiesMenu(player);
                 return;
             }
 
             const selectedPlayer = players[dropdownIndex];
 
-            if (!selectedPlayer || !selectedPlayer.isValid()) {
+            if (!selectedPlayer || !selectedPlayer.isValid) {
                 log(`Selected player is no longer valid or undefined.`, LOG_LEVELS.WARN, player.nameTag);
-                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cSelected player is no longer available."}]}`);
+                player.runCommand(`tellraw @s {"rawtext":[{"text":"§cSelected player is no longer available."}]}`);
                 propertiesMenu(player);
                 return;
             }
@@ -67,9 +67,9 @@ function playerPropertiesMenu(player) {
 function viewPlayerProperties(player, selectedPlayer) {
     log(`Opening View Player Properties for ${player.nameTag} viewing ${selectedPlayer.nameTag}'s properties`, LOG_LEVELS.DEBUG);
 
-    if (!selectedPlayer || !selectedPlayer.isValid()) {
+    if (!selectedPlayer || !selectedPlayer.isValid) {
         log(`Selected player is no longer valid.`, LOG_LEVELS.WARN, player.nameTag);
-        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cSelected player is no longer available."}]}`);
+        player.runCommand(`tellraw @s {"rawtext":[{"text":"§cSelected player is no longer available."}]}`);
         playerPropertiesMenu(player);
         return;
     }
@@ -115,9 +115,9 @@ function viewPlayerProperties(player, selectedPlayer) {
 }
 
 function modifyPlayerProperties(player, selectedPlayer) {
-  if (!selectedPlayer || !selectedPlayer.isValid()) {
+  if (!selectedPlayer || !selectedPlayer.isValid) {
     log(`Selected player is no longer valid (modify properties).`, LOG_LEVELS.WARN, player.nameTag);
-    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cSelected player is no longer available."}]}`);
+    player.runCommand(`tellraw @s {"rawtext":[{"text":"§cSelected player is no longer available."}]}`);
     playerPropertiesMenu(player);
     return;
   }
@@ -144,14 +144,14 @@ function modifyPlayerProperties(player, selectedPlayer) {
 
       if (selectedOption === options.length - 1) {
         if (!keyField.trim() || !keyField.trim().startsWith("player_")) {
-          player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cA key must be provided and start with 'player_'!"}]}`);
+          player.runCommand(`tellraw @s {"rawtext":[{"text":"§cA key must be provided and start with 'player_'!"}]}`);
           modifyPlayerProperties(player, selectedPlayer);
           return;
         }
 
         selectedPlayer.setDynamicProperty(keyField.trim(), valueField.trim());
         log(`Admin set dynamic property ${keyField.trim()} to ${valueField.trim()} for ${selectedPlayer.nameTag}`, LOG_LEVELS.INFO, player.nameTag);
-        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aDynamic property ${keyField.trim()} has been set to ${valueField.trim()} for ${selectedPlayer.nameTag}."}]}`);
+        player.runCommand(`tellraw @s {"rawtext":[{"text":"§aDynamic property ${keyField.trim()} has been set to ${valueField.trim()} for ${selectedPlayer.nameTag}."}]}`);
         modifyPlayerProperties(player, selectedPlayer);
         return;
       }
@@ -160,14 +160,14 @@ function modifyPlayerProperties(player, selectedPlayer) {
 
       if (valueField.trim() === "") {
         log(`${player.nameTag} cleared ${selectedProperty} property.`, LOG_LEVELS.INFO);
-        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cProperty Cleared!"}]}`);
+        player.runCommand(`tellraw @s {"rawtext":[{"text":"§cProperty Cleared!"}]}`);
         selectedPlayer.setDynamicProperty(selectedProperty, null);
         modifyPlayerProperties(player, selectedPlayer);
         return;
       }
       selectedPlayer.setDynamicProperty(selectedProperty, valueField.trim());
       log(`Admin set dynamic property ${selectedProperty} to ${valueField.trim()} for ${selectedPlayer.nameTag}`, LOG_LEVELS.INFO, player.nameTag);
-      player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aDynamic property ${selectedProperty} has been set to ${valueField.trim()} for ${selectedPlayer.nameTag}."}]}`);
+      player.runCommand(`tellraw @s {"rawtext":[{"text":"§aDynamic property ${selectedProperty} has been set to ${valueField.trim()} for ${selectedPlayer.nameTag}."}]}`);
     })
     .catch(error => {
       log(`Error with ModalFormData in modifyPlayerProperties: ${error}`, LOG_LEVELS.ERROR, player.nameTag, error, error.stack);
@@ -216,26 +216,26 @@ function shopItemPropertiesMenu(player) {
 
             if (selectedOption === options.length - 1) {
                 if (!propertyName || !propertyName.startsWith("shopItem_")) {
-                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cProperty name must start with 'shopItem_'."}]}`);
+                    player.runCommand(`tellraw @s {"rawtext":[{"text":"§cProperty name must start with 'shopItem_'."}]}`);
                     return;
                 }
 
                 const newValue = `${itemName},${buyAmount},${buyCost},${buyData},${sellAmount},${sellCost},${sellData}`;
                 world.setDynamicProperty(propertyName, newValue);
-                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aNew property '${propertyName}' has been created."}]}`);
+                player.runCommand(`tellraw @s {"rawtext":[{"text":"§aNew property '${propertyName}' has been created."}]}`);
 
             } else if (selectedOption >= 0 && selectedOption < worldProperties.length) {
                 const existingProperty = worldProperties[selectedOption];
                 const newValue = `${itemName},${buyAmount},${buyCost},${buyData},${sellAmount},${sellCost},${sellData}`;
                 world.setDynamicProperty(existingProperty, newValue);
-                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aProperty '${existingProperty}' has been updated."}]}`);
+                player.runCommand(`tellraw @s {"rawtext":[{"text":"§aProperty '${existingProperty}' has been updated."}]}`);
             } else {
-                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cInvalid selection."}]}`);
+                player.runCommand(`tellraw @s {"rawtext":[{"text":"§cInvalid selection."}]}`);
             }
         })
         .catch(error => {
           log(`Error in shopItemPropertiesMenu: ${error}`, LOG_LEVELS.ERROR, player.nameTag, error, error.stack);
-          player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cAn error occurred while managing shop items."}]}`);
+          player.runCommand(`tellraw @s {"rawtext":[{"text":"§cAn error occurred while managing shop items."}]}`);
         });
 };
 
@@ -304,18 +304,18 @@ function modifyWorldProperties(player) {
             if (selectedOption === options.length - 1) {
                 if (!keyField.trim()) {
                     log(`${player.nameTag} entered empty key for world property modification.`, LOG_LEVELS.WARN);
-                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cA key must be provided!"}]}`);
+                    player.runCommand(`tellraw @s {"rawtext":[{"text":"§cAn key must be provided!"}]}`);
                     return;
                 }
 
                 try {
                     world.setDynamicProperty(keyField.trim(), valueField.trim());
                     log(`World property ${keyField.trim()} set to ${valueField.trim()} by ${player.nameTag}.`, LOG_LEVELS.INFO);
-                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aWorld property ${keyField.trim()} has been set to ${valueField.trim()}."}]}`);
+                    player.runCommand(`tellraw @s {"rawtext":[{"text":"§aWorld property ${keyField.trim()} has been set to ${valueField.trim()}."}]}`);
                     modifyWorldProperties(player);
                 } catch (error) {
                     log(`Error setting world property: ${error}`, LOG_LEVELS.ERROR, player.nameTag, error, error.stack);
-                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cAn error occurred while modifying the world property."}]}`);
+                    player.runCommand(`tellraw @s {"rawtext":[{"text":"§cAn error occurred while modifying the world property."}]}`);
                 }
                 return;
             }
@@ -324,7 +324,7 @@ function modifyWorldProperties(player) {
 
             if (valueField.trim() === "") {
                 log(`${player.nameTag} cleared ${selectedProperty} property.`, LOG_LEVELS.INFO);
-                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cProperty Cleared!"}]}`);
+                player.runCommand(`tellraw @s {"rawtext":[{"text":"§cProperty Cleared!"}]}`);
                 world.setDynamicProperty(selectedProperty, null);
                 modifyWorldProperties(player)
                 return;
@@ -333,11 +333,11 @@ function modifyWorldProperties(player) {
             try {
                 world.setDynamicProperty(selectedProperty, valueField.trim());
                 log(`World property ${selectedProperty} set to ${valueField.trim()} by ${player.nameTag}.`, LOG_LEVELS.INFO);
-                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aWorld property ${selectedProperty} has been set to ${valueField.trim()}."}]}`);
+                player.runCommand(`tellraw @s {"rawtext":[{"text":"§aWorld property ${selectedProperty} has been set to ${valueField.trim()}."}]}`);
                 modifyWorldProperties(player)
             } catch (error) {
                 log(`Error setting world property: ${error}`, LOG_LEVELS.ERROR, player.nameTag, error, error.stack);
-                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cAn error occurred while modifying the world property."}]}`);
+                player.runCommand(`tellraw @s {"rawtext":[{"text":"§cAn error occurred while modifying the world property."}]}`);
             }
 
         })
@@ -350,7 +350,7 @@ function modifyWorldProperties(player) {
 function clearAllWorldProperties(player) {
     log(`Clearing all world properties initiated by ${player.nameTag}.`, LOG_LEVELS.WARN);
     world.clearDynamicProperties();
-    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aAll dynamic properties have been cleared successfully!"}]}`);
+    player.runCommand(`tellraw @s {"rawtext":[{"text":"§aAll dynamic properties have been cleared successfully!"}]}`);
     log(`All world properties cleared by ${player.nameTag}.`, LOG_LEVELS.WARN);
     worldPropertiesMenu(player);
 }
