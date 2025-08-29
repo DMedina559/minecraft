@@ -5,7 +5,9 @@ import { openRewardsMenu } from './rewards_menu.js';
 import { moneyzAdmin } from './admin_menu.js';
 import { luckyMenu } from './lucky_menu.js';
 import { chanceMenu } from './chance_menu.js';
+import { itemData } from "../item_data.js";
 import { customShop } from './custom_shop.js';
+import { showShopCategories } from './main_shop.js';
 import { giveQuest } from './quest_menu.js';
 import { log, LOG_LEVELS } from '../logger.js';
 
@@ -75,35 +77,39 @@ export function main(player) {
 function shops(player) {
 
     const customShopName = world.getDynamicProperty("customShop") || "Custom Shop";
+    const shopIds = Object.keys(itemData);
 
-    new ActionFormData()
+    const form = new ActionFormData()
         .title("§l§1Shop Menu")
-        .body(`§l§o§fMoneyz Balance: §g${getScore('Moneyz', player.nameTag)}`)
-        .button("§d§lArmory\n§r§7[ Click to Shop ]")
-        .button("§d§lCrafter's Market\n§r§7[ Click to Shop ]")
-        .button("§d§lFarmer's Market\n§r§7[ Click to Shop ]")
-        .button("§d§lLibrary\n§r§7[ Click to Shop ]")
-        .button("§d§lPet Shop\n§r§7[ Click to Shop ]")
-        .button("§d§lWorkshop\n§r§7[ Click to Shop ]")
-        .button(`§d§l${customShopName}\n§r§7[ Click to Shop ]`)
-        .button("§c§lBack")
-        .show(player)
+        .body(`§l§o§fMoneyz Balance: §g${getScore('Moneyz', player.nameTag)}`);
+
+    // Add buttons for each main shop
+    shopIds.forEach(shopId => {
+        const displayName = shopId.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        form.button(`§d§l${displayName}\n§r§7[ Click to Shop ]`);
+    });
+
+    // Add the custom shop button
+    form.button(`§d§l${customShopName}\n§r§7[ Click to Shop ]`);
+    
+    // Add the back button
+    form.button("§c§lBack");
+
+    form.show(player)
         .then(r => {
-            if (r.selection === 0) {
-                player.runCommandAsync("dialogue open @s @s armory");
-            } else if (r.selection === 1) {
-                player.runCommandAsync("dialogue open @s @s craftershop");
-            } else if (r.selection === 2) {
-                player.runCommandAsync("dialogue open @s @s farmers_market");
-            } else if (r.selection === 3) {
-                player.runCommandAsync("dialogue open @s @s library");
-            } else if (r.selection === 4) {
-                player.runCommandAsync("dialogue open @s @s petshop");
-            } else if (r.selection === 5) {
-                player.runCommandAsync("dialogue open @s @s workshop");
-            } else if (r.selection === 6) {
+            if (r.isCanceled) return;
+            
+            const selection = r.selection;
+
+            if (selection < shopIds.length) {
+                // A main shop was selected
+                const selectedShopId = shopIds[selection];
+                showShopCategories(player, selectedShopId);
+            } else if (selection === shopIds.length) {
+                // The custom shop was selected
                 customShop(player);
-            } else if (r.selection === 7) {
+            } else {
+                // The back button was selected
                 main(player);
             }
         })
