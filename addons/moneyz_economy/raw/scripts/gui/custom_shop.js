@@ -148,85 +148,54 @@ async function handleBuy(player, shopItem) {
             return;
         }
 
-        const playerMoney = await getScore("Moneyz", player);
+        const playerMoney = getScore("Moneyz", player);
         log("Player Moneyz (raw score):", LOG_LEVELS.DEBUG, playerMoney);
 
         if (isNaN(playerMoney) || playerMoney < buyCost) {
-            await player.runCommandAsync(`playsound note.bassattack @s ~ ~ ~`);
-            await player.runCommandAsync(`tell @s §cYou can't buy ${buyAmount} ${itemName}!`);
-            await player.runCommandAsync(`tellraw @s {"rawtext": [{"text": "§cYou need ${buyCost} Moneyz for this purchase\n"}, {"text": "§6You have "}, {"score":{"name": "@s","objective": "Moneyz"}}, {"text": " Moneyz"}]}`);
+            player.playSound("note.bass");
+            player.sendMessage(`§cYou need ${buyCost} Moneyz to buy ${buyAmount} ${itemName}!\n§6You have ${playerMoney} Moneyz`);
             log(`Player ${player.nameTag} has insufficient Moneyz.`, LOG_LEVELS.INFO);
             return;
         }
 
         const giveCommand = buyData !== 0 ? `give @s ${String(itemName)} ${String(buyAmount)} ${String(buyData)}` : `give @s ${String(itemName)} ${String(buyAmount)}`;
-        log("Give Command:", LOG_LEVELS.DEBUG, giveCommand);
+        player.runCommand(giveCommand);
+        
+        updateScore(player, buyCost, "remove");
 
-        const giveResult = await player.runCommandAsync(giveCommand);
-        log("Item given result:", LOG_LEVELS.DEBUG, giveResult);
-
-        const removeMoneyResult = await updateScore(player, -buyCost);
-        log("Moneyz removed result:", LOG_LEVELS.DEBUG, removeMoneyResult);
-
-        if (!removeMoneyResult) {
-            log("Error removing Moneyz.", LOG_LEVELS.ERROR);
-            player.sendMessage("§cThere was an error removing your Moneyz. Please contact an admin.");
-            return;
-        }
-
-        await player.runCommandAsync(`playsound random.levelup @s ~ ~ ~`);
-        await player.runCommandAsync(`tell @s §aPurchased ${String(buyAmount)} ${String(itemName)} for ${String(buyCost)} Moneyz.`);
+        player.playSound("random.levelup");
+        player.sendMessage(`§aPurchased ${String(buyAmount)} ${String(itemName)} for ${String(buyCost)} Moneyz.`);
         log(`${player.nameTag} bought ${String(buyAmount)} ${String(itemName)} for ${String(buyCost)} Moneyz.`, LOG_LEVELS.INFO);
     } catch (error) {
-        log("Error in handleBuy:", LOG_LEVELS.ERROR, error);
+        log("Error in handleBuy:", LOG_LEVELS.ERROR, error.stack);
         player.sendMessage("§cError processing purchase. Check logs.");
     }
 }
 
 async function handleSell(player, shopItem) {
     log("Shop Item in handleSell:", LOG_LEVELS.DEBUG, JSON.stringify(shopItem, null, 2));
-
     const { itemName, sellAmount, sellCost, sellData } = shopItem;
 
     try {
-        if (!player || typeof player.runCommandAsync !== 'function') {
-            log("Error: player is invalid.", LOG_LEVELS.ERROR);
-            return;
+        const hasItemCheck = `testfor @s[hasitem={item=${itemName},data=${sellData},quantity=${sellAmount}..}]`;
+        const testResult = world.getDimension(player.dimension.id).runCommand(hasItemCheck);
+
+        if (testResult.successCount > 0) {
+            updateScore(player, sellCost, "add");
+            
+            const clearCommand = `clear @s ${itemName} ${sellData !== 0 ? sellData : 0} ${sellAmount}`;
+            player.runCommand(clearCommand);
+
+            player.playSound("random.levelup");
+            player.sendMessage(`§aSold ${sellAmount} ${itemName} for ${sellCost} Moneyz!`);
+            log(`${player.nameTag} sold ${sellAmount} ${itemName}.`, LOG_LEVELS.INFO);
+        } else {
+            player.playSound("note.bass");
+            player.sendMessage(`§cYou don't have enough ${itemName} to sell.`);
+            log(`${player.nameTag} failed to sell ${sellAmount} ${itemName}.`, LOG_LEVELS.INFO);
         }
-
-        const hasItemCheck = sellData !== 0
-            ? `@s[hasitem={item=${itemName},data=${sellData},quantity=${sellAmount}..}]`
-            : `@s[hasitem={item=${itemName},quantity=${sellAmount}..}]`;
-
-        const hasNoItemCheck = sellData !== 0
-            ? `@s[hasitem={item=${itemName},data=${sellData},quantity=!${sellAmount}..}]`
-            : `@s[hasitem={item=${itemName},quantity=!${sellAmount}..}]`;
-
-        const soundCommand = `execute as ${hasItemCheck} run playsound random.levelup @s ~ ~ ~`;
-        const giveMoneyCommand = `execute as ${hasItemCheck} run scoreboard players add @s Moneyz ${sellCost}`;
-        const successMessageCommand = `execute as ${hasItemCheck} run tell @s §aSold ${sellAmount} ${itemName} for ${sellCost} Moneyz!`;
-        const clearItemCommand = `execute as ${hasItemCheck} run clear @s ${itemName} ${sellData !== 0 ? sellData : 0} ${sellAmount}`;
-
-        const noItemSound = `execute as ${hasNoItemCheck} run playsound note.bassattack @s ~ ~ ~`;
-        const noItemMessage = `execute as ${hasNoItemCheck} run tell @s §cYou don't have enough ${itemName} to sell.`;
-
-        try {
-            await player.runCommandAsync(noItemSound);
-            await player.runCommandAsync(noItemMessage);
-            await player.runCommandAsync(soundCommand);
-            await player.runCommandAsync(giveMoneyCommand);
-            await player.runCommandAsync(successMessageCommand);
-            await player.runCommandAsync(clearItemCommand);
-
-            log(`${player.nameTag} attempted to sell ${sellAmount} ${itemName}.`, LOG_LEVELS.INFO);
-
-        } catch (error) {
-            log("Error in handleSell:", LOG_LEVELS.ERROR, error);
-            player.sendMessage("§cError processing sell. Check logs.");
-        }
-
     } catch (error) {
-        log("Outer Error in handleSell:", LOG_LEVELS.ERROR, error);
-        player.sendMessage("§cError processing sell. Check logs.");
+        log("Error in handleSell:", LOG_LEVELS.ERROR, error.stack);
+        player.sendMessage("§cError processing sell transaction.");
     }
 }

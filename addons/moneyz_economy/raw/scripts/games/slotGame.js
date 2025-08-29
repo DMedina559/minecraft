@@ -45,14 +45,14 @@ async function playSlots(player, stake, isNpcInteraction) {
 
     if (winnings > 0) {
         log(`${player.nameTag} won ${winnings} Moneyz on the slots.`, LOG_LEVELS.INFO);
-        player.runCommandAsync("playsound random.levelup @s ~ ~ ~");
+        player.playSound("random.levelup");
     } else {
         log(`${player.nameTag} lost ${stake} Moneyz on the slots.`, LOG_LEVELS.INFO);
-        player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
+        player.playSound("note.bass");
     }
 
     try {
-        await updateScore(player, winnings, "add");
+        updateScore(player, winnings, "add");
         showSlotResults(player, stake, reels, winnings, winType, isNpcInteraction);
     } catch (error) {
         log(`Error updating winnings for ${player.nameTag}: ${error}`, LOG_LEVELS.ERROR);
@@ -85,12 +85,12 @@ function showSlotResults(player, stake, reels, winnings, winType, isNpcInteracti
         });
 }
 
-export async function startSlotsGame(player, isNpcInteraction) {
+export function startSlotsGame(player, isNpcInteraction) {
     new ModalFormData()
         .title("§l§6Slot Machine")
         .textField("Enter your stake:", "Enter stake amount here")
         .show(player)
-        .then(async response => {
+        .then(response => {
             if (response.canceled) return;
 
             const stake = parseInt(response.formValues[0], 10);
@@ -100,12 +100,12 @@ export async function startSlotsGame(player, isNpcInteraction) {
             }
 
             try {
-                const playerScore = await getScore("Moneyz", player);
+                const playerScore = getScore("Moneyz", player);
                 if (playerScore < stake) {
                     player.sendMessage("§cYou don't have enough Moneyz!");
                     return;
                 }
-                await updateScore(player, stake, "remove");
+                updateScore(player, stake, "remove");
                 playSlots(player, stake, isNpcInteraction);
             } catch (error) {
                 log(`Error during stake validation for ${player.nameTag}: ${error}`, LOG_LEVELS.ERROR);

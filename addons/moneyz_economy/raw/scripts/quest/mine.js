@@ -39,10 +39,9 @@ world.beforeEvents.playerBreakBlock.subscribe(event => {
                     player.sendMessage(`§aYou earned ${rewardAmount} Moneyz for mining ${brokenBlock.typeId.replace("minecraft:", "").replace(/_/g, " ").replace(/\b\w/g, char => char.toUpperCase())}!`);
                 }
                 event.cancel = true;
-                const blockPosition = brokenBlock.location;
-                const positionString = `${blockPosition.x} ${blockPosition.y} ${blockPosition.z}`;
-                player.runCommandAsync(`setblock ${positionString} minecraft:air replace`);
-                log(`Placed air at:`, LOG_LEVELS.DEBUG, positionString);
+                // Replace the block with air using the modern API
+                player.dimension.setBlockPermutation(brokenBlock.location, world.getBlockPermutation("minecraft:air"));
+                log(`Set block to air at: ${brokenBlock.location.x}, ${brokenBlock.location.y}, ${brokenBlock.location.z}`, LOG_LEVELS.DEBUG);
             }
         }
     }

@@ -59,7 +59,7 @@ export async function start21Game(player, isNpcInteraction) {
         }
 
         log(`${player.nameTag} starts a 21 game with a stake of ${stake}.`, LOG_LEVELS.INFO);
-        await updateScore(player, stake, "remove");
+        updateScore(player, stake, "remove");
         await startGameRound(player, stake);
     } catch (error) {
         log(`Error starting 21 game: ${error}`, LOG_LEVELS.ERROR);
@@ -165,12 +165,12 @@ async function endGame(player, stake, playerHand, dealerHand, chanceX, winMessag
 
         if (winMessage.includes("win")) {
             const winnings = Math.round(stake * chanceX);
-            await updateScore(player, winnings, "add");
+            updateScore(player, winnings, "add");
             message += `§aYou win ${winnings} Moneyz!`;
-            player.runCommandAsync("playsound random.levelup @s ~ ~ ~");
+            player.playSound("random.levelup");
         } else {
             message += "§cYou lose!";
-            player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
+            player.playSound("note.bass");
         }
 
         player.sendMessage(message);

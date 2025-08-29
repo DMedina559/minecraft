@@ -28,16 +28,16 @@ export async function luckyPurchase(player, isNpcInteraction) {
                     const currentDate = getCurrentUTCDate();
                     const oneLuckyPurchaseEnabled = world.getDynamicProperty('oneLuckyPurchase');
 
-                    const money = await getScore("Moneyz", player);
+                    const money = getScore("Moneyz", player);
 
                     if (money >= 150) {
-                        player.runCommandAsync("playsound random.levelup @s ~ ~ ~");
+                        player.playSound("random.levelup");
                         player.sendMessage("§aYou can make a Lucky Purchase!");
 
-                        player.runCommandAsync(`loot spawn ~ ~ ~ loot "lucky_purchase"`);
+                        player.runCommand(`loot spawn ~ ~ ~ loot "lucky_purchase"`);
 
                         player.sendMessage("§aDo You Feel Lucky?");
-                        await updateScore(player, 150, "remove");
+                        updateScore(player, 150, "remove");
 
                         if (oneLuckyPurchaseEnabled === 'true') {
                             log(`oneLuckyPurchase is enabled, setting ${player.nameTag}'s lastLuckyPurchase to ${currentDate}`, LOG_LEVELS.INFO);
@@ -46,7 +46,7 @@ export async function luckyPurchase(player, isNpcInteraction) {
                             log(`oneLuckyPurchase is disabled in the world properties`, LOG_LEVELS.DEBUG);
                         }
                     } else {
-                        player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
+                        player.playSound("note.bass");
                         player.sendMessage(`§cYou need 150 Moneyz for this purchase\n§6You have ${money} Moneyz`);
                     }
                 } else if (r.selection === 1 && !isNpcInteraction) {

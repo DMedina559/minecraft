@@ -4,11 +4,15 @@ import { convertTagsToProperties, updateWorldProperties } from './convertTags.js
 import { log, LOG_LEVELS, setLogLevelFromWorldProperty } from './logger.js';
 import "./npcInteract.js"; 
 
-// Use World Property for Log Level
-setLogLevelFromWorldProperty()
-
-// Convert moneyzAutoTag scoreboard to World Properties
-updateWorldProperties();
+// Defer initialization until the world is loaded
+world.afterEvents.worldLoad.subscribe(() => {
+    // First, ensure the properties exist.
+    ensureWorldPropertiesExist();
+    // Now that we know the property exists, set the log level.
+    setLogLevelFromWorldProperty();
+    // Convert old tags for any players that might already be online.
+    updateWorldProperties();
+});
 
 // Get Scoreboard info
 export const getScore = (objective, target, useZero = true) => {
@@ -42,7 +46,7 @@ export const getScore = (objective, target, useZero = true) => {
 };
 
 // Add/Set/Remove Scores
-export async function updateScore(player, amount, operation = "add") {
+export function updateScore(player, amount, operation = "add") { // No longer async
     log(`updateScore: Updating score for ${player?.nameTag} by ${amount} using ${operation}.`, LOG_LEVELS.DEBUG);
 
     if (!player) {
@@ -50,21 +54,33 @@ export async function updateScore(player, amount, operation = "add") {
         return false;
     }
 
-    const playerName = player.nameTag;
+    const objective = world.scoreboard.getObjective("Moneyz");
+    if (!objective) {
+        log(`updateScore: Objective "Moneyz" not found.`, LOG_LEVELS.ERROR);
+        return false;
+    }
+
     const roundedAmount = Math.round(amount);
-    log(`updateScore: Rounded amount to ${roundedAmount}.`, LOG_LEVELS.DEBUG);
 
     try {
-        let command = `scoreboard players ${operation} "${playerName}" Moneyz ${roundedAmount}`;
-        let commandResult = await player.runCommandAsync(command);
-        if(commandResult.successCount === undefined || commandResult.successCount === 0){
-            log(`updateScore: Command failed: ${command}`, LOG_LEVELS.ERROR)
-            return false;
+        switch (operation) {
+            case "add":
+                objective.addScore(player, roundedAmount);
+                break;
+            case "remove":
+                objective.addScore(player, -roundedAmount); // Removing is adding a negative
+                break;
+            case "set":
+                objective.setScore(player, roundedAmount);
+                break;
+            default:
+                log(`updateScore: Invalid operation "${operation}".`, LOG_LEVELS.WARN);
+                return false;
         }
-        log(`updateScore: ${operation}ed ${roundedAmount} to ${playerName}'s Moneyz.`, LOG_LEVELS.DEBUG);
+        log(`updateScore: ${operation}ed ${roundedAmount} to ${player.nameTag}'s Moneyz.`, LOG_LEVELS.DEBUG);
         return true;
     } catch (error) {
-        log(`updateScore: Error updating score: ${error}`, LOG_LEVELS.ERROR);
+        log(`updateScore: Error updating score: ${error}`, LOG_LEVELS.ERROR, error.stack);
         return false;
     }
 }
@@ -106,12 +122,12 @@ const ensureWorldPropertiesExist = () => {
 };
 
 // Set Player Moneyz score if they Don't Already
-const ensurePlayerHasMoneyzScore = async (player) => {
+const ensurePlayerHasMoneyzScore = (player) => {
     log(`Checking Moneyz balance for ${player.nameTag}`, LOG_LEVELS.DEBUG);
 
     const moneyzScore = getScore('Moneyz', player);
     if (moneyzScore === 0) {
-        const result = await updateScore(player, 0, "set");
+        const result = updateScore(player, 0, "set");
         if (result) {
             log(`Initialized Moneyz balance for ${player.nameTag}`, LOG_LEVELS.INFO);
         } else {
@@ -159,8 +175,9 @@ world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
 
     log(`Player ${player.nameTag} spawned`, LOG_LEVELS.INFO);
     
+    // World properties are now handled by the worldLoad event.
+    // We only run player-specific setup here.
     convertTagsToProperties(player);
-    ensureWorldPropertiesExist();
     ensurePlayerHasMoneyzScore(player);
     syncPlayerPropertiesWithWorld(player);
     

@@ -22,21 +22,21 @@ async function playCraps(player, stake) {
     if (comeOutRoll === 7 || comeOutRoll === 11) {
         if (getRandomInt(1, 100) <= chanceWin) {
             const winnings = Math.round(stake * chanceX);
-            await updateScore(player, winnings, "add");
+            updateScore(player, winnings, "add");
             message += `§aYou win ${winnings} Moneyz! (Natural)`;
             log(`${player.nameTag} won ${winnings} Moneyz (Natural).`, LOG_LEVELS.INFO);
-            player.runCommandAsync("playsound random.levelup @s ~ ~ ~");
+            player.playSound("random.levelup");
         } else {
             message += "§cYou lose! (Natural - Chance Fail)";
             log(`${player.nameTag} lost ${stake} Moneyz (Natural - Chance Fail).`, LOG_LEVELS.INFO);
-            player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
+            player.playSound("note.bass");
         }
         player.sendMessage(message);
         return;
     } else if (comeOutRoll === 2 || comeOutRoll === 3 || comeOutRoll === 12) {
         message += "§cYou lose! (Craps)";
         log(`${player.nameTag} lost ${stake} Moneyz (Craps).`, LOG_LEVELS.INFO);
-        player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
+        player.playSound("note.bass");
         player.sendMessage(message);
         return;
     } else {
@@ -58,19 +58,19 @@ async function playCraps(player, stake) {
         if (nextRoll === point) {
             if (getRandomInt(1, 100) <= chanceWin) {
                 const winnings = Math.round(stake * chanceX);
-                await updateScore(player, winnings, "add");
+                updateScore(player, winnings, "add");
                 message += `§aYou win ${winnings} Moneyz! (Hit the Point)`;
                 log(`${player.nameTag} won ${winnings} Moneyz (Hit the Point).`, LOG_LEVELS.INFO);
-                player.runCommandAsync("playsound random.levelup @s ~ ~ ~");
+                player.playSound("random.levelup");
             } else {
                 message += "§cYou lose! (Hit the Point - Chance Fail)";
                 log(`${player.nameTag} lost ${stake} Moneyz (Hit the Point - Chance Fail).`, LOG_LEVELS.INFO);
-                player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
+                player.playSound("note.bass");
             }
         } else if (nextRoll === 7) {
             message += "§cYou lose! (Seven Out)";
             log(`${player.nameTag} lost ${stake} Moneyz (Seven Out).`, LOG_LEVELS.INFO);
-            player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
+            player.playSound("note.bass");
         } else {
             message += "Roll again!";
             log(`Rolled ${nextRoll}, still trying for point ${point}`, LOG_LEVELS.DEBUG);
@@ -96,13 +96,13 @@ export async function startCrapsGame(player) {
             return;
         }
 
-        const scoreData = await getScore("Moneyz", player);
-        if (!scoreData || scoreData.score < stake) {
+        const playerScore = getScore("Moneyz", player);
+        if (playerScore < stake) {
             player.sendMessage("§cYou don't have enough Moneyz!");
             return;
         }
 
-        await updateScore(player, stake, "remove");
+        updateScore(player, stake, "remove");
         await playCraps(player, stake);
     } catch (error) {
         log(`Error in Craps game: ${error}`, LOG_LEVELS.ERROR);
