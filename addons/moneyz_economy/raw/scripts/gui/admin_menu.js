@@ -28,16 +28,16 @@ export function moneyzAdmin(player) {
     });
 };
 
-async function balanceManage(player) {
+function balanceManage(player) {
     log(`Player ${player.nameTag} opened the Balance Manage Menu.`, LOG_LEVELS.DEBUG);
 
     const players = [...world.getPlayers()].map(p => ({ name: p.nameTag, player: p }));
 
     try {
-        const playerBalances = await Promise.all(players.map(async (p) => {
-            const balance = await getScore('Moneyz', p.player);
+        const playerBalances = players.map((p) => {
+            const balance = getScore('Moneyz', p.player);
             return `§f${p.name}: §g${balance}`;
-        }));
+        });
 
         new ActionFormData()
             .title(title)
@@ -74,8 +74,8 @@ async function balanceManage(player) {
                             const amount = parseInt(textField);
 
                             if (isNaN(amount) || amount < 0) {
-                                player.runCommandAsync(`playsound note.bassattack @s ~ ~ ~`);
-                                player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid positive number!"}]}`);
+                                player.playSound("note.bass");
+                                player.sendMessage("§cPlease enter a valid positive number!");
                                 log(`Player ${player.nameTag} entered an invalid amount for balance adjustment.`, LOG_LEVELS.WARN);
                                 return;
                             }
@@ -94,19 +94,19 @@ async function balanceManage(player) {
                                         return;
                                     }
                                     if (selection === 0) {
-                                        player.runCommandAsync(`playsound random.levelup @s ~ ~ ~`);
+                                        player.playSound("random.levelup");
                                         updateScore(selectedPlayer, amount, "add");
-                                        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aAdded §l${amount} §r§ato ${selectedPlayer.nameTag}'s Moneyz."}]}`);
+                                        player.sendMessage(`§aAdded §l${amount} §r§ato ${selectedPlayer.nameTag}'s Moneyz.`);
                                         log(`Player ${player.nameTag} added ${amount} Moneyz to ${selectedPlayer.nameTag}.`, LOG_LEVELS.INFO);
                                     } else if (selection === 1) {
-                                        player.runCommandAsync(`playsound random.levelup @s ~ ~ ~`);
+                                        player.playSound("random.levelup");
                                         updateScore(selectedPlayer, amount, "set");
-                                        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aSet ${selectedPlayer.nameTag}'s Moneyz to §l${amount}."}]}`);
+                                        player.sendMessage(`§aSet ${selectedPlayer.nameTag}'s Moneyz to §l${amount}.`);
                                         log(`Player ${player.nameTag} set ${selectedPlayer.nameTag}'s Moneyz to ${amount}.`, LOG_LEVELS.INFO);
                                     } else if (selection === 2) {
-                                        player.runCommandAsync(`playsound random.levelup @s ~ ~ ~`);
+                                        player.playSound("random.levelup");
                                         updateScore(selectedPlayer, amount, "remove");
-                                        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aRemoved §l${amount} §r§afrom ${selectedPlayer.nameTag}'s Moneyz."}]}`);
+                                        player.sendMessage(`§aRemoved §l${amount} §r§afrom ${selectedPlayer.nameTag}'s Moneyz.`);
                                         log(`Player ${player.nameTag} removed ${amount} Moneyz from ${selectedPlayer.nameTag}.`, LOG_LEVELS.INFO);
                                     }
                                 })
@@ -182,22 +182,22 @@ async function tagManage(player) {
                                 const trimmedTag = tag.trim();
 
                                 if (trimmedTag === "") {
-                                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§cPlease enter a valid tag!"}]}`);
+                                    player.sendMessage("§cPlease enter a valid tag!");
                                     log(`Player ${player.nameTag} entered an invalid tag.`, LOG_LEVELS.WARN);
                                     return;
                                 }
 
                                 if (actionIndex === 0) {
                                     selectedPlayer.addTag(trimmedTag);
-                                    player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aAdded tag §l${trimmedTag} §r§ato ${selectedPlayer.nameTag}."}]}`);
+                                    player.sendMessage(`§aAdded tag §l${trimmedTag} §r§ato ${selectedPlayer.nameTag}.`);
                                     log(`Player ${player.nameTag} added tag ${trimmedTag} to ${selectedPlayer.nameTag}.`, LOG_LEVELS.INFO);
                                 } else if (actionIndex === 1) {
                                     if (selectedPlayer.hasTag(trimmedTag)) {
                                         selectedPlayer.removeTag(trimmedTag);
-                                        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§aRemoved tag §l${trimmedTag} §r§afrom ${selectedPlayer.nameTag}."}]}`);
+                                        player.sendMessage(`§aRemoved tag §l${trimmedTag} §r§afrom ${selectedPlayer.nameTag}.`);
                                         log(`Player ${player.nameTag} removed tag ${trimmedTag} from ${selectedPlayer.nameTag}.`, LOG_LEVELS.INFO);
                                     } else {
-                                        player.runCommandAsync(`tellraw @s {"rawtext":[{"text":"§c${selectedPlayer.nameTag} does not have the tag §l${trimmedTag}."}]}`);
+                                        player.sendMessage(`§c${selectedPlayer.nameTag} does not have the tag §l${trimmedTag}.`);
                                         log(`Player ${player.nameTag} tried to remove a non-existent tag ${trimmedTag} from ${selectedPlayer.nameTag}.`, LOG_LEVELS.WARN);
                                     }
                                 }

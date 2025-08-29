@@ -14,15 +14,7 @@ export async function testYourLuck(player) {
     log(`Running "Test Your Luck" for ${player.nameTag}`, LOG_LEVELS.DEBUG);
 
     try {
-        const scoreData = await getScore("Moneyz", player);
-
-        if (!scoreData) {
-            player.sendMessage(`§cYou do not have any Moneyz.`);
-            log(`Player "${player.nameTag}" has no Moneyz score.`, LOG_LEVELS.WARN);
-            return;
-        }
-
-        const playerScore = scoreData.score;
+        const playerScore = getScore("Moneyz", player);
         const winChance = getWorldProperty("chanceWin");
         const worldMultiplier = parseFloat(getWorldProperty("chanceX"));
 
@@ -51,22 +43,22 @@ export async function testYourLuck(player) {
             return;
         }
 
-        await updateScore(player, stakeAmount, "remove");
+        updateScore(player, stakeAmount, "remove");
         log(`Player "${player.nameTag}" is staking ${stakeAmount} Moneyz. Stake deducted.`, LOG_LEVELS.DEBUG);
 
         if (getRandomInt(1, 100) <= winChance) {
             const winAmount = Math.round(stakeAmount * worldMultiplier);
-            await updateScore(player, winAmount, "add");
+            updateScore(player, winAmount, "add");
             player.sendMessage(`§aYou won ${winAmount} Moneyz!`);
-            player.runCommandAsync("playsound random.levelup @s ~ ~ ~");
+            player.playSound("random.levelup");
             log(`${player.nameTag} won ${winAmount} Moneyz.`, LOG_LEVELS.INFO);
         } else {
             player.sendMessage(`§cYou lost ${stakeAmount} Moneyz. Better luck next time!`);
-            player.runCommandAsync("playsound note.bassattack @s ~ ~ ~");
+            player.playSound("note.bass");
             log(`${player.nameTag} lost ${stakeAmount} Moneyz.`, LOG_LEVELS.INFO);
         }
     } catch (error) {
-        log(`Error processing "Test Your Luck" for player "${player.nameTag}": ${error}`, LOG_LEVELS.ERROR);
+        log(`Error processing "Test Your Luck" for player "${player.nameTag}": ${error}`, LOG_LEVELS.ERROR, error.stack);
     }
 };
 

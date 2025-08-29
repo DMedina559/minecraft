@@ -132,20 +132,22 @@ async function handleBuy(player, item) {
     log(`Attempting to buy ${buyAmount} ${itemName} for ${buyCost} Moneyz.`, LOG_LEVELS.DEBUG);
 
     try {
-        const playerMoney = await getScore("Moneyz", player);
+        const playerMoney = getScore("Moneyz", player);
         if (isNaN(playerMoney) || playerMoney < buyCost) {
-            await player.runCommandAsync(`playsound note.bassattack @s ~ ~ ~`);
-            await player.runCommandAsync(`tellraw @s {"rawtext": [{"text": "§cYou need ${buyCost} Moneyz to buy ${buyAmount} ${itemName}.\n"}, {"text": "§6You have "}, {"score":{"name": "@s","objective": "Moneyz"}}, {"text": " Moneyz"}]}`);
+            player.playSound("note.bass");
+            player.sendMessage(`§cYou need ${buyCost} Moneyz to buy ${buyAmount} ${itemName}.\n§6You have ${playerMoney} Moneyz`);
             log(`Player ${player.nameTag} has insufficient Moneyz.`, LOG_LEVELS.INFO);
             return;
         }
 
+        // Using runCommand for give to handle item data values, which is not easily done with modern APIs without a larger refactor.
         const giveCommand = buyData !== 0 ? `give @s ${itemId} ${buyAmount} ${buyData}` : `give @s ${itemId} ${buyAmount}`;
-        await player.runCommandAsync(giveCommand);
-        await updateScore(player, -buyCost);
+        player.runCommand(giveCommand);
+        
+        updateScore(player, buyCost, "remove");
 
-        await player.runCommandAsync(`playsound random.levelup @s ~ ~ ~`);
-        await player.runCommandAsync(`tell @s §aPurchased ${buyAmount} ${itemName} for ${buyCost} Moneyz.`);
+        player.playSound("random.levelup");
+        player.sendMessage(`§aPurchased ${buyAmount} ${itemName} for ${buyCost} Moneyz.`);
         log(`${player.nameTag} bought ${buyAmount} ${itemName} for ${buyCost} Moneyz.`, LOG_LEVELS.INFO);
     } catch (error) {
         log("Error in handleBuy:", LOG_LEVELS.ERROR, error.stack);
@@ -158,25 +160,24 @@ async function handleSell(player, item) {
     const { id: itemId, name: itemName, amount: sellAmount, sellPrice: sellCost, sellDamage: sellData } = item;
 
     try {
-        const hasItemCheck = sellData !== 0
-            ? `@s[hasitem={item=${itemId},data=${sellData},quantity=${sellAmount}..}]`
-            : `@s[hasitem={item=${itemId},quantity=${sellAmount}..}]`;
-
-        // Test for the item first
-        const testCommand = `execute as ${hasItemCheck} run say has_item`;
-        const testResult = await player.runCommandAsync(testCommand);
+        // The `hasitem` selector is the most reliable way to check for items with specific data values.
+        const hasItemCheck = `testfor @s[hasitem={item=${itemId},data=${sellData},quantity=${sellAmount}..}]`;
+        const testResult = world.getDimension(player.dimension.id).runCommand(hasItemCheck);
 
         if (testResult.successCount > 0) {
             // Player has the item, proceed with selling
-            await player.runCommandAsync(`playsound random.levelup @s ~ ~ ~`);
-            await updateScore(player, sellCost);
-            await player.runCommandAsync(`tell @s §aSold ${sellAmount} ${itemName} for ${sellCost} Moneyz!`);
-            await player.runCommandAsync(`clear @s ${itemId} ${sellData !== 0 ? sellData : 0} ${sellAmount}`);
+            updateScore(player, sellCost, "add");
+            
+            const clearCommand = `clear @s ${itemId} ${sellData} ${sellAmount}`;
+            player.runCommand(clearCommand);
+
+            player.playSound("random.levelup");
+            player.sendMessage(`§aSold ${sellAmount} ${itemName} for ${sellCost} Moneyz!`);
             log(`${player.nameTag} sold ${sellAmount} ${itemName}.`, LOG_LEVELS.INFO);
         } else {
             // Player does not have the item
-            await player.runCommandAsync(`playsound note.bassattack @s ~ ~ ~`);
-            await player.runCommandAsync(`tell @s §cYou don't have ${sellAmount} ${itemName} to sell.`);
+            player.playSound("note.bass");
+            player.sendMessage(`§cYou don't have ${sellAmount} ${itemName} to sell.`);
             log(`${player.nameTag} failed to sell ${sellAmount} ${itemName}.`, LOG_LEVELS.INFO);
         }
     } catch (error) {
