@@ -4,6 +4,7 @@ import { getScore, updateScore, getCurrentUTCDate } from '../utilities.js';
 import { main } from './moneyz_menu.js';
 import { propertiesMenu } from './properties_menu.js';
 import { moneyzSettings } from './settings.js';
+import { showShopEditorMenu } from './shop_editor.js';
 import { log, LOG_LEVELS } from '../logger.js';
 
 const title = "§l§1Admin Menu";
@@ -16,6 +17,7 @@ export function moneyzAdmin(player) {
         .button(`§d§lManage Balances\n§r§7[ Click to Manage ]`)
         .button(`§d§lManage Properties\n§r§7[ Click to Manage ]`)
         .button(`§d§lManage Tags\n§r§7[ Click to Manage ]`)
+        .button(`§d§lManage Shops\n§r§7[ Click to Edit ]`)
         .button(`§d§lSettings\n§r§7[ Click to Manage ]`)
         .button(`§c§lBack`);
 
@@ -23,8 +25,9 @@ export function moneyzAdmin(player) {
         if (r.selection === 0) balanceManage(player);
         if (r.selection === 1) propertiesMenu(player);
         if (r.selection === 2) tagManage(player);
-        if (r.selection === 3) moneyzSettings(player);
-        if (r.selection === 4) main(player);
+        if (r.selection === 3) showShopEditorMenu(player);
+        if (r.selection === 4) moneyzSettings(player);
+        if (r.selection === 5) main(player);
     });
 };
 

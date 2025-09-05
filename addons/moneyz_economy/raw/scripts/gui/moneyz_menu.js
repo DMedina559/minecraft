@@ -5,7 +5,7 @@ import { openRewardsMenu } from './rewards_menu.js';
 import { moneyzAdmin } from './admin_menu.js';
 import { luckyMenu } from './lucky_menu.js';
 import { chanceMenu } from './chance_menu.js';
-import { itemData } from "../item_data.js";
+import { getShopData } from "../data_provider.js";
 import { customShop } from './custom_shop.js';
 import { showShopCategories } from './main_shop.js';
 import { giveQuest } from './quest_menu.js';
@@ -77,7 +77,8 @@ export function main(player) {
 function shops(player) {
 
     const customShopName = world.getDynamicProperty("customShop") || "Custom Shop";
-    const shopIds = Object.keys(itemData);
+    const shopData = getShopData();
+    const shopIds = Object.keys(shopData);
 
     const form = new ActionFormData()
         .title("§l§1Shop Menu")
