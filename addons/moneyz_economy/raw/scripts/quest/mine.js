@@ -5,11 +5,23 @@ import { log, LOG_LEVELS } from '../logger.js';
 
 export const ORE_BREAK_REWARDS = {
     "minecraft:coal_ore": 5,
+    "minecraft:deepslate_coal_ore": 5,
     "minecraft:copper_ore": 8,
-    "minecraft:gold_ore": 20,
+    "minecraft:deepslate_copper_ore": 8,
     "minecraft:iron_ore": 10,
+    "minecraft:deepslate_iron_ore": 10,
+    "minecraft:gold_ore": 20,
+    "minecraft:deepslate_gold_ore": 20,
     "minecraft:diamond_ore": 50,
-    "minecraft:emerald_ore": 75
+    "minecraft:deepslate_diamond_ore": 50,
+    "minecraft:emerald_ore": 75,
+    "minecraft:deepslate_emerald_ore": 75,
+    "minecraft:lapis_ore": 15,
+    "minecraft:deepslate_lapis_ore": 15,
+    "minecraft:redstone_ore": 12,
+    "minecraft:deepslate_redstone_ore": 12,
+    "minecraft:nether_gold_ore": 10,
+    "minecraft:quartz_ore": 10
 };
 
 world.beforeEvents.playerBreakBlock.subscribe(event => {

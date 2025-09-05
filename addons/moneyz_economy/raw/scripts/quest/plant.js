@@ -5,8 +5,8 @@ import { log, LOG_LEVELS } from '../logger.js';
 
 export const CROP_PLANT_REWARDS = {
     "minecraft:wheat": 3,
-    "minecraft:potato": 3,
-    "minecraft:carrot": 3,
+    "minecraft:potatoes": 3,
+    "minecraft:carrots": 3,
     "minecraft:beetroot": 3,
     "minecraft:reeds": 3
 };
