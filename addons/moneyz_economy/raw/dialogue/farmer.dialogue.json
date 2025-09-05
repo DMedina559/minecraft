@@ -244,7 +244,7 @@
 						"name": "Main Menu",
 						"commands": ["/dialogue open @s @initiator farmers_market"]
 					}
-				],
+				]
 			},
 			{
 				"scene_tag": "farmer_buy_meat",
@@ -953,7 +953,7 @@
 						"name": "Main Menu",
 						"commands": ["/dialogue open @s @initiator farmers_market"]
 					}
-				],
+				]
 			},
 			{
 				"scene_tag": "farmer_sell_meat",

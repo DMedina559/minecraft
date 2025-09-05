@@ -1,10 +1,11 @@
-import { world } from "@minecraft/server";
+import { world, system } from "@minecraft/server";
 import { itemData as defaultShopData } from "./item_data.js";
 import { log, LOG_LEVELS } from './logger.js';
 
 const SHOP_DATA_PROPERTY = "worldShopData";
 
 let activeShopData = defaultShopData;
+let lastKnownDataString = "";
 
 /**
  * Loads shop data from the world's dynamic properties. If it doesn't exist or fails to parse,
@@ -14,32 +15,39 @@ function loadShopData() {
     try {
         const overrideDataString = world.getDynamicProperty(SHOP_DATA_PROPERTY);
         if (overrideDataString && typeof overrideDataString === 'string') {
-            log("Found worldShopData property, attempting to parse.", LOG_LEVELS.INFO);
-            const overrideData = JSON.parse(overrideDataString);
-            activeShopData = overrideData;
-            log("Successfully loaded and applied shop data from world property.", LOG_LEVELS.INFO);
+            if (overrideDataString !== lastKnownDataString) {
+                log("Found new worldShopData property, attempting to parse.", LOG_LEVELS.INFO);
+                const overrideData = JSON.parse(overrideDataString);
+                activeShopData = overrideData;
+                lastKnownDataString = overrideDataString;
+                log("Successfully loaded and applied shop data from world property.", LOG_LEVELS.INFO);
+            }
         } else {
-            log("No worldShopData property found, using default shop data.", LOG_LEVELS.INFO);
-            activeShopData = defaultShopData;
+            if (lastKnownDataString !== "") {
+                log("worldShopData property removed, using default shop data.", LOG_LEVELS.INFO);
+                activeShopData = defaultShopData;
+                lastKnownDataString = "";
+            }
         }
     } catch (error) {
-        log(`Error parsing worldShopData property. Using default data. Error: ${error}`, LOG_LEVELS.ERROR, error.stack);
+        log(`Error processing worldShopData property. Using default data. Error: ${error}`, LOG_LEVELS.ERROR, error.stack);
         activeShopData = defaultShopData;
     }
 }
 
 // Load the data when the world is ready
 world.afterEvents.worldLoad.subscribe(() => {
+    const overrideDataString = world.getDynamicProperty(SHOP_DATA_PROPERTY);
+    if(overrideDataString && typeof overrideDataString === 'string') {
+        lastKnownDataString = overrideDataString;
+    }
     loadShopData();
 });
 
 // Watch for changes to the property so it can be updated live without a server restart
-world.afterEvents.dynamicPropertyChanged.subscribe(event => {
-    if (event.propertyId === SHOP_DATA_PROPERTY) {
-        log("worldShopData property changed, reloading shop data.", LOG_LEVELS.INFO);
-        loadShopData();
-    }
-});
+system.runInterval(() => {
+    loadShopData();
+}, 20); // Check every second (20 ticks)
 
 /**
  * Gets the currently active shop data.

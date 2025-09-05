@@ -154,14 +154,14 @@ function editShop_itemForm(player, shopId, categoryId, itemIndexToEdit = -1) {
 
     const form = new ModalFormData()
         .title(isEditing ? `Edit: ${item.name}` : "Add New Item")
-        .textField("Item ID (e.g., minecraft:stone)", "minecraft:item_id", item.id || "")
-        .textField("Display Name (e.g., Stone)", "Item Name", item.name || "")
-        .textField("Amount", "1", String(item.amount || 1))
-        .textField("Buy Price (-1 to disable)", "100", String(item.buyPrice || 0))
-        .textField("Sell Price (-1 to disable)", "50", String(item.sellPrice || 0))
-        .textField("Buy Damage Value", "0", String(item.buyDamage || 0))
-        .textField("Sell Damage Value", "0", String(item.sellDamage || 0))
-        .textField("Custom Icon Path (optional)", "textures/items/custom", item.iconPath || "");
+        .textField("Item ID (e.g., minecraft:stone)", "minecraft:item_id", { defaultValue: item.id || "" })
+        .textField("Display Name (e.g., Stone)", "Item Name", { defaultValue: item.name || "" })
+        .textField("Amount", "1", { defaultValue: String(item.amount || 1) })
+        .textField("Buy Price (-1 to disable)", "100", { defaultValue: String(item.buyPrice || 0) })
+        .textField("Sell Price (-1 to disable)", "50", { defaultValue: String(item.sellPrice || 0) })
+        .textField("Buy Damage Value", "0", { defaultValue: String(item.buyDamage || 0) })
+        .textField("Sell Damage Value", "0", { defaultValue: String(item.sellDamage || 0) })
+        .textField("Custom Icon Path (optional)", "textures/items/custom", { defaultValue: item.iconPath || "" });
 
     form.show(player).then(r => {
         if (r.isCanceled) {
