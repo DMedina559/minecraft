@@ -178,7 +178,7 @@ async function handleSell(player, shopItem) {
 
     try {
         const hasItemCheck = `testfor @s[hasitem={item=${itemName},data=${sellData},quantity=${sellAmount}..}]`;
-        const testResult = world.getDimension(player.dimension.id).runCommand(hasItemCheck);
+        const testResult = player.runCommand(hasItemCheck);
 
         if (testResult.successCount > 0) {
             updateScore(player, sellCost, "add");
@@ -195,7 +195,7 @@ async function handleSell(player, shopItem) {
             log(`${player.nameTag} failed to sell ${sellAmount} ${itemName}.`, LOG_LEVELS.INFO);
         }
     } catch (error) {
-        log("Error in handleSell:", LOG_LEVELS.ERROR, error.stack);
-        player.sendMessage("§cError processing sell transaction.");
+        log(`Error in handleSell: ${error.message}`, LOG_LEVELS.ERROR, error.stack);
+        player.sendMessage("§cError processing sell transaction. Please check logs.");
     }
 }

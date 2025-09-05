@@ -115,8 +115,8 @@ function editShop_selectCategoryForAdd(player, shopId) {
 function editShop_createNewCategory(player, shopId) {
     const form = new ModalFormData()
         .title("Create New Category")
-        .textField("Enter a new Category ID
-(e.g., 'potions', no spaces, lowercase)", "category_id");
+        .textField(`Enter a new Category ID
+(e.g., 'potions', no spaces, lowercase)`, "category_id");
 
     form.show(player).then(r => {
         if (r.isCanceled) {
@@ -383,8 +383,8 @@ function removeShop(player) {
 function createNewShop(player) {
     const form = new ModalFormData()
         .title("Create New Shop")
-        .textField("Enter a new Shop ID
-(e.g., 'potion_shop', no spaces, lowercase)", "shop_id");
+        .textField(`Enter a new Shop ID
+(e.g., 'potion_shop', no spaces, lowercase)`, "shop_id");
 
     form.show(player).then(r => {
         if (r.isCanceled) {
