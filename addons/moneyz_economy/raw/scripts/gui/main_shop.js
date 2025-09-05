@@ -1,13 +1,14 @@
 import { ActionFormData } from "@minecraft/server-ui";
 import { getScore, updateScore } from '../utilities.js';
 import { log, LOG_LEVELS } from "../logger.js";
-import { itemData } from "../item_data.js";
+import { getShopData } from "../data_provider.js";
 
 // The main entry point from moneyz_menu.js is now showShopCategories.
 // The original mainShop function was removed as its logic is now handled in moneyz_menu.js.
 
 export async function showShopCategories(player, shopId, isNpcInteraction) {
-    const shop = itemData[shopId];
+    const shopData = getShopData();
+    const shop = shopData[shopId];
     if (!shop) {
         log(`Shop with id "${shopId}" not found.`, LOG_LEVELS.WARN);
         player.sendMessage("§cError: Shop not found.");
@@ -42,7 +43,8 @@ export async function showShopCategories(player, shopId, isNpcInteraction) {
 }
 
 async function showCategoryItems(player, shopId, categoryId, isNpcInteraction) {
-    const items = itemData[shopId][categoryId];
+    const shopData = getShopData();
+    const items = shopData[shopId][categoryId];
     const categoryDisplayName = categoryId.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
     const form = new ActionFormData();
@@ -53,13 +55,15 @@ async function showCategoryItems(player, shopId, categoryId, isNpcInteraction) {
         const sellText = item.sellPrice >= 0 ? `Sell: ${item.sellPrice}` : "Cannot be sold";
         const buttonText = `§d§l${item.amount} ${item.name}\n§r${buyText} | ${sellText}`;
 
-        // Attempt to construct a texture path. This works for most vanilla items.
-        const iconId = item.id.startsWith("minecraft:") ? item.id.substring(10) : item.id;
-        // A simple heuristic for items vs blocks. This is not perfect but covers many cases.
-        const folder = (iconId.includes("_block") || iconId.includes("planks") || iconId.includes("log") || iconId.includes("stone") || iconId.includes("dirt")) ? "blocks" : "items";
-        const iconPath = `textures/${folder}/${iconId}`;
+        let iconPath = item.iconPath; // Use the custom path if it exists.
+        if (!iconPath) {
+            // Fallback to auto-generation if no custom path is provided.
+            const iconId = item.id.startsWith("minecraft:") ? item.id.substring(10) : item.id;
+            const folder = (iconId.includes("_block") || iconId.includes("planks") || iconId.includes("log") || iconId.includes("stone") || iconId.includes("dirt")) ? "blocks" : "items";
+            iconPath = `textures/${folder}/${iconId}`;
+        }
 
-        form.button(buttonText);//, iconPath);
+        form.button(buttonText, iconPath);
     });
     form.button("§c§lBack");
 
