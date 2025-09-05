@@ -2,61 +2,66 @@ import { world, system } from "@minecraft/server";
 import { itemData as defaultShopData } from "./item_data.js";
 import { log, LOG_LEVELS } from './logger.js';
 
-const SHOP_DATA_PROPERTY = "worldShopData";
+// The prefix for dynamic properties that store individual shop data.
+export const SHOP_DATA_PREFIX = "shop_";
 
-let activeShopData = defaultShopData;
-let lastKnownDataString = "";
+// In-memory cache of the shop data.
+let activeShopData = {};
 
 /**
- * Loads shop data from the world's dynamic properties. If it doesn't exist or fails to parse,
- * it falls back to the default data from item_data.js.
+ * Loads all shop data from the world's dynamic properties.
+ * It searches for all properties with the SHOP_DATA_PREFIX and merges them.
  */
-function loadShopData() {
+function loadAllShopData() {
     try {
-        const overrideDataString = world.getDynamicProperty(SHOP_DATA_PROPERTY);
-        if (overrideDataString && typeof overrideDataString === 'string') {
-            if (overrideDataString !== lastKnownDataString) {
-                log("Found new worldShopData property, attempting to parse.", LOG_LEVELS.INFO);
-                const overrideData = JSON.parse(overrideDataString);
-                activeShopData = overrideData;
-                lastKnownDataString = overrideDataString;
-                log("Successfully loaded and applied shop data from world property.", LOG_LEVELS.INFO);
-            }
-        } else {
-            if (lastKnownDataString !== "") {
-                log("worldShopData property removed, using default shop data.", LOG_LEVELS.INFO);
-                activeShopData = defaultShopData;
-                lastKnownDataString = "";
+        const allPropIds = world.getDynamicPropertyIds();
+        const shopPropIds = allPropIds.filter(id => id.startsWith(SHOP_DATA_PREFIX));
+
+        const newShopData = {};
+        let loaded = false;
+
+        for (const propId of shopPropIds) {
+            const shopJson = world.getDynamicProperty(propId);
+            if (typeof shopJson === 'string') {
+                const shopId = propId.substring(SHOP_DATA_PREFIX.length);
+                newShopData[shopId] = JSON.parse(shopJson);
+                loaded = true;
             }
         }
+
+        if (loaded) {
+            activeShopData = newShopData;
+            log(`Successfully loaded ${Object.keys(newShopData).length} shops.`, LOG_LEVELS.INFO);
+        } else {
+            // If no custom shops exist, fall back to the default data.
+            log("No custom shops found, using default shop data.", LOG_LEVELS.INFO);
+            activeShopData = defaultShopData;
+        }
     } catch (error) {
-        log(`Error processing worldShopData property. Using default data. Error: ${error}`, LOG_LEVELS.ERROR, error.stack);
+        log(`Error loading shop data: ${error}`, LOG_LEVELS.ERROR, error.stack);
+        // Fallback to default data in case of any error during loading/parsing.
         activeShopData = defaultShopData;
     }
 }
 
-// Load the data when the world is ready
+// Initial load when the world is ready.
 world.afterEvents.worldLoad.subscribe(() => {
-    const overrideDataString = world.getDynamicProperty(SHOP_DATA_PROPERTY);
-    if(overrideDataString && typeof overrideDataString === 'string') {
-        lastKnownDataString = overrideDataString;
-    }
-    loadShopData();
+    loadAllShopData();
 });
 
-// Watch for changes to the property so it can be updated live without a server restart
+// Polling to detect changes made by other scripts or in other game sessions.
 system.runInterval(() => {
-    loadShopData();
-}, 20); // Check every second (20 ticks)
+    // This is a simple polling mechanism. A more optimized version might
+    // compare property counts or use version numbers if this becomes a performance issue.
+    loadAllShopData();
+}, 100); // Check every 5 seconds (100 ticks).
 
 /**
  * Gets the currently active shop data.
- * This is exported as a function to ensure modules always get the latest data,
- * especially after a live reload from a property change.
  * @returns {object} The active shop data object.
  */
 export function getShopData() {
     return activeShopData;
 }
 
-log("data_provider.js loaded", LOG_LEVELS.DEBUG);
+log("data_provider.js loaded and initialized for multi-property shop storage.", LOG_LEVELS.DEBUG);
