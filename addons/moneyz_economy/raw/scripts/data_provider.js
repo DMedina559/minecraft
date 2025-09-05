@@ -14,32 +14,36 @@ let activeShopData = {};
  */
 function loadAllShopData() {
     try {
+        log('Starting to load all shop data...', LOG_LEVELS.DEBUG);
+        log('Default shop data at start of load:', LOG_LEVELS.DEBUG, JSON.stringify(defaultShopData));
+        
+        let newShopData = JSON.parse(JSON.stringify(defaultShopData));
+        
         const allPropIds = world.getDynamicPropertyIds();
         const shopPropIds = allPropIds.filter(id => id.startsWith(SHOP_DATA_PREFIX));
+        log(`Found shop property IDs: ${JSON.stringify(shopPropIds)}`, LOG_LEVELS.DEBUG);
 
-        const newShopData = {};
-        let loaded = false;
-
-        for (const propId of shopPropIds) {
-            const shopJson = world.getDynamicProperty(propId);
-            if (typeof shopJson === 'string') {
-                const shopId = propId.substring(SHOP_DATA_PREFIX.length);
-                newShopData[shopId] = JSON.parse(shopJson);
-                loaded = true;
+        if (shopPropIds.length > 0) {
+            for (const propId of shopPropIds) {
+                const shopJson = world.getDynamicProperty(propId);
+                if (typeof shopJson === 'string') {
+                    const shopId = propId.substring(SHOP_DATA_PREFIX.length);
+                    try {
+                        const customShopData = JSON.parse(shopJson);
+                        newShopData[shopId] = { ...(newShopData[shopId] || {}), ...customShopData };
+                        log(`Merged data for ${shopId}. newShopData is now:`, LOG_LEVELS.DEBUG, JSON.stringify(newShopData));
+                    } catch (e) {
+                        log(`Could not parse shop data for ${shopId}: ${e}`, LOG_LEVELS.ERROR);
+                    }
+                }
             }
+            log(`Successfully loaded and merged ${shopPropIds.length} custom shops.`, LOG_LEVELS.INFO);
         }
 
-        if (loaded) {
-            activeShopData = newShopData;
-            log(`Successfully loaded ${Object.keys(newShopData).length} shops.`, LOG_LEVELS.INFO);
-        } else {
-            // If no custom shops exist, fall back to the default data.
-            log("No custom shops found, using default shop data.", LOG_LEVELS.INFO);
-            activeShopData = defaultShopData;
-        }
+        activeShopData = newShopData;
+        log('Finished loading all shop data. Final activeShopData:', LOG_LEVELS.DEBUG, JSON.stringify(activeShopData));
     } catch (error) {
         log(`Error loading shop data: ${error}`, LOG_LEVELS.ERROR, error.stack);
-        // Fallback to default data in case of any error during loading/parsing.
         activeShopData = defaultShopData;
     }
 }

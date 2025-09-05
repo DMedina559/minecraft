@@ -166,7 +166,7 @@ async function handleSell(player, item) {
     try {
         // The `hasitem` selector is the most reliable way to check for items with specific data values.
         const hasItemCheck = `testfor @s[hasitem={item=${itemId},data=${sellData},quantity=${sellAmount}..}]`;
-        const testResult = world.getDimension(player.dimension.id).runCommand(hasItemCheck);
+        const testResult = player.runCommand(hasItemCheck);
 
         if (testResult.successCount > 0) {
             // Player has the item, proceed with selling
@@ -185,7 +185,7 @@ async function handleSell(player, item) {
             log(`${player.nameTag} failed to sell ${sellAmount} ${itemName}.`, LOG_LEVELS.INFO);
         }
     } catch (error) {
-        log("Error in handleSell:", LOG_LEVELS.ERROR, error.stack);
-        player.sendMessage("§cError processing sell transaction.");
+        log(`Error in handleSell: ${error.message}`, LOG_LEVELS.ERROR, error.stack);
+        player.sendMessage("§cError processing sell transaction. Please check logs.");
     }
 }
