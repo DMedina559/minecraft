@@ -5,13 +5,13 @@ import { chanceMenu } from "../gui/chance_menu.js";
 import { log, LOG_LEVELS } from "../logger.js";
 
 const SLOT_ICONS = {
-    "Cherry": "🍒 Cherry",
-    "Lemon": "🍋 Lemon",
-    "Orange": "🍊 Orange",
-    "Plum": "🫐 Plum",
-    "Bell": "🔔 Bell",
-    "Bar": "🪙 Bar",
-    "Seven": "🎰 Seven"
+    "Cherry": "[Cherry]",
+    "Lemon": "[Lemon]",
+    "Orange": "[Orange]",
+    "Plum": "[Plum]",
+    "Bell": "[Bell]",
+    "Bar": "[Bar]",
+    "Seven": "[Seven]"
 };
 
 const slotSymbols = Object.keys(SLOT_ICONS);
@@ -40,17 +40,17 @@ async function playSlots(player, stake, isNpcInteraction) {
     if (reels[0] === reels[1] && reels[1] === reels[2]) {
         if (reels[0] === "Seven") {
             winnings = Math.round(stake * chanceX * 5);
-            winType = "💥 JACKPOT! 💥";
+            winType = "§l§cJACKPOT!";
         } else if (reels[0] === "Bar") {
             winnings = Math.round(stake * chanceX * 3);
-            winType = "🌟 BIG WIN! 🌟";
+            winType = "§l§eBIG WIN!";
         } else {
             winnings = Math.round(stake * chanceX);
-            winType = "🎉 Three of a Kind! 🎉";
+            winType = "§l§aThree of a Kind!";
         }
     } else if (reels[0] === reels[1] || reels[1] === reels[2] || reels[0] === reels[2]) {
         winnings = Math.round(stake * (chanceX / 2));
-        winType = "✨ Two of a Kind! ✨";
+        winType = "§l§bTwo of a Kind!";
     }
 
     if (winnings > 0) {
@@ -82,7 +82,7 @@ function showSlotResults(player, stake, reels, winnings, winType, isNpcInteracti
     new ActionFormData()
         .title("§l§6Slot Machine")
         .body(message)
-        .button("🎰 Spin Again")
+        .button("Spin Again")
         .button("§c§lBack to Menu")
         .show(player)
         .then(response => {

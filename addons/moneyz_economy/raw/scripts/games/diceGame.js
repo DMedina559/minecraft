@@ -14,9 +14,9 @@ async function playCrapsPointLoop(player, stake, point, chanceWin, chanceX) {
 
     while (true) {
         const actionForm = new ActionFormData()
-            .title("🎲 Craps - Roll for Point")
+            .title("§l§6Craps - Roll for Point")
             .body(message)
-            .button("🎲 Roll Dice");
+            .button("Roll Dice");
 
         const rollResponse = await actionForm.show(player);
         if (rollResponse.canceled) return;

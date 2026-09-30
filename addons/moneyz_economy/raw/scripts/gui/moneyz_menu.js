@@ -1,6 +1,6 @@
 import { world, system } from "@minecraft/server";
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
-import { getScore, updateScore } from "../utilities.js";
+import { getScore, updateScore, runCommand } from "../utilities.js";
 import { openRewardsMenu } from "./rewards_menu.js";
 import { moneyzAdmin } from "./admin_menu.js";
 import { luckyMenu } from "./lucky_menu.js";
@@ -27,7 +27,10 @@ export function main(player) {
 
     if (player.getDynamicProperty("moneyzATM") === "true") {
         buttons.push("§d§lATM\n§r§7[ Click to Exchange ]");
-        actions.push(() => player.runCommandAsync("dialogue open @s @s atm"));
+        actions.push(() => {
+            const playerName = player.nameTag || player.name;
+            runCommand(player, `execute as "${playerName.replace(/"/g, '\\"')}" run dialogue open @s @s atm`);
+        });
     }
 
     if (player.getDynamicProperty("moneyzSend") === "true") {
@@ -56,7 +59,10 @@ export function main(player) {
     }
 
     buttons.push("§d§lHelp\n§r§7[ Click for Help ]");
-    actions.push(() => player.runCommandAsync("dialogue open @s @s help"));
+    actions.push(() => {
+        const playerName = player.nameTag || player.name;
+        runCommand(player, `execute as "${playerName.replace(/"/g, '\\"')}" run dialogue open @s @s help`);
+    });
 
     buttons.push("§d§lCredits\n§r§7[ Click to View ]");
     actions.push(() => Credits(player));

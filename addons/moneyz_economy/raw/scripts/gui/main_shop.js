@@ -1,5 +1,5 @@
 import { ActionFormData } from "@minecraft/server-ui";
-import { getScore, updateScore } from "../utilities.js";
+import { getScore, updateScore, runCommand } from "../utilities.js";
 import { log, LOG_LEVELS } from "../logger.js";
 import { getShopData } from "../data_provider.js";
 
@@ -127,8 +127,9 @@ async function handleBuy(player, item) {
             return;
         }
 
-        const giveCommand = buyData !== 0 ? `give @s ${itemId} ${buyAmount} ${buyData}` : `give @s ${itemId} ${buyAmount}`;
-        await player.runCommandAsync(giveCommand);
+        const playerName = player.nameTag || player.name;
+        const giveCommand = buyData !== undefined && buyData !== null && buyData !== 0 ? `give @s ${itemId} ${buyAmount} ${buyData}` : `give @s ${itemId} ${buyAmount}`;
+        await runCommand(player, `execute as "${playerName.replace(/"/g, '\\"')}" run ${giveCommand}`);
 
         updateScore(player, buyCost, "remove");
 
@@ -144,14 +145,15 @@ async function handleSell(player, item) {
     const { id: itemId, name: itemName, amount: sellAmount, sellPrice: sellCost, sellDamage: sellData } = item;
 
     try {
-        const hasItemCheck = `testfor @s[hasitem={item=${itemId},data=${sellData},quantity=${sellAmount}..}]`;
-        const testResult = await player.runCommandAsync(hasItemCheck);
+        const playerName = player.nameTag || player.name;
+        const hasItemCheck = `execute as "${playerName.replace(/"/g, '\\"')}" run testfor @s[hasitem={item=${itemId},data=${sellData},quantity=${sellAmount}..}]`;
+        const testResult = await runCommand(player, hasItemCheck);
 
-        if (testResult.successCount > 0) {
+        if (testResult && (testResult.successCount > 0 || testResult.successCount === undefined)) {
             updateScore(player, sellCost, "add");
 
-            const clearCommand = `clear @s ${itemId} ${sellData} ${sellAmount}`;
-            await player.runCommandAsync(clearCommand);
+            const clearCommand = `execute as "${playerName.replace(/"/g, '\\"')}" run clear @s ${itemId} ${sellData} ${sellAmount}`;
+            await runCommand(player, clearCommand);
 
             try { player.playSound("random.levelup"); } catch {}
             player.sendMessage(`§aSold ${sellAmount} ${itemName} for ${sellCost} Moneyz!`);

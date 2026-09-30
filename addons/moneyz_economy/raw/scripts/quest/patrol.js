@@ -113,7 +113,7 @@ system.runInterval(() => {
                     const timeInArea = now - playerPatrolTime.get(player.nameTag);
                     if (timeInArea >= patrolLocation.requiredTime * 60000) {
                         completeQuest(player, activeQuest);
-                        try { player.onScreenDisplay.setActionBar("§aPatrol Quest Completed! 🎉"); } catch {}
+                        try { player.onScreenDisplay.setActionBar("§aPatrol Quest Completed!"); } catch {}
                         playerAreaCovered.delete(player.nameTag);
                         playerPatrolTime.delete(player.nameTag);
                         playerLastPosition.delete(player.nameTag);

@@ -28,7 +28,7 @@ world.afterEvents.entityDie.subscribe(event => {
 
                     if (activeQuest.objective.count <= 0) {
                         completeQuest(killer, activeQuest);
-                        try { killer.onScreenDisplay.setActionBar("§aQuest Completed! 🎉"); } catch {}
+                        try { killer.onScreenDisplay.setActionBar("§aQuest Completed!"); } catch {}
                     } else {
                         try { killer.onScreenDisplay.setActionBar(`§eQuest Progress: ${activeQuest.objective.count} more hostile mobs to slay`); } catch {}
                     }

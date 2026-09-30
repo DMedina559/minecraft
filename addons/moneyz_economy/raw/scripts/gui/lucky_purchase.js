@@ -1,6 +1,6 @@
 import { world } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
-import { getScore, getCurrentUTCDate, updateScore } from "../utilities.js";
+import { getScore, getCurrentUTCDate, updateScore, runCommand } from "../utilities.js";
 import { luckyMenu } from "./lucky_menu.js";
 import { log, LOG_LEVELS } from "../logger.js";
 
@@ -33,7 +33,8 @@ export async function luckyPurchase(player, isNpcInteraction) {
                         player.sendMessage("§aYou made a Lucky Purchase!");
 
                         try {
-                            await player.runCommandAsync("loot spawn ~ ~ ~ loot \"lucky_purchase\"");
+                            const playerName = player.nameTag || player.name;
+                            await runCommand(player, `execute as "${playerName.replace(/"/g, '\\"')}" at @s run loot spawn ~ ~ ~ loot "lucky_purchase"`);
                         } catch (err) {
                             log(`Loot spawn command failed: ${err}`, LOG_LEVELS.WARN);
                         }
