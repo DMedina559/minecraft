@@ -1,7 +1,7 @@
-import { world, system } from "@minecraft/server";
-import { updateScore, getCurrentUTCDate } from '../utilities.js';
-import { getActiveQuest, completeQuest } from '../gui/quest_menu.js';
-import { log, LOG_LEVELS } from '../logger.js';
+import { world } from "@minecraft/server";
+import { updateScore } from "../utilities.js";
+import { getActiveQuest, completeQuest } from "../gui/quest_menu.js";
+import { log, LOG_LEVELS } from "../logger.js";
 
 export const ORE_BREAK_REWARDS = {
     "minecraft:coal_ore": 5,
@@ -26,34 +26,39 @@ export const ORE_BREAK_REWARDS = {
 
 world.beforeEvents.playerBreakBlock.subscribe(event => {
     const player = event.player;
-    const brokenBlock = event.block;  
-    log(`Player ${player.nameTag} tried to break block: ${brokenBlock.typeId}`, LOG_LEVELS.DEBUG);
+    const brokenBlock = event.block;
 
-    if (player) {
-        const activeQuest = getActiveQuest(player);
+    if (!player || !brokenBlock) return;
 
-        if (activeQuest && activeQuest.objective && activeQuest.objective.type === "break") {
-            const blockTypes = activeQuest.objective.blockTypes;
-            
-            if (blockTypes && Array.isArray(blockTypes) && blockTypes.includes(brokenBlock.typeId)) {
-                activeQuest.objective.count -= 1;
+    const activeQuest = getActiveQuest(player);
 
-                if (activeQuest.objective.count <= 0) {
-                    completeQuest(player, activeQuest);
-                } else {
-                    player.setDynamicProperty("activeQuest", JSON.stringify(activeQuest));
-                    player.sendMessage(`§eYou still need to mine ${activeQuest.objective.count} more ${blockTypes.map(type => type.replace("minecraft:", "").replace(/_/g, " ").replace(/\b\w/g, char => char.toUpperCase())).join(", ")}.`);
-                }
+    if (activeQuest?.objective?.type === "break") {
+        const blockTypes = activeQuest.objective.blockTypes;
 
-                if (ORE_BREAK_REWARDS[brokenBlock.typeId]) {
-                    const rewardAmount = ORE_BREAK_REWARDS[brokenBlock.typeId];
-                    updateScore(player, rewardAmount, "add");
-                    player.sendMessage(`§aYou earned ${rewardAmount} Moneyz for mining ${brokenBlock.typeId.replace("minecraft:", "").replace(/_/g, " ").replace(/\b\w/g, char => char.toUpperCase())}!`);
-                }
-                event.cancel = true;
-                // Replace the block with air using the modern API
-                player.dimension.setBlockPermutation(brokenBlock.location, world.getBlockPermutation("minecraft:air"));
-                log(`Set block to air at: ${brokenBlock.location.x}, ${brokenBlock.location.y}, ${brokenBlock.location.z}`, LOG_LEVELS.DEBUG);
+        if (Array.isArray(blockTypes) && blockTypes.includes(brokenBlock.typeId)) {
+            activeQuest.objective.count -= 1;
+
+            const blockName = brokenBlock.typeId.replace("minecraft:", "").replace(/_/g, " ");
+
+            if (activeQuest.objective.count <= 0) {
+                completeQuest(player, activeQuest);
+                try { player.onScreenDisplay.setActionBar("§aQuest Completed! 🎉"); } catch {}
+            } else {
+                player.setDynamicProperty("activeQuest", JSON.stringify(activeQuest));
+                const progressMsg = `§eQuest Progress: ${activeQuest.objective.count} more ${blockName} to mine`;
+                try { player.onScreenDisplay.setActionBar(progressMsg); } catch {}
+            }
+
+            if (ORE_BREAK_REWARDS[brokenBlock.typeId]) {
+                const rewardAmount = ORE_BREAK_REWARDS[brokenBlock.typeId];
+                updateScore(player, rewardAmount, "add");
+            }
+
+            event.cancel = true;
+            try {
+                brokenBlock.setType("minecraft:air");
+            } catch (err) {
+                log(`Failed setting block air: ${err}`, LOG_LEVELS.WARN);
             }
         }
     }
@@ -61,4 +66,4 @@ world.beforeEvents.playerBreakBlock.subscribe(event => {
     blockTypes: Object.keys(ORE_BREAK_REWARDS)
 });
 
-log('mine.js loaded', LOG_LEVELS.DEBUG);
+log("mine.js loaded", LOG_LEVELS.DEBUG);

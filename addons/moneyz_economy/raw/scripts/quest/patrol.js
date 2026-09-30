@@ -1,63 +1,53 @@
 import { world, system } from "@minecraft/server";
-import { updateScore, getCurrentUTCDate } from '../utilities.js';
 import { getActiveQuest, completeQuest } from "../gui/quest_menu.js";
-import { log, LOG_LEVELS } from '../logger.js';
+import { log, LOG_LEVELS } from "../logger.js";
 
 const playerPatrolTime = new Map();
 const playerAreaCovered = new Map();
 const playerLastPosition = new Map();
 const playerPatrolMessageCooldowns = new Map();
-const PATROL_MESSAGE_COOLDOWN = 5000;
+const PATROL_MESSAGE_COOLDOWN = 3000;
 const OUT_OF_RANGE_RESET_DELAY = 15000;
 
 system.runInterval(() => {
     for (const player of world.getPlayers()) {
         const activeQuest = getActiveQuest(player);
 
-        if (activeQuest && activeQuest.objective.type === "location") {
-            const patrolLocationData = world.getDynamicProperty('patrolLocation');
+        if (activeQuest?.objective?.type === "location") {
+            const patrolLocationData = world.getDynamicProperty("patrolLocation");
 
-            if (!patrolLocationData) {
-                player.sendMessage("§cPatrol location data is missing. Set patrolLocation property to:\"x,y,z,radius,timeInMinutes\".");
-                continue;
-            }
-
-            if (typeof patrolLocationData !== 'string') {
-                log(`Patrol location data is not a string:`, LOG_LEVELS.WARN, patrolLocationData);
-                player.sendMessage("§cPatrol location data is in an incorrect format.");
+            if (!patrolLocationData || typeof patrolLocationData !== "string") {
+                player.sendMessage("§cPatrol location data is missing or invalid. Set patrolLocation property to: \"x,y,z,radius,timeInMinutes\".");
                 continue;
             }
 
             try {
-                const patrolLocationParts = patrolLocationData.split(',');
-
-                if (patrolLocationParts.length !== 5) {
-                    log(`Invalid patrol location data format. Expected x,y,z,radius,timeInMinutes.`, LOG_LEVELS.WARN);
-                    player.sendMessage("§cInvalid patrol location data format. Expected x,y,z,radius,timeInMinutes.");
+                const parts = patrolLocationData.split(",");
+                if (parts.length !== 5) {
+                    player.sendMessage("§cInvalid patrol location format. Expected x,y,z,radius,timeInMinutes.");
                     player.setDynamicProperty("activeQuest", null);
                     continue;
                 }
 
                 const patrolLocation = {
-                    x: parseInt(patrolLocationParts[0].trim()),
-                    y: parseInt(patrolLocationParts[1].trim()),
-                    z: parseInt(patrolLocationParts[2].trim()),
-                    radius: parseInt(patrolLocationParts[3].trim()),
-                    requiredTime: parseInt(patrolLocationParts[4].trim())
+                    x: parseInt(parts[0].trim(), 10),
+                    y: parseInt(parts[1].trim(), 10),
+                    z: parseInt(parts[2].trim(), 10),
+                    radius: parseInt(parts[3].trim(), 10),
+                    requiredTime: parseInt(parts[4].trim(), 10)
                 };
 
-                if (isNaN(patrolLocation.x) || isNaN(patrolLocation.y) || isNaN(patrolLocation.z) || isNaN(patrolLocation.radius) || isNaN(patrolLocation.requiredTime)) {
-                    log(`Invalid patrol location parameters. Please provide numbers.`, LOG_LEVELS.WARN);
-                    player.sendMessage("§cInvalid patrol location parameters. Please provide numbers.");
+                if (Object.values(patrolLocation).some(val => isNaN(val))) {
+                    player.sendMessage("§cInvalid patrol location parameters. Numeric values expected.");
                     player.setDynamicProperty("activeQuest", null);
                     continue;
                 }
 
-                const playerLocation = player.location;
+                const pos = player.location;
                 const distance = Math.sqrt(
-                    Math.pow(playerLocation.x - patrolLocation.x, 2) +
-                    Math.pow(playerLocation.y - patrolLocation.y, 2) +
-                    Math.pow(playerLocation.z - patrolLocation.z, 2)
+                    Math.pow(pos.x - patrolLocation.x, 2) +
+                    Math.pow(pos.y - patrolLocation.y, 2) +
+                    Math.pow(pos.z - patrolLocation.z, 2)
                 );
 
                 const lastMessageTime = playerPatrolMessageCooldowns.get(player.nameTag) || 0;
@@ -71,74 +61,71 @@ system.runInterval(() => {
                         playerAreaCovered.delete(player.nameTag);
                         playerLastPosition.delete(player.nameTag);
                         playerPatrolMessageCooldowns.delete(player.nameTag);
-                        player.sendMessage("§cYou left the patrol area. The patrol has been reset.");
-                    } 
+                        try { player.onScreenDisplay.setActionBar("§cOut of patrol area! Patrol reset."); } catch {}
+                    }
 
                     playerLastPosition.set(player.nameTag, { outOfRangeTime: now });
 
                     if (now - lastMessageTime >= PATROL_MESSAGE_COOLDOWN) {
-                        const distanceRemaining = Math.round(distance - patrolLocation.radius);
-                        player.sendMessage(`§eYou are ${distanceRemaining} blocks away from the patrol area.`);
+                        const distRem = Math.round(distance - patrolLocation.radius);
+                        try { player.onScreenDisplay.setActionBar(`§eYou are ${distRem} blocks away from patrol zone`); } catch {}
                         playerPatrolMessageCooldowns.set(player.nameTag, now);
                     }
                     continue;
                 }
 
                 let areaCovered = playerAreaCovered.get(player.nameTag) || 0;
-                let lastPosition = playerLastPosition.get(player.nameTag);
+                const lastPos = playerLastPosition.get(player.nameTag);
 
-                if (lastPosition) {
-                    const distanceTraveled = Math.sqrt(
-                        Math.pow(playerLocation.x - lastPosition.x, 2) +
-                        Math.pow(playerLocation.z - lastPosition.z, 2)
+                if (lastPos && lastPos.x !== undefined) {
+                    const distTraveled = Math.sqrt(
+                        Math.pow(pos.x - lastPos.x, 2) +
+                        Math.pow(pos.z - lastPos.z, 2)
                     );
-                    areaCovered += distanceTraveled;
+                    areaCovered += distTraveled;
                 }
 
-                playerLastPosition.set(player.nameTag, { x: playerLocation.x, z: playerLocation.z });
+                playerLastPosition.set(player.nameTag, { x: pos.x, z: pos.z });
                 playerAreaCovered.set(player.nameTag, areaCovered);
 
                 if (!playerPatrolTime.has(player.nameTag)) {
-                    playerPatrolTime.set(player.nameTag, Date.now());
+                    playerPatrolTime.set(player.nameTag, now);
                 }
 
-                const remainingArea = Math.max(0, activeQuest.objective.minAreaCovered - areaCovered);
-                const roundedRemainingArea = Math.round(remainingArea);
+                const remArea = Math.max(0, activeQuest.objective.minAreaCovered - areaCovered);
+                const roundedRemArea = Math.round(remArea);
 
-                if (roundedRemainingArea > 0 && now - lastMessageTime >= PATROL_MESSAGE_COOLDOWN) {
-                    const timeInArea = Date.now() - playerPatrolTime.get(player.nameTag);
-                    const remainingTime = patrolLocation.requiredTime * 60 * 1000 - timeInArea;
+                if (now - lastMessageTime >= PATROL_MESSAGE_COOLDOWN) {
+                    const timeInArea = now - playerPatrolTime.get(player.nameTag);
+                    const remTime = patrolLocation.requiredTime * 60000 - timeInArea;
 
-                    if (remainingTime > 0) {
-                        const minutesRemaining = Math.floor(remainingTime / (1000 * 60));
-                        const secondsRemaining = Math.floor((remainingTime % (1000 * 60)) / 1000);
-                        player.sendMessage(`§eYou still need to cover ${roundedRemainingArea} more blocks and patrol for ${minutesRemaining} minutes and ${secondsRemaining} seconds.`);
+                    if (roundedRemArea > 0 || remTime > 0) {
+                        const mins = Math.max(0, Math.floor(remTime / 60000));
+                        const secs = Math.max(0, Math.floor((remTime % 60000) / 1000));
+                        try {
+                            player.onScreenDisplay.setActionBar(`§ePatrol: ${roundedRemArea} blocks rem | ${mins}m ${secs}s rem`);
+                        } catch {}
                         playerPatrolMessageCooldowns.set(player.nameTag, now);
                     }
                 }
 
                 if (areaCovered >= activeQuest.objective.minAreaCovered) {
-                    const timeInArea = Date.now() - playerPatrolTime.get(player.nameTag);
-
-                    if (timeInArea >= patrolLocation.requiredTime * 60 * 1000) {
-                        if (now - lastMessageTime >= PATROL_MESSAGE_COOLDOWN) {
-                            completeQuest(player, activeQuest);
-                            player.sendMessage("§aQuest completed! You have finished patrolling.");
-                            playerAreaCovered.delete(player.nameTag);
-                            playerPatrolTime.delete(player.nameTag);
-                            playerLastPosition.delete(player.nameTag);
-                            playerPatrolMessageCooldowns.delete(player.nameTag);
-                            continue;
-                        }
+                    const timeInArea = now - playerPatrolTime.get(player.nameTag);
+                    if (timeInArea >= patrolLocation.requiredTime * 60000) {
+                        completeQuest(player, activeQuest);
+                        try { player.onScreenDisplay.setActionBar("§aPatrol Quest Completed! 🎉"); } catch {}
+                        playerAreaCovered.delete(player.nameTag);
+                        playerPatrolTime.delete(player.nameTag);
+                        playerLastPosition.delete(player.nameTag);
+                        playerPatrolMessageCooldowns.delete(player.nameTag);
                     }
                 }
-
             } catch (error) {
-                log(`Error parsing patrol location data:`, LOG_LEVELS.ERROR, error);
+                log(`Error processing patrol quest: ${error}`, LOG_LEVELS.ERROR);
                 player.setDynamicProperty("activeQuest", null);
             }
         }
     }
-});
+}, 20);
 
-log('patrol.js loaded', LOG_LEVELS.DEBUG);
+log("patrol.js loaded", LOG_LEVELS.DEBUG);
