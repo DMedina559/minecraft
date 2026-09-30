@@ -53,7 +53,7 @@ system.runInterval(() => {
 
                     if (elapsedTime >= requiredDuration) {
                         completeQuest(player, activeQuest);
-                        try { player.onScreenDisplay.setActionBar("§aMaintain Balance Quest Completed! 🎉"); } catch {}
+                        try { player.onScreenDisplay.setActionBar("§aMaintain Balance Quest Completed!"); } catch {}
                         player.setDynamicProperty(`balanceStartTime_${activeQuest.property}`, null);
                         lastMessageTimes.delete(player.nameTag);
                     }

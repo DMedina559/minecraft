@@ -1,6 +1,6 @@
 import { world, ItemStack } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
-import { updateScore, getCurrentUTCDate } from "../utilities.js";
+import { updateScore, getCurrentUTCDate, runCommand } from "../utilities.js";
 import { main } from "./moneyz_menu.js";
 import { QUEST_DATA } from "../questData.js";
 import { startMaintainBalanceQuest } from "../quest/maintain.js";
@@ -210,23 +210,25 @@ export function completeQuest(player, activeQuest) {
             updateScore(player, reward.amount, "add");
             player.sendMessage(`§aYou completed the quest and earned ${reward.amount} Moneyz!`);
         } else if (reward.type === "item") {
+            const playerName = player.nameTag || player.name;
             try {
                 const item = new ItemStack(reward.itemStack.typeId, reward.itemStack.amount);
                 const container = player.getComponent("inventory")?.container;
                 if (container) {
                     container.addItem(item);
                 } else {
-                    player.runCommandAsync(`give @s ${reward.itemStack.typeId} ${reward.itemStack.amount}`);
+                    runCommand(player, `execute as "${playerName.replace(/"/g, '\\"')}" run give @s ${reward.itemStack.typeId} ${reward.itemStack.amount}`);
                 }
             } catch {
-                player.runCommandAsync(`give @s ${reward.itemStack.typeId} ${reward.itemStack.amount}`);
+                runCommand(player, `execute as "${playerName.replace(/"/g, '\\"')}" run give @s ${reward.itemStack.typeId} ${reward.itemStack.amount}`);
             }
             player.sendMessage(`§aYou completed the quest and earned ${reward.itemStack.amount} ${reward.itemStack.typeId.replace("minecraft:", "")}!`);
         } else if (reward.type === "experience") {
+            const playerName = player.nameTag || player.name;
             try {
                 player.addExperience(reward.amount);
             } catch {
-                player.runCommandAsync(`xp ${reward.amount} @s`);
+                runCommand(player, `execute as "${playerName.replace(/"/g, '\\"')}" run xp ${reward.amount} @s`);
             }
             player.sendMessage(`§aYou completed the quest and earned ${reward.amount} Experience!`);
         }

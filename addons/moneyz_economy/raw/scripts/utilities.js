@@ -173,6 +173,26 @@ system.runInterval(() => {
 }, 90);
 
 /**
+ * Safely executes a command across API versions and target types.
+ * @param {import("@minecraft/server").Player|import("@minecraft/server").Entity} target
+ * @param {string} command
+ * @returns {Promise<any>}
+ */
+export async function runCommand(target, command) {
+    if (!target) return;
+    const runner = target.dimension ?? target;
+    if (typeof runner.runCommand === "function") {
+        return runner.runCommand(command);
+    } else if (typeof runner.runCommandAsync === "function") {
+        return await runner.runCommandAsync(command);
+    } else if (typeof target.runCommand === "function") {
+        return target.runCommand(command);
+    } else if (typeof target.runCommandAsync === "function") {
+        return await target.runCommandAsync(command);
+    }
+}
+
+/**
  * Returns a random integer between min and max inclusive.
  */
 export function getRandomInt(min, max) {

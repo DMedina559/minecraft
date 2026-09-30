@@ -29,7 +29,7 @@ world.afterEvents.playerPlaceBlock.subscribe(event => {
 
                 if (activeQuest.objective.count <= 0) {
                     completeQuest(player, activeQuest);
-                    try { player.onScreenDisplay.setActionBar("§aQuest Completed! 🎉"); } catch {}
+                    try { player.onScreenDisplay.setActionBar("§aQuest Completed!"); } catch {}
                 } else {
                     player.setDynamicProperty("activeQuest", JSON.stringify(activeQuest));
                     try { player.onScreenDisplay.setActionBar(`§eQuest Progress: ${activeQuest.objective.count} more ${cropName} to plant`); } catch {}
