@@ -39,8 +39,8 @@ export async function start21Game(player, isNpcInteraction) {
             .textField("Enter your stake:", "Enter stake amount here");
 
         const response = await modalForm.show(player);
-        if (response.canceled && !isNpcInteraction) {
-            chanceMenu(player);
+        if (response.canceled) {
+            if (!isNpcInteraction) chanceMenu(player);
             return;
         }
 
@@ -51,132 +51,99 @@ export async function start21Game(player, isNpcInteraction) {
             return;
         }
 
-        const playerScore = await getScore("Moneyz", player);
+        const playerScore = getScore("Moneyz", player);
         if (playerScore < stake) {
             player.sendMessage("§cYou don't have enough Moneyz!");
             if (!isNpcInteraction) chanceMenu(player);
             return;
         }
 
-        log(`${player.nameTag} starts a 21 game with a stake of ${stake}.`, LOG_LEVELS.INFO);
         updateScore(player, stake, "remove");
-        await startGameRound(player, stake);
+        await startGameRound(player, stake, isNpcInteraction);
     } catch (error) {
         log(`Error starting 21 game: ${error}`, LOG_LEVELS.ERROR);
     }
 }
 
-async function startGameRound(player, stake) {
-    try {
-        const playerHand = [getRandomCard(), getRandomCard()];
-        const dealerHand = [getRandomCard(), getRandomCard()];
-        const chanceX = world.getDynamicProperty("chanceX") || 1;
+async function startGameRound(player, stake, isNpcInteraction) {
+    const playerHand = [getRandomCard(), getRandomCard()];
+    const dealerHand = [getRandomCard(), getRandomCard()];
+    const chanceX = parseFloat(world.getDynamicProperty("chanceX") || "1");
 
-        log(`Initial hands - Player: ${displayHand(playerHand)}; Dealer: ${displayHand([dealerHand[0]])} (showing only the first card).`, LOG_LEVELS.DEBUG);
+    await continue21Game(player, stake, playerHand, dealerHand, chanceX, isNpcInteraction);
+}
 
-        await continue21Game(player, stake, playerHand, dealerHand, chanceX);
-    } catch (error) {
-        log(`Error in game round: ${error}`, LOG_LEVELS.ERROR);
+async function continue21Game(player, stake, playerHand, dealerHand, chanceX, isNpcInteraction) {
+    const playerValue = calculateHandValue(playerHand);
+    const dealerFirstCard = dealerHand[0];
+
+    const message = `Your hand: ${displayHand(playerHand)} (${playerValue})\nDealer's showing card: ${displayHand([dealerFirstCard])}\n`;
+
+    if (playerValue === 21) {
+        await endGame(player, stake, playerHand, dealerHand, chanceX, "§aBlackjack!", isNpcInteraction);
+        return;
+    }
+
+    if (playerValue > 21) {
+        await endGame(player, stake, playerHand, dealerHand, chanceX, "§cYou busted!", isNpcInteraction);
+        return;
+    }
+
+    const actionForm = new ActionFormData()
+        .title("21 Game - Hit or Stand?")
+        .body(message)
+        .button("Hit")
+        .button("Stand");
+
+    const response = await actionForm.show(player);
+    if (response.canceled) return;
+
+    if (response.selection === 0) {
+        playerHand.push(getRandomCard());
+        await continue21Game(player, stake, playerHand, dealerHand, chanceX, isNpcInteraction);
+    } else {
+        await dealerTurn(player, stake, playerHand, dealerHand, chanceX, isNpcInteraction);
     }
 }
 
-async function continue21Game(player, stake, playerHand, dealerHand, chanceX) {
-    try {
-        const playerValue = calculateHandValue(playerHand);
-        const dealerFirstCard = dealerHand[0];
+async function dealerTurn(player, stake, playerHand, dealerHand, chanceX, isNpcInteraction) {
+    const playerValue = calculateHandValue(playerHand);
+    const chanceWin = parseFloat(world.getDynamicProperty("chanceWin") || "50");
 
-        let message = `Your hand: ${displayHand(playerHand)} (${playerValue})\nDealer's showing card: ${displayHand([dealerFirstCard])}\n`;
-
-        if (playerValue === 21) {
-            await endGame(player, stake, playerHand, dealerHand, chanceX, "§aBlackjack!");
-            return;
-        }
-
-        if (playerValue > 21) {
-            await endGame(player, stake, playerHand, dealerHand, chanceX, "§cYou busted!");
-            return;
-        }
-
-        const actionForm = new ActionFormData()
-            .title("21 Game - Hit or Stand?")
-            .body(message)
-            .button("Hit")
-            .button("Stand");
-
-        const response = await actionForm.show(player);
-        if (response.canceled) return;
-
-        if (response.selection === 0) {
-            playerHand.push(getRandomCard());
-            log(`${player.nameTag} hits. New hand: ${displayHand(playerHand)} (Value: ${calculateHandValue(playerHand)})`, LOG_LEVELS.DEBUG);
-            await continue21Game(player, stake, playerHand, dealerHand, chanceX);
-        } else {
-            log(`${player.nameTag} stands.`, LOG_LEVELS.DEBUG);
-            await dealerTurn(player, stake, playerHand, dealerHand, chanceX);
-        }
-    } catch (error) {
-        log(`Error in game continuation: ${error}`, LOG_LEVELS.ERROR);
-    }
-}
-
-async function dealerTurn(player, stake, playerHand, dealerHand, chanceX) {
-    try {
-        const playerValue = calculateHandValue(playerHand);
-        const chanceWin = world.getDynamicProperty("chanceWin") || 50;
-
-        while (calculateHandValue(dealerHand) < 17) {
-            const dealerValue = calculateHandValue(dealerHand);
-
-            const shouldStop = getRandomInt(1, 100) <= chanceWin;
-            if (shouldStop && dealerValue < playerValue) {
-                log(`Dealer stops hitting due to chanceWin (${chanceWin}%).`, LOG_LEVELS.DEBUG);
-                break;
-            }
-
-            dealerHand.push(getRandomCard());
-            log(`Dealer hits. New hand: ${displayHand(dealerHand)} (Value: ${calculateHandValue(dealerHand)})`, LOG_LEVELS.DEBUG);
-        }
-
+    while (calculateHandValue(dealerHand) < 17) {
         const dealerValue = calculateHandValue(dealerHand);
-        const playerWins = 
-            playerValue <= 21 && (dealerValue > 21 || playerValue > dealerValue);
+        const shouldStop = getRandomInt(1, 100) <= chanceWin;
+        if (shouldStop && dealerValue < playerValue) break;
 
-        const forcedWin = !playerWins && getRandomInt(1, 100) <= chanceWin;
-
-        if (forcedWin) {
-            log(`Player forced to win due to chanceWin (${chanceWin}%).`, LOG_LEVELS.DEBUG);
-        }
-
-        await endGame(player, stake, playerHand, dealerHand, chanceX, playerWins || forcedWin ? "§aYou win!" : "§cYou lose!");
-    } catch (error) {
-        log(`Error during dealer turn: ${error}`, LOG_LEVELS.ERROR);
+        dealerHand.push(getRandomCard());
     }
+
+    const dealerValue = calculateHandValue(dealerHand);
+    const playerWins = playerValue <= 21 && (dealerValue > 21 || playerValue > dealerValue);
+    const forcedWin = !playerWins && getRandomInt(1, 100) <= chanceWin;
+
+    await endGame(player, stake, playerHand, dealerHand, chanceX, (playerWins || forcedWin) ? "§aYou win!" : "§cYou lose!", isNpcInteraction);
 }
 
-async function endGame(player, stake, playerHand, dealerHand, chanceX, winMessage = "") {
-    try {
-        const playerValue = calculateHandValue(playerHand);
-        const dealerValue = calculateHandValue(dealerHand);
-        let message = `Your hand: ${displayHand(playerHand)} (${playerValue})\nDealer's hand: ${displayHand(dealerHand)} (${dealerValue})\n`;
+async function endGame(player, stake, playerHand, dealerHand, chanceX, winMessage = "", isNpcInteraction = false) {
+    const playerValue = calculateHandValue(playerHand);
+    const dealerValue = calculateHandValue(dealerHand);
+    let message = `Your hand: ${displayHand(playerHand)} (${playerValue})\nDealer's hand: ${displayHand(dealerHand)} (${dealerValue})\n`;
 
-        log(`Final hands - Player: ${displayHand(playerHand)} (Value: ${playerValue}); Dealer: ${displayHand(dealerHand)} (Value: ${dealerValue})`, LOG_LEVELS.DEBUG);
+    if (winMessage) message += winMessage + "\n";
 
-        if (winMessage) message += winMessage + "\n";
+    if (winMessage.includes("win")) {
+        const winnings = Math.round(stake * chanceX);
+        updateScore(player, winnings, "add");
+        message += `§aYou win ${winnings} Moneyz!`;
+        try { player.playSound("random.levelup"); } catch {}
+    } else {
+        try { player.playSound("note.bass"); } catch {}
+    }
 
-        if (winMessage.includes("win")) {
-            const winnings = Math.round(stake * chanceX);
-            updateScore(player, winnings, "add");
-            message += `§aYou win ${winnings} Moneyz!`;
-            player.playSound("random.levelup");
-        } else {
-            message += "§cYou lose!";
-            player.playSound("note.bass");
-        }
-
-        player.sendMessage(message);
+    player.sendMessage(message);
+    if (!isNpcInteraction) {
         system.run(() => chanceMenu(player));
-    } catch (error) {
-        log(`Error in game end: ${error}`, LOG_LEVELS.ERROR);
     }
 }
 

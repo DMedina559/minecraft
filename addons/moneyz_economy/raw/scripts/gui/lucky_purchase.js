@@ -1,59 +1,57 @@
-import { world, system } from "@minecraft/server"
-import { ActionFormData } from "@minecraft/server-ui"
-import { getScore, getCurrentUTCDate, updateScore } from '../utilities.js';
-import { luckyMenu } from './lucky_menu.js';
-import { log, LOG_LEVELS } from '../logger.js';
+import { world } from "@minecraft/server";
+import { ActionFormData } from "@minecraft/server-ui";
+import { getScore, getCurrentUTCDate, updateScore } from "../utilities.js";
+import { luckyMenu } from "./lucky_menu.js";
+import { log, LOG_LEVELS } from "../logger.js";
 
 export async function luckyPurchase(player, isNpcInteraction) {
+    if (!player) return;
 
-    async function canAccessLuckyMenu(player) {
+    function canAccessLuckyMenu() {
         const lastAccessDate = player.getDynamicProperty("lastLuckyPurchase");
         const currentDate = getCurrentUTCDate();
-        const oneLuckyPurchaseEnabled = world.getDynamicProperty('oneLuckyPurchase');
-        log(`Checking Lucky Purchase access for ${player.nameTag}:`, LOG_LEVELS.DEBUG);
-        log(`   - lastAccessDate: ${lastAccessDate}`, LOG_LEVELS.DEBUG);
-        log(`   - currentDate: ${currentDate}`, LOG_LEVELS.DEBUG);
-        log(`   - oneLuckyPurchaseEnabled: ${oneLuckyPurchaseEnabled}`, LOG_LEVELS.DEBUG);
-        return !oneLuckyPurchaseEnabled || !lastAccessDate || lastAccessDate !== currentDate;
+        const oneLuckyPurchaseEnabled = world.getDynamicProperty("oneLuckyPurchase");
+        return oneLuckyPurchaseEnabled !== "true" || !lastAccessDate || lastAccessDate !== currentDate;
     }
 
-    if (await canAccessLuckyMenu(player)) {
+    if (canAccessLuckyMenu()) {
         new ActionFormData()
             .title("§l§1Lucky Purchase")
             .body("§l§o§fMake a Lucky Purchase for 150 Moneyz!")
             .button("§a§lMake Purchase")
             .button("§c§lBack")
             .show(player).then(async r => {
+                if (!r || r.canceled) return;
+
                 if (r.selection === 0) {
                     const currentDate = getCurrentUTCDate();
-                    const oneLuckyPurchaseEnabled = world.getDynamicProperty('oneLuckyPurchase');
-
+                    const oneLuckyPurchaseEnabled = world.getDynamicProperty("oneLuckyPurchase");
                     const money = getScore("Moneyz", player);
 
                     if (money >= 150) {
-                        player.playSound("random.levelup");
-                        player.sendMessage("§aYou can make a Lucky Purchase!");
+                        try { player.playSound("random.levelup"); } catch {}
+                        player.sendMessage("§aYou made a Lucky Purchase!");
 
-                        player.runCommand(`loot spawn ~ ~ ~ loot "lucky_purchase"`);
+                        try {
+                            await player.runCommandAsync("loot spawn ~ ~ ~ loot \"lucky_purchase\"");
+                        } catch (err) {
+                            log(`Loot spawn command failed: ${err}`, LOG_LEVELS.WARN);
+                        }
 
-                        player.sendMessage("§aDo You Feel Lucky?");
                         updateScore(player, 150, "remove");
 
-                        if (oneLuckyPurchaseEnabled === 'true') {
-                            log(`oneLuckyPurchase is enabled, setting ${player.nameTag}'s lastLuckyPurchase to ${currentDate}`, LOG_LEVELS.INFO);
+                        if (oneLuckyPurchaseEnabled === "true") {
                             player.setDynamicProperty("lastLuckyPurchase", currentDate);
-                        } else {
-                            log(`oneLuckyPurchase is disabled in the world properties`, LOG_LEVELS.DEBUG);
                         }
                     } else {
-                        player.playSound("note.bass");
+                        try { player.playSound("note.bass"); } catch {}
                         player.sendMessage(`§cYou need 150 Moneyz for this purchase\n§6You have ${money} Moneyz`);
                     }
                 } else if (r.selection === 1 && !isNpcInteraction) {
                     luckyMenu(player);
                 }
             }).catch(err => {
-                log(`Error in ActionFormData: ${err}`, LOG_LEVELS.ERROR);
+                log(`Error in luckyPurchase form: ${err}`, LOG_LEVELS.ERROR);
             });
     } else {
         new ActionFormData()
@@ -64,5 +62,4 @@ export async function luckyPurchase(player, isNpcInteraction) {
     }
 }
 
-
-log('lucky_purchase.js loaded', LOG_LEVELS.DEBUG);
+log("lucky_purchase.js loaded", LOG_LEVELS.DEBUG);

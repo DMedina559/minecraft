@@ -1,10 +1,12 @@
 import { world } from "@minecraft/server";
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
 import { getShopData, SHOP_DATA_PREFIX } from "../data_provider.js";
-import { log, LOG_LEVELS } from '../logger.js';
+import { log, LOG_LEVELS } from "../logger.js";
 import { moneyzAdmin } from "./admin_menu.js";
 
 export function showShopEditorMenu(player) {
+    if (!player) return;
+
     const form = new ActionFormData()
         .title("§l§1Shop Editor")
         .body("§oManage your world's shops.")
@@ -14,23 +16,19 @@ export function showShopEditorMenu(player) {
         .button("§c§lBack");
 
     form.show(player).then(r => {
-        if (r.isCanceled) return;
-
-        if (r.selection === 0) {
-            createNewShop(player);
-        } else if (r.selection === 1) {
-            editShop_selectShop(player);
-        } else if (r.selection === 2) {
-            removeShop(player);
-        } else if (r.selection === 3) {
-            moneyzAdmin(player);
+        if (r.canceled) return;
+        switch (r.selection) {
+            case 0: createNewShop(player); break;
+            case 1: editShop_selectShop(player); break;
+            case 2: removeShop(player); break;
+            case 3: moneyzAdmin(player); break;
         }
     });
 }
 
 function editShop_selectCategoryForEdit(player, shopId) {
     const shopData = getShopData();
-    const shop = shopData[shopId];
+    const shop = shopData[shopId] || {};
     const categoryIds = Object.keys(shop);
 
     if (categoryIds.length === 0) {
@@ -43,24 +41,23 @@ function editShop_selectCategoryForEdit(player, shopId) {
         .title(`Edit Item in: ${shopId}`)
         .body("Select a category to edit an item from.");
 
-    categoryIds.forEach(id => form.button(id.replace(/_/g, ' ').replace(/\w/g, l => l.toUpperCase())));
+    categoryIds.forEach(id => form.button(id.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())));
     form.button("§c§lBack");
 
     form.show(player).then(r => {
-        if (r.isCanceled || r.selection === categoryIds.length) {
+        if (r.canceled || r.selection === categoryIds.length) {
             editShop_selectAction(player, shopId);
             return;
         }
-        const selectedCategoryId = categoryIds[r.selection];
-        editShop_selectItemForEdit(player, shopId, selectedCategoryId);
+        editShop_selectItemForEdit(player, shopId, categoryIds[r.selection]);
     });
 }
 
 function editShop_selectItemForEdit(player, shopId, categoryId) {
     const shopData = getShopData();
-    const items = shopData[shopId][categoryId];
+    const items = shopData[shopId]?.[categoryId] || [];
 
-    if (!items || items.length === 0) {
+    if (items.length === 0) {
         player.sendMessage(`§cCategory "${categoryId}" has no items to edit.`);
         editShop_selectCategoryForEdit(player, shopId);
         return;
@@ -74,39 +71,36 @@ function editShop_selectItemForEdit(player, shopId, categoryId) {
     form.button("§c§lBack");
 
     form.show(player).then(r => {
-        if (r.isCanceled || r.selection === items.length) {
+        if (r.canceled || r.selection === items.length) {
             editShop_selectCategoryForEdit(player, shopId);
             return;
         }
-
-        const itemIndexToEdit = r.selection;
-        editShop_itemForm(player, shopId, categoryId, itemIndexToEdit);
+        editShop_itemForm(player, shopId, categoryId, r.selection);
     });
 }
 
 function editShop_selectCategoryForAdd(player, shopId) {
     const shopData = getShopData();
-    const shop = shopData[shopId];
+    const shop = shopData[shopId] || {};
     const categoryIds = Object.keys(shop);
 
     const form = new ActionFormData()
         .title(`Add Item to: ${shopId}`)
         .body("Select a category to add the item to, or create a new one.");
-    
-    categoryIds.forEach(id => form.button(id.replace(/_/g, ' ').replace(/\w/g, l => l.toUpperCase())));
+
+    categoryIds.forEach(id => form.button(id.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())));
     form.button("§aCreate New Category");
     form.button("§c§lBack");
 
     form.show(player).then(r => {
-        if (r.isCanceled || r.selection === categoryIds.length + 1) {
+        if (r.canceled || r.selection === categoryIds.length + 1) {
             editShop_selectAction(player, shopId);
             return;
         }
 
         if (r.selection < categoryIds.length) {
-            const selectedCategoryId = categoryIds[r.selection];
-            editShop_itemForm(player, shopId, selectedCategoryId, -1); // -1 for adding new
-        } else { // Create New Category was selected
+            editShop_itemForm(player, shopId, categoryIds[r.selection], -1);
+        } else {
             editShop_createNewCategory(player, shopId);
         }
     });
@@ -115,34 +109,30 @@ function editShop_selectCategoryForAdd(player, shopId) {
 function editShop_createNewCategory(player, shopId) {
     const form = new ModalFormData()
         .title("Create New Category")
-        .textField(`Enter a new Category ID
-(e.g., 'potions', no spaces, lowercase)`, "category_id");
+        .textField("Enter a new Category ID\n(e.g., 'potions', no spaces, lowercase)", "category_id");
 
     form.show(player).then(r => {
-        if (r.isCanceled) {
+        if (r.canceled) {
             editShop_selectCategoryForAdd(player, shopId);
             return;
         }
-        const newCategoryId = r.formValues[0].trim();
+
+        const newCategoryId = String(r.formValues[0] || "").trim();
         const shopData = getShopData();
 
-        if (!newCategoryId) {
-            player.sendMessage("§cCategory ID cannot be empty.");
+        if (!newCategoryId || /\s/.test(newCategoryId) || newCategoryId !== newCategoryId.toLowerCase()) {
+            player.sendMessage("§cInvalid Category ID. Must not contain spaces or uppercase letters.");
             editShop_selectCategoryForAdd(player, shopId);
             return;
         }
-        if (/\s/.test(newCategoryId) || newCategoryId !== newCategoryId.toLowerCase()) {
-            player.sendMessage("§cCategory ID cannot contain spaces or uppercase letters.");
-            editShop_selectCategoryForAdd(player, shopId);
-            return;
-        }
-        if (shopData[shopId][newCategoryId]) {
+
+        if (shopData[shopId]?.[newCategoryId]) {
             player.sendMessage(`§cCategory with ID "${newCategoryId}" already exists.`);
             editShop_selectCategoryForAdd(player, shopId);
             return;
         }
 
-        // Create the new category and immediately go to add an item to it
+        if (!shopData[shopId]) shopData[shopId] = {};
         shopData[shopId][newCategoryId] = [];
         editShop_itemForm(player, shopId, newCategoryId, -1);
     });
@@ -151,7 +141,7 @@ function editShop_createNewCategory(player, shopId) {
 function editShop_itemForm(player, shopId, categoryId, itemIndexToEdit = -1) {
     const shopData = getShopData();
     const isEditing = itemIndexToEdit >= 0;
-    const item = isEditing ? shopData[shopId][categoryId][itemIndexToEdit] : {};
+    const item = isEditing ? (shopData[shopId]?.[categoryId]?.[itemIndexToEdit] || {}) : {};
 
     const form = new ModalFormData()
         .title(isEditing ? `Edit: ${item.name}` : "Add New Item")
@@ -165,44 +155,44 @@ function editShop_itemForm(player, shopId, categoryId, itemIndexToEdit = -1) {
         .textField("Custom Icon Path (optional)", "textures/items/custom", { defaultValue: item.iconPath || "" });
 
     form.show(player).then(r => {
-        if (r.isCanceled) {
+        if (r.canceled) {
             editShop_selectAction(player, shopId);
             return;
         }
 
         const [id, name, amount, buyPrice, sellPrice, buyDamage, sellDamage, iconPath] = r.formValues;
 
-        if (!id || !name) {
+        const itemId = String(id || "").trim();
+        const itemName = String(name || "").trim();
+
+        if (!itemId || !itemName) {
             player.sendMessage("§cItem ID and Display Name are required.");
             editShop_itemForm(player, shopId, categoryId, itemIndexToEdit);
             return;
         }
 
         const newItemData = {
-            id: id.trim(),
-            name: name.trim(),
-            amount: parseInt(amount) || 1,
-            buyPrice: parseInt(buyPrice) || 0,
-            sellPrice: parseInt(sellPrice) || 0,
-            buyDamage: parseInt(buyDamage) || 0,
-            sellDamage: parseInt(sellDamage) || 0,
-            iconPath: iconPath.trim() || undefined,
+            id: itemId,
+            name: itemName,
+            amount: parseInt(amount, 10) || 1,
+            buyPrice: parseInt(buyPrice, 10) || 0,
+            sellPrice: parseInt(sellPrice, 10) || 0,
+            buyDamage: parseInt(buyDamage, 10) || 0,
+            sellDamage: parseInt(sellDamage, 10) || 0,
+            iconPath: String(iconPath || "").trim() || undefined,
         };
 
-        const shopToUpdate = shopData[shopId];
+        const shopToUpdate = shopData[shopId] || {};
+        if (!shopToUpdate[categoryId]) shopToUpdate[categoryId] = [];
 
         if (isEditing) {
             shopToUpdate[categoryId][itemIndexToEdit] = newItemData;
         } else {
-            if (!shopToUpdate[categoryId]) {
-                shopToUpdate[categoryId] = [];
-            }
             shopToUpdate[categoryId].push(newItemData);
         }
 
         world.setDynamicProperty(SHOP_DATA_PREFIX + shopId, JSON.stringify(shopToUpdate));
-        player.sendMessage(`§aSuccessfully ${isEditing ? 'updated' : 'added'} item: "${newItemData.name}"`);
-        log(`${player.name} ${isEditing ? 'updated' : 'added'} item: ${newItemData.name} in ${shopId}/${categoryId}`, LOG_LEVELS.INFO);
+        player.sendMessage(`§aSuccessfully ${isEditing ? "updated" : "added"} item: "${newItemData.name}"`);
 
         editShop_selectAction(player, shopId);
     });
@@ -210,9 +200,9 @@ function editShop_itemForm(player, shopId, categoryId, itemIndexToEdit = -1) {
 
 function editShop_selectItemForRemove(player, shopId, categoryId) {
     const shopData = getShopData();
-    const items = shopData[shopId][categoryId];
+    const items = shopData[shopId]?.[categoryId] || [];
 
-    if (!items || items.length === 0) {
+    if (items.length === 0) {
         player.sendMessage(`§cCategory "${categoryId}" has no items to remove.`);
         editShop_selectCategoryForRemove(player, shopId);
         return;
@@ -226,7 +216,7 @@ function editShop_selectItemForRemove(player, shopId, categoryId) {
     form.button("§c§lBack");
 
     form.show(player).then(r => {
-        if (r.isCanceled || r.selection === items.length) {
+        if (r.canceled || r.selection === items.length) {
             editShop_selectCategoryForRemove(player, shopId);
             return;
         }
@@ -234,33 +224,29 @@ function editShop_selectItemForRemove(player, shopId, categoryId) {
         const itemIndexToRemove = r.selection;
         const itemToRemove = items[itemIndexToRemove];
 
-        const confirmForm = new ActionFormData()
+        new ActionFormData()
             .title("§cConfirm Deletion")
             .body(`Are you sure you want to permanently delete the item "${itemToRemove.name}"?`)
             .button("§4Confirm Delete")
-            .button("§aCancel");
+            .button("§aCancel")
+            .show(player)
+            .then(confirmResult => {
+                if (!confirmResult.canceled && confirmResult.selection === 0) {
+                    const shopToUpdate = shopData[shopId];
+                    shopToUpdate[categoryId].splice(itemIndexToRemove, 1);
+                    if (shopToUpdate[categoryId].length === 0) delete shopToUpdate[categoryId];
 
-        confirmForm.show(player).then(confirmResult => {
-            if (confirmResult.selection === 0) { // Confirm Delete
-                const shopToUpdate = shopData[shopId];
-                shopToUpdate[categoryId].splice(itemIndexToRemove, 1);
-                
-                if (shopToUpdate[categoryId].length === 0) {
-                    delete shopToUpdate[categoryId];
+                    world.setDynamicProperty(SHOP_DATA_PREFIX + shopId, JSON.stringify(shopToUpdate));
+                    player.sendMessage(`§aItem "${itemToRemove.name}" has been removed.`);
                 }
-
-                world.setDynamicProperty(SHOP_DATA_PREFIX + shopId, JSON.stringify(shopToUpdate));
-                player.sendMessage(`§aItem "${itemToRemove.name}" has been removed.`);
-                log(`${player.name} removed item: ${itemToRemove.name} from ${shopId}/${categoryId}`, LOG_LEVELS.INFO);
-            }
-            editShop_selectCategoryForRemove(player, shopId);
-        });
+                editShop_selectCategoryForRemove(player, shopId);
+            });
     });
 }
 
 function editShop_selectCategoryForRemove(player, shopId) {
     const shopData = getShopData();
-    const shop = shopData[shopId];
+    const shop = shopData[shopId] || {};
     const categoryIds = Object.keys(shop);
 
     if (categoryIds.length === 0) {
@@ -273,16 +259,15 @@ function editShop_selectCategoryForRemove(player, shopId) {
         .title(`Remove Item from: ${shopId}`)
         .body("Select a category to remove an item from.");
 
-    categoryIds.forEach(id => form.button(id.replace(/_/g, ' ').replace(/\w/g, l => l.toUpperCase())));
+    categoryIds.forEach(id => form.button(id.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())));
     form.button("§c§lBack");
 
     form.show(player).then(r => {
-        if (r.isCanceled || r.selection === categoryIds.length) {
+        if (r.canceled || r.selection === categoryIds.length) {
             editShop_selectAction(player, shopId);
             return;
         }
-        const selectedCategoryId = categoryIds[r.selection];
-        editShop_selectItemForRemove(player, shopId, selectedCategoryId);
+        editShop_selectItemForRemove(player, shopId, categoryIds[r.selection]);
     });
 }
 
@@ -299,17 +284,16 @@ function editShop_selectShop(player) {
     const form = new ActionFormData()
         .title("Edit Shop")
         .body("Select a shop to edit.");
-    
-    shopIds.forEach(id => form.button(id.replace(/_/g, ' ').replace(/\w/g, l => l.toUpperCase())));
+
+    shopIds.forEach(id => form.button(id.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())));
     form.button("§c§lBack");
 
     form.show(player).then(r => {
-        if (r.isCanceled || r.selection === shopIds.length) {
+        if (r.canceled || r.selection === shopIds.length) {
             showShopEditorMenu(player);
             return;
         }
-        const selectedShopId = shopIds[r.selection];
-        editShop_selectAction(player, selectedShopId);
+        editShop_selectAction(player, shopIds[r.selection]);
     });
 }
 
@@ -323,18 +307,13 @@ function editShop_selectAction(player, shopId) {
         .button("§c§lBack");
 
     form.show(player).then(r => {
-        if (r.isCanceled || r.selection === 3) {
-            editShop_selectShop(player); // Go back to shop selection
+        if (r.canceled || r.selection === 3) {
+            editShop_selectShop(player);
             return;
         }
-
-        if (r.selection === 0) { // Add Item
-            editShop_selectCategoryForAdd(player, shopId);
-        } else if (r.selection === 1) { // Edit Item
-            editShop_selectCategoryForEdit(player, shopId);
-        } else if (r.selection === 2) { // Remove Item
-            editShop_selectCategoryForRemove(player, shopId);
-        }
+        if (r.selection === 0) editShop_selectCategoryForAdd(player, shopId);
+        else if (r.selection === 1) editShop_selectCategoryForEdit(player, shopId);
+        else if (r.selection === 2) editShop_selectCategoryForRemove(player, shopId);
     });
 }
 
@@ -351,72 +330,64 @@ function removeShop(player) {
     const form = new ActionFormData()
         .title("Remove Shop")
         .body("§cWarning: This action is permanent.");
-    
-    shopIds.forEach(id => form.button(id.replace(/_/g, ' ').replace(/\w/g, l => l.toUpperCase())));
+
+    shopIds.forEach(id => form.button(id.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())));
     form.button("§c§lBack");
 
     form.show(player).then(r => {
-        if (r.isCanceled || r.selection === shopIds.length) {
+        if (r.canceled || r.selection === shopIds.length) {
             showShopEditorMenu(player);
             return;
         }
 
         const shopIdToRemove = shopIds[r.selection];
 
-        const confirmForm = new ActionFormData()
+        new ActionFormData()
             .title("§cConfirm Deletion")
             .body(`Are you sure you want to permanently delete the "${shopIdToRemove}" shop and all of its items?`)
             .button("§4Confirm Delete")
-            .button("§aCancel");
-
-        confirmForm.show(player).then(confirmResult => {
-            if (confirmResult.selection === 0) { // Confirm Delete
-                world.setDynamicProperty(SHOP_DATA_PREFIX + shopIdToRemove, undefined);
-                player.sendMessage(`§aShop "${shopIdToRemove}" has been removed.`);
-                log(`${player.name} removed shop: ${shopIdToRemove}`, LOG_LEVELS.INFO);
-            }
-            showShopEditorMenu(player);
-        });
+            .button("§aCancel")
+            .show(player)
+            .then(confirmResult => {
+                if (!confirmResult.canceled && confirmResult.selection === 0) {
+                    world.setDynamicProperty(SHOP_DATA_PREFIX + shopIdToRemove, undefined);
+                    player.sendMessage(`§aShop "${shopIdToRemove}" has been removed.`);
+                }
+                showShopEditorMenu(player);
+            });
     });
 }
 
 function createNewShop(player) {
-    const form = new ModalFormData()
+    new ModalFormData()
         .title("Create New Shop")
-        .textField(`Enter a new Shop ID
-(e.g., 'potion_shop', no spaces, lowercase)`, "shop_id");
+        .textField("Enter a new Shop ID\n(e.g., 'potion_shop', no spaces, lowercase)", "shop_id")
+        .show(player)
+        .then(r => {
+            if (r.canceled) {
+                showShopEditorMenu(player);
+                return;
+            }
 
-    form.show(player).then(r => {
-        if (r.isCanceled) {
-            showShopEditorMenu(player);
-            return;
-        }
+            const newShopId = String(r.formValues[0] || "").trim();
+            const shopData = getShopData();
 
-        const newShopId = r.formValues[0].trim();
-        const shopData = getShopData();
+            if (!newShopId || /\s/.test(newShopId) || newShopId !== newShopId.toLowerCase()) {
+                player.sendMessage("§cShop ID cannot be empty or contain spaces or uppercase letters.");
+                showShopEditorMenu(player);
+                return;
+            }
 
-        // Validation
-        if (!newShopId) {
-            player.sendMessage("§cShop ID cannot be empty.");
-            showShopEditorMenu(player);
-            return;
-        }
-        if (/\s/.test(newShopId) || newShopId !== newShopId.toLowerCase()) {
-            player.sendMessage("§cShop ID cannot contain spaces or uppercase letters.");
-            showShopEditorMenu(player);
-            return;
-        }
-        if (shopData[newShopId]) {
-            player.sendMessage(`§cShop with ID "${newShopId}" already exists.`);
-            showShopEditorMenu(player);
-            return;
-        }
+            if (shopData[newShopId]) {
+                player.sendMessage(`§cShop with ID "${newShopId}" already exists.`);
+                showShopEditorMenu(player);
+                return;
+            }
 
-        // Add new shop and save
-        world.setDynamicProperty(SHOP_DATA_PREFIX + newShopId, JSON.stringify({}));
-        player.sendMessage(`§aSuccessfully created new shop: "${newShopId}"`);
-        log(`${player.name} created new shop: ${newShopId}`, LOG_LEVELS.INFO);
-        
-        showShopEditorMenu(player);
-    });
+            world.setDynamicProperty(SHOP_DATA_PREFIX + newShopId, JSON.stringify({}));
+            player.sendMessage(`§aSuccessfully created new shop: "${newShopId}"`);
+            showShopEditorMenu(player);
+        });
 }
+
+log("shop_editor.js loaded", LOG_LEVELS.DEBUG);

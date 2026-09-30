@@ -1,13 +1,23 @@
 import { world } from "@minecraft/server";
 import { ModalFormData, ActionFormData } from "@minecraft/server-ui";
-import { getScore, updateScore, getRandomInt } from '../utilities.js';
-import { chanceMenu } from '../gui/chance_menu.js';
-import { log, LOG_LEVELS } from '../logger.js';
+import { getScore, updateScore, getRandomInt } from "../utilities.js";
+import { chanceMenu } from "../gui/chance_menu.js";
+import { log, LOG_LEVELS } from "../logger.js";
 
-const slotSymbols = ["Cherry", "Lemon", "Orange", "Plum", "Bell", "Bar", "Seven"];
+const SLOT_ICONS = {
+    "Cherry": "🍒 Cherry",
+    "Lemon": "🍋 Lemon",
+    "Orange": "🍊 Orange",
+    "Plum": "🫐 Plum",
+    "Bell": "🔔 Bell",
+    "Bar": "🪙 Bar",
+    "Seven": "🎰 Seven"
+};
+
+const slotSymbols = Object.keys(SLOT_ICONS);
 
 function spinSlots(chanceWin) {
-    let reels = [];
+    const reels = [];
     for (let i = 0; i < 3; i++) {
         if (getRandomInt(1, 100) <= chanceWin) {
             const winSymbols = ["Bell", "Bar", "Seven"];
@@ -20,8 +30,8 @@ function spinSlots(chanceWin) {
 }
 
 async function playSlots(player, stake, isNpcInteraction) {
-    const chanceWin = world.getDynamicProperty("chanceWin");
-    const chanceX = parseFloat(world.getDynamicProperty("chanceX"));
+    const chanceWin = parseFloat(world.getDynamicProperty("chanceWin") || "50");
+    const chanceX = parseFloat(world.getDynamicProperty("chanceX") || "2");
 
     const reels = spinSlots(chanceWin);
     let winnings = 0;
@@ -29,56 +39,56 @@ async function playSlots(player, stake, isNpcInteraction) {
 
     if (reels[0] === reels[1] && reels[1] === reels[2]) {
         if (reels[0] === "Seven") {
-            winnings = stake * chanceX * 5;
-            winType = "JACKPOT!";
+            winnings = Math.round(stake * chanceX * 5);
+            winType = "💥 JACKPOT! 💥";
         } else if (reels[0] === "Bar") {
-            winnings = stake * chanceX * 3;
-            winType = "Big Win!";
+            winnings = Math.round(stake * chanceX * 3);
+            winType = "🌟 BIG WIN! 🌟";
         } else {
-            winnings = stake * chanceX;
-            winType = "Three of a kind!";
+            winnings = Math.round(stake * chanceX);
+            winType = "🎉 Three of a Kind! 🎉";
         }
     } else if (reels[0] === reels[1] || reels[1] === reels[2] || reels[0] === reels[2]) {
-        winnings = stake * (chanceX / 2);
-        winType = "Two of a kind!";
+        winnings = Math.round(stake * (chanceX / 2));
+        winType = "✨ Two of a Kind! ✨";
     }
 
     if (winnings > 0) {
-        log(`${player.nameTag} won ${winnings} Moneyz on the slots.`, LOG_LEVELS.INFO);
-        player.playSound("random.levelup");
+        try { player.playSound("random.levelup"); } catch {}
     } else {
-        log(`${player.nameTag} lost ${stake} Moneyz on the slots.`, LOG_LEVELS.INFO);
-        player.playSound("note.bass");
+        try { player.playSound("note.bass"); } catch {}
     }
 
     try {
         updateScore(player, winnings, "add");
         showSlotResults(player, stake, reels, winnings, winType, isNpcInteraction);
     } catch (error) {
-        log(`Error updating winnings for ${player.nameTag}: ${error}`, LOG_LEVELS.ERROR);
+        log(`Error updating slot winnings for ${player.nameTag}: ${error}`, LOG_LEVELS.ERROR);
         player.sendMessage("§cAn error occurred while updating your winnings.");
     }
 }
 
 function showSlotResults(player, stake, reels, winnings, winType, isNpcInteraction) {
-    let message = `§l§6[RESULTS]§r\n`;
-    message += `[ ${reels.join(" | ")} ]\n`;
+    const displayReels = reels.map(r => SLOT_ICONS[r] || r).join(" | ");
+    let message = `§l§6[ SLOT MACHINE RESULTS ]§r\n\n`;
+    message += `[ ${displayReels} ]\n\n`;
 
     if (winnings > 0) {
-        message += `§a${winType} You win ${winnings} Moneyz!`;
+        message += `§a${winType}\n§2You won ${winnings} Moneyz!`;
     } else {
-        message += "§cYou lose!";
+        message += "§cBetter luck next time! You lost your stake.";
     }
 
     new ActionFormData()
-        .title("§l§6Slot Results")
+        .title("§l§6Slot Machine")
         .body(message)
-        .button("Spin Again")
-        .button("Back to Menu")
+        .button("🎰 Spin Again")
+        .button("§c§lBack to Menu")
         .show(player)
         .then(response => {
+            if (!response || response.canceled) return;
             if (response.selection === 0) {
-                startSlotsGame(player);
+                startSlotsGame(player, isNpcInteraction);
             } else if (!isNpcInteraction) {
                 chanceMenu(player);
             }
@@ -91,7 +101,7 @@ export function startSlotsGame(player, isNpcInteraction) {
         .textField("Enter your stake:", "Enter stake amount here")
         .show(player)
         .then(response => {
-            if (response.canceled) return;
+            if (!response || response.canceled) return;
 
             const stake = parseInt(response.formValues[0], 10);
             if (isNaN(stake) || stake <= 0) {
@@ -108,7 +118,7 @@ export function startSlotsGame(player, isNpcInteraction) {
                 updateScore(player, stake, "remove");
                 playSlots(player, stake, isNpcInteraction);
             } catch (error) {
-                log(`Error during stake validation for ${player.nameTag}: ${error}`, LOG_LEVELS.ERROR);
+                log(`Error during slot stake validation for ${player.nameTag}: ${error}`, LOG_LEVELS.ERROR);
                 player.sendMessage("§cAn error occurred while processing your stake.");
             }
         });
