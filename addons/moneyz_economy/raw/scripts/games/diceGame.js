@@ -1,6 +1,7 @@
 import { world } from "@minecraft/server";
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
 import { getScore, updateScore, getRandomInt } from "../utilities.js";
+import { chanceMenu } from "../gui/chance_menu.js";
 import { log, LOG_LEVELS } from "../logger.js";
 
 function rollDice() {
@@ -70,29 +71,34 @@ async function playCraps(player, stake) {
     }
 }
 
-export async function startCrapsGame(player) {
+export async function startCrapsGame(player, isNpcInteraction) {
     try {
         const modalForm = new ModalFormData()
             .title("§l§6Dice Game (Craps)")
             .textField("Enter your stake:", "Enter stake amount here");
 
         const response = await modalForm.show(player);
-        if (response.canceled) return;
+        if (response.canceled) {
+            if (!isNpcInteraction) chanceMenu(player);
+            return;
+        }
 
         const stake = parseInt(response.formValues[0], 10);
         if (isNaN(stake) || stake <= 0) {
             player.sendMessage("§cInvalid stake amount.");
+            if (!isNpcInteraction) chanceMenu(player);
             return;
         }
 
         const playerScore = getScore("Moneyz", player);
         if (playerScore < stake) {
             player.sendMessage("§cYou don't have enough Moneyz!");
+            if (!isNpcInteraction) chanceMenu(player);
             return;
         }
 
         updateScore(player, stake, "remove");
-        await playCraps(player, stake);
+        await playCraps(player, stake, isNpcInteraction);
     } catch (error) {
         log(`Error in Craps game: ${error}`, LOG_LEVELS.ERROR);
     }
