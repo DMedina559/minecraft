@@ -1,5 +1,5 @@
 import { world } from "@minecraft/server";
-import { ActionFormData } from "@minecraft/server-ui";
+import { ActionFormData } from "../ui/forms.js";
 import { luckyMenu } from "./lucky_menu.js";
 import { testYourLuck } from "../games/randomNum.js";
 import { start21Game } from "../games/21Game.js";

@@ -1,5 +1,5 @@
 import { world } from "@minecraft/server";
-import { ActionFormData } from "@minecraft/server-ui";
+import { ActionFormData } from "../ui/forms.js";
 import { getCurrentUTCDate, runCommand } from "../utilities.js";
 import * as Economy from "../core/economy.js";
 import { luckyMenu } from "./lucky_menu.js";
@@ -13,8 +13,8 @@ export async function luckyPurchase(player, isNpcInteraction) {
     function canAccessLuckyMenu() {
         const lastAccessDate = player.getDynamicProperty("lastLuckyPurchase");
         const currentDate = getCurrentUTCDate();
-        const oneLuckyPurchaseEnabled = Config.get("oneLuckyPurchase");
-        return oneLuckyPurchaseEnabled !== "true" || !lastAccessDate || lastAccessDate !== currentDate;
+        const oneLuckyPurchaseEnabled = Config.bool("oneLuckyPurchase", true);
+        return !oneLuckyPurchaseEnabled || !lastAccessDate || lastAccessDate !== currentDate;
     }
 
     if (canAccessLuckyMenu()) {
@@ -28,27 +28,24 @@ export async function luckyPurchase(player, isNpcInteraction) {
 
                 if (r.selection === 0) {
                     const currentDate = getCurrentUTCDate();
-                    const oneLuckyPurchaseEnabled = Config.get("oneLuckyPurchase");
+                    const oneLuckyPurchaseEnabled = Config.bool("oneLuckyPurchase", true);
                     const money = Economy.getBalance(player);
 
                     if (money >= 150) {
+                        if (!Economy.withdraw(player, 150, { type: "lucky_purchase", source: "lucky_purchase" })) return;
+                        let delivered = false;
+                        try {
+                            delivered = await giveLootTable(player, "lucky_purchase");
+                            if (!delivered) {
+                                const playerName = player.nameTag || player.name;
+                                const result = await runCommand(player, `execute as "${playerName.replace(/"/g, '\\"')}" at @s run loot spawn ~ ~ ~ loot "lucky_purchase"`);
+                                delivered = Boolean(result && (result.successCount > 0 || result.successCount === undefined));
+                            }
+                        } catch (err) { log(`Lucky purchase delivery failed: ${err}`, LOG_LEVELS.WARN); }
+                        if (!delivered) { Economy.deposit(player, 150, { type:"lucky_purchase_refund", source:"lucky_purchase" }); player.sendMessage("§cReward delivery failed; your 150 Moneyz were refunded."); return; }
                         try { player.playSound("random.levelup"); } catch {}
                         player.sendMessage("§aYou made a Lucky Purchase!");
-
-                        try {
-                            const playerName = player.nameTag || player.name;
-                            if (!await giveLootTable(player, "lucky_purchase")) {
-                                await runCommand(player, `execute as "${playerName.replace(/"/g, '\\"')}" at @s run loot spawn ~ ~ ~ loot "lucky_purchase"`);
-                            }
-                        } catch (err) {
-                            log(`Loot spawn command failed: ${err}`, LOG_LEVELS.WARN);
-                        }
-
-                        Economy.withdraw(player, 150, { source: "lucky_purchase" });
-
-                        if (oneLuckyPurchaseEnabled === "true") {
-                            player.setDynamicProperty("lastLuckyPurchase", currentDate);
-                        }
+                        if (oneLuckyPurchaseEnabled) player.setDynamicProperty("lastLuckyPurchase", currentDate);
                     } else {
                         try { player.playSound("note.bass"); } catch {}
                         player.sendMessage(`§cYou need 150 Moneyz for this purchase\n§6You have ${money} Moneyz`);

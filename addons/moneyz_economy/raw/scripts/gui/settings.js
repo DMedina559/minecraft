@@ -1,3 +1,4 @@
+import { system } from "@minecraft/server";
 import { CustomForm, ObservableBoolean, ObservableNumber, ObservableString } from "@minecraft/server-ui";
 import * as Config from "../core/config.js";
 import { setLogLevelFromWorldProperty } from "../logger.js";
@@ -15,12 +16,12 @@ export function moneyzSettings(player){
     const form=new CustomForm(player,"§l§1Moneyz Settings").header("§lGlobal Configuration")
       .toggle("Sync feature flags to players",sync).toggle("One Lucky Purchase per day",once).divider();
     for(const k of FEATURES) form.toggle(k,featureObs[k]);
-    form.divider().textField("Daily Reward",daily).textField("Chance Multiplier",chanceX).textField("Win Chance %",chanceWin)
-      .textField("Custom Shop Name",shopName).button("§aSave",()=>{
+    form.divider().textField("Daily Reward",daily).textField("Chance Multiplier",chanceX).textField("Test Your Luck Win Chance %",chanceWin)
+      .textField("Custom Shop Name",shopName).button("Save",()=>{
         Config.set("syncPlayers",sync.getData()); Config.set("oneLuckyPurchase",once.getData());
         for(const k of FEATURES) Config.set(k,featureObs[k].getData());
         Config.set("dailyReward",Number(daily.getData())||0); Config.set("chanceX",Number(chanceX.getData())||1); Config.set("chanceWin",Number(chanceWin.getData())||0);
         Config.set("customShop",shopName.getData().trim()||"Custom Shop"); setLogLevelFromWorldProperty(); player.sendMessage("§aMoneyz settings saved.");
-      }).button("§cBack",()=>moneyzAdmin(player)).closeButton();
+      }).button("Back",()=>{ try { if (form.isShowing()) form.close(); } catch {} system.run(()=>moneyzAdmin(player)); }).closeButton();
     form.show();
 }

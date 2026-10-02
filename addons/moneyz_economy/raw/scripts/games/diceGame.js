@@ -1,110 +1,66 @@
-import { world } from "@minecraft/server";
-import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
+import { system } from "@minecraft/server";
+import { ActionFormData, ModalFormData } from "../ui/forms.js";
 import { getRandomInt } from "../utilities.js";
 import * as GameEconomy from "../services/game_economy.js";
 import { chanceMenu } from "../gui/chance_menu.js";
 import { log, LOG_LEVELS } from "../logger.js";
 import * as Config from "../core/config.js";
-import * as Economy from "../core/economy.js";
 
-function rollDice() {
-    const die1 = getRandomInt(1, 6);
-    const die2 = getRandomInt(1, 6);
-    return die1 + die2;
-}
+const rollDice = () => [getRandomInt(1, 6), getRandomInt(1, 6)];
+const total = dice => dice[0] + dice[1];
+const diceText = dice => `${dice[0]} + ${dice[1]} = ${total(dice)}`;
+const back = (player, npc) => { if (!npc) system.run(() => chanceMenu(player)); };
 
-async function playCrapsPointLoop(player, stake, point, chanceWin, chanceX) {
-    let message = `§ePoint is set to §l${point}§r§e. Roll again to hit the point, or 7 to lose!`;
-
-    while (true) {
-        const actionForm = new ActionFormData()
-            .title("§l§6Craps - Roll for Point")
-            .body(message)
-            .button("Roll Dice");
-
-        const rollResponse = await actionForm.show(player);
-        if (rollResponse.canceled) return;
-
-        const nextRoll = rollDice();
-
-        if (nextRoll === point) {
-            if (getRandomInt(1, 100) <= chanceWin) {
-                const winnings = Math.round(stake * chanceX);
-                GameEconomy.payout(player, winnings, "dice");
-                try { player.playSound("random.levelup"); } catch {}
-                player.sendMessage(`§aYou rolled a ${nextRoll}! Hit the Point! You win ${winnings} Moneyz!`);
-            } else {
-                try { player.playSound("note.bass"); } catch {}
-                player.sendMessage(`§cYou rolled a ${nextRoll} (Hit Point - Chance Fail). You lose!`);
-            }
-            break;
-        } else if (nextRoll === 7) {
-            try { player.playSound("note.bass"); } catch {}
-            player.sendMessage(`§cYou rolled a 7 (Seven Out)! You lose your stake.`);
-            break;
-        } else {
-            message = `§eYou rolled a §l${nextRoll}§r§e. Point is still §l${point}§r§e. Roll again!`;
-        }
-    }
-}
-
-async function playCraps(player, stake) {
-    const chanceWin = Config.number("chanceWin", 50);
-    const chanceX = Config.number("chanceX", 2);
-
-    const comeOutRoll = rollDice();
-
-    if (comeOutRoll === 7 || comeOutRoll === 11) {
-        if (getRandomInt(1, 100) <= chanceWin) {
-            const winnings = Math.round(stake * chanceX);
-            GameEconomy.payout(player, winnings, "dice");
-            try { player.playSound("random.levelup"); } catch {}
-            player.sendMessage(`§aCome-out roll: ${comeOutRoll}! Natural Win! You win ${winnings} Moneyz!`);
-        } else {
-            try { player.playSound("note.bass"); } catch {}
-            player.sendMessage(`§cCome-out roll: ${comeOutRoll}! Natural Win - Chance Fail. You lose!`);
-        }
-    } else if (comeOutRoll === 2 || comeOutRoll === 3 || comeOutRoll === 12) {
-        try { player.playSound("note.bass"); } catch {}
-        player.sendMessage(`§cCome-out roll: ${comeOutRoll}! Craps! You lose!`);
+async function result(player, stake, outcome, detail, npc) {
+    const multiplier = Math.max(1, Config.number("chanceX", 2));
+    let summary;
+    if (outcome === "win") {
+        const payout = Math.round(stake * multiplier);
+        GameEconomy.payout(player, payout, "dice", { outcome: detail });
+        summary = `§aYou win! §e+${payout} Moneyz`;
+        try { player.playSound("random.levelup"); } catch {}
     } else {
-        const point = comeOutRoll;
-        player.sendMessage(`§eCome-out roll: ${point}! Point established at ${point}.`);
-        await playCrapsPointLoop(player, stake, point, chanceWin, chanceX);
+        summary = `§cYou lose ${stake} Moneyz.`;
+        try { player.playSound("note.bass"); } catch {}
+    }
+    const r = await new ActionFormData().title("§l§6Dice Game - Craps").body(`${detail}\n\n${summary}`).button("Play Again").button("Back").show(player);
+    if (r && !r.canceled && r.selection === 0) system.run(() => startCrapsGame(player, npc));
+    else if (r && !r.canceled) back(player, npc);
+}
+
+async function play(player, stake, npc) {
+    const first = rollDice(), firstTotal = total(first);
+    if (firstTotal === 7 || firstTotal === 11) return result(player, stake, "win", `Come-out roll: ${diceText(first)}\nNatural.`, npc);
+    if ([2, 3, 12].includes(firstTotal)) return result(player, stake, "lose", `Come-out roll: ${diceText(first)}\nCraps.`, npc);
+
+    const point = firstTotal;
+    let last = `Come-out roll: ${diceText(first)}\n§ePoint is ${point}.`;
+    while (true) {
+        const r = await new ActionFormData().title("§l§6Dice Game - Craps").body(`${last}\n\nRoll ${point} before 7 to win.`).button("Roll Dice").show(player);
+        if (!r || r.canceled) return; // forfeits an already-placed bet
+        const dice = rollDice(), n = total(dice);
+        if (n === point) return result(player, stake, "win", `Roll: ${diceText(dice)}\nPoint hit!`, npc);
+        if (n === 7) return result(player, stake, "lose", `Roll: ${diceText(dice)}\nSeven out.`, npc);
+        last = `Roll: ${diceText(dice)}\n§ePoint remains ${point}.`;
     }
 }
 
-export async function startCrapsGame(player, isNpcInteraction) {
+export async function startCrapsGame(player, isNpcInteraction = false) {
+    if (!GameEconomy.beginSession(player, "dice")) return player.sendMessage("§cFinish your current Moneyz game first.");
     try {
-        const modalForm = new ModalFormData()
-            .title("§l§6Dice Game (Craps)")
-            .textField("Enter your stake:", "Enter stake amount here");
-
-        const response = await modalForm.show(player);
-        if (response.canceled) {
-            if (!isNpcInteraction) chanceMenu(player);
-            return;
+        const response = await new ModalFormData().title("§l§6Dice Game (Craps)").textField("Stake", "Whole Moneyz amount").show(player);
+        if (!response || response.canceled) return back(player, isNpcInteraction);
+        const check = GameEconomy.validateStake(player, response.formValues?.[0]);
+        if (!check.ok) {
+            player.sendMessage(check.reason === "insufficient" ? "§cYou don't have enough Moneyz." : "§cEnter a valid positive whole-number stake.");
+            return back(player, isNpcInteraction);
         }
-
-        const stake = parseInt(response.formValues[0], 10);
-        if (isNaN(stake) || stake <= 0) {
-            player.sendMessage("§cInvalid stake amount.");
-            if (!isNpcInteraction) chanceMenu(player);
-            return;
-        }
-
-        const playerScore = Economy.getBalance(player);
-        if (playerScore < stake) {
-            player.sendMessage("§cYou don't have enough Moneyz!");
-            if (!isNpcInteraction) chanceMenu(player);
-            return;
-        }
-
-        GameEconomy.placeBet(player, stake, "dice");
-        await playCraps(player, stake, isNpcInteraction);
+        if (!GameEconomy.placeBet(player, check.stake, "dice")) return player.sendMessage("§cYour bet could not be placed.");
+        await play(player, check.stake, isNpcInteraction);
     } catch (error) {
-        log(`Error in Craps game: ${error}`, LOG_LEVELS.ERROR);
-    }
+        log(`Craps failed for ${player?.nameTag}: ${error}`, LOG_LEVELS.ERROR);
+        player?.sendMessage("§cThe dice game encountered an error.");
+    } finally { GameEconomy.endSession(player); }
 }
 
 log("diceGame.js loaded", LOG_LEVELS.DEBUG);

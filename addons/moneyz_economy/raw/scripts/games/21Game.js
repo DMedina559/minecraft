@@ -1,152 +1,110 @@
-import { world, system } from "@minecraft/server";
-import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
-import { getRandomInt } from "../utilities.js";
+import { system } from "@minecraft/server";
+import { ActionFormData, ModalFormData } from "../ui/forms.js";
 import * as GameEconomy from "../services/game_economy.js";
 import { chanceMenu } from "../gui/chance_menu.js";
 import { log, LOG_LEVELS } from "../logger.js";
 import * as Config from "../core/config.js";
-import * as Economy from "../core/economy.js";
 
-const CARD_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10];
+// Aces start at 11 and are reduced to 1 only when required.
+const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+const valueOf = rank => rank === "A" ? 11 : ["J", "Q", "K"].includes(rank) ? 10 : Number(rank);
+const drawCard = () => RANKS[Math.floor(Math.random() * RANKS.length)];
 
-function getRandomCard() {
-    return CARD_VALUES[Math.floor(Math.random() * CARD_VALUES.length)];
+function handValue(hand) {
+    let total = hand.reduce((sum, rank) => sum + valueOf(rank), 0);
+    let aces = hand.filter(rank => rank === "A").length;
+    while (total > 21 && aces-- > 0) total -= 10;
+    return total;
 }
 
-function calculateHandValue(hand) {
-    let sum = 0;
-    let aces = 0;
+const handText = hand => `${hand.join(", ")} (${handValue(hand)})`;
+const isNatural = hand => hand.length === 2 && handValue(hand) === 21;
 
-    for (const card of hand) {
-        sum += card;
-        if (card === 1) aces++;
-    }
-
-    while (sum > 21 && aces > 0) {
-        sum -= 10;
-        aces--;
-    }
-    return sum;
+function returnToMenu(player, isNpcInteraction) {
+    if (!isNpcInteraction) system.run(() => chanceMenu(player));
 }
 
-function displayHand(hand) {
-    return hand
-        .map(card => (card === 1 ? "A" : card === 10 ? "10/J/Q/K" : card.toString()))
-        .join(", ");
-}
-
-export async function start21Game(player, isNpcInteraction) {
-    try {
-        const modalForm = new ModalFormData()
-            .title("§l§621 Game")
-            .textField("Enter your stake:", "Enter stake amount here");
-
-        const response = await modalForm.show(player);
-        if (response.canceled) {
-            if (!isNpcInteraction) chanceMenu(player);
-            return;
-        }
-
-        const stake = parseInt(response.formValues[0], 10);
-        if (isNaN(stake) || stake <= 0) {
-            player.sendMessage("§cInvalid stake amount.");
-            if (!isNpcInteraction) chanceMenu(player);
-            return;
-        }
-
-        const playerScore = Economy.getBalance(player);
-        if (playerScore < stake) {
-            player.sendMessage("§cYou don't have enough Moneyz!");
-            if (!isNpcInteraction) chanceMenu(player);
-            return;
-        }
-
-        GameEconomy.placeBet(player, stake, "21");
-        await startGameRound(player, stake, isNpcInteraction);
-    } catch (error) {
-        log(`Error starting 21 game: ${error}`, LOG_LEVELS.ERROR);
-    }
-}
-
-async function startGameRound(player, stake, isNpcInteraction) {
-    const playerHand = [getRandomCard(), getRandomCard()];
-    const dealerHand = [getRandomCard(), getRandomCard()];
-    const chanceX = Config.number("chanceX", 1);
-
-    await continue21Game(player, stake, playerHand, dealerHand, chanceX, isNpcInteraction);
-}
-
-async function continue21Game(player, stake, playerHand, dealerHand, chanceX, isNpcInteraction) {
-    const playerValue = calculateHandValue(playerHand);
-    const dealerFirstCard = dealerHand[0];
-
-    const message = `Your hand: ${displayHand(playerHand)} (${playerValue})\nDealer's showing card: ${displayHand([dealerFirstCard])}\n`;
-
-    if (playerValue === 21) {
-        await endGame(player, stake, playerHand, dealerHand, chanceX, "§aBlackjack!", isNpcInteraction);
-        return;
-    }
-
-    if (playerValue > 21) {
-        await endGame(player, stake, playerHand, dealerHand, chanceX, "§cYou busted!", isNpcInteraction);
-        return;
-    }
-
-    const actionForm = new ActionFormData()
-        .title("21 Game - Hit or Stand?")
-        .body(message)
-        .button("Hit")
-        .button("Stand");
-
-    const response = await actionForm.show(player);
-    if (response.canceled) return;
-
-    if (response.selection === 0) {
-        playerHand.push(getRandomCard());
-        await continue21Game(player, stake, playerHand, dealerHand, chanceX, isNpcInteraction);
-    } else {
-        await dealerTurn(player, stake, playerHand, dealerHand, chanceX, isNpcInteraction);
-    }
-}
-
-async function dealerTurn(player, stake, playerHand, dealerHand, chanceX, isNpcInteraction) {
-    const playerValue = calculateHandValue(playerHand);
-    const chanceWin = Config.number("chanceWin", 50);
-
-    while (calculateHandValue(dealerHand) < 17) {
-        const dealerValue = calculateHandValue(dealerHand);
-        const shouldStop = getRandomInt(1, 100) <= chanceWin;
-        if (shouldStop && dealerValue < playerValue) break;
-
-        dealerHand.push(getRandomCard());
-    }
-
-    const dealerValue = calculateHandValue(dealerHand);
-    const playerWins = playerValue <= 21 && (dealerValue > 21 || playerValue > dealerValue);
-    const forcedWin = !playerWins && getRandomInt(1, 100) <= chanceWin;
-
-    await endGame(player, stake, playerHand, dealerHand, chanceX, (playerWins || forcedWin) ? "§aYou win!" : "§cYou lose!", isNpcInteraction);
-}
-
-async function endGame(player, stake, playerHand, dealerHand, chanceX, winMessage = "", isNpcInteraction = false) {
-    const playerValue = calculateHandValue(playerHand);
-    const dealerValue = calculateHandValue(dealerHand);
-    let message = `Your hand: ${displayHand(playerHand)} (${playerValue})\nDealer's hand: ${displayHand(dealerHand)} (${dealerValue})\n`;
-
-    if (winMessage) message += winMessage + "\n";
-
-    if (winMessage.includes("win")) {
-        const winnings = Math.round(stake * chanceX);
-        GameEconomy.payout(player, winnings, "21");
-        message += `§aYou win ${winnings} Moneyz!`;
+async function finish(player, stake, playerHand, dealerHand, outcome, isNpcInteraction) {
+    const multiplier = Math.max(1, Config.number("chanceX", 2));
+    let result;
+    if (outcome === "win" || outcome === "blackjack") {
+        const payout = Math.round(stake * multiplier);
+        GameEconomy.payout(player, payout, "21", { outcome });
+        result = `§a${outcome === "blackjack" ? "Blackjack!" : "You win!"} §e+${payout} Moneyz`;
         try { player.playSound("random.levelup"); } catch {}
+    } else if (outcome === "push") {
+        GameEconomy.push(player, stake, "21", { outcome });
+        result = "§ePush. Your stake was returned.";
     } else {
+        result = `§cYou lose ${stake} Moneyz.`;
         try { player.playSound("note.bass"); } catch {}
     }
 
-    player.sendMessage(message);
-    if (!isNpcInteraction) {
-        system.run(() => chanceMenu(player));
+    await new ActionFormData()
+        .title("§l§621 Game")
+        .body(`§lYour hand§r\n${handText(playerHand)}\n\n§lDealer hand§r\n${handText(dealerHand)}\n\n${result}`)
+        .button("Play Again")
+        .button("Back")
+        .show(player)
+        .then(r => {
+            if (!r || r.canceled) return;
+            if (r.selection === 0) system.run(() => start21Game(player, isNpcInteraction));
+            else returnToMenu(player, isNpcInteraction);
+        });
+}
+
+async function playRound(player, stake, isNpcInteraction) {
+    const playerHand = [drawCard(), drawCard()];
+    const dealerHand = [drawCard(), drawCard()];
+
+    if (isNatural(playerHand) || isNatural(dealerHand)) {
+        const outcome = isNatural(playerHand) && isNatural(dealerHand) ? "push" : isNatural(playerHand) ? "blackjack" : "lose";
+        return finish(player, stake, playerHand, dealerHand, outcome, isNpcInteraction);
+    }
+
+    while (handValue(playerHand) < 21) {
+        const response = await new ActionFormData()
+            .title("§l§621 Game")
+            .body(`§lYour hand§r\n${handText(playerHand)}\n\n§lDealer shows§r\n${dealerHand[0]}`)
+            .button("Hit")
+            .button("Stand")
+            .show(player);
+        if (!response || response.canceled) return; // closing after a placed bet forfeits the round
+        if (response.selection === 1) break;
+        playerHand.push(drawCard());
+    }
+
+    if (handValue(playerHand) > 21) return finish(player, stake, playerHand, dealerHand, "lose", isNpcInteraction);
+    while (handValue(dealerHand) < 17) dealerHand.push(drawCard());
+
+    const playerValue = handValue(playerHand), dealerValue = handValue(dealerHand);
+    const outcome = dealerValue > 21 || playerValue > dealerValue ? "win" : playerValue === dealerValue ? "push" : "lose";
+    return finish(player, stake, playerHand, dealerHand, outcome, isNpcInteraction);
+}
+
+export async function start21Game(player, isNpcInteraction = false) {
+    if (!GameEconomy.beginSession(player, "21")) {
+        player.sendMessage("§cFinish your current Moneyz game first.");
+        return;
+    }
+    try {
+        const response = await new ModalFormData().title("§l§621 Game").textField("Stake", "Whole Moneyz amount").show(player);
+        if (!response || response.canceled) return returnToMenu(player, isNpcInteraction);
+        const check = GameEconomy.validateStake(player, response.formValues?.[0]);
+        if (!check.ok) {
+            player.sendMessage(check.reason === "insufficient" ? "§cYou don't have enough Moneyz." : "§cEnter a valid positive whole-number stake.");
+            return returnToMenu(player, isNpcInteraction);
+        }
+        if (!GameEconomy.placeBet(player, check.stake, "21")) {
+            player.sendMessage("§cYour bet could not be placed.");
+            return;
+        }
+        await playRound(player, check.stake, isNpcInteraction);
+    } catch (error) {
+        log(`21 game failed for ${player?.nameTag}: ${error}`, LOG_LEVELS.ERROR);
+        player?.sendMessage("§cThe 21 game encountered an error.");
+    } finally {
+        GameEconomy.endSession(player);
     }
 }
 

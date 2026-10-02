@@ -1,5 +1,5 @@
 import { world, system } from "@minecraft/server";
-import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
+import { ActionFormData, ModalFormData } from "../ui/forms.js";
 import { runCommand } from "../utilities.js";
 import * as Economy from "../core/economy.js";
 import * as Config from "../core/config.js";
@@ -155,7 +155,7 @@ async function moneyzTransfer(player) {
             }
 
             try {
-                if (!Economy.transfer(player, selectedPlayer, amountToSend, { source: "player_transfer" })) {
+                if (!Economy.transfer(player, selectedPlayer, amountToSend, { type: "player_transfer", source: "player_transfer" })) {
                     throw new Error("Transfer rejected");
                 }
 

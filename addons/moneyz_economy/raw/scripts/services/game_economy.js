@@ -1,3 +1,47 @@
 import * as Economy from "../core/economy.js";
-export function placeBet(player, amount, game) { return Economy.withdraw(player, amount, { source: "game", game }); }
-export function payout(player, amount, game) { return Economy.deposit(player, amount, { source: "game", game }); }
+
+const activeGames = new Map();
+const keyFor = player => player?.id ?? player?.name ?? player?.nameTag;
+
+export function validateStake(player, amount) {
+    const stake = Math.floor(Number(amount));
+    if (!Number.isFinite(stake) || stake <= 0) return { ok: false, reason: "invalid", stake: 0 };
+    if (Economy.getBalance(player) < stake) return { ok: false, reason: "insufficient", stake };
+    return { ok: true, stake };
+}
+
+export function beginSession(player, game) {
+    const key = keyFor(player);
+    if (!key) return false;
+    if (activeGames.has(key)) return false;
+    activeGames.set(key, { game, startedAt: Date.now() });
+    return true;
+}
+
+export function endSession(player) {
+    const key = keyFor(player);
+    if (key) activeGames.delete(key);
+}
+
+export function isPlaying(player) {
+    const key = keyFor(player);
+    return key ? activeGames.has(key) : false;
+}
+
+export function placeBet(player, amount, game) {
+    const check = validateStake(player, amount);
+    if (!check.ok) return false;
+    return Economy.withdraw(player, check.stake, { type: "game_bet", source: "game", game });
+}
+
+export function payout(player, amount, game, metadata = {}) {
+    const value = Math.max(0, Math.round(Number(amount) || 0));
+    if (value <= 0) return true;
+    return Economy.deposit(player, value, { type: "game_payout", source: "game", game, ...metadata });
+}
+
+export function push(player, stake, game, metadata = {}) {
+    const value = Math.max(0, Math.round(Number(stake) || 0));
+    if (value <= 0) return true;
+    return Economy.deposit(player, value, { type: "game_push", source: "game", game, ...metadata });
+}

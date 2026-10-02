@@ -1,4 +1,5 @@
 import { world } from "@minecraft/server";
+import { emit } from "./events.js";
 
 // Legacy keys remain authoritative for compatibility with existing worlds, NPCs and command content.
 export const DEFAULTS = Object.freeze({
@@ -20,8 +21,9 @@ export function get(key, fallback = DEFAULTS[key]) {
 }
 
 export function set(key, value) {
-    world.setDynamicProperty(key, value);
+    const previous=get(key); world.setDynamicProperty(key, value);
     if (key === "syncPlayers" || key.startsWith("moneyz")) syncFeatureToPlayers(key, value);
+    emit("configChanged", { key, previous, value });
 }
 
 export function bool(key, fallback = false, player) {
@@ -49,3 +51,5 @@ function syncFeatureToPlayers(key, value) {
     if (!bool("syncPlayers", true) || key === "syncPlayers") return;
     for (const player of world.getPlayers()) player.setDynamicProperty(key, value);
 }
+
+export function all(){return Object.fromEntries(Object.keys(DEFAULTS).map(k=>[k,get(k)]));}

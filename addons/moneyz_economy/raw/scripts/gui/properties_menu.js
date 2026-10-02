@@ -1,5 +1,5 @@
 import { world } from "@minecraft/server";
-import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
+import { ActionFormData, ModalFormData } from "../ui/forms.js";
 import { moneyzAdmin } from "./admin_menu.js";
 import { log, LOG_LEVELS } from "../logger.js";
 
