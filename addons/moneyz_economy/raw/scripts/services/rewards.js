@@ -1,20 +1,5 @@
 import { world } from "@minecraft/server";
 import * as Economy from "../core/economy.js";
 import * as Inventory from "./inventory.js";
-
-export async function apply(player, reward, metadata={}) {
-    if (!reward || !player) return false;
-    if (reward.type === "Moneyz") return Economy.deposit(player, Number(reward.amount)||0, { source:"reward", ...metadata });
-    if (reward.type === "experience") { try { player.addExperience(Number.parseInt(reward.amount,10)||0); return true; } catch { return false; } }
-    if (reward.type === "item" && reward.itemStack) return Inventory.give(player,reward.itemStack.typeId,Number(reward.itemStack.amount)||1,reward.itemStack.data||0);
-    return false;
-}
-export async function giveLootTable(player, path) {
-    try {
-        const manager=world.getLootTableManager(); const table=manager.getLootTable(path); if(!table) return false;
-        const items=manager.generateLootFromTable(table) ?? []; const container=player.getComponent("minecraft:inventory")?.container ?? player.getComponent("inventory")?.container;
-        if(!container) return false;
-        for(const item of items){ const remainder=container.addItem(item); if(remainder) player.dimension.spawnItem(remainder,player.location); }
-        return true;
-    } catch { return false; }
-}
+export async function apply(player,reward,metadata={}){if(!reward||!player)return false;if(reward.type==="Moneyz")return Economy.deposit(player,Number(reward.amount)||0,{type:metadata.type??"reward",source:"reward",...metadata});if(reward.type==="experience"){try{player.addExperience(Number.parseInt(reward.amount,10)||0);return true;}catch{return false;}}if(reward.type==="item"&&reward.itemStack)return Inventory.give(player,reward.itemStack.typeId,Number(reward.itemStack.amount)||1,reward.itemStack.data||0);return false;}
+export async function giveLootTable(player,path){try{const manager=world.getLootTableManager();const table=manager.getLootTable(path);if(!table)return false;const items=manager.generateLootFromTable(table)??[],container=player.getComponent("minecraft:inventory")?.container??player.getComponent("inventory")?.container;if(!container)return false;for(const item of items){const remainder=container.addItem(item);if(remainder)player.dimension.spawnItem(remainder,player.location);}return true;}catch{return false;}}

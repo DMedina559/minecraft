@@ -1,4 +1,4 @@
-import { ActionFormData } from "@minecraft/server-ui";
+import { ActionFormData } from "../ui/forms.js";
 
 import { main } from "./moneyz_menu.js";
 import { chanceMenu } from "./chance_menu.js";

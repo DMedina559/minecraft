@@ -1,130 +1,63 @@
-import { world } from "@minecraft/server";
-import { ModalFormData, ActionFormData } from "@minecraft/server-ui";
+import { system } from "@minecraft/server";
+import { ActionFormData, ModalFormData } from "../ui/forms.js";
 import { getRandomInt } from "../utilities.js";
 import * as GameEconomy from "../services/game_economy.js";
 import { chanceMenu } from "../gui/chance_menu.js";
 import { log, LOG_LEVELS } from "../logger.js";
 import * as Config from "../core/config.js";
-import * as Economy from "../core/economy.js";
 
-const SLOT_ICONS = {
-    "Cherry": "[Cherry]",
-    "Lemon": "[Lemon]",
-    "Orange": "[Orange]",
-    "Plum": "[Plum]",
-    "Bell": "[Bell]",
-    "Bar": "[Bar]",
-    "Seven": "[Seven]"
-};
+const SYMBOLS = [
+    { name: "Cherry", weight: 28 }, { name: "Lemon", weight: 24 }, { name: "Orange", weight: 18 },
+    { name: "Plum", weight: 13 }, { name: "Bell", weight: 8 }, { name: "Bar", weight: 6 }, { name: "Seven", weight: 3 }
+];
+const totalWeight = SYMBOLS.reduce((n, s) => n + s.weight, 0);
+function symbol() {
+    let roll = getRandomInt(1, totalWeight);
+    for (const s of SYMBOLS) { roll -= s.weight; if (roll <= 0) return s.name; }
+    return SYMBOLS[0].name;
+}
+const spin = () => [symbol(), symbol(), symbol()];
+const back = (player, npc) => { if (!npc) system.run(() => chanceMenu(player)); };
 
-const slotSymbols = Object.keys(SLOT_ICONS);
-
-function spinSlots(chanceWin) {
-    const reels = [];
-    for (let i = 0; i < 3; i++) {
-        if (getRandomInt(1, 100) <= chanceWin) {
-            const winSymbols = ["Bell", "Bar", "Seven"];
-            reels.push(winSymbols[getRandomInt(0, winSymbols.length - 1)]);
-        } else {
-            reels.push(slotSymbols[getRandomInt(0, slotSymbols.length - 1)]);
-        }
+function payoutFor(reels, stake, base) {
+    const [a,b,c] = reels;
+    if (a === b && b === c) {
+        if (a === "Seven") return { amount: Math.round(stake * base * 5), label: "JACKPOT" };
+        if (a === "Bar") return { amount: Math.round(stake * base * 3), label: "BIG WIN" };
+        if (a === "Bell") return { amount: Math.round(stake * base * 2), label: "Bell Triple" };
+        return { amount: Math.round(stake * base), label: "Three of a Kind" };
     }
-    return reels;
+    if (a === b || b === c || a === c) return { amount: Math.max(1, Math.round(stake * base / 2)), label: "Two of a Kind" };
+    return { amount: 0, label: "No Match" };
 }
 
-async function playSlots(player, stake, isNpcInteraction) {
-    const chanceWin = Config.number("chanceWin", 50);
-    const chanceX = Config.number("chanceX", 2);
-
-    const reels = spinSlots(chanceWin);
-    let winnings = 0;
-    let winType = "";
-
-    if (reels[0] === reels[1] && reels[1] === reels[2]) {
-        if (reels[0] === "Seven") {
-            winnings = Math.round(stake * chanceX * 5);
-            winType = "§l§cJACKPOT!";
-        } else if (reels[0] === "Bar") {
-            winnings = Math.round(stake * chanceX * 3);
-            winType = "§l§eBIG WIN!";
-        } else {
-            winnings = Math.round(stake * chanceX);
-            winType = "§l§aThree of a Kind!";
-        }
-    } else if (reels[0] === reels[1] || reels[1] === reels[2] || reels[0] === reels[2]) {
-        winnings = Math.round(stake * (chanceX / 2));
-        winType = "§l§bTwo of a Kind!";
-    }
-
-    if (winnings > 0) {
-        try { player.playSound("random.levelup"); } catch {}
-    } else {
-        try { player.playSound("note.bass"); } catch {}
-    }
-
+export async function startSlotsGame(player, isNpcInteraction = false) {
+    if (!GameEconomy.beginSession(player, "slots")) return player.sendMessage("§cFinish your current Moneyz game first.");
     try {
-        GameEconomy.payout(player, winnings, "slots");
-        showSlotResults(player, stake, reels, winnings, winType, isNpcInteraction);
+        const response = await new ModalFormData().title("§l§6Slot Machine").textField("Stake", "Whole Moneyz amount").show(player);
+        if (!response || response.canceled) return back(player, isNpcInteraction);
+        const check = GameEconomy.validateStake(player, response.formValues?.[0]);
+        if (!check.ok) {
+            player.sendMessage(check.reason === "insufficient" ? "§cYou don't have enough Moneyz." : "§cEnter a valid positive whole-number stake.");
+            return back(player, isNpcInteraction);
+        }
+        if (!GameEconomy.placeBet(player, check.stake, "slots")) return player.sendMessage("§cYour bet could not be placed.");
+
+        const reels = spin();
+        const base = Math.max(1, Config.number("chanceX", 2));
+        const win = payoutFor(reels, check.stake, base);
+        if (win.amount > 0) GameEconomy.payout(player, win.amount, "slots", { reels, result: win.label });
+        try { player.playSound(win.amount > 0 ? "random.levelup" : "note.bass"); } catch {}
+
+        const r = await new ActionFormData().title("§l§6Slot Machine")
+            .body(`§l[ ${reels.join(" | ")} ]§r\n\n${win.amount > 0 ? `§a${win.label}!\n§e+${win.amount} Moneyz` : `§cNo match. You lose ${check.stake} Moneyz.`}`)
+            .button("Spin Again").button("Back").show(player);
+        if (r && !r.canceled && r.selection === 0) system.run(() => startSlotsGame(player, isNpcInteraction));
+        else if (r && !r.canceled) back(player, isNpcInteraction);
     } catch (error) {
-        log(`Error updating slot winnings for ${player.nameTag}: ${error}`, LOG_LEVELS.ERROR);
-        player.sendMessage("§cAn error occurred while updating your winnings.");
-    }
-}
-
-function showSlotResults(player, stake, reels, winnings, winType, isNpcInteraction) {
-    const displayReels = reels.map(r => SLOT_ICONS[r] || r).join(" | ");
-    let message = `§l§6[ SLOT MACHINE RESULTS ]§r\n\n`;
-    message += `[ ${displayReels} ]\n\n`;
-
-    if (winnings > 0) {
-        message += `§a${winType}\n§2You won ${winnings} Moneyz!`;
-    } else {
-        message += "§cBetter luck next time! You lost your stake.";
-    }
-
-    new ActionFormData()
-        .title("§l§6Slot Machine")
-        .body(message)
-        .button("Spin Again")
-        .button("§c§lBack to Menu")
-        .show(player)
-        .then(response => {
-            if (!response || response.canceled) return;
-            if (response.selection === 0) {
-                startSlotsGame(player, isNpcInteraction);
-            } else if (!isNpcInteraction) {
-                chanceMenu(player);
-            }
-        });
-}
-
-export function startSlotsGame(player, isNpcInteraction) {
-    new ModalFormData()
-        .title("§l§6Slot Machine")
-        .textField("Enter your stake:", "Enter stake amount here")
-        .show(player)
-        .then(response => {
-            if (!response || response.canceled) return;
-
-            const stake = parseInt(response.formValues[0], 10);
-            if (isNaN(stake) || stake <= 0) {
-                player.sendMessage("§cInvalid stake amount.");
-                return;
-            }
-
-            try {
-                const playerScore = Economy.getBalance(player);
-                if (playerScore < stake) {
-                    player.sendMessage("§cYou don't have enough Moneyz!");
-                    return;
-                }
-                GameEconomy.placeBet(player, stake, "slots");
-                playSlots(player, stake, isNpcInteraction);
-            } catch (error) {
-                log(`Error during slot stake validation for ${player.nameTag}: ${error}`, LOG_LEVELS.ERROR);
-                player.sendMessage("§cAn error occurred while processing your stake.");
-            }
-        });
+        log(`Slots failed for ${player?.nameTag}: ${error}`, LOG_LEVELS.ERROR);
+        player?.sendMessage("§cThe slot machine encountered an error.");
+    } finally { GameEconomy.endSession(player); }
 }
 
 log("slotGame.js loaded", LOG_LEVELS.DEBUG);

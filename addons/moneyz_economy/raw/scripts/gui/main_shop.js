@@ -1,7 +1,7 @@
-import { ActionFormData } from "@minecraft/server-ui";
+import { ActionFormData } from "../ui/forms.js";
 
 import * as Economy from "../core/economy.js";
-import * as Inventory from "../services/inventory.js";
+import * as Commerce from "../services/commerce.js";
 import { log, LOG_LEVELS } from "../logger.js";
 import { getShopData } from "../data_provider.js";
 
@@ -119,48 +119,19 @@ async function handleShopItemMenu(player, item, shopId, categoryId, isNpcInterac
 }
 
 async function handleBuy(player, item) {
-    const { id: itemId, name: itemName, amount: buyAmount, buyPrice: buyCost, buyDamage: buyData } = item;
-
-    try {
-        const playerMoney = Economy.getBalance(player);
-        if (isNaN(playerMoney) || playerMoney < buyCost) {
-            try { player.playSound("note.bass"); } catch {}
-            player.sendMessage(`§cYou need ${buyCost} Moneyz to buy ${buyAmount} ${itemName}.\n§6You have ${playerMoney} Moneyz`);
-            return;
-        }
-
-        if (!Economy.withdraw(player, buyCost, { source: "shop_purchase", itemId, amount: buyAmount })) throw new Error("Could not charge purchase");
-        if (!await Inventory.give(player, itemId, buyAmount, buyData)) {
-            Economy.deposit(player, buyCost, { source: "shop_refund", itemId, amount: buyAmount });
-            throw new Error("Could not give purchased item; purchase refunded");
-        }
-
-        try { player.playSound("random.levelup"); } catch {}
-        player.sendMessage(`§aPurchased ${buyAmount} ${itemName} for ${buyCost} Moneyz.`);
-    } catch (error) {
-        log(`Error in handleBuy: ${error}`, LOG_LEVELS.ERROR);
-        player.sendMessage("§cError processing purchase.");
+    const result = await Commerce.buy(player, { id:item.id, amount:item.amount, price:item.buyPrice, data:item.buyDamage }, { source:"main_shop" });
+    if (!result.ok) {
+        try { player.playSound("note.bass"); } catch {}
+        player.sendMessage(result.reason === "insufficient_funds" ? `§cYou need ${item.buyPrice} Moneyz to buy ${item.amount} ${item.name}.\n§6You have ${Economy.getBalance(player)} Moneyz` : "§cError processing purchase.");
+        return;
     }
+    try { player.playSound("random.levelup"); } catch {}
+    player.sendMessage(`§aPurchased ${item.amount} ${item.name} for ${item.buyPrice} Moneyz.`);
 }
 
 async function handleSell(player, item) {
-    const { id: itemId, name: itemName, amount: sellAmount, sellPrice: sellCost, sellDamage: sellData } = item;
-
-    try {
-        const removed = await Inventory.remove(player, itemId, sellAmount, sellData);
-
-        if (removed) {
-            Economy.deposit(player, sellCost, { source: "shop_sale", itemId, amount: sellAmount });
-
-            try { player.playSound("random.levelup"); } catch {}
-            player.sendMessage(`§aSold ${sellAmount} ${itemName} for ${sellCost} Moneyz!`);
-        } else {
-            try { player.playSound("note.bass"); } catch {}
-            player.sendMessage(`§cYou don't have ${sellAmount} ${itemName} to sell.`);
-        }
-    } catch (error) {
-        log(`Error in handleSell: ${error}`, LOG_LEVELS.ERROR);
-        try { player.playSound("note.bass"); } catch {}
-        player.sendMessage(`§cYou don't have ${sellAmount} ${itemName} to sell.`);
-    }
+    const result = await Commerce.sell(player, { id:item.id, amount:item.amount, price:item.sellPrice, data:item.sellDamage }, { source:"main_shop" });
+    if (!result.ok) { try { player.playSound("note.bass"); } catch {} player.sendMessage(`§cYou don't have ${item.amount} ${item.name} to sell.`); return; }
+    try { player.playSound("random.levelup"); } catch {}
+    player.sendMessage(`§aSold ${item.amount} ${item.name} for ${item.sellPrice} Moneyz!`);
 }

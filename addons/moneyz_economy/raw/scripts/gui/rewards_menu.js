@@ -1,5 +1,5 @@
 import { world } from "@minecraft/server";
-import { ActionFormData } from "@minecraft/server-ui";
+import { ActionFormData } from "../ui/forms.js";
 import { getCurrentUTCDate } from "../utilities.js";
 import { main } from "./moneyz_menu.js";
 import { log, LOG_LEVELS } from "../logger.js";
@@ -51,7 +51,7 @@ async function dailyRewardLogic(player, rewardValue) {
 
     if (lastRedemption !== currentDate) {
         try {
-            const updateResult = Economy.deposit(player, rewardValue, { source: "daily_reward" });
+            const updateResult = Economy.deposit(player, rewardValue, { type: "daily_reward", source: "daily_reward" });
             if (updateResult) {
                 player.setDynamicProperty("lastDailyReward", currentDate);
                 try { player.playSound("random.levelup"); } catch {}

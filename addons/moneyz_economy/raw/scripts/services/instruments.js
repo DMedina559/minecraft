@@ -1,0 +1,8 @@
+import { ItemStack } from "@minecraft/server";
+import * as Inventory from "./inventory.js";
+const PREFIX="moneyz:";
+export function stamp(item,data={}){if(!(item instanceof ItemStack))return item;for(const [key,value] of Object.entries(data)){if(value===undefined)continue;try{item.setDynamicProperty(PREFIX+key,value);}catch{}}return item;}
+export function read(item,key){try{return item?.getDynamicProperty(PREFIX+key);}catch{return undefined;}}
+export function receipt({transactionId,merchantId,amount,label="Moneyz Receipt"}={}){const item=stamp(new ItemStack("minecraft:paper",1),{kind:"receipt",transactionId:String(transactionId??""),merchantId:String(merchantId??""),amount:Number(amount??0),issuedAt:Date.now()});try{item.nameTag=label;item.setLore([`§7Transaction: §f${transactionId??"unknown"}`,`§7Amount: §g${Number(amount??0)} Moneyz`,merchantId?`§7Merchant: §f${merchantId}`:""]);}catch{}return item;}
+export function voucher({value=0,id,label="Moneyz Voucher"}={}){const item=stamp(new ItemStack("minecraft:paper",1),{kind:"voucher",voucherId:String(id??`${Date.now()}`),value:Math.max(0,Math.round(Number(value)||0)),issuedAt:Date.now()});try{item.nameTag=label;item.setLore([`§7Value: §g${Math.max(0,Math.round(Number(value)||0))} Moneyz`]);}catch{}return item;}
+export async function giveItemStack(player,item){const container=player.getComponent("minecraft:inventory")?.container??player.getComponent("inventory")?.container;if(!container)return false;try{const remainder=container.addItem(item);if(remainder)player.dimension.spawnItem(remainder,player.location);return true;}catch{return false;}}
