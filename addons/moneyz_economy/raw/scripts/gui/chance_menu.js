@@ -6,11 +6,12 @@ import { start21Game } from "../games/21Game.js";
 import { startCrapsGame } from "../games/diceGame.js";
 import { startSlotsGame } from "../games/slotGame.js";
 import { log, LOG_LEVELS } from "../logger.js";
+import * as Config from "../core/config.js";
 
 export function chanceMenu(player) {
     if (!player) return;
 
-    const chanceX = world.getDynamicProperty("chanceX") || "2";
+    const chanceX = Config.get("chanceX", "2");
     const chanceMessage = `§l§oTake a chance!\nYou have a chance to win:\n§g§l${chanceX}x §ryour stake amount!`;
 
     new ActionFormData()

@@ -1,8 +1,11 @@
 import { world } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
-import { getScore, getCurrentUTCDate, updateScore, runCommand } from "../utilities.js";
+import { getCurrentUTCDate, runCommand } from "../utilities.js";
+import * as Economy from "../core/economy.js";
 import { luckyMenu } from "./lucky_menu.js";
 import { log, LOG_LEVELS } from "../logger.js";
+import { giveLootTable } from "../services/rewards.js";
+import * as Config from "../core/config.js";
 
 export async function luckyPurchase(player, isNpcInteraction) {
     if (!player) return;
@@ -10,7 +13,7 @@ export async function luckyPurchase(player, isNpcInteraction) {
     function canAccessLuckyMenu() {
         const lastAccessDate = player.getDynamicProperty("lastLuckyPurchase");
         const currentDate = getCurrentUTCDate();
-        const oneLuckyPurchaseEnabled = world.getDynamicProperty("oneLuckyPurchase");
+        const oneLuckyPurchaseEnabled = Config.get("oneLuckyPurchase");
         return oneLuckyPurchaseEnabled !== "true" || !lastAccessDate || lastAccessDate !== currentDate;
     }
 
@@ -25,8 +28,8 @@ export async function luckyPurchase(player, isNpcInteraction) {
 
                 if (r.selection === 0) {
                     const currentDate = getCurrentUTCDate();
-                    const oneLuckyPurchaseEnabled = world.getDynamicProperty("oneLuckyPurchase");
-                    const money = getScore("Moneyz", player);
+                    const oneLuckyPurchaseEnabled = Config.get("oneLuckyPurchase");
+                    const money = Economy.getBalance(player);
 
                     if (money >= 150) {
                         try { player.playSound("random.levelup"); } catch {}
@@ -34,12 +37,14 @@ export async function luckyPurchase(player, isNpcInteraction) {
 
                         try {
                             const playerName = player.nameTag || player.name;
-                            await runCommand(player, `execute as "${playerName.replace(/"/g, '\\"')}" at @s run loot spawn ~ ~ ~ loot "lucky_purchase"`);
+                            if (!await giveLootTable(player, "lucky_purchase")) {
+                                await runCommand(player, `execute as "${playerName.replace(/"/g, '\\"')}" at @s run loot spawn ~ ~ ~ loot "lucky_purchase"`);
+                            }
                         } catch (err) {
                             log(`Loot spawn command failed: ${err}`, LOG_LEVELS.WARN);
                         }
 
-                        updateScore(player, 150, "remove");
+                        Economy.withdraw(player, 150, { source: "lucky_purchase" });
 
                         if (oneLuckyPurchaseEnabled === "true") {
                             player.setDynamicProperty("lastLuckyPurchase", currentDate);

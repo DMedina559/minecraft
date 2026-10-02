@@ -1,5 +1,7 @@
 import { ActionFormData } from "@minecraft/server-ui";
-import { getScore, updateScore, runCommand } from "../utilities.js";
+
+import * as Economy from "../core/economy.js";
+import * as Inventory from "../services/inventory.js";
 import { log, LOG_LEVELS } from "../logger.js";
 import { getShopData } from "../data_provider.js";
 
@@ -120,18 +122,18 @@ async function handleBuy(player, item) {
     const { id: itemId, name: itemName, amount: buyAmount, buyPrice: buyCost, buyDamage: buyData } = item;
 
     try {
-        const playerMoney = getScore("Moneyz", player);
+        const playerMoney = Economy.getBalance(player);
         if (isNaN(playerMoney) || playerMoney < buyCost) {
             try { player.playSound("note.bass"); } catch {}
             player.sendMessage(`§cYou need ${buyCost} Moneyz to buy ${buyAmount} ${itemName}.\n§6You have ${playerMoney} Moneyz`);
             return;
         }
 
-        const playerName = player.nameTag || player.name;
-        const giveCommand = buyData !== undefined && buyData !== null && buyData !== 0 ? `give @s ${itemId} ${buyAmount} ${buyData}` : `give @s ${itemId} ${buyAmount}`;
-        await runCommand(player, `execute as "${playerName.replace(/"/g, '\\"')}" run ${giveCommand}`);
-
-        updateScore(player, buyCost, "remove");
+        if (!Economy.withdraw(player, buyCost, { source: "shop_purchase", itemId, amount: buyAmount })) throw new Error("Could not charge purchase");
+        if (!await Inventory.give(player, itemId, buyAmount, buyData)) {
+            Economy.deposit(player, buyCost, { source: "shop_refund", itemId, amount: buyAmount });
+            throw new Error("Could not give purchased item; purchase refunded");
+        }
 
         try { player.playSound("random.levelup"); } catch {}
         player.sendMessage(`§aPurchased ${buyAmount} ${itemName} for ${buyCost} Moneyz.`);
@@ -145,15 +147,10 @@ async function handleSell(player, item) {
     const { id: itemId, name: itemName, amount: sellAmount, sellPrice: sellCost, sellDamage: sellData } = item;
 
     try {
-        const playerName = player.nameTag || player.name;
-        const hasItemCheck = `execute as "${playerName.replace(/"/g, '\\"')}" run testfor @s[hasitem={item=${itemId},data=${sellData},quantity=${sellAmount}..}]`;
-        const testResult = await runCommand(player, hasItemCheck);
+        const removed = await Inventory.remove(player, itemId, sellAmount, sellData);
 
-        if (testResult && (testResult.successCount > 0 || testResult.successCount === undefined)) {
-            updateScore(player, sellCost, "add");
-
-            const clearCommand = `execute as "${playerName.replace(/"/g, '\\"')}" run clear @s ${itemId} ${sellData} ${sellAmount}`;
-            await runCommand(player, clearCommand);
+        if (removed) {
+            Economy.deposit(player, sellCost, { source: "shop_sale", itemId, amount: sellAmount });
 
             try { player.playSound("random.levelup"); } catch {}
             player.sendMessage(`§aSold ${sellAmount} ${itemName} for ${sellCost} Moneyz!`);

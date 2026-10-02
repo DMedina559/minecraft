@@ -1,12 +1,13 @@
 import { world, system } from "@minecraft/server";
 import { getActiveQuest, completeQuest } from "../gui/quest_menu.js";
-import { getScore } from "../utilities.js";
+
 import { log, LOG_LEVELS } from "../logger.js";
+import * as Economy from "../core/economy.js";
 
 export function startMaintainBalanceQuest(player, selectedQuest) {
     if (!player || !selectedQuest) return;
 
-    const currentBalance = getScore("Moneyz", player);
+    const currentBalance = Economy.getBalance(player);
     if (currentBalance === undefined || currentBalance < selectedQuest.objective.amount) {
         player.sendMessage(`§cYou don't have enough Moneyz to start this quest. You need at least ${selectedQuest.objective.amount}!`);
         return;
@@ -34,7 +35,7 @@ system.runInterval(() => {
             const requiredBalance = activeQuest.objective.amount;
             const requiredDuration = activeQuest.objective.duration;
             const startTime = player.getDynamicProperty(`balanceStartTime_${activeQuest.property}`);
-            const currentBalance = getScore("Moneyz", player);
+            const currentBalance = Economy.getBalance(player);
 
             if (startTime !== null && startTime !== undefined && currentBalance !== undefined) {
                 const elapsedTime = Date.now() - Number(startTime);

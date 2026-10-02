@@ -1,11 +1,13 @@
 import { world, ItemStack } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
-import { updateScore, getCurrentUTCDate, runCommand } from "../utilities.js";
+import { getCurrentUTCDate, runCommand } from "../utilities.js";
 import { main } from "./moneyz_menu.js";
 import { QUEST_DATA } from "../questData.js";
 import { startMaintainBalanceQuest } from "../quest/maintain.js";
 import { log, LOG_LEVELS } from "../logger.js";
 import "../quest/patrol.js";
+import * as Economy from "../core/economy.js";
+import * as Config from "../core/config.js";
 
 function getAvailableQuestsForPlayer(player) {
     const playerTags = player.getTags();
@@ -72,7 +74,7 @@ export function giveQuest(player, isNpcInteraction) {
         }
 
         if (selectedQuest.objective?.type === "location") {
-            const patrolLocationData = world.getDynamicProperty("patrolLocation");
+            const patrolLocationData = Config.get("patrolLocation");
             if (!patrolLocationData) {
                 player.sendMessage("§cPatrol location data is missing. This quest cannot be started.");
                 return;
@@ -207,7 +209,7 @@ export function completeQuest(player, activeQuest) {
         try { player.playSound("random.levelup"); } catch {}
 
         if (reward.type === "Moneyz") {
-            updateScore(player, reward.amount, "add");
+            Economy.deposit(player, reward.amount, { source: "quest_reward" });
             player.sendMessage(`§aYou completed the quest and earned ${reward.amount} Moneyz!`);
         } else if (reward.type === "item") {
             const playerName = player.nameTag || player.name;

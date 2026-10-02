@@ -8,6 +8,7 @@ import { start21Game } from "./games/21Game.js";
 import { startCrapsGame } from "./games/diceGame.js";
 import { startSlotsGame } from "./games/slotGame.js";
 import { log, LOG_LEVELS } from "./logger.js";
+import * as Config from "./core/config.js";
 
 // Handles NPC interaction events to trigger Moneyz Economy menus
 world.beforeEvents.playerInteractWithEntity.subscribe((data) => {
@@ -17,14 +18,14 @@ world.beforeEvents.playerInteractWithEntity.subscribe((data) => {
     if (!player || !targetEntity) return;
 
     if (targetEntity.typeId === "minecraft:npc") {
-        const npcCustomShop = world.getDynamicProperty("customShop") || "Custom Shop";
-        const npcRewards = world.getDynamicProperty("npcRewards") || "Daily Rewards";
-        const npcLuckyP = world.getDynamicProperty("npcLuckyP") || "Lucky Purchase";
-        const npc21Game = world.getDynamicProperty("npc21") || "21";
-        const npcTestLuck = world.getDynamicProperty("npcTestLuck") || "Test Luck";
-        const npcDiceGame = world.getDynamicProperty("npcDice") || "Dice";
-        const npcSlotsGame = world.getDynamicProperty("npcSlots") || "Slots";
-        const npcQuest = world.getDynamicProperty("npcQuest") || "Quest Giver";
+        const npcCustomShop = Config.get("customShop", "Custom Shop");
+        const npcRewards = Config.get("npcRewards", "Daily Rewards");
+        const npcLuckyP = Config.get("npcLuckyP", "Lucky Purchase");
+        const npc21Game = Config.get("npc21", "21");
+        const npcTestLuck = Config.get("npcTestLuck", "Test Luck");
+        const npcDiceGame = Config.get("npcDice", "Dice");
+        const npcSlotsGame = Config.get("npcSlots", "Slots");
+        const npcQuest = Config.get("npcQuest", "Quest Giver");
 
         const npcName = targetEntity.nameTag || "Unnamed NPC";
         const isNpcInteraction = true;

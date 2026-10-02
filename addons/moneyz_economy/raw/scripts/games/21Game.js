@@ -1,8 +1,11 @@
 import { world, system } from "@minecraft/server";
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
-import { getScore, updateScore, getRandomInt } from "../utilities.js";
+import { getRandomInt } from "../utilities.js";
+import * as GameEconomy from "../services/game_economy.js";
 import { chanceMenu } from "../gui/chance_menu.js";
 import { log, LOG_LEVELS } from "../logger.js";
+import * as Config from "../core/config.js";
+import * as Economy from "../core/economy.js";
 
 const CARD_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10];
 
@@ -51,14 +54,14 @@ export async function start21Game(player, isNpcInteraction) {
             return;
         }
 
-        const playerScore = getScore("Moneyz", player);
+        const playerScore = Economy.getBalance(player);
         if (playerScore < stake) {
             player.sendMessage("§cYou don't have enough Moneyz!");
             if (!isNpcInteraction) chanceMenu(player);
             return;
         }
 
-        updateScore(player, stake, "remove");
+        GameEconomy.placeBet(player, stake, "21");
         await startGameRound(player, stake, isNpcInteraction);
     } catch (error) {
         log(`Error starting 21 game: ${error}`, LOG_LEVELS.ERROR);
@@ -68,7 +71,7 @@ export async function start21Game(player, isNpcInteraction) {
 async function startGameRound(player, stake, isNpcInteraction) {
     const playerHand = [getRandomCard(), getRandomCard()];
     const dealerHand = [getRandomCard(), getRandomCard()];
-    const chanceX = parseFloat(world.getDynamicProperty("chanceX") || "1");
+    const chanceX = Config.number("chanceX", 1);
 
     await continue21Game(player, stake, playerHand, dealerHand, chanceX, isNpcInteraction);
 }
@@ -108,7 +111,7 @@ async function continue21Game(player, stake, playerHand, dealerHand, chanceX, is
 
 async function dealerTurn(player, stake, playerHand, dealerHand, chanceX, isNpcInteraction) {
     const playerValue = calculateHandValue(playerHand);
-    const chanceWin = parseFloat(world.getDynamicProperty("chanceWin") || "50");
+    const chanceWin = Config.number("chanceWin", 50);
 
     while (calculateHandValue(dealerHand) < 17) {
         const dealerValue = calculateHandValue(dealerHand);
@@ -134,7 +137,7 @@ async function endGame(player, stake, playerHand, dealerHand, chanceX, winMessag
 
     if (winMessage.includes("win")) {
         const winnings = Math.round(stake * chanceX);
-        updateScore(player, winnings, "add");
+        GameEconomy.payout(player, winnings, "21");
         message += `§aYou win ${winnings} Moneyz!`;
         try { player.playSound("random.levelup"); } catch {}
     } else {

@@ -1,15 +1,17 @@
 import { world } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
 import { main } from "./moneyz_menu.js";
-import { getScore, updateScore, runCommand } from "../utilities.js";
+import { runCommand } from "../utilities.js";
+import * as Economy from "../core/economy.js";
 import { log, LOG_LEVELS } from "../logger.js";
+import * as Config from "../core/config.js";
 
 const SHOP_WORLD_PROPERTY_PREFIX = "shopItem_";
 
 export async function customShop(player, isNpcInteraction) {
     if (!player) return;
 
-    const shopName = world.getDynamicProperty("customShop") || "Custom Shop";
+    const shopName = Config.get("customShop", "Custom Shop");
 
     try {
         const shopItems = await getShopItemsFromWorldProperties();
@@ -109,7 +111,7 @@ async function handleBuy(player, shopItem) {
     const { itemName, buyAmount, buyCost, buyData } = shopItem;
 
     try {
-        const playerMoney = getScore("Moneyz", player);
+        const playerMoney = Economy.getBalance(player);
 
         if (isNaN(playerMoney) || playerMoney < buyCost) {
             try { player.playSound("note.bass"); } catch {}
@@ -117,11 +119,15 @@ async function handleBuy(player, shopItem) {
             return;
         }
 
+        if (!Economy.withdraw(player, buyCost, { source: "custom_shop_purchase", itemId: itemName, amount: buyAmount })) return;
         const playerName = player.nameTag || player.name;
         const giveCommand = buyData !== 0 ? `give @s ${itemName} ${buyAmount} ${buyData}` : `give @s ${itemName} ${buyAmount}`;
-        await runCommand(player, `execute as "${playerName.replace(/"/g, '\\"')}" run ${giveCommand}`);
-
-        updateScore(player, buyCost, "remove");
+        try {
+            await runCommand(player, `execute as "${playerName.replace(/"/g, '\\"')}" run ${giveCommand}`);
+        } catch (error) {
+            Economy.deposit(player, buyCost, { source: "custom_shop_refund", itemId: itemName, amount: buyAmount });
+            throw error;
+        }
 
         try { player.playSound("random.levelup"); } catch {}
         player.sendMessage(`§aPurchased ${buyAmount} ${itemName} for ${buyCost} Moneyz.`);
@@ -140,7 +146,7 @@ async function handleSell(player, shopItem) {
         const testResult = await runCommand(player, hasItemCheck);
 
         if (testResult && (testResult.successCount > 0 || testResult.successCount === undefined)) {
-            updateScore(player, sellCost, "add");
+            Economy.deposit(player, sellCost, { source: "custom_shop_sale", itemId: itemName, amount: sellAmount });
 
             const clearCommand = `execute as "${playerName.replace(/"/g, '\\"')}" run clear @s ${itemName} ${sellData} ${sellAmount}`;
             await runCommand(player, clearCommand);

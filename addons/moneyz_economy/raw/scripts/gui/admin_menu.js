@@ -1,167 +1,45 @@
 import { world } from "@minecraft/server";
-import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
-import { getScore, updateScore } from "../utilities.js";
+import { CustomForm, ObservableNumber, ObservableString } from "@minecraft/server-ui";
+import * as Economy from "../core/economy.js";
+import { recent } from "../core/transactions.js";
 import { main } from "./moneyz_menu.js";
 import { propertiesMenu } from "./properties_menu.js";
 import { moneyzSettings } from "./settings.js";
 import { showShopEditorMenu } from "./shop_editor.js";
 import { log, LOG_LEVELS } from "../logger.js";
 
-const TITLE = "§l§1Admin Menu";
-
+const TITLE="§l§1Admin Menu";
 export function moneyzAdmin(player) {
-    if (!player) return;
-
-    const form = new ActionFormData()
-        .title(TITLE)
-        .body("§l§o§fManage Various Moneyz Aspects Here")
-        .button("§d§lManage Balances\n§r§7[ Click to Manage ]")
-        .button("§d§lManage Properties\n§r§7[ Click to Manage ]")
-        .button("§d§lManage Tags\n§r§7[ Click to Manage ]")
-        .button("§d§lManage Shops\n§r§7[ Click to Edit ]")
-        .button("§d§lSettings\n§r§7[ Click to Manage ]")
-        .button("§c§lBack");
-
-    form.show(player).then(r => {
-        if (r.canceled) return;
-        switch (r.selection) {
-            case 0: balanceManage(player); break;
-            case 1: propertiesMenu(player); break;
-            case 2: tagManage(player); break;
-            case 3: showShopEditorMenu(player); break;
-            case 4: moneyzSettings(player); break;
-            case 5: main(player); break;
-        }
-    }).catch(err => log(`Error in moneyzAdmin: ${err}`, LOG_LEVELS.ERROR));
+    if(!player) return;
+    const form=new CustomForm(player,TITLE).header("§l§o§fManage Moneyz").divider()
+      .button("§d§lManage Balances",()=>balanceManage(player))
+      .button("§d§lManage Properties",()=>propertiesMenu(player))
+      .button("§d§lManage Tags",()=>tagManage(player))
+      .button("§d§lManage Shops",()=>showShopEditorMenu(player))
+      .button("§d§lSettings",()=>moneyzSettings(player))
+      .button("§d§lRecent Transactions",()=>transactionView(player))
+      .button("§c§lBack",()=>main(player)).closeButton();
+    form.show().catch(e=>log(`Admin UI: ${e}`,LOG_LEVELS.ERROR));
 }
-
-function balanceManage(player) {
-    const players = [...world.getPlayers()].map(p => ({ name: p.nameTag, player: p }));
-
-    try {
-        const playerBalances = players.map(p => `§f${p.name}: §g${getScore("Moneyz", p.player)}`);
-
-        new ActionFormData()
-            .title(TITLE)
-            .body(`§l§oPlayers Moneyz Balances:\n${playerBalances.join("\n")}`)
-            .button("§d§lManage Player Balances\n§r§7[ Click to Manage ]")
-            .button("§c§lBack")
-            .show(player)
-            .then(r => {
-                if (!r || r.canceled) return;
-
-                if (r.selection === 0) {
-                    new ModalFormData()
-                        .title(TITLE)
-                        .dropdown("§o§fChoose a Player to Manage", players.map(p => p.name))
-                        .textField("§fEnter the Amount to Adjust:\n", "§oNumbers Only")
-                        .show(player)
-                        .then(({ formValues, canceled }) => {
-                            if (canceled || !formValues) return;
-
-                            const [dropdownIndex, textField] = formValues;
-                            const selectedPlayer = players[dropdownIndex]?.player;
-                            if (!selectedPlayer) return;
-
-                            const amount = parseInt(textField, 10);
-                            if (isNaN(amount) || amount < 0) {
-                                try { player.playSound("note.bass"); } catch {}
-                                player.sendMessage("§cPlease enter a valid positive number!");
-                                return;
-                            }
-
-                            new ActionFormData()
-                                .title(TITLE)
-                                .body(`§l§oManage ${selectedPlayer.nameTag}'s Moneyz`)
-                                .button("§d§lAdd Moneyz")
-                                .button("§d§lSet Moneyz")
-                                .button("§d§lRemove Moneyz")
-                                .button("§c§lCancel")
-                                .show(player)
-                                .then(({ selection, canceled: actionCanceled }) => {
-                                    if (actionCanceled || selection === undefined || selection === 3) return;
-
-                                    try { player.playSound("random.levelup"); } catch {}
-                                    if (selection === 0) {
-                                        updateScore(selectedPlayer, amount, "add");
-                                        player.sendMessage(`§aAdded §l${amount} §r§ato ${selectedPlayer.nameTag}'s Moneyz.`);
-                                    } else if (selection === 1) {
-                                        updateScore(selectedPlayer, amount, "set");
-                                        player.sendMessage(`§aSet ${selectedPlayer.nameTag}'s Moneyz to §l${amount}.`);
-                                    } else if (selection === 2) {
-                                        updateScore(selectedPlayer, amount, "remove");
-                                        player.sendMessage(`§aRemoved §l${amount} §r§afrom ${selectedPlayer.nameTag}'s Moneyz.`);
-                                    }
-                                });
-                        });
-                } else {
-                    moneyzAdmin(player);
-                }
-            });
-    } catch (error) {
-        log(`Error retrieving balances: ${error}`, LOG_LEVELS.ERROR);
-        player.sendMessage("§cError retrieving player balances.");
-    }
+function balanceManage(admin) {
+    const players=[...world.getPlayers()]; if(!players.length) return;
+    const selected=new ObservableNumber(0,{clientWritable:true});
+    const amount=new ObservableString("0",{clientWritable:true});
+    const balanceLabel=new ObservableString("");
+    const refresh=()=>{ const p=players[selected.getData()]; balanceLabel.setData(p?`§f${p.nameTag}: §g${Economy.getBalance(p)} Moneyz`:"No player"); };
+    selected.subscribe(refresh); refresh();
+    const act=op=>{ const p=players[selected.getData()], n=Math.round(Number(amount.getData())); if(!p||!Number.isFinite(n)||n<0){admin.sendMessage("§cEnter a valid non-negative amount.");return;} const ok=Economy[op](p,n,{source:"admin_ui",actor:admin}); if(!ok) admin.sendMessage("§cOperation failed."); else {try{admin.playSound("random.levelup");}catch{} refresh();} };
+    new CustomForm(admin,"§l§1Balance Manager").label(balanceLabel).dropdown("Player",selected,players.map((p,i)=>({label:p.nameTag,value:i})))
+      .textField("Amount",amount,{description:"Whole Moneyz amount"}).button("§aAdd",()=>act("deposit")).button("§eSet",()=>act("setBalance"))
+      .button("§cRemove",()=>act("withdraw")).button("§7Back",()=>moneyzAdmin(admin)).closeButton().show().catch(e=>log(`Balance UI: ${e}`,LOG_LEVELS.ERROR));
 }
-
-async function tagManage(player) {
-    const players = [...world.getPlayers()];
-    const playerTagsList = players.map(p => `${p.nameTag}: §g${p.getTags().join(", ") || "No Tags"}`).join("\n");
-
-    new ActionFormData()
-        .title(TITLE)
-        .body(`§l§oPlayers Tags:\n${playerTagsList}`)
-        .button("§d§lManage Tags\n§r§7[ Add or Remove ]")
-        .button("§c§lBack")
-        .show(player)
-        .then(r => {
-            if (!r || r.canceled) return;
-
-            if (r.selection === 0) {
-                new ModalFormData()
-                    .title(TITLE)
-                    .dropdown("§o§fChoose a Player", players.map(p => p.nameTag))
-                    .show(player)
-                    .then(({ formValues, canceled }) => {
-                        if (canceled || !formValues) return;
-
-                        const selectedPlayer = players[formValues[0]];
-                        if (!selectedPlayer) return;
-
-                        new ModalFormData()
-                            .title(`§lManage Tags for ${selectedPlayer.nameTag}`)
-                            .dropdown("§o§fAction", ["Add Tag", "Remove Tag"])
-                            .textField("§fEnter Tag:", "§oTag")
-                            .show(player)
-                            .then(({ formValues: actionValues, canceled: actionCanceled }) => {
-                                if (actionCanceled || !actionValues) return;
-
-                                const [actionIndex, tag] = actionValues;
-                                const trimmedTag = String(tag || "").trim();
-
-                                if (!trimmedTag) {
-                                    player.sendMessage("§cPlease enter a valid tag!");
-                                    return;
-                                }
-
-                                if (actionIndex === 0) {
-                                    selectedPlayer.addTag(trimmedTag);
-                                    player.sendMessage(`§aAdded tag §l${trimmedTag} §r§ato ${selectedPlayer.nameTag}.`);
-                                } else if (actionIndex === 1) {
-                                    if (selectedPlayer.hasTag(trimmedTag)) {
-                                        selectedPlayer.removeTag(trimmedTag);
-                                        player.sendMessage(`§aRemoved tag §l${trimmedTag} §r§afrom ${selectedPlayer.nameTag}.`);
-                                    } else {
-                                        player.sendMessage(`§c${selectedPlayer.nameTag} does not have the tag §l${trimmedTag}.`);
-                                    }
-                                }
-                                tagManage(player);
-                            });
-                    });
-            } else {
-                moneyzAdmin(player);
-            }
-        });
+function transactionView(player){ const lines=recent(30).map(t=>`§7${new Date(t.at).toISOString()} §f${t.type} §g${t.amount} §8${t.from??""}${t.to?` -> ${t.to}`:""}`); new CustomForm(player,"§l§1Transactions").label(lines.join("\n")||"No transactions yet.").button("§cBack",()=>moneyzAdmin(player)).closeButton().show(); }
+function tagManage(admin){
+    const players=[...world.getPlayers()]; if(!players.length)return;
+    const selected=new ObservableNumber(0,{clientWritable:true}), tag=new ObservableString("",{clientWritable:true}), status=new ObservableString("");
+    const refresh=()=>{const p=players[selected.getData()];status.setData(p?`§fTags: §g${p.getTags().join(", ")||"None"}`:"");}; selected.subscribe(refresh);refresh();
+    const apply=add=>{const p=players[selected.getData()],v=tag.getData().trim();if(!p||!v)return; if(add)p.addTag(v);else p.removeTag(v);refresh();};
+    new CustomForm(admin,"§l§1Tag Manager").label(status).dropdown("Player",selected,players.map((p,i)=>({label:p.nameTag,value:i}))).textField("Tag",tag)
+      .button("§aAdd Tag",()=>apply(true)).button("§cRemove Tag",()=>apply(false)).button("§7Back",()=>moneyzAdmin(admin)).closeButton().show();
 }
-
-log("admin_menu.js loaded", LOG_LEVELS.DEBUG);
+log("admin_menu.js loaded",LOG_LEVELS.DEBUG);

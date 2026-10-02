@@ -1,16 +1,18 @@
 import { ActionFormData } from "@minecraft/server-ui";
-import { getScore } from "../utilities.js";
+
 import { main } from "./moneyz_menu.js";
 import { chanceMenu } from "./chance_menu.js";
 import { luckyPurchase } from "./lucky_purchase.js";
 import { log, LOG_LEVELS } from "../logger.js";
+import * as Config from "../core/config.js";
+import * as Economy from "../core/economy.js";
 
 export function luckyMenu(player) {
     if (!player) return;
 
     const form = new ActionFormData();
     form.title("§l§1Feeling Lucky?");
-    form.body(`§l§o§fWelcome §g${player.nameTag}§f!\nTest your Luck\nChoose an Option Below\n§fMoneyz Balance: §g${getScore("Moneyz", player)}`);
+    form.body(`§l§o§fWelcome §g${player.nameTag}§f!\nTest your Luck\nChoose an Option Below\n§fMoneyz Balance: §g${Economy.getBalance(player)}`);
 
     const buttons = [];
     const actions = [];

@@ -1,5 +1,6 @@
 import { world } from "@minecraft/server";
-import { updateScore } from "../utilities.js";
+import * as Economy from "../core/economy.js";
+
 import { getActiveQuest, completeQuest } from "../gui/quest_menu.js";
 import { log, LOG_LEVELS } from "../logger.js";
 
@@ -36,7 +37,7 @@ world.afterEvents.playerPlaceBlock.subscribe(event => {
                 }
 
                 const rewardAmount = CROP_PLANT_REWARDS[placedBlock.typeId] || 0;
-                updateScore(player, rewardAmount, "add");
+                Economy.deposit(player, rewardAmount, { source: "quest_reward" });
             }
         }
     } catch (error) {

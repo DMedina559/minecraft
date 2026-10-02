@@ -1,8 +1,11 @@
 import { world } from "@minecraft/server";
 import { ModalFormData, ActionFormData } from "@minecraft/server-ui";
-import { getScore, updateScore, getRandomInt } from "../utilities.js";
+import { getRandomInt } from "../utilities.js";
+import * as GameEconomy from "../services/game_economy.js";
 import { chanceMenu } from "../gui/chance_menu.js";
 import { log, LOG_LEVELS } from "../logger.js";
+import * as Config from "../core/config.js";
+import * as Economy from "../core/economy.js";
 
 const SLOT_ICONS = {
     "Cherry": "[Cherry]",
@@ -30,8 +33,8 @@ function spinSlots(chanceWin) {
 }
 
 async function playSlots(player, stake, isNpcInteraction) {
-    const chanceWin = parseFloat(world.getDynamicProperty("chanceWin") || "50");
-    const chanceX = parseFloat(world.getDynamicProperty("chanceX") || "2");
+    const chanceWin = Config.number("chanceWin", 50);
+    const chanceX = Config.number("chanceX", 2);
 
     const reels = spinSlots(chanceWin);
     let winnings = 0;
@@ -60,7 +63,7 @@ async function playSlots(player, stake, isNpcInteraction) {
     }
 
     try {
-        updateScore(player, winnings, "add");
+        GameEconomy.payout(player, winnings, "slots");
         showSlotResults(player, stake, reels, winnings, winType, isNpcInteraction);
     } catch (error) {
         log(`Error updating slot winnings for ${player.nameTag}: ${error}`, LOG_LEVELS.ERROR);
@@ -110,12 +113,12 @@ export function startSlotsGame(player, isNpcInteraction) {
             }
 
             try {
-                const playerScore = getScore("Moneyz", player);
+                const playerScore = Economy.getBalance(player);
                 if (playerScore < stake) {
                     player.sendMessage("§cYou don't have enough Moneyz!");
                     return;
                 }
-                updateScore(player, stake, "remove");
+                GameEconomy.placeBet(player, stake, "slots");
                 playSlots(player, stake, isNpcInteraction);
             } catch (error) {
                 log(`Error during slot stake validation for ${player.nameTag}: ${error}`, LOG_LEVELS.ERROR);

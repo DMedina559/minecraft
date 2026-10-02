@@ -1,13 +1,15 @@
 import { world } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
-import { updateScore, getCurrentUTCDate } from "../utilities.js";
+import { getCurrentUTCDate } from "../utilities.js";
 import { main } from "./moneyz_menu.js";
 import { log, LOG_LEVELS } from "../logger.js";
+import * as Economy from "../core/economy.js";
+import * as Config from "../core/config.js";
 
 export function openRewardsMenu(player, isNpcInteraction) {
     if (!player) return;
 
-    const rewardValue = world.getDynamicProperty("dailyReward");
+    const rewardValue = Config.get("dailyReward", 25);
     const currentDate = getCurrentUTCDate();
     const lastRedemption = player.getDynamicProperty("lastDailyReward");
 
@@ -49,7 +51,7 @@ async function dailyRewardLogic(player, rewardValue) {
 
     if (lastRedemption !== currentDate) {
         try {
-            const updateResult = updateScore(player, rewardValue, "add");
+            const updateResult = Economy.deposit(player, rewardValue, { source: "daily_reward" });
             if (updateResult) {
                 player.setDynamicProperty("lastDailyReward", currentDate);
                 try { player.playSound("random.levelup"); } catch {}

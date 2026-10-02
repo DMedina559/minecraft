@@ -1,14 +1,17 @@
 import { world } from "@minecraft/server";
 import { ModalFormData } from "@minecraft/server-ui";
-import { getScore, updateScore, getRandomInt } from "../utilities.js";
+import { getRandomInt } from "../utilities.js";
+import * as GameEconomy from "../services/game_economy.js";
 import { chanceMenu } from "../gui/chance_menu.js";
 import { log, LOG_LEVELS } from "../logger.js";
+import * as Config from "../core/config.js";
+import * as Economy from "../core/economy.js";
 
 export async function testYourLuck(player, isNpcInteraction) {
     try {
-        const playerScore = getScore("Moneyz", player);
-        const winChance = parseFloat(world.getDynamicProperty("chanceWin") || "50");
-        const worldMultiplier = parseFloat(world.getDynamicProperty("chanceX") || "2");
+        const playerScore = Economy.getBalance(player);
+        const winChance = Config.number("chanceWin", 50);
+        const worldMultiplier = Config.number("chanceX", 2);
 
         const modalForm = new ModalFormData()
             .title("§l§6Test Your Luck")
@@ -35,11 +38,11 @@ export async function testYourLuck(player, isNpcInteraction) {
             return;
         }
 
-        updateScore(player, stakeAmount, "remove");
+        GameEconomy.placeBet(player, stakeAmount, "random");
 
         if (getRandomInt(1, 100) <= winChance) {
             const winAmount = Math.round(stakeAmount * worldMultiplier);
-            updateScore(player, winAmount, "add");
+            GameEconomy.payout(player, winAmount, "random");
             player.sendMessage(`§aYou won ${winAmount} Moneyz!`);
             try { player.playSound("random.levelup"); } catch {}
         } else {
