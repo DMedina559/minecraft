@@ -1,0 +1,1 @@
+const send=(p,msg,sound)=>{try{p.sendMessage(msg);if(sound)p.playSound(sound)}catch{}};export const success=(p,m)=>send(p,`§a${m}`,"random.levelup");export const error=(p,m)=>send(p,`§c${m}`,"note.bass");export const info=(p,m)=>send(p,`§f${m}`);export const money=(p,a)=>send(p,`${a>=0?"§a+":"§c"}${Math.round(a)} §gMoneyz`,a>=0?"random.orb":"note.bass");

@@ -1,0 +1,1 @@
+export function validate(Moneyz){const issues=[];if(!Moneyz.economy?.isReady?.())issues.push("Moneyz scoreboard is unavailable");return{ok:issues.length===0,issues,apiVersion:Moneyz.apiVersion,capabilities:Moneyz.capabilities}}export const listExtensions=M=>M.extensions.list?.()??[];

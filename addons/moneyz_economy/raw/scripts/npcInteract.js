@@ -7,55 +7,27 @@ import { testYourLuck } from "./games/randomNum.js";
 import { start21Game } from "./games/21Game.js";
 import { startCrapsGame } from "./games/diceGame.js";
 import { startSlotsGame } from "./games/slotGame.js";
+import { main } from "./gui/moneyz_menu.js";
 import { log, LOG_LEVELS } from "./logger.js";
 import * as Config from "./core/config.js";
+import * as NpcMenus from "./api/npc_menus.js";
 
-// Handles NPC interaction events to trigger Moneyz Economy menus
-world.beforeEvents.playerInteractWithEntity.subscribe((data) => {
-    const player = data.player;
-    const targetEntity = data.target;
-
-    if (!player || !targetEntity) return;
-
-    if (targetEntity.typeId === "minecraft:npc") {
-        const npcCustomShop = Config.get("customShop", "Custom Shop");
-        const npcRewards = Config.get("npcRewards", "Daily Rewards");
-        const npcLuckyP = Config.get("npcLuckyP", "Lucky Purchase");
-        const npc21Game = Config.get("npc21", "21");
-        const npcTestLuck = Config.get("npcTestLuck", "Test Luck");
-        const npcDiceGame = Config.get("npcDice", "Dice");
-        const npcSlotsGame = Config.get("npcSlots", "Slots");
-        const npcQuest = Config.get("npcQuest", "Quest Giver");
-
-        const npcName = targetEntity.nameTag || "Unnamed NPC";
-        const isNpcInteraction = true;
-
-        if (npcName === npcCustomShop) {
-            data.cancel = true;
-            system.run(() => customShop(player, isNpcInteraction));
-        } else if (npcName === npcRewards) {
-            data.cancel = true;
-            system.run(() => openRewardsMenu(player, isNpcInteraction));
-        } else if (npcName === npcLuckyP) {
-            data.cancel = true;
-            system.run(() => luckyPurchase(player, isNpcInteraction));
-        } else if (npcName === npc21Game) {
-            data.cancel = true;
-            system.run(() => start21Game(player, isNpcInteraction));
-        } else if (npcName === npcTestLuck) {
-            data.cancel = true;
-            system.run(() => testYourLuck(player, isNpcInteraction));
-        } else if (npcName === npcDiceGame) {
-            data.cancel = true;
-            system.run(() => startCrapsGame(player, isNpcInteraction));
-        } else if (npcName === npcSlotsGame) {
-            data.cancel = true;
-            system.run(() => startSlotsGame(player, isNpcInteraction));
-        } else if (npcName === npcQuest) {
-            data.cancel = true;
-            system.run(() => giveQuest(player, isNpcInteraction));
-        }
-    }
+let registered=false;
+export function registerBuiltInNpcMenus(){if(registered)return;registered=true;
+ NpcMenus.registerMenu("moneyz:menu",p=>main(p),{label:"Moneyz Menu"});
+ NpcMenus.registerMenu("moneyz:custom_shop",p=>customShop(p,true),{label:"Custom Shop"});
+ NpcMenus.registerMenu("moneyz:daily_rewards",p=>openRewardsMenu(p,true),{label:"Daily Rewards"});
+ NpcMenus.registerMenu("moneyz:lucky_purchase",p=>luckyPurchase(p,true),{label:"Lucky Purchase"});
+ NpcMenus.registerMenu("moneyz:blackjack",p=>start21Game(p,true),{label:"21 / Blackjack"});
+ NpcMenus.registerMenu("moneyz:test_luck",p=>testYourLuck(p,true),{label:"Test Your Luck"});
+ NpcMenus.registerMenu("moneyz:craps",p=>startCrapsGame(p,true),{label:"Dice / Craps"});
+ NpcMenus.registerMenu("moneyz:slots",p=>startSlotsGame(p,true),{label:"Slots"});
+ NpcMenus.registerMenu("moneyz:quests",p=>giveQuest(p,true),{label:"Quests"});
+}
+registerBuiltInNpcMenus();
+world.beforeEvents.playerInteractWithEntity.subscribe(data=>{const player=data.player,target=data.target;if(!player||target?.typeId!=="minecraft:npc")return;
+ if(NpcMenus.assigned(target)){data.cancel=true;system.run(()=>{if(!NpcMenus.dispatch(player,target))player.sendMessage("§cThis NPC references an unavailable Moneyz menu.");});return;}
+ const legacy=[["customShop","Custom Shop",()=>customShop(player,true)],["npcRewards","Daily Rewards",()=>openRewardsMenu(player,true)],["npcLuckyP","Lucky Purchase",()=>luckyPurchase(player,true)],["npc21","21",()=>start21Game(player,true)],["npcTestLuck","Test Luck",()=>testYourLuck(player,true)],["npcDice","Dice",()=>startCrapsGame(player,true)],["npcSlots","Slots",()=>startSlotsGame(player,true)],["npcQuest","Quest Giver",()=>giveQuest(player,true)]];
+ const name=target.nameTag||"";for(const [key,fallback,open] of legacy){if(name===Config.get(key,fallback)){data.cancel=true;system.run(open);return;}}
 });
-
-log("npcInteract.js initialized", LOG_LEVELS.DEBUG);
+log("npcInteract.js initialized",LOG_LEVELS.DEBUG);

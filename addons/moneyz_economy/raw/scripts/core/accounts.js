@@ -1,0 +1,15 @@
+import { world } from "@minecraft/server";
+import { record } from "./transactions.js";
+import { emit, emitCancelable } from "./events.js";
+const KEY="moneyz:accounts:v1";let cache;
+const load=()=>{if(cache)return cache;try{const raw=world.getDynamicProperty(KEY);cache=typeof raw==="string"?JSON.parse(raw):{};}catch{cache={};}return cache;};
+const save=()=>world.setDynamicProperty(KEY,JSON.stringify(load()));
+export function normalizeId(id){const s=String(id??"").trim().toLowerCase();if(!/^[a-z0-9_.:-]{3,80}$/.test(s))throw new Error("Invalid account id");return s;}
+export function create(id,{name=id,type="virtual",metadata={}}={}){id=normalizeId(id);const db=load();if(db[id])return db[id];db[id]={id,name:String(name),type:String(type),balance:0,metadata,createdAt:Date.now()};save();emit("accountCreated",db[id]);return db[id];}
+export function get(id){try{return load()[normalizeId(id)]??null;}catch{return null;}}
+export function list(){return Object.values(load()).map(x=>({...x}));}
+export function getBalance(id){return Number(get(id)?.balance??0);}
+function change(id,delta,metadata={}){const account=get(id);if(!account)return {ok:false,reason:"unknown_account"};const before=Number(account.balance)||0,after=before+delta;if(after<0)return {ok:false,reason:"insufficient_funds"};const beforeEvent=emitCancelable("beforeAccountChange",{account:{...account},delta,before,after,metadata});if(beforeEvent.cancel)return {ok:false,reason:beforeEvent.reason??"cancelled"};account.balance=after;save();const tx=record(metadata.type??(delta>=0?"account_deposit":"account_withdraw"),{actor:metadata.actor,from:delta<0?id:null,to:delta>=0?id:null,amount:Math.abs(delta),balanceBefore:before,balanceAfter:after,metadata:{...metadata,accountId:id}});emit("accountChanged",{account:{...account},before,after,delta,transaction:tx});return {ok:true,balance:after,transaction:tx};}
+export function deposit(id,amount,metadata={}){amount=Math.round(Number(amount));return Number.isFinite(amount)&&amount>=0?change(id,amount,metadata):{ok:false,reason:"invalid_amount"};}
+export function withdraw(id,amount,metadata={}){amount=Math.round(Number(amount));return Number.isFinite(amount)&&amount>=0?change(id,-amount,metadata):{ok:false,reason:"invalid_amount"};}
+export function transfer(from,to,amount,metadata={}){amount=Math.round(Number(amount));if(!Number.isFinite(amount)||amount<=0||from===to)return {ok:false,reason:"invalid_transfer"};const a=get(from),b=get(to);if(!a||!b)return {ok:false,reason:"unknown_account"};if(a.balance<amount)return {ok:false,reason:"insufficient_funds"};const evt=emitCancelable("beforeAccountTransfer",{from:{...a},to:{...b},amount,metadata});if(evt.cancel)return {ok:false,reason:evt.reason??"cancelled"};a.balance-=amount;b.balance+=amount;save();const tx=record(metadata.type??"account_transfer",{actor:metadata.actor,from:a.id,to:b.id,amount,balanceBefore:a.balance+amount,balanceAfter:a.balance,metadata:{...metadata,toBalanceAfter:b.balance}});emit("accountTransfer",{from:{...a},to:{...b},amount,transaction:tx});return {ok:true,transaction:tx};}

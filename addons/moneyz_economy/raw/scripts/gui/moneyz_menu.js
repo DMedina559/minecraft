@@ -11,6 +11,7 @@ import { customShop } from "./custom_shop.js";
 import { showShopCategories } from "./main_shop.js";
 import { giveQuest } from "./quest_menu.js";
 import { log, LOG_LEVELS } from "../logger.js";
+import { ui as uiExtensions } from "../api/extensions.js";
 
 export function main(player) {
     if (!player) return;
@@ -53,6 +54,14 @@ export function main(player) {
     if (Config.bool("moneyzLucky", true, player) || Config.bool("moneyzChance", true, player)) {
         buttons.push("§d§lFeeling Lucky?\n§r§7[ Click to See ]");
         actions.push(() => luckyMenu(player));
+    }
+
+    for (const item of uiExtensions.listMenuItems()) {
+        try {
+            if (item.visible && !item.visible(player)) continue;
+            buttons.push(item.label ?? item.id);
+            actions.push(() => item.open?.(player));
+        } catch (e) { log(`Extension menu ${item.id} failed: ${e}`, LOG_LEVELS.WARN); }
     }
 
     if (player.hasTag("moneyzAdmin")) {
