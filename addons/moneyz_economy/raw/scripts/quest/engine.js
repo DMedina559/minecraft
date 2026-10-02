@@ -10,11 +10,14 @@ import { log, LOG_LEVELS } from "../logger.js";
 const STATE_KEY="activeQuest";
 const STATE_VERSION=2;
 const runtime=new Map();
+const customDefinitions=new Map();
 let initialized=false;
 const key=p=>p.id??p.name;
 const clone=o=>JSON.parse(JSON.stringify(o));
 
-function definitionFor(value){if(!value)return null;if(typeof value==="string")return QUEST_BY_ID.get(value)??QUEST_BY_PROPERTY.get(value)??null;return QUEST_BY_ID.get(value.id)??QUEST_BY_PROPERTY.get(value.property)??null;}
+function definitionFor(value){if(!value)return null;if(typeof value==="string")return QUEST_BY_ID.get(value)??QUEST_BY_PROPERTY.get(value)??customDefinitions.get(value)??null;return QUEST_BY_ID.get(value.id)??QUEST_BY_PROPERTY.get(value.property)??customDefinitions.get(value.id)??null;}
+export function registerQuest(def){if(!def?.id||!String(def.id).includes(":"))throw new Error("Custom quest id must be namespaced");if(!def.objective||!def.reward)throw new Error("Custom quest requires objective and reward");customDefinitions.set(String(def.id),def);return()=>customDefinitions.delete(String(def.id));}
+export function listDefinitions(){return [...QUEST_DATA,...customDefinitions.values()];}
 function initialProgress(q){const o=q.objective; if(["break","plant","slay","slaughter"].includes(o.type)) return {current:0,target:o.count}; if(o.type==="location")return {distance:0,target:o.minAreaCovered}; if(o.type==="maintain_balance")return {elapsed:0,target:o.duration}; return {current:0,target:1};}
 function makeState(q){return {version:STATE_VERSION,id:q.id,property:q.property,startedAt:Date.now(),progress:initialProgress(q)};}
 function save(player,state){player.setDynamicProperty(STATE_KEY,state?JSON.stringify(state):null);}
@@ -25,7 +28,7 @@ export function getActiveQuest(player){const state=getState(player);if(!state)re
 export function getDefinition(id){return definitionFor(id);}
 function isPeaceful(){try{const d=world.getDifficulty();return d===0||String(d).toLowerCase()==="peaceful";}catch{return false;}}
 export function isQuestAvailableForWorld(q){return !(q?.objective?.type==="slay"&&isPeaceful());}
-export function getAvailable(player){const tags=player.getTags();return QUEST_DATA.filter(q=>(!q.tags||q.tags.some(t=>tags.includes(t)))&&isQuestAvailableForWorld(q));}
+export function getAvailable(player){const tags=player.getTags();return listDefinitions().filter(q=>(!q.tags||q.tags.some(t=>tags.includes(t)))&&isQuestAvailableForWorld(q));}
 export function isCompletedToday(player,q){return player.getDynamicProperty(`last${q.property}`)===getCurrentUTCDate();}
 export function startQuest(player,id){if(!player)return {ok:false,reason:"invalid_player"};if(getState(player))return {ok:false,reason:"active_quest"};const q=definitionFor(id);if(!q)return {ok:false,reason:"unknown_quest"};if(isCompletedToday(player,q))return {ok:false,reason:"daily_limit"};if(!isQuestAvailableForWorld(q))return {ok:false,reason:"peaceful_difficulty"};if(q.objective.type==="location"&&!parsePatrol())return {ok:false,reason:"patrol_unconfigured"};if(q.objective.type==="maintain_balance"&&Economy.getBalance(player)<q.objective.amount)return {ok:false,reason:"insufficient_balance"};const state=makeState(q);save(player,state);runtime.delete(key(player));emit("questStarted",{player,quest:q,state:clone(state)});return {ok:true,quest:q,state};}
 export function abandonQuest(player,reason="abandoned"){const active=getActiveQuest(player);if(!active)return false;save(player,null);runtime.delete(key(player));emit("questAbandoned",{player,quest:active,reason});return true;}
@@ -33,6 +36,7 @@ export function abandonQuest(player,reason="abandoned"){const active=getActiveQu
 export async function completeActiveQuest(player){const state=getState(player);if(!state)return false;const q=definitionFor(state);return q?complete(player,q,state):false;}
 async function complete(player,q,state){const ok=await Rewards.apply(player,q.reward,{type:"quest_reward",source:"quest",quest:q.id});if(!ok){player.sendMessage("§cQuest reward could not be delivered. Please contact an admin.");return false;}player.setDynamicProperty(`last${q.property}`,getCurrentUTCDate());save(player,null);runtime.delete(key(player));try{player.playSound("random.levelup");player.onScreenDisplay.setActionBar("§aQuest Completed!");}catch{}const amount=q.reward.amount??q.reward.itemStack?.amount??"";player.sendMessage(`§aQuest complete: ${q.description}${amount!==""?` — reward: ${amount}${q.reward.type==="Moneyz"?" Moneyz":""}`:""}`);emit("questCompleted",{player,quest:q,state:clone(state),reward:q.reward});return true;}
 function progressMessage(player,q,state){let text="";const p=state.progress;if(["break","plant","slay","slaughter"].includes(q.objective.type))text=`§eQuest: ${p.current}/${p.target}`;else if(q.objective.type==="location")text=`§ePatrol: ${Math.round(p.distance)}/${p.target} blocks`;else if(q.objective.type==="maintain_balance"){const left=Math.max(0,p.target-p.elapsed);text=`§eMaintain Balance: ${Math.floor(left/60000)}m ${Math.floor((left%60000)/1000)}s rem`;}try{player.onScreenDisplay.setActionBar(text);}catch{}}
+export async function progress(player,amount=1,context={}){const state=getState(player);if(!state)return false;const q=definitionFor(state);if(!q||context.quest&&context.quest!==q.id)return false;return increment(player,q,state,amount,Number(context.reward)||0,context);}
 async function increment(player,q,state,amount=1,reward=0,meta={}){state.progress.current=Math.min(state.progress.target,state.progress.current+amount);save(player,state);if(reward>0)Economy.deposit(player,reward,{type:"quest_progress_reward",source:"quest",quest:q.id,...meta});emit("questProgress",{player,quest:q,state:clone(state)});if(state.progress.current>=state.progress.target)return complete(player,q,state);progressMessage(player,q,state);return false;}
 function activeOfType(player,type){const state=getState(player);if(!state)return null;const q=definitionFor(state);return q?.objective.type===type?{q,state}:null;}
 function parsePatrol(){const value=Config.get("patrolLocation");if(typeof value!=="string")return null;const a=value.split(",").map(v=>Number(v.trim()));if(a.length!==5||a.some(v=>!Number.isFinite(v)))return null;return {x:a[0],y:a[1],z:a[2],radius:a[3],requiredTimeMs:a[4]*60000};}

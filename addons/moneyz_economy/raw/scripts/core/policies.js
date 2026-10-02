@@ -1,0 +1,3 @@
+const policies=new Map();export function register(def){if(!def?.id||!String(def.id).includes(":" )||typeof def.authorize!=="function")throw new Error("Policy requires namespaced id and authorize()");policies.set(def.id,def);return()=>policies.delete(def.id)}
+export function authorize(ctx){for(const p of policies.values()){try{const r=p.authorize(ctx);if(r&&typeof r.then==="function")throw new Error("Async policies are not supported in synchronous economy operations");if(r===false)return{allowed:false,reason:`Denied by ${p.id}`,policy:p.id};if(r?.allowed===false)return{...r,policy:p.id}}catch(e){return{allowed:false,reason:`Policy ${p.id} failed: ${e}`,policy:p.id}}}return{allowed:true}}
+export const list=()=>[...policies.values()];

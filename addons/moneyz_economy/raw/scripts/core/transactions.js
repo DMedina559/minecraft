@@ -13,7 +13,9 @@ export function record(type,{actor,from,to,amount=0,balanceBefore,balanceAfter,m
     const tx={id:`${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`,at:Date.now(),type:String(type||"unknown"),actor:nameOf(actor),from:nameOf(from),to:nameOf(to),amount:Math.round(Number(amount)||0),balanceBefore:Number.isFinite(balanceBefore)?balanceBefore:null,balanceAfter:Number.isFinite(balanceAfter)?balanceAfter:null,metadata:safeMetadata(metadata)};
     load().push(tx); if(cache.length>MAX)cache.splice(0,cache.length-MAX); save(); emit("transaction",tx); return tx;
 }
-export function recent(limit=25,{player,type}={}) { let rows=[...load()].reverse(); if(player){const n=nameOf(player);rows=rows.filter(t=>t.actor===n||t.from===n||t.to===n);} if(type)rows=rows.filter(t=>t.type===type); return rows.slice(0,Math.max(1,limit)); }
+export function recent(limit=25,{player,type,source,since,before}={}) { let rows=[...load()].reverse(); if(player){const n=nameOf(player);rows=rows.filter(t=>t.actor===n||t.from===n||t.to===n);} if(type)rows=rows.filter(t=>t.type===type); if(source)rows=rows.filter(t=>t.metadata?.source===source||t.metadata?.pack===source); if(since)rows=rows.filter(t=>t.at>=Number(since)); if(before)rows=rows.filter(t=>t.at<=Number(before)); return rows.slice(0,Math.max(1,limit)); }
+export function query(options={}){return recent(options.limit??50,options);}
+export function reverse(id,{actor,reason="manual_reversal"}={}){const original=find(id);if(!original)return {ok:false,reason:"not_found"};return {ok:false,reason:"requires_account_context",original};}
 export function find(id){return load().find(t=>t.id===id);}
 export function count(){return load().length;}
 export function clear(){cache=[];save();emit("transactionsCleared",{});}
