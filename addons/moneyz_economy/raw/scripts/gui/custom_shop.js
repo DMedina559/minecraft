@@ -1,12 +1,2 @@
-import { ActionFormData } from "../ui/forms.js";
-import { main } from "./moneyz_menu.js";
-import * as Economy from "../core/economy.js";
-import * as Commerce from "../services/commerce.js";
-import * as Config from "../core/config.js";
-import { getItems } from "../repositories/custom_shop.js";
-import { log, LOG_LEVELS } from "../logger.js";
-
-export async function customShop(player,isNpcInteraction){if(!player)return;const shopName=Config.get("customShop","Custom Shop");try{const items=getItems();if(!items.length){player.sendMessage("§cNo shop items available.");return;}const form=new ActionFormData().title(`§l§1${shopName}`);items.forEach(x=>form.button(x.buyAmount&&x.id?`§d§l${x.buyAmount} ${x.name}\n${x.buyCost} Moneyz`:"§cInvalid Item"));form.button("§c§lBack");const r=await form.show(player);if(r.canceled)return;if(r.selection<items.length)await itemMenu(player,items[r.selection],isNpcInteraction);else if(!isNpcInteraction)main(player);}catch(e){log(`Custom shop: ${e}`,LOG_LEVELS.ERROR);player.sendMessage("§cAn error occurred while opening the Custom Shop.");}}
-async function itemMenu(player,item,isNpc){const f=new ActionFormData().title(`Shop: ${item.name}`).button(`Buy ${item.buyAmount} for ${item.buyCost} Moneyz`).button(`Sell ${item.sellAmount} for ${item.sellCost} Moneyz`).button("Back");const r=await f.show(player);if(r.canceled)return;if(r.selection===0)await buy(player,item);else if(r.selection===1)await sell(player,item);else await customShop(player,isNpc);}
-async function buy(player,item){const r=await Commerce.buy(player,{id:item.id,amount:item.buyAmount,price:item.buyCost,data:item.buyData},{source:"custom_shop"});if(!r.ok){try{player.playSound("note.bass");}catch{}player.sendMessage(r.reason==="insufficient_funds"?`§cYou need ${item.buyCost} Moneyz. §6You have ${Economy.getBalance(player)} Moneyz`:"§cError processing purchase.");return;}try{player.playSound("random.levelup");}catch{}player.sendMessage(`§aPurchased ${item.buyAmount} ${item.name} for ${item.buyCost} Moneyz.`);}
-async function sell(player,item){const r=await Commerce.sell(player,{id:item.id,amount:item.sellAmount,price:item.sellCost,data:item.sellData},{source:"custom_shop"});if(!r.ok){try{player.playSound("note.bass");}catch{}player.sendMessage(`§cYou don't have enough ${item.name} to sell.`);return;}try{player.playSound("random.levelup");}catch{}player.sendMessage(`§aSold ${item.sellAmount} ${item.name} for ${item.sellCost} Moneyz!`);}
+import { openShop } from "./shop_v3.js";
+export function customShop(player,isNpcInteraction=false){return openShop(player,"custom_shop",{isNpcInteraction});}

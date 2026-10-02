@@ -7,6 +7,12 @@ import { main } from "./moneyz_menu.js";
 import { propertiesMenu } from "./properties_menu.js";
 import { moneyzSettings } from "./settings.js";
 import { showShopEditorMenu } from "./shop_editor.js";
+import { npcManager } from "./npc_manager.js";
+import { jobAdmin } from "./jobs.js";
+import { propertyAdmin } from "./properties.js";
+import { exchangeAdmin } from "./exchanges.js";
+import { productAdmin } from "./products.js";
+import { setupWizard } from "./setup_wizard.js";
 import { log, LOG_LEVELS } from "../logger.js";
 
 const TITLE="§l§1Admin Menu";
@@ -22,6 +28,12 @@ export function moneyzAdmin(player) {
       .button("Manage Properties",()=>navigate(()=>propertiesMenu(player)))
       .button("Manage Tags",()=>navigate(()=>tagManage(player)))
       .button("Manage Shops",()=>navigate(()=>showShopEditorMenu(player)))
+      .button("Manage NPC Services",()=>navigate(()=>npcManager(player)))
+      .button("Manage Jobs",()=>navigate(()=>jobAdmin(player)))
+      .button("Manage Properties / Hotels",()=>navigate(()=>propertyAdmin(player)))
+      .button("Manage Exchanges",()=>navigate(()=>exchangeAdmin(player)))
+      .button("Manage Products / Bundles",()=>navigate(()=>productAdmin(player)))
+      .button("Setup Wizard",()=>navigate(()=>setupWizard(player)))
       .button("Settings",()=>navigate(()=>moneyzSettings(player)))
       .button("Recent Transactions",()=>navigate(()=>transactionView(player)))
       .button("Diagnostics",()=>navigate(()=>diagnosticsView(player)))
@@ -29,7 +41,7 @@ export function moneyzAdmin(player) {
     form.show().catch(e=>log(`Admin UI: ${e}`,LOG_LEVELS.ERROR));
 }
 
-function balanceManage(admin) {
+export function balanceManage(admin) {
     const players=[...world.getPlayers()]; if(!players.length) return;
     const selected=new ObservableNumber(0,{clientWritable:true});
     const amount=new ObservableString("0",{clientWritable:true});
@@ -43,7 +55,7 @@ function balanceManage(admin) {
       .textField("Amount",amount,{description:"Whole Moneyz amount"}).button("Add",()=>act("deposit")).button("Set",()=>act("setBalance"))
       .button("Remove",()=>act("withdraw")).button("Back",back).closeButton().show().catch(e=>log(`Balance UI: ${e}`,LOG_LEVELS.ERROR));
 }
-function transactionView(player){
+export function transactionView(player){
     const types=["all",...new Set(recent(150).map(t=>t.type))], filter=new ObservableNumber(0,{clientWritable:true}), query=new ObservableString("",{clientWritable:true}), body=new ObservableString("");
     const refresh=()=>{const q=query.getData().trim().toLowerCase(),type=types[filter.getData()]??"all";const rows=recent(150).filter(t=>(type==="all"||t.type===type)&&(!q||JSON.stringify(t).toLowerCase().includes(q))).slice(0,40);body.setData(rows.map(t=>`§7${new Date(t.at).toISOString().slice(0,19)} §f${t.type} §g${t.amount} §8${t.from??""}${t.to?` -> ${t.to}`:""} §7#${t.id}`).join("\n")||"No matching transactions.");};
     filter.subscribe(refresh);query.subscribe(refresh);refresh();
@@ -51,12 +63,12 @@ function transactionView(player){
     const back = () => { try { if (form.isShowing()) form.close(); } catch {} system.run(()=>moneyzAdmin(player)); };
     form.dropdown("Type",filter,types.map((x,i)=>({label:x,value:i}))).textField("Search player/id/metadata",query).label(body).button("Refresh",refresh).button("Clear Ledger",()=>{clearTransactions();refresh();player.sendMessage("§eMoneyz transaction ledger cleared.");}).button("Back",back).closeButton().show();
 }
-function diagnosticsView(player){
+export function diagnosticsView(player){
     const form = new CustomForm(player,"§l§1Moneyz Diagnostics");
     const navigate = next => { try { if (form.isShowing()) form.close(); } catch {} system.run(next); };
     form.label(formatHealth()).button("Refresh",()=>navigate(()=>diagnosticsView(player))).button("Back",()=>navigate(()=>moneyzAdmin(player))).closeButton().show();
 }
-function tagManage(admin){
+export function tagManage(admin){
     const players=[...world.getPlayers()]; if(!players.length)return;
     const selected=new ObservableNumber(0,{clientWritable:true}), tag=new ObservableString("",{clientWritable:true}), status=new ObservableString("");
     const refresh=()=>{const p=players[selected.getData()];status.setData(p?`§fTags: §g${p.getTags().join(", ")||"None"}`:"");}; selected.subscribe(refresh);refresh();
