@@ -1,0 +1,10 @@
+import { world, system } from "@minecraft/server";
+import { CustomForm } from "@minecraft/server-ui";
+import * as Economy from "../core/economy.js";
+import * as Shops from "../repositories/shops.js";
+import * as Jobs from "../core/jobs.js";
+import * as Properties from "../core/properties.js";
+import * as Exchanges from "../core/exchanges.js";
+import * as Products from "../core/products.js";
+const nav=(f,fn)=>{try{if(f.isShowing())f.close();}catch{}system.run(fn)};
+export function setupWizard(player){const f=new CustomForm(player,"Moneyz Setup Wizard"),objective=world.scoreboard.getObjective("Moneyz");f.header("World Setup").label(`Moneyz objective: ${objective?"Ready":"Missing"}\nShops: ${Object.keys(Shops.getShopData()).length}\nJobs: ${Jobs.list().length}\nProperties: ${Properties.list().length}\nExchanges: ${Exchanges.all().length}\nProducts: ${Products.all().length}`);if(!objective)f.button("Create Moneyz Objective",()=>{try{world.scoreboard.addObjective("Moneyz","Moneyz");for(const p of world.getPlayers())world.scoreboard.getObjective("Moneyz")?.setScore(p,0);player.sendMessage("§aMoneyz objective created.");}catch(e){player.sendMessage(`§c${e}`)}nav(f,()=>setupWizard(player));});f.button("Manage Shops",()=>nav(f,()=>import("./shop_editor.js").then(m=>m.showShopEditorMenu(player)))).button("Manage NPC Services",()=>nav(f,()=>import("./npc_manager.js").then(m=>m.npcManager(player)))).button("Manage Jobs",()=>nav(f,()=>import("./jobs.js").then(m=>m.jobAdmin(player)))).button("Manage Properties / Hotels",()=>nav(f,()=>import("./properties.js").then(m=>m.propertyAdmin(player)))).button("Manage Exchanges",()=>nav(f,()=>import("./exchanges.js").then(m=>m.exchangeAdmin(player)))).button("Manage Products / Bundles",()=>nav(f,()=>import("./products.js").then(m=>m.productAdmin(player)))).button("Finish / Admin Menu",()=>nav(f,()=>import("./admin_menu.js").then(m=>m.moneyzAdmin(player)))).closeButton().show();}
