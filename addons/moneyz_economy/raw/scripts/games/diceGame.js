@@ -1,8 +1,11 @@
 import { world } from "@minecraft/server";
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
-import { getScore, updateScore, getRandomInt } from "../utilities.js";
+import { getRandomInt } from "../utilities.js";
+import * as GameEconomy from "../services/game_economy.js";
 import { chanceMenu } from "../gui/chance_menu.js";
 import { log, LOG_LEVELS } from "../logger.js";
+import * as Config from "../core/config.js";
+import * as Economy from "../core/economy.js";
 
 function rollDice() {
     const die1 = getRandomInt(1, 6);
@@ -27,7 +30,7 @@ async function playCrapsPointLoop(player, stake, point, chanceWin, chanceX) {
         if (nextRoll === point) {
             if (getRandomInt(1, 100) <= chanceWin) {
                 const winnings = Math.round(stake * chanceX);
-                updateScore(player, winnings, "add");
+                GameEconomy.payout(player, winnings, "dice");
                 try { player.playSound("random.levelup"); } catch {}
                 player.sendMessage(`§aYou rolled a ${nextRoll}! Hit the Point! You win ${winnings} Moneyz!`);
             } else {
@@ -46,15 +49,15 @@ async function playCrapsPointLoop(player, stake, point, chanceWin, chanceX) {
 }
 
 async function playCraps(player, stake) {
-    const chanceWin = parseFloat(world.getDynamicProperty("chanceWin") || "50");
-    const chanceX = parseFloat(world.getDynamicProperty("chanceX") || "2");
+    const chanceWin = Config.number("chanceWin", 50);
+    const chanceX = Config.number("chanceX", 2);
 
     const comeOutRoll = rollDice();
 
     if (comeOutRoll === 7 || comeOutRoll === 11) {
         if (getRandomInt(1, 100) <= chanceWin) {
             const winnings = Math.round(stake * chanceX);
-            updateScore(player, winnings, "add");
+            GameEconomy.payout(player, winnings, "dice");
             try { player.playSound("random.levelup"); } catch {}
             player.sendMessage(`§aCome-out roll: ${comeOutRoll}! Natural Win! You win ${winnings} Moneyz!`);
         } else {
@@ -90,14 +93,14 @@ export async function startCrapsGame(player, isNpcInteraction) {
             return;
         }
 
-        const playerScore = getScore("Moneyz", player);
+        const playerScore = Economy.getBalance(player);
         if (playerScore < stake) {
             player.sendMessage("§cYou don't have enough Moneyz!");
             if (!isNpcInteraction) chanceMenu(player);
             return;
         }
 
-        updateScore(player, stake, "remove");
+        GameEconomy.placeBet(player, stake, "dice");
         await playCraps(player, stake, isNpcInteraction);
     } catch (error) {
         log(`Error in Craps game: ${error}`, LOG_LEVELS.ERROR);

@@ -1,6 +1,6 @@
 import { world } from "@minecraft/server";
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
-import { getShopData, SHOP_DATA_PREFIX } from "../data_provider.js";
+import { getShopData, SHOP_DATA_PREFIX, saveShop, deleteShop } from "../data_provider.js";
 import { log, LOG_LEVELS } from "../logger.js";
 import { moneyzAdmin } from "./admin_menu.js";
 
@@ -191,7 +191,7 @@ function editShop_itemForm(player, shopId, categoryId, itemIndexToEdit = -1) {
             shopToUpdate[categoryId].push(newItemData);
         }
 
-        world.setDynamicProperty(SHOP_DATA_PREFIX + shopId, JSON.stringify(shopToUpdate));
+        saveShop(shopId, shopToUpdate);
         player.sendMessage(`§aSuccessfully ${isEditing ? "updated" : "added"} item: "${newItemData.name}"`);
 
         editShop_selectAction(player, shopId);
@@ -236,7 +236,7 @@ function editShop_selectItemForRemove(player, shopId, categoryId) {
                     shopToUpdate[categoryId].splice(itemIndexToRemove, 1);
                     if (shopToUpdate[categoryId].length === 0) delete shopToUpdate[categoryId];
 
-                    world.setDynamicProperty(SHOP_DATA_PREFIX + shopId, JSON.stringify(shopToUpdate));
+                    saveShop(shopId, shopToUpdate);
                     player.sendMessage(`§aItem "${itemToRemove.name}" has been removed.`);
                 }
                 editShop_selectCategoryForRemove(player, shopId);
@@ -350,7 +350,7 @@ function removeShop(player) {
             .show(player)
             .then(confirmResult => {
                 if (!confirmResult.canceled && confirmResult.selection === 0) {
-                    world.setDynamicProperty(SHOP_DATA_PREFIX + shopIdToRemove, undefined);
+                    deleteShop(shopIdToRemove);
                     player.sendMessage(`§aShop "${shopIdToRemove}" has been removed.`);
                 }
                 showShopEditorMenu(player);
@@ -384,7 +384,7 @@ function createNewShop(player) {
                 return;
             }
 
-            world.setDynamicProperty(SHOP_DATA_PREFIX + newShopId, JSON.stringify({}));
+            saveShop(newShopId, {});
             player.sendMessage(`§aSuccessfully created new shop: "${newShopId}"`);
             showShopEditorMenu(player);
         });

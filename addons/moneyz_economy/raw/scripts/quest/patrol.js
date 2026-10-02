@@ -1,6 +1,7 @@
 import { world, system } from "@minecraft/server";
 import { getActiveQuest, completeQuest } from "../gui/quest_menu.js";
 import { log, LOG_LEVELS } from "../logger.js";
+import * as Config from "../core/config.js";
 
 const playerPatrolTime = new Map();
 const playerAreaCovered = new Map();
@@ -14,7 +15,7 @@ system.runInterval(() => {
         const activeQuest = getActiveQuest(player);
 
         if (activeQuest?.objective?.type === "location") {
-            const patrolLocationData = world.getDynamicProperty("patrolLocation");
+            const patrolLocationData = Config.get("patrolLocation");
 
             if (!patrolLocationData || typeof patrolLocationData !== "string") {
                 player.sendMessage("§cPatrol location data is missing or invalid. Set patrolLocation property to: \"x,y,z,radius,timeInMinutes\".");

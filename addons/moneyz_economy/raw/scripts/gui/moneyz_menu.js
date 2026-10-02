@@ -1,6 +1,8 @@
 import { world, system } from "@minecraft/server";
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
-import { getScore, updateScore, runCommand } from "../utilities.js";
+import { runCommand } from "../utilities.js";
+import * as Economy from "../core/economy.js";
+import * as Config from "../core/config.js";
 import { openRewardsMenu } from "./rewards_menu.js";
 import { moneyzAdmin } from "./admin_menu.js";
 import { luckyMenu } from "./lucky_menu.js";
@@ -15,17 +17,17 @@ export function main(player) {
 
     const form = new ActionFormData();
     form.title("§l§1Moneyz Menu");
-    form.body(`§l§o§fWelcome §g${player.nameTag}§f!\n§fMoneyz Balance: §g${getScore("Moneyz", player)}`);
+    form.body(`§l§o§fWelcome §g${player.nameTag}§f!\n§fMoneyz Balance: §g${Economy.getBalance(player)}`);
 
     const buttons = [];
     const actions = [];
 
-    if (player.getDynamicProperty("moneyzShop") === "true") {
+    if (Config.bool("moneyzShop", true, player)) {
         buttons.push("§d§lShops\n§r§7[ Click to Shop ]");
         actions.push(() => shops(player));
     }
 
-    if (player.getDynamicProperty("moneyzATM") === "true") {
+    if (Config.bool("moneyzATM", true, player)) {
         buttons.push("§d§lATM\n§r§7[ Click to Exchange ]");
         actions.push(() => {
             const playerName = player.nameTag || player.name;
@@ -33,22 +35,22 @@ export function main(player) {
         });
     }
 
-    if (player.getDynamicProperty("moneyzSend") === "true") {
+    if (Config.bool("moneyzSend", true, player)) {
         buttons.push("§d§lSend Moneyz\n§r§7[ Click to Send Moneyz ]");
         actions.push(() => moneyzTransfer(player));
     }
 
-    if (player.getDynamicProperty("moneyzQuest") === "true") {
+    if (Config.bool("moneyzQuest", true, player)) {
         buttons.push("§d§lQuest\n§r§7[ Click to View ]");
         actions.push(() => giveQuest(player));
     }
 
-    if (player.getDynamicProperty("moneyzDaily") === "true") {
+    if (Config.bool("moneyzDaily", true, player)) {
         buttons.push("§d§lDaily Reward\n§r§7[ Click to Redeem ]");
         actions.push(() => openRewardsMenu(player));
     }
 
-    if (player.getDynamicProperty("moneyzLucky") === "true" || player.getDynamicProperty("moneyzChance") === "true") {
+    if (Config.bool("moneyzLucky", true, player) || Config.bool("moneyzChance", true, player)) {
         buttons.push("§d§lFeeling Lucky?\n§r§7[ Click to See ]");
         actions.push(() => luckyMenu(player));
     }
@@ -80,13 +82,13 @@ export function main(player) {
 }
 
 function shops(player) {
-    const customShopName = world.getDynamicProperty("customShop") || "Custom Shop";
+    const customShopName = Config.get("customShop", "Custom Shop");
     const shopData = getShopData();
     const shopIds = Object.keys(shopData);
 
     const form = new ActionFormData()
         .title("§l§1Shop Menu")
-        .body(`§l§o§fMoneyz Balance: §g${getScore("Moneyz", player)}`);
+        .body(`§l§o§fMoneyz Balance: §g${Economy.getBalance(player)}`);
 
     shopIds.forEach(shopId => {
         const displayName = shopId.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase());
@@ -115,7 +117,7 @@ function shops(player) {
 
 async function moneyzTransfer(player) {
     const players = [...world.getPlayers()];
-    const currentBalance = getScore("Moneyz", player);
+    const currentBalance = Economy.getBalance(player);
 
     new ModalFormData()
         .title("§l§1Send Moneyz")
@@ -153,8 +155,9 @@ async function moneyzTransfer(player) {
             }
 
             try {
-                updateScore(player, amountToSend, "remove");
-                updateScore(selectedPlayer, amountToSend, "add");
+                if (!Economy.transfer(player, selectedPlayer, amountToSend, { source: "player_transfer" })) {
+                    throw new Error("Transfer rejected");
+                }
 
                 try { player.playSound("random.levelup"); } catch {}
                 player.sendMessage(`§aSent §l${selectedPlayer.nameTag} §r§2${amountToSend} Moneyz`);

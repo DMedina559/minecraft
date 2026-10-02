@@ -1,5 +1,6 @@
 import { world } from "@minecraft/server";
-import { updateScore } from "../utilities.js";
+import * as Economy from "../core/economy.js";
+
 import { getActiveQuest, completeQuest } from "../gui/quest_menu.js";
 import { log, LOG_LEVELS } from "../logger.js";
 
@@ -51,7 +52,7 @@ world.beforeEvents.playerBreakBlock.subscribe(event => {
 
             if (ORE_BREAK_REWARDS[brokenBlock.typeId]) {
                 const rewardAmount = ORE_BREAK_REWARDS[brokenBlock.typeId];
-                updateScore(player, rewardAmount, "add");
+                Economy.deposit(player, rewardAmount, { source: "quest_reward" });
             }
 
             event.cancel = true;

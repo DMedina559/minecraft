@@ -1,5 +1,6 @@
 import { world } from "@minecraft/server";
-import { updateScore } from "../utilities.js";
+import * as Economy from "../core/economy.js";
+
 import { getActiveQuest, completeQuest } from "../gui/quest_menu.js";
 import { log, LOG_LEVELS } from "../logger.js";
 
@@ -34,7 +35,7 @@ world.afterEvents.entityDie.subscribe(event => {
                         try { killer.onScreenDisplay.setActionBar(`§eQuest Progress: ${activeQuest.objective.count} more farm animals to slaughter`); } catch {}
                     }
 
-                    updateScore(killer, rewardAmount, "add");
+                    Economy.deposit(killer, rewardAmount, { source: "quest_reward" });
                 }
             }
         }
