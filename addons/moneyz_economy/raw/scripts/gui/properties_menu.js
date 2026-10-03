@@ -139,6 +139,7 @@ function modifyPlayerProperties(player, selectedPlayer) {
 
             selectedPlayer.setDynamicProperty(selectedProperty, valStr);
             player.sendMessage(`§aDynamic property ${selectedProperty} has been set to ${valStr} for ${selectedPlayer.nameTag}.`);
+            viewPlayerProperties(player, selectedPlayer);
         })
         .catch(() => playerPropertiesMenu(player));
 }
@@ -183,10 +184,12 @@ function shopItemPropertiesMenu(player) {
                 }
                 world.setDynamicProperty(propertyName, newValue);
                 player.sendMessage(`§aNew property '${propertyName}' has been created.`);
+                shopItemPropertiesMenu(player);
             } else if (selectedOption >= 0 && selectedOption < worldProperties.length) {
                 const existingProperty = worldProperties[selectedOption];
                 world.setDynamicProperty(existingProperty, newValue);
                 player.sendMessage(`§aProperty '${existingProperty}' has been updated.`);
+                shopItemPropertiesMenu(player);
             }
         })
         .catch(() => player.sendMessage("§cAn error occurred while managing shop items."));
@@ -262,7 +265,7 @@ function modifyWorldProperties(player) {
 
             world.setDynamicProperty(selectedProperty, valStr);
             player.sendMessage(`§aWorld property ${selectedProperty} has been set to ${valStr}.`);
-            modifyWorldProperties(player);
+            worldPropertiesMenu(player);
         })
         .catch(() => worldPropertiesMenu(player));
 }

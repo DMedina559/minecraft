@@ -225,6 +225,7 @@ export function openHelp(player) {
         form.button(title, () => nav(form, () => helpPage(player, title)));
     }
 
+    form.button("Back", () => nav(form, () => import("./moneyz_menu.js").then(m => m.main(player))));
     form.closeButton().show();
 }
 

@@ -68,8 +68,10 @@ async function playRound(player, stake, isNpcInteraction) {
             .body(`§lYour hand§r\n${handText(playerHand)}\n\n§lDealer shows§r\n${dealerHand[0]}`)
             .button("Hit")
             .button("Stand")
+            .button("Forfeit & Back")
             .show(player);
         if (!response || response.canceled) return; // closing after a placed bet forfeits the round
+        if (response.selection === 2) { returnToMenu(player, isNpcInteraction); return; }
         if (response.selection === 1) break;
         playerHand.push(drawCard());
     }
