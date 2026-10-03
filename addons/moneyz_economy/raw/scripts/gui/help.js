@@ -193,7 +193,7 @@ Moneyz 2.0 can run in three economy modes:
 Moneyz does not crash. A shop sale, job payment, reward, property sale, or other system payout is rejected safely before value is lost.
 
 §lAdmins:§r
-Open §6Moneyz Admin → Economy Treasury§r to view liquid funds, resource backing, total backing, inflow/outflow, select the economy mode, and add/remove treasury funds.
+Open §6Moneyz Admin → Economy Treasury§r to view liquid funds, resource backing, total backing, inflow/outflow, choose the economy mode from a dropdown, and add/remove/set treasury funds. §6Manage Resource Reserves§r lets Admins add custom item/block reserves, edit stock and reserve value, set exact values, or clear a reserve.
 
 §lPlayers:§r
 Player-to-player transfers do not use treasury liquidity because no Moneyz enters or leaves the player economy.`,
