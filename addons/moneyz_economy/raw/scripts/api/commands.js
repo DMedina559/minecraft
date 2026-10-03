@@ -13,6 +13,7 @@ import * as Shops from "../repositories/shops.js";
 import { Moneyz } from "../core/api.js";
 import * as Jobs from "../core/jobs.js";
 import * as Properties from "../core/properties.js";
+import { handleApiCommand } from "./gateway.js";
 const playerFrom=o=>o.sourceEntity instanceof Player?o.sourceEntity:undefined;
 const result=(ok,message)=>({status:ok?CustomCommandStatus.Success:CustomCommandStatus.Failure,message});
 export function registerCommands(registry){
@@ -45,6 +46,30 @@ export function registerCommands(registry){
  registry.registerCommand({name:"moneyz:setup",description:"Open Moneyz setup wizard",permissionLevel:CommandPermissionLevel.GameDirectors,cheatsRequired:false},origin=>{const p=playerFrom(origin);if(!p)return result(false,"Player only.");system.run(()=>Services.open("moneyz:admin/setup",p,{source:"command"}));return result(true,"Opening Setup Wizard.");});
  registry.registerCommand({name:"moneyz:api",description:"Show Moneyz public API version and capabilities",permissionLevel:CommandPermissionLevel.GameDirectors,cheatsRequired:false},()=>result(true,`Moneyz API ${Moneyz.apiVersion}: ${Object.entries(Moneyz.capabilities).filter(([,v])=>v).map(([k])=>k).join(", ")}`));
  registry.registerCommand({name:"moneyz:extensions",description:"List registered Moneyz extensions",permissionLevel:CommandPermissionLevel.GameDirectors,cheatsRequired:false},()=>result(true,Moneyz.extensions.list().map(x=>`${x.id}@${x.version}`).join(", ")||"No third-party extensions registered."));
+ registry.registerCommand({name:"moneyz:test_rpc",description:"Developer RPC transport for Moneyz integration tests",permissionLevel:CommandPermissionLevel.Any,cheatsRequired:true,mandatoryParameters:[{type:CustomCommandParamType.String,name:"payload"}]},(_origin,payload)=>{
+  try{
+   const hex=String(payload??"");
+   if(!hex||hex.length%2!==0||!/^[0-9a-f]+$/i.test(hex))return result(false,"Invalid RPC payload.");
+   let json="";for(let i=0;i<hex.length;i+=2)json+=String.fromCharCode(parseInt(hex.slice(i,i+2),16));
+   const data=JSON.parse(json);
+   if(!data||typeof data!=="object")return result(false,"Invalid RPC request.");
+   handleApiCommand(data);
+   return result(true,"Moneyz RPC queued.");
+  }catch(error){return result(false,`Moneyz RPC rejected: ${error}`);}
+ });
+ registry.registerCommand({name:"moneyz:test_rpc_player",description:"Developer RPC transport targeting a resolved player",permissionLevel:CommandPermissionLevel.Any,cheatsRequired:true,mandatoryParameters:[{type:CustomCommandParamType.PlayerSelector,name:"player"},{type:CustomCommandParamType.String,name:"payload"}]},(_origin,targets,payload)=>{
+  try{
+   const target=targets?.[0];
+   if(!target)return result(false,"No test player resolved.");
+   const hex=String(payload??"");
+   if(!hex||hex.length%2!==0||!/^[0-9a-f]+$/i.test(hex))return result(false,"Invalid RPC payload.");
+   let json="";for(let i=0;i<hex.length;i+=2)json+=String.fromCharCode(parseInt(hex.slice(i,i+2),16));
+   const data=JSON.parse(json);
+   if(!data||typeof data!=="object")return result(false,"Invalid RPC request.");
+   handleApiCommand(data,target);
+   return result(true,"Moneyz player RPC queued.");
+  }catch(error){return result(false,`Moneyz player RPC rejected: ${error}`);}
+ });
  registry.registerCommand({name:"moneyz:validate",description:"Validate the Moneyz runtime",permissionLevel:CommandPermissionLevel.Admin},()=>{const v=Moneyz.dev.validate(Moneyz);return result(v.ok,v.ok?`Moneyz API ${v.apiVersion} validated successfully.`:`Moneyz validation: ${v.issues.join("; ")}`);});
 
 }
