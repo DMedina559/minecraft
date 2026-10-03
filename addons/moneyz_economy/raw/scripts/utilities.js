@@ -1,5 +1,5 @@
 import { world, system } from "@minecraft/server";
-import { main } from "./gui/moneyz_menu.js";
+import * as Services from "./api/services.js";
 import { convertTagsToProperties, updateWorldProperties } from "./convertTags.js";
 import { log, LOG_LEVELS, setLogLevelFromWorldProperty } from "./logger.js";
 import * as Economy from "./core/economy.js";
@@ -76,7 +76,7 @@ world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
 world.beforeEvents.itemUse.subscribe(data => {
     const player = data.source;
     if (data.itemStack?.typeId === "zvortex:moneyz_menu") {
-        system.run(() => main(player));
+        system.run(() => Services.open("moneyz:menu", player, { source: "item", itemTypeId: "zvortex:moneyz_menu" }));
     }
 });
 
