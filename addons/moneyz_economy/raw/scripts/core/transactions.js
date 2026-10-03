@@ -1,11 +1,12 @@
 import { world } from "@minecraft/server";
 import { log, LOG_LEVELS } from "../logger.js";
 import { emit } from "./events.js";
+import { safeEntityName } from "./entity_identity.js";
 
 const KEY = "moneyz:transactions";
 const MAX = 150;
 let cache;
-const nameOf = value => value?.name ?? value?.nameTag ?? value ?? null;
+const nameOf = value => { const name=safeEntityName(value, ""); return name || (value === null || value === undefined ? null : (typeof value === "string" || typeof value === "number" ? String(value) : null)); };
 const safeMetadata = metadata => { try { JSON.stringify(metadata); return metadata ?? {}; } catch { return { note: "unserializable metadata omitted" }; } };
 function load() { if (cache) return cache; try { const raw=world.getDynamicProperty(KEY); cache=typeof raw==="string"?JSON.parse(raw):[]; if(!Array.isArray(cache))cache=[]; } catch { cache=[]; } return cache; }
 function save() { try { world.setDynamicProperty(KEY, JSON.stringify(load().slice(-MAX))); } catch(e) { log(`Transaction persistence failed: ${e}`,LOG_LEVELS.WARN); } }

@@ -1,3 +1,4 @@
+import { safeEntityName } from "./entity_identity.js";
 import * as Storage from "./storage.js";
 import * as Economy from "./economy.js";
 import { emit } from "./events.js";
@@ -11,7 +12,7 @@ export function importDefinitions(defs,{overwrite=false}={}){let added=0,updated
 export const exportDefinitions=()=>load().map(x=>({...x}));
 export function migrateLegacyPlayer(player){const a=load();let changed=0;for(let i=0;i<a.length;i++){const p=a[i],tag=p.legacyTag;if(!tag||p.owner||!player?.hasTag?.(tag))continue;p.owner=who(player);p.purchasedAt=p.purchasedAt??Date.now();a[i]=p;changed++;}if(changed)save(a);return {ok:true,changed};}
 export function remove(id){const a=load(),n=a.filter(x=>x.id!==clean(id));if(n.length===a.length)return false;save(n);return true;}
-const who=p=>p?.name??p?.nameTag??String(p??"");
+const who=p=>safeEntityName(p,typeof p==="string"?p:"");
 export function ownedBy(player){const n=who(player);return load().filter(x=>x.owner===n);}
 export function rentedBy(player){const n=who(player);return load().filter(x=>x.tenant===n);}
 export function buy(player,id){const a=load(),i=a.findIndex(x=>x.id===clean(id));if(i<0)return {ok:false,reason:"unknown_property"};const p=a[i];if(p.type==="hotel")return {ok:false,reason:"not_for_sale"};if(p.owner||p.tenant)return {ok:false,reason:"unavailable"};if(!Economy.withdraw(player,p.price,{type:"property_purchase",propertyId:p.id}))return {ok:false,reason:"insufficient_funds"};p.owner=who(player);p.purchasedAt=Date.now();a[i]=p;save(a);emit("propertyPurchased",{player,property:p});return {ok:true,property:p};}

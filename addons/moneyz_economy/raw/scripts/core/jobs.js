@@ -21,7 +21,8 @@ const defaults=[
  {id:"realtor",name:"Realtor",description:"Real-estate worker.",pay:3000,legacyTags:["realtor"]}
 ].map(j=>({...j,payInterval:0,requiresApplication:true}));
 const cleanId=v=>String(v??"").trim().toLowerCase().replace(/[^a-z0-9_.-]/g,"_");
-function load(){const v=db.get(KEY);if(Array.isArray(v))return v;db.set(KEY,defaults);return structuredClone(defaults);}
+function cloneJson(value){return JSON.parse(JSON.stringify(value));}
+function load(){const v=db.get(KEY);if(Array.isArray(v))return v;const initial=cloneJson(defaults);db.set(KEY,initial);return initial;}
 function save(v){db.set(KEY,v);return v;}
 export function list(){return load().filter(x=>x.enabled!==false);}
 export function listAll(){return load();}
