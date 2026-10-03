@@ -28,3 +28,6 @@ world.afterEvents.playerSpawn.subscribe(({player,initialSpawn})=>{
  });
 });
 log("main.js loaded",LOG_LEVELS.INFO);
+
+// Test-build only: comprehensive internal GameTest suite.
+//import "./tests/main.js";
