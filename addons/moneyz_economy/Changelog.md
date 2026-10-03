@@ -439,3 +439,278 @@
 9. Fixed Pumpkin Buy
 10. Fixed Pumpkin Sell messaging
 11. Fixed Crimson Typos
+
+# 2.0.0
+1. Rebuilt Moneyz Economy for the 2.0 release
+   - Reworked major legacy systems to use the newer Scripting API based systems
+   - Reduced reliance on legacy function, tag, scoreboard, and dialogue based systems where newer systems are available
+   - Added migration/compatibility support for legacy Moneyz worlds and systems
+
+2. Reworked Shops
+   - Shops can now be created and managed dynamically instead of requiring individual function commands for every item
+   - Supports both Items and Blocks using their Minecraft/Add-On identifiers
+   - Admins can create custom Shops and configure their contents in-game
+   - Admins can set Buy and Sell prices for individual Shop items
+   - Shops can support Buy only, Sell only, or Buy and Sell items
+   - Added support for custom Add-On Items and Blocks
+   - Added support for item quantities/bundles
+   - Non-stackable bundle items are now correctly delivered as multiple individual stacks
+   - Reworked Shop menus to make Buy and Sell prices easier to read
+   - NPCs can be assigned directly to specific Shops
+   - NPCs can show only the Shop or Shops assigned to them
+   - Reworked Shop transactions to use the newer transaction systems
+   - Shop purchases and sales now support atomic transaction handling and rollback
+   - Added better handling for insufficient Moneyz, inventory failures, and failed transactions
+
+3. Added Dynamic Pricing Systems
+   - Added pricing support for Shop items based on configured values
+   - Added reusable Pricing and Fee systems for other Moneyz features and Add-Ons
+   - Added support for Buy/Sell price calculations through the Moneyz API
+   - Pricing systems can be used by custom Shops and other public API integrations
+
+4. Reworked Moneyz Menu
+   - Updated the Moneyz Menu Item for the newer 2.0 systems
+   - Moneyz Menu Item now opens the same Moneyz Menu service used by commands and NPCs
+   - `/moneyz:setup` gives the Moneyz Menu Item if the Player does not already have one
+   - Re-running setup will not duplicate the Moneyz Menu Item
+   - Added `/moneyz:give_menu` to give yourself a replacement Moneyz Menu Item
+   - Moneyz Menu Item includes descriptive lore
+   - Moneyz Menu Item is not kept on death
+   - Removed the need for Moneyz to override `minecraft:player`
+
+5. Added Moneyz Services
+   - Added a reusable service system for opening Moneyz menus and features
+   - Commands, NPCs, Items, and other Add-Ons can use the same Moneyz services
+   - NPCs can be configured to open specific Moneyz menus directly
+   - Added support for NPCs opening specific Shops instead of only generic Shop menus
+   - Added services for Moneyz Menu, Shops, ATM, Banking, Send Moneyz, Jobs, Real Estate, Hotels, Help, Admin tools, and other supported systems
+   - Other Add-Ons can build their own integrations using the Moneyz service/API systems
+
+6. Reworked NPC Support
+   - NPCs can now be configured directly for specific Moneyz services
+   - NPCs can open specific Shop IDs
+   - NPCs can be limited to selected Shops or services
+   - Added NPC support for ATM services
+   - Added NPC support for Send Moneyz
+   - Added NPC support for Jobs
+   - Added NPC support for Real Estate
+   - Added NPC support for Hotels
+   - Added NPC support for Help
+   - Added NPC support for Admin menus where the Player has permission
+   - Legacy NPC/dialogue workflows can continue to be migrated to the newer service system
+
+7. Reworked Admin Menus
+   - Expanded Admin tools for managing Moneyz systems in-game
+   - Added management for Shops and Shop items
+   - Added management for Jobs
+   - Added management for Real Estate and Hotels
+   - Added management for Moneyz Treasury settings
+   - Added management for newer Moneyz services and configuration
+   - Improved access to Moneyz system information and settings without requiring manual function editing
+
+8. Reworked Help
+   - Reworked Help into a larger multi-page in-game guide
+   - Added updated Player instructions
+   - Added updated Admin/World Owner instructions
+   - Added NPC setup information
+   - Added Shop setup information
+   - Added Job setup information
+   - Added Real Estate and Hotel setup information
+   - Added Treasury and Reserve Economy information
+   - Added Developer/Public API information
+   - Updated Help for the newer command and menu based Moneyz systems
+
+9. Reworked Setup
+   - `/moneyz:setup` now uses the newer Moneyz setup systems
+   - Setup initializes required Moneyz systems for a new world
+   - Setup grants required legacy/setup items where applicable
+   - Setup gives the Moneyz Menu Item without creating duplicates
+   - Improved compatibility between setup, migration, and newer Moneyz systems
+   - Real Estate starts blank and requires Admins or other Add-Ons to register world-specific Properties
+
+10. Reworked Jobs
+   - Migrated Jobs away from relying only on legacy tags/functions
+   - Jobs can now be managed through newer Moneyz menus, commands, NPCs, and API systems
+   - Added Job application support through the newer systems
+   - Added Job join, leave, and current Job support
+   - Maintained legacy compatibility where required for existing worlds
+   - Reworked Job pay to integrate with the newer Economy transaction systems
+   - Jobs can participate in Treasury-backed payouts when Treasury mode is enabled
+
+11. Reworked Real Estate
+   - Real Estate now starts with no preconfigured world Properties
+   - Admins can configure Properties based on the layout of their own world
+   - Added reusable Property registration and management systems
+   - Added Property ownership support
+   - Added Property purchase and sale support
+   - Added Property rental support
+   - Added Property access control
+   - Property Owners can grant and revoke access for other Players
+   - Ownership and tenancy can be checked by other Moneyz systems and Add-Ons
+   - Added support for custom Property metadata
+   - Added support for namespaced Property IDs for third-party Add-Ons
+   - Property purchases and system buy-backs can integrate with the Moneyz Treasury
+
+12. Reworked Hotels and Reservations
+   - Added reusable Hotel registration support
+   - Other Add-Ons can register their own Hotels/rooms with Moneyz
+   - Added reservation creation, lookup, availability, cancellation, and checkout systems
+   - Added protection against invalid/double bookings
+   - Hotel payments can integrate with the Moneyz Treasury
+   - Hotel/Reservation systems are available through the public Moneyz API
+
+13. Added Moneyz Treasury
+   - Added a world-level Treasury for system Moneyz
+   - Added Classic Economy mode
+     - Uses unlimited system liquidity similar to previous Moneyz versions
+   - Added Treasury Economy mode
+     - System payouts require enough Moneyz in the Treasury
+   - Added Reserve Economy mode
+     - Uses the Treasury with tracked Resource reserves
+   - System purchases can add Moneyz to the Treasury
+   - System payouts can remove Moneyz from the Treasury
+   - Player-to-Player transfers do not create or destroy Treasury Moneyz
+   - Transactions that require more Moneyz than the Treasury contains are rejected
+   - Failed Treasury transactions are designed to leave Player Moneyz, Items, ownership, and Treasury values unchanged
+   - Added Treasury statistics for inflow, outflow, issuance, and other Economy information
+   - Added Treasury management to the Admin Menu
+   - Classic mode remains available for worlds that do not want a backed Economy
+
+14. Added Resource Reserve Economy
+   - Reserve Economy can track Resources deposited into Moneyz
+   - Resource deposits can add physical Resource quantities to Moneyz reserves
+   - Resource withdrawals require the Resource to exist in the reserve
+   - Moneyz will not generate an unavailable Resource when Reserve Economy enforcement is enabled
+   - Added Resource reserve counts and value information
+   - Added API support for adding, removing, listing, and checking Resource reserves
+
+15. Reworked Economy Transactions
+   - Expanded transaction handling across Moneyz systems
+   - Added atomic transaction handling for supported operations
+   - Added rollback protection for failed operations
+   - Improved handling for Shop purchases and sales
+   - Improved handling for Moneyz transfers
+   - Improved handling for Property transactions
+   - Improved handling for Hotel bookings
+   - Improved handling for Treasury deposits and payouts
+   - Added transaction history/recording systems for supported operations
+   - Improved protection against partial transactions where Moneyz or Items could otherwise be lost
+
+16. Expanded Moneyz Public API 2.0
+   - Moneyz 2.0 includes a public API for other Behavior Packs/Add-Ons
+   - Added Economy APIs
+   - Added Account APIs
+   - Added Transaction APIs
+   - Added Treasury APIs
+   - Added Resource Reserve APIs
+   - Added Shop/Commerce APIs
+   - Added Product APIs
+   - Added Job APIs
+   - Added Quest/Reward APIs
+   - Added Real Estate APIs
+   - Added Hotel/Reservation APIs
+   - Added Permission/Policy APIs
+   - Added Pricing/Fee APIs
+   - Added Merchant APIs
+   - Added Audit/Metrics APIs
+   - Added Extension discovery APIs
+   - Added Moneyz Service APIs
+   - Added NPC Service APIs
+   - Added Event APIs
+   - Added ScriptEvent/API gateway support for cross-pack integrations
+   - Public APIs allow other Add-Ons to build on Moneyz without modifying Moneyz source files
+
+17. Added Real Estate Public API
+   - Other Add-Ons can register their own Properties
+   - Other Add-Ons can register their own Hotels
+   - Added Property list/get/register/unregister operations
+   - Added Property ownership queries
+   - Added Property purchase/sale/rental operations
+   - Added Property access check/grant/revoke operations
+   - Added Hotel registration/list operations
+   - Added Reservation availability and management operations
+   - Supports provider/namespaced IDs to reduce conflicts between Add-Ons
+   - Supports custom metadata for Add-On specific Property information
+
+18. Expanded Public API Discovery and Observability
+   - Added Metrics snapshot support
+   - Added Audit recent/query support
+   - Added public Config get/list support
+   - Added Permission discovery
+   - Added Merchant list/get support
+   - Added Extension discovery
+   - Added Currency discovery
+   - Added Pricing calculation support
+   - Added Fee calculation support
+   - Privileged mutation operations remain controlled instead of exposing unrestricted remote Admin access
+
+19. Reworked Commands
+   - Added newer Moneyz custom commands for supported systems
+   - Commands can use the same underlying services as Moneyz menus and NPCs
+   - Namespaced Moneyz commands can be used when command aliases conflict with other Add-Ons
+   - Improved command/API handling for non-Player command origins where supported
+   - Improved compatibility with GameTest and cross-pack command/API requests
+
+20. Added Comprehensive GameTest Coverage
+   - Added a separate Moneyz 2.0 GameTest pack for testing the production pack
+   - GameTests do not require custom in-game structures for the supported test suites
+   - Added tests for Moneyz Economy APIs
+   - Added tests for balances, deposits, withdrawals, transfers, and invalid operations
+   - Added tests for Shops and Exchanges
+   - Added tests for Jobs and legacy Job migration
+   - Added tests for Entitlements
+   - Added tests for Properties
+   - Added tests for Hotels and Reservations
+   - Added tests for Quests
+   - Added tests for setup and legacy migration
+   - Added tests for the public API gateway
+   - Added stress tests for API requests
+   - Added Treasury unit and integration tests
+   - Added Treasury Shop purchase/sale tests
+   - Added Treasury insolvency/atomicity tests
+   - Added Reserve Economy tests
+   - Added Real Estate public API tests
+   - Added Property access security tests
+   - Added Hotel registration/availability tests
+   - Added Public API discovery/observability tests
+   - Full current internal test suite passes all 115 required tests
+
+21. Improved Legacy Migration
+   - Added migration support for legacy Job tags and newer Job state
+   - Added compatibility for legacy Job application behavior where required
+   - Improved migration/setup idempotency
+   - Reworked legacy systems to use newer Moneyz services where practical
+   - Existing worlds can continue using Classic Economy behavior while migrating to newer 2.0 features
+
+22. Improved Stability and Compatibility
+   - Removed unsupported `structuredClone` usage
+   - Fixed invalid Entity references causing Dynamic Property errors
+   - Fixed invalid Player references in Quest and HUD systems
+   - Fixed API gateway handling for non-Player request origins
+   - Fixed API request timeout issues during GameTests
+   - Improved handling for removed/invalid simulated Players in Metrics
+   - Improved Treasury test isolation
+   - Fixed non-stackable bundle delivery
+   - Improved transaction rollback and failure handling
+   - Improved setup and service availability handling
+   - Cleaned up production pack files that were only required for development/testing
+
+23. Added/Updated Documentation
+   - Added a detailed GitHub README for Moneyz Economy 2.0
+   - Added Player usage information
+   - Added Admin/World Owner setup information
+   - Added Shop configuration information
+   - Added NPC configuration information
+   - Added Jobs information
+   - Added Real Estate/Hotel information
+   - Added Treasury/Reserve Economy information
+   - Added Developer/Public API documentation
+   - Added examples for other Add-Ons building on Moneyz
+
+24. BREAKING CHANGES: Moneyz 2.0
+   - Moneyz 2.0 replaces many legacy function-only workflows with newer Script/API based systems
+   - World-specific Real Estate is no longer expected to be preconfigured and should be created by Admins or registered by Add-Ons
+   - New integrations should use Moneyz Services and the Moneyz Public API instead of depending on internal implementation files
+   - NPCs should use the newer service/menu bindings where possible
+   - Legacy compatibility and migration support is included where practical, but Add-On creators should update integrations to the Moneyz 2.0 Public API
+
