@@ -32,12 +32,21 @@ export async function give(player, typeId, amount, legacyData = 0) {
     const container = containerOf(player);
     if (container && (!legacyData || legacyData === 0)) {
         try {
-            let left = amount;
+            let left = Math.max(0, Math.floor(Number(amount) || 0));
+            // ItemStack amounts may not exceed the item type's own max stack size.
+            // Tools, weapons and other non-stackable items (for example spears)
+            // therefore need to be delivered as multiple one-item stacks.
+            const probe = new ItemStack(typeId, 1);
+            const maxPerStack = Math.max(1, Number(probe.maxAmount) || 1);
             while (left > 0) {
-                const stack = new ItemStack(typeId, Math.min(left, 64));
+                const requested = Math.min(left, maxPerStack);
+                const stack = new ItemStack(typeId, requested);
                 const remainder = container.addItem(stack);
-                left -= stack.amount - (remainder?.amount ?? 0);
-                if (remainder) break;
+                const notAdded = Math.max(0, Number(remainder?.amount) || 0);
+                const added = requested - notAdded;
+                if (added <= 0) break;
+                left -= added;
+                if (notAdded > 0) break;
             }
             if (left === 0) return true;
         } catch { /* compatibility fallback below */ }
