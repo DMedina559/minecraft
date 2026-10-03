@@ -129,7 +129,7 @@ export function shops(player) {
 function Credits(player) {
     new ActionFormData()
         .title("§l§1Credits")
-        .body("\n§l§5Creator: §dZVortex11325\n§5Link: §dlinktr.ee/dmedina559\n§5Platform API: §d2.5.0")
+        .body("\n§l§5Creator: §dZVortex11325\n§5Link: §dlinktr.ee/dmedina559\n§5Platform API: §d2.0.0")
         .button("§c§lBack")
         .show(player)
         .then(r => {
