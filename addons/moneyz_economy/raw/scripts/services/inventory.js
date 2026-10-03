@@ -59,6 +59,7 @@ export async function give(player, typeId, amount, legacyData = 0) {
 
 /** Give an exact ItemStack template, splitting quantities by the item's runtime max stack size. */
 export async function giveTemplate(player, spec, amount = undefined) {
+    if (spec?.tippedArrow?.data !== undefined) return give(player, "minecraft:arrow", Math.max(1, Math.floor(Number(amount ?? spec.amount) || 1)), Math.floor(Number(spec.tippedArrow.data)));
     const { create } = await import("../core/item_templates.js");
     const container = containerOf(player); if (!container) return false;
     let left = Math.max(1, Math.floor(Number(amount ?? spec?.amount) || 1));
@@ -80,6 +81,7 @@ export async function giveTemplate(player, spec, amount = undefined) {
 
 /** Remove only stacks matching an exact captured template (enchantments, potion state, lore, etc.). */
 export async function removeTemplate(player, spec, amount = undefined) {
+    if (spec?.tippedArrow?.data !== undefined) return remove(player, "minecraft:arrow", Math.max(1, Math.floor(Number(amount ?? spec.amount) || 1)), Math.floor(Number(spec.tippedArrow.data)));
     const { create } = await import("../core/item_templates.js");
     const container = containerOf(player); if (!container) return false;
     const target = create(spec, { amount: 1 });
