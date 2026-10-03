@@ -1,7 +1,7 @@
 {
     "format_version": 2,
     "header": {
-        "description": "Moneyz Economy 2.0 RC1 \u2014 modern Script API economy platform. Upgrade candidate from public 1.10.1.",
+        "description": "Moneyz Economy 2.0 \u2014 modern Script API economy platform.",
         "name": "Moneyz Economy",
         "uuid": "97f0bff3-9af2-4a12-a869-a4090a90c734",
         "min_engine_version": [
@@ -17,7 +17,7 @@
     },
     "modules": [
         {
-            "description": "Moneyz Economy 2.0 RC1 \u2014 modern Script API economy platform.",
+            "description": "Moneyz Economy 2.0 \u2014 modern Script API economy platform.",
             "type": "data",
             "uuid": "59e3ae9c-4bf1-4737-a8dd-9fd9c7d13630",
             "version": [
@@ -27,7 +27,7 @@
             ]
         },
         {
-            "description": "Moneyz Economy 2.0 RC1 \u2014 modern Script API economy platform.",
+            "description": "Moneyz Economy 2.0 \u2014 modern Script API economy platform.",
             "type": "script",
             "uuid": "56f78814-6722-41ee-9374-27b30e413968",
             "version": [
