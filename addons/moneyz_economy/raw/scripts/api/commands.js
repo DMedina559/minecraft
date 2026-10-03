@@ -14,13 +14,14 @@ import { Moneyz } from "../core/api.js";
 import * as Jobs from "../core/jobs.js";
 import * as Properties from "../core/properties.js";
 import { handleApiCommand } from "./gateway.js";
-import { setupWorld } from "../core/setup.js";
+import { setupWorld, grantMenuItem } from "../core/setup.js";
 const playerFrom=o=>o.sourceEntity instanceof Player?o.sourceEntity:undefined;
 const result=(ok,message)=>({status:ok?CustomCommandStatus.Success:CustomCommandStatus.Failure,message});
 export function registerCommands(registry){
- registry.registerCommand({name:"moneyz:menu",description:"Open the Moneyz menu",permissionLevel:CommandPermissionLevel.Any,cheatsRequired:false},origin=>{const p=playerFrom(origin);if(!p)return result(false,"Player only.");system.run(()=>main(p));return result(true,"Opening Moneyz.");});
+ registry.registerCommand({name:"moneyz:menu",description:"Open the Moneyz menu",permissionLevel:CommandPermissionLevel.Any,cheatsRequired:false},origin=>{const p=playerFrom(origin);if(!p)return result(false,"Player only.");system.run(()=>Services.open("moneyz:menu",p,{source:"command"}));return result(true,"Opening Moneyz.");});
  registry.registerCommand({name:"moneyz:balance",description:"Show a Moneyz balance",permissionLevel:CommandPermissionLevel.Any,cheatsRequired:false,optionalParameters:[{type:CustomCommandParamType.PlayerSelector,name:"player"}]},(origin,targets)=>{const target=targets?.[0]??playerFrom(origin);if(!target)return result(false,"No player.");return result(true,`${target.nameTag}: ${Economy.getBalance(target)} Moneyz`);});
  for(const [name,op] of [["give","deposit"],["take","withdraw"],["set","setBalance"]])registry.registerCommand({name:`moneyz:${name}`,description:`${name} Moneyz`,permissionLevel:CommandPermissionLevel.Admin,mandatoryParameters:[{type:CustomCommandParamType.PlayerSelector,name:"player"},{type:CustomCommandParamType.Integer,name:"amount"}]},(origin,targets,amount)=>{const target=targets?.[0];if(!target)return result(false,"No player.");const actor=playerFrom(origin)??"console";system.run(()=>Economy[op](target,amount,{type:"admin_adjustment",source:"custom_command",actor}));return result(true,"Moneyz update queued.");});
+ registry.registerCommand({name:"moneyz:give_menu",description:"Give yourself the Moneyz Menu item",permissionLevel:CommandPermissionLevel.Any,cheatsRequired:false},origin=>{const p=playerFrom(origin);if(!p)return result(false,"Player only.");system.run(()=>{const r=grantMenuItem(p);if(!r.ok)p.sendMessage(`§cCould not give Moneyz Menu: ${r.reason}.`);else if(!r.granted)p.sendMessage("§7You already have a Moneyz Menu.");else p.sendMessage("§aMoneyz Menu added to your inventory.");});return result(true,"Moneyz Menu grant queued.");});
  registry.registerCommand({name:"moneyz:reload",description:"Reload Moneyz shop data",permissionLevel:CommandPermissionLevel.Admin},()=>{system.run(()=>reloadShops());return result(true,"Moneyz reload queued.");});
  registry.registerCommand({name:"moneyz:health",description:"Show Moneyz diagnostics",permissionLevel:CommandPermissionLevel.Admin},()=>result(true,formatHealth()));
  registry.registerCommand({name:"moneyz:migrate",description:"Run Moneyz schema migrations",permissionLevel:CommandPermissionLevel.Admin},()=>{system.run(()=>runMigrations());return result(true,"Moneyz migration queued.");});

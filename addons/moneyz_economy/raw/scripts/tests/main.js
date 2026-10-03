@@ -4,7 +4,7 @@ import { operation } from "../api/gateway.js";
 import * as Economy from "../core/economy.js";
 import * as Jobs from "../core/jobs.js";
 import * as Transactions from "../core/transactions.js";
-import { setupWorld } from "../core/setup.js";
+import { setupWorld, grantMenuItem, countMenuItems } from "../core/setup.js";
 const STRUCTURE="moneyz_tests:fixture",ALL="moneyz_internal";
 const wait=(ticks=2)=>new Promise(r=>system.runTimeout(r,ticks));
 const objective=n=>world.scoreboard.getObjective(n), money=()=>objective("Moneyz"), mailbox=()=>objective("MoneyzAPI");
@@ -51,7 +51,9 @@ reg("transport_unknown_operation",async t=>{const r=await api(t,{op:"does.not.ex
 reg("platform_capabilities",async t=>{const r=await api(t,{op:"capabilities"});t.assert(r.ok&&r.value>=30,"Expected broad Moneyz capability surface");},"moneyz_internal_contract");
 reg("moneyz_objective",async t=>t.assert(!!money(),"Moneyz objective missing"),"moneyz_internal_contract");
 reg("setup_idempotent",async t=>{const p=await readyPlayer(t,"SETUP");const a=setupWorld(p,{grantItems:false}),b=setupWorld(p,{grantItems:false});t.assert(a.ok&&b.ok&&!!money()&&p.hasTag("moneyzAdmin")&&score(p)===0,"Setup did not reproduce legacy initialization");},"moneyz_internal_setup");
-reg("setup_grants_legacy_items",async t=>{const p=await readyPlayer(t,"SETITEM");const c=p.getComponent("minecraft:inventory")?.container;t.assert(!!c,"Setup test inventory unavailable");const r=setupWorld(p,{grantItems:true});await wait(3);let menu=0,egg=0;for(let i=0;i<c.size;i++){const it=c.getItem(i);if(!it)continue;if(it.typeId==="zvortex:moneyz_menu")menu+=it.amount;if(String(it.typeId).includes("spawn_egg"))egg+=it.amount;}t.assert(r.ok&&menu>=1&&egg>=1,"Setup did not grant Moneyz Menu and NPC spawn egg like legacy /function setup");},"moneyz_internal_setup");
+reg("setup_grants_legacy_items",async t=>{const p=await readyPlayer(t,"SETITEM");const c=p.getComponent("minecraft:inventory")?.container;t.assert(!!c,"Setup test inventory unavailable");const r=setupWorld(p,{grantItems:true});await wait(3);let egg=0;for(let i=0;i<c.size;i++){const it=c.getItem(i);if(!it)continue;if(String(it.typeId).includes("spawn_egg"))egg+=it.amount;}t.assert(r.ok&&countMenuItems(p)===1&&egg>=1,"Setup did not grant exactly one Moneyz Menu and an NPC spawn egg");},"moneyz_internal_setup");
+reg("setup_menu_no_duplicate",async t=>{const p=await readyPlayer(t,"SETDUP");setupWorld(p,{grantItems:true});await wait(2);setupWorld(p,{grantItems:true});await wait(2);t.assert(countMenuItems(p)===1,"Repeated setup duplicated the Moneyz Menu item");},"moneyz_internal_setup");
+reg("menu_item_grant_idempotent",async t=>{const p=await readyPlayer(t,"MENUGIVE");const a=grantMenuItem(p),b=grantMenuItem(p);t.assert(a.ok&&a.granted&&b.ok&&!b.granted&&countMenuItems(p)===1,"Menu item grant is not idempotent");const c=p.getComponent("minecraft:inventory")?.container;let lore=[];for(let i=0;i<c.size;i++){const it=c.getItem(i);if(it?.typeId==="zvortex:moneyz_menu"){lore=it.getLore();break;}}t.assert(lore.some(x=>x.includes("Moneyz Economy menu")),"Moneyz Menu lore missing");},"moneyz_internal_setup");
 
 // Economy + transactions
 reg("economy_set_balance",async t=>{const p=await readyPlayer(t,"ESET");await setBal(t,p,123);t.assert(score(p)===123,"Set balance mismatch");},"moneyz_internal_economy");
