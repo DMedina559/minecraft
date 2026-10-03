@@ -437,8 +437,8 @@ It re-exports the Moneyz platform object from `core/api.js`.
 Current platform identifiers:
 
 ```text
-Moneyz platform: 2.0.0-rc.1
-Public API:       2.6.0
+Moneyz platform: 2.0.0
+Public API:       2.0.0
 ```
 
 Major SDK namespaces include:
