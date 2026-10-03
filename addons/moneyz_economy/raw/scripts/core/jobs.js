@@ -1,6 +1,7 @@
 import { world } from "@minecraft/server";
 import * as Storage from "./storage.js";
 import * as Economy from "./economy.js";
+import * as Treasury from "./treasury.js";
 import { emit } from "./events.js";
 const db=Storage.namespace("jobs");
 const KEY="definitions";
@@ -38,7 +39,7 @@ export function join(player,id,{source="api",bypassApplication=false}={}){const 
 export function leave(player,{source="api"}={}){const job=current(player);if(!job)return {ok:false,reason:"unemployed"};for(const t of job.legacyTags??[])try{player.removeTag(t)}catch{}pstore(player).delete("current");pstore(player).delete("joinedAt");emit("jobLeft",{player,job,source});return {ok:true,job};}
 export function migrateLegacy(player){if(current(player))return null;for(const job of list()){if((job.legacyTags??[]).some(t=>player.hasTag?.(t))){pstore(player).set("current",job.id);pstore(player).set("joinedAt",Date.now());return job;}}return null;}
 export function canRunPayroll(player){return current(player)?.id==="banker"||player.hasTag?.("banker");}
-export function runPayroll(actor,{source="jobs_payroll"}={}){if(!canRunPayroll(actor))return {ok:false,reason:"banker_required"};const payments=[];for(const player of world.getPlayers()){const job=current(player)??migrateLegacy(player);if(!job||job.pay<=0)continue;if(Economy.deposit(player,job.pay,{type:"job_pay",source,actor,jobId:job.id})){payments.push({player,job,amount:job.pay});try{player.sendMessage(`§aPayment received: ${job.pay} Moneyz (${job.name}).`)}catch{}}}emit("payrollRun",{actor,payments,source});return {ok:true,count:payments.length,total:payments.reduce((n,x)=>n+x.amount,0),payments};}
+export function runPayroll(actor,{source="jobs_payroll"}={}){if(!canRunPayroll(actor))return {ok:false,reason:"banker_required"};const payments=[];for(const player of world.getPlayers()){const job=current(player)??migrateLegacy(player);if(!job||job.pay<=0)continue;const pay=Treasury.payout(job.pay,{type:"job_pay",jobId:job.id});if(pay.ok&&Economy.deposit(player,job.pay,{type:"job_pay",source,actor,jobId:job.id})){payments.push({player,job,amount:job.pay});try{player.sendMessage(`§aPayment received: ${job.pay} Moneyz (${job.name}).`)}catch{}}}emit("payrollRun",{actor,payments,source});return {ok:true,count:payments.length,total:payments.reduce((n,x)=>n+x.amount,0),payments};}
 // Compatibility API: individual pay is retained for extensions/admin automation, but normal Moneyz UX uses banker-run payroll.
-export function claimPay(player,{source="jobs",actor}={}){const job=current(player)??migrateLegacy(player);if(!job)return {ok:false,reason:"unemployed"};if(!Economy.deposit(player,job.pay,{type:"job_pay",source,actor,jobId:job.id}))return {ok:false,reason:"payment_failed"};emit("jobPaid",{player,job,amount:job.pay,source});return {ok:true,job,amount:job.pay};}
+export function claimPay(player,{source="jobs",actor}={}){const job=current(player)??migrateLegacy(player);if(!job)return {ok:false,reason:"unemployed"};const pay=Treasury.payout(job.pay,{type:"job_pay",jobId:job.id});if(!pay.ok)return {ok:false,reason:pay.reason};if(!Economy.deposit(player,job.pay,{type:"job_pay",source,actor,jobId:job.id})){Treasury.collect(job.pay,{type:"job_pay_rollback",jobId:job.id});return {ok:false,reason:"payment_failed"};}emit("jobPaid",{player,job,amount:job.pay,source});return {ok:true,job,amount:job.pay};}
 export function state(player){return {job:current(player),joinedAt:pstore(player).get("joinedAt")??null,hasApplication:hasApplication(player)};}

@@ -10,6 +10,15 @@ import * as Products from "../core/products.js";
 import * as Properties from "../core/properties.js";
 import * as Exchanges from "../core/exchanges.js";
 import * as Reservations from "../core/reservations.js";
+import * as Treasury from "../core/treasury.js";
+import * as Metrics from "../core/metrics.js";
+import * as Audit from "../core/audit.js";
+import * as Config from "../core/config.js";
+import * as Permissions from "../core/permissions.js";
+import * as Merchants from "../core/merchants.js";
+import * as Extensions from "./extensions.js";
+import * as Pricing from "../core/pricing.js";
+import * as Fees from "../core/fees.js";
 import * as Quests from "../quest/engine.js";
 import * as Services from "./services.js";
 import { capabilities, API_VERSION, PACK_PLATFORM_VERSION } from "../core/api.js";
@@ -78,6 +87,37 @@ export async function operation(event,data){
   case"products.remove":return {ok:Products.remove(data.id)};
   case"products.purchase":return player?await Products.purchase(player,data.id,{source:"gateway"}):fail("player_not_found");
   case"products.exists":return {ok:true,value:Products.get(data.id)?1:0};
+  case"treasury.stats":return {ok:true,...Treasury.stats(),reserves:Treasury.listReserves()};
+  case"treasury.balance":return {ok:true,balance:Treasury.getBalance(),value:Treasury.getBalance(),mode:Treasury.getMode()};
+  case"treasury.mode":{try{return {ok:true,mode:Treasury.setMode(data.mode)}}catch(e){return fail("invalid_mode",{message:String(e)})}}
+  case"treasury.deposit":return Treasury.deposit(Number(data.amount),{reason:"api_treasury_deposit",metadata:{source:"gateway"}});
+  case"treasury.withdraw":return Treasury.withdraw(Number(data.amount),{reason:"api_treasury_withdraw",metadata:{source:"gateway"}});
+  case"metrics.snapshot":return {ok:true,metrics:Metrics.snapshot()};
+  case"audit.recent":{const rows=Audit.recent(Math.max(1,Math.min(100,Number(data.limit)||25)));return {ok:true,value:rows.length,entries:rows};}
+  case"audit.query":{const rows=Audit.query({action:data.action,actor:data.actor,since:Number(data.since)||undefined,limit:Math.max(1,Math.min(100,Number(data.limit)||25))});return {ok:true,value:rows.length,entries:rows};}
+  case"config.get":{const key=String(data.key??"");return key?{ok:true,key,value:Config.get(key)}:fail("key_required");}
+  case"config.list":return {ok:true,config:Config.all()};
+  case"permissions.list":{const rows=Permissions.list();return {ok:true,value:rows.length,permissions:rows};}
+  case"merchants.list":{const rows=Merchants.list().map(x=>({id:x.id,name:x.name,accountId:x.accountId,metadata:x.metadata}));return {ok:true,value:rows.length,merchants:rows};}
+  case"merchants.get":{const x=Merchants.get(data.id);return x?{ok:true,merchant:{id:x.id,name:x.name,accountId:x.accountId,metadata:x.metadata}}:fail("unknown_merchant");}
+  case"extensions.list":{const rows=Extensions.list().map(x=>({id:x.id,name:x.name,version:x.version,metadata:x.metadata}));return {ok:true,value:rows.length,extensions:rows};}
+  case"currencies.list":{const rows=Extensions.currencies.list();return {ok:true,value:rows.length,currencies:rows};}
+  case"pricing.calculate":{const value=Pricing.calculate(Number(data.base??data.price??0),data.context??{});return {ok:true,value,price:value};}
+  case"fees.calculate":{const rows=Fees.calculate(data.context??data);return {ok:true,value:rows.reduce((n,x)=>n+Number(x.amount||0),0),fees:rows};}
+  case"realestate.list":{const rows=Properties.list({type:data.type,available:data.available});return {ok:true,value:rows.length,properties:rows};}
+  case"realestate.get":{const p=Properties.get(data.id);return p?{ok:true,property:p}:fail("unknown_property");}
+  case"realestate.register":case"hotels.register":{try{const p=op==="hotels.register"?Properties.registerHotel(data.property??data):Properties.registerProperty(data.property??data);return {ok:true,id:p.id,property:p};}catch(e){return fail("property_register_failed",{message:String(e)})}}
+  case"realestate.unregister":return {ok:Properties.unregisterProperty(data.id)};
+  case"realestate.owner":{const owner=Properties.getOwner(data.id);return {ok:Boolean(Properties.get(data.id)),owner};}
+  case"realestate.ownedby":{if(!player)return fail("player_not_found");const rows=Properties.ownedBy(player);return {ok:true,value:rows.length,properties:rows};}
+  case"realestate.purchase":return player?Properties.buy(player,data.id):fail("player_not_found");
+  case"realestate.sell":return player?Properties.sell(player,data.id,{rate:Number(data.rate??1)}):fail("player_not_found");
+  case"realestate.rent":return player?Properties.rent(player,data.id):fail("player_not_found");
+  case"realestate.access.check":return player?{ok:true,has:Properties.hasAccess(player,data.id),value:Properties.hasAccess(player,data.id)?1:0}:fail("player_not_found");
+  case"realestate.access.grant":{if(!player)return fail("player_not_found");const guest=findPlayer(data.guest??data.target);return guest?Properties.grantAccess(player,data.id,guest,data.role):fail("target_not_found");}
+  case"realestate.access.revoke":{if(!player)return fail("player_not_found");const guest=findPlayer(data.guest??data.target);return guest?Properties.revokeAccess(player,data.id,guest):fail("target_not_found");}
+  case"hotels.list":{const rows=Properties.listHotels();return {ok:true,value:rows.length,hotels:rows};}
+  case"reservations.available":return {ok:true,available:Reservations.isAvailable(data.propertyId??data.id),value:Reservations.isAvailable(data.propertyId??data.id)?1:0};
   case"properties.upsert":{try{const p=Properties.upsert(data.property??data);return {ok:true,value:p.price,id:p.id};}catch(e){return fail("property_upsert_failed",{message:String(e)});}}
   case"properties.remove":return {ok:Properties.remove(data.id)};
   case"properties.buy":return player?Properties.buy(player,data.id):fail("player_not_found");
