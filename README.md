@@ -26,15 +26,15 @@ Come in and explore this charming role-play map, lovingly crafted to capture the
 
 ### [Moneyz Economy](addons/moneyz_economy):
 
-Moneyz Economy is a function pack for Minecraft Bedrock, that allows you to buy/sell items, apply for jobs and much more. Money Economy is also used in the world MountainSide Villages 1.4.0+
+Moneyz Economy is a complete economy, shop, quest, rewards, and minigame behavior pack for Minecraft Bedrock Edition powered by the `@minecraft/server` Script API. It allows players to buy/sell items with live prices, send money, apply for jobs, complete quests, and play chance games. Moneyz Economy is also used in MountainSide Villages.
 
 ### [Moneyz Trader](addons/moneyz_tader):
 
-An NPC uses to trade items from Moneyz Economy shops.
+An NPC used to trade items from Moneyz Economy shops.
 
 ### [PVP NPC](addons/pvp_npc)
 
-Quickly turn your Moneyz NPC shop in to a Loot giver for quick PvP gameplay.
+Quickly turn your Moneyz NPC shop into a Loot giver for quick PvP gameplay.
 
 WIP
 
@@ -44,7 +44,7 @@ This behavior pack revamps the Archaeology system in Minecraft Bedrock Edition 1
 
 ### [Transfer UI](addons/transfer_ui):
 
-The Transfer UI Behavior Pack allows players to transfer to other Minecraft Bedrock servers using an in-game menu. Players can access the transfer menu by using a compass and input the desired server IP address and port.
+The Transfer UI Behavior Pack allows players to transfer to other Minecraft Bedrock servers using an in-game menu. Players can access the transfer menu by using a compass and inputting the desired server IP address and port.
 
 ## Scripts
 
@@ -54,11 +54,11 @@ Bedrock Server Manager is a comprehensive python package designed for installing
 
 ### [Moneyz Economy Function Creator](scripts/README.md#moneyz-economy-function-creator):
 
-Moneyz Economy Function Creator is bash script used to quickly create basic Moneyz Economy buy/sell function files for the Moneyz Economy Behavior Pack. 
+Moneyz Economy Function Creator is a bash script used to quickly create basic Moneyz Economy buy/sell function files for the Moneyz Economy Behavior Pack. 
 
 
 # Downloading Content
-To download any content from this respitory click on the desired file you want and click on "Download Raw File"
+To download any content from this repository click on the desired file you want and click on "Download Raw File"
 
 If on Mobile, after clicking on the desired files tap the 3 dot menu in the top corner and press Download.
 
