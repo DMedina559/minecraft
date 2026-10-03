@@ -1,836 +1,635 @@
-# Downloading Moneyz Economy
+# Moneyz Economy 2.0
 
-Download Moneyz Economy from MCPEDL:
+Moneyz Economy is a modern economy and roleplay platform for **Minecraft Bedrock Edition**. Version 2.0 moves the pack's core systems from legacy function/dialogue-driven behavior to the Bedrock Script API while keeping compatibility paths for existing Moneyz worlds.
 
-https://mcpedl.com/moneyz-economy/
+Moneyz can power player balances, dynamic shops, resource exchanges, player-to-player transfers, jobs and payroll, real estate, hotels, products and pets, daily rewards, quests, chance games, NPC terminals, transactions, and integrations with other behavior packs.
 
-# Moneyz Economy
+> **2.0 status:** this branch is the 2.0 release candidate. The latest previously released public build is 1.10.1. Test upgrades on a copy of an existing world before replacing a production pack.
 
-**Moneyz Economy** is a complete economy, shop, quest, rewards, and minigame system for Minecraft Bedrock Edition.
+## Contents
 
-Moneyz was originally created for **MountainSide Villages** and can also be installed in other Bedrock worlds to add a configurable economy without requiring world creators to build their own scoreboard, shop, payment, quest, and administration systems.
+- [Quick start](#quick-start)
+- [Player guide](#player-guide)
+- [Admin guide](#admin-guide)
+- [Dynamic shops](#dynamic-shops)
+- [NPC services](#npc-services)
+- [Jobs and payroll](#jobs-and-payroll)
+- [Real estate and hotels](#real-estate-and-hotels)
+- [Rewards, quests and games](#rewards-quests-and-games)
+- [Commands](#commands)
+- [Public API and integrations](#public-api-and-integrations)
+- [Legacy compatibility and migration](#legacy-compatibility-and-migration)
+- [Troubleshooting](#troubleshooting)
+- [Development and testing](#development-and-testing)
 
-Moneyz includes:
+## Quick start
 
-- Scoreboard-based currency
-- Player-to-player payments
-- Buy and sell shops
-- Custom shops
-- Daily rewards
-- Daily quests
-- Lucky purchases
-- Chance minigames
-- Transaction tracking
-- Administrative tools
-- Configurable player/world features
-- NPC integration
-- Custom Moneyz commands
-- A DDUI-based in-game interface
-- APIs and events for integration with other behavior packs
+### 1. Enable the behavior pack
 
-Moneyz continues to use the `Moneyz` scoreboard as its currency, making it compatible with Minecraft commands, NPCs, command blocks, and other behavior packs.
+Enable Moneyz Economy on the world. Moneyz 2.0 uses the Bedrock Script API and the `@minecraft/server` / `@minecraft/server-ui` modules declared by the pack manifest.
 
----
+### 2. Initialize the world
 
-# Getting Started
+As a world owner/operator, run:
 
-Enable the Moneyz Economy behavior pack in your world and make sure cheats are enabled.
+```mcfunction
+/moneyz:setup
+```
+
+The setup command is idempotent and is the scripted equivalent of the legacy `function setup` workflow. It:
+
+- creates the `Moneyz` scoreboard objective if it does not exist;
+- initializes online players in that objective;
+- grants the caller the `moneyzAdmin` compatibility/admin tag;
+- grants the Moneyz Menu item (`zvortex:moneyz_menu`);
+- grants an NPC spawn egg where supported.
+
+Running setup again should not destroy balances or recreate an existing objective.
+
+### 3. Open Moneyz
+
+Players can open the main UI with the Moneyz Menu item or:
+
+```mcfunction
+/moneyz:menu
+```
+
+Admins can open the management UI with:
+
+```mcfunction
+/moneyz:admin
+```
+
+The built-in in-game guide is available with:
+
+```mcfunction
+/moneyz:help
+```
+
+### 4. Configure your world
+
+Moneyz intentionally leaves **world-specific real estate blank**. Use the Admin Menu to configure the shops, properties, hotels, products, exchanges, jobs and NPC services that make sense for your map.
+
+## Player guide
+
+### Moneyz balance
+
+Moneyz uses the `Moneyz` scoreboard objective as the player currency balance. The main menu shows the current balance, and players can query it with:
+
+```mcfunction
+/moneyz:balance
+```
+
+Moneyz's economy service validates deposits, withdrawals and transfers and records supported activity in the transaction ledger.
+
+### Shops
+
+Moneyz 2.0 uses **Shop Engine v3** for modern shops. Shops are runtime Script API definitions rather than giant generated buy/sell function trees.
+
+A shop can define:
+
+- any valid Minecraft item/block type ID that can be handled as an inventory item;
+- separate buy and sell prices;
+- buy/sell bundle quantities;
+- categories;
+- unlimited or tracked stock;
+- browser visibility;
+- whether the shop can be attached to NPCs.
+
+Players can browse exposed shops from the Moneyz Menu. A world owner can also make an NPC expose only one particular shop.
+
+### ATM and exchanges
+
+The ATM is backed by the configurable Exchange Engine. An exchange defines a resource, quantity and Moneyz value. Players can exchange through the ATM UI without legacy buy/sell functions.
+
+Existing legacy exchange values are preserved as compatibility defaults where applicable, but admins can manage exchange definitions for their world.
+
+### Sending Moneyz
+
+The Send Moneyz UI transfers Moneyz directly between online players. The transfer is rejected when the amount is invalid or the sender cannot afford it.
+
+### Jobs
+
+Open the employment UI with the Moneyz Menu or:
+
+```mcfunction
+/moneyz:jobs
+```
+
+Most built-in jobs require an application permit. The command flow is:
+
+```mcfunction
+/moneyz:job_apply
+/moneyz:job farmer
+```
+
+Leave a job with:
+
+```mcfunction
+/moneyz:job_quit
+```
+
+The built-in legacy-compatible roster currently includes Assistant, Banker, Builder, Cop, Delivery Person, Farmer, Fisher, Hotel Owner, Judge, Lawyer, Mayor, Pastor and Realtor. Job definitions and pay can be changed by admins.
+
+Bankers can run payroll for currently employed online players:
+
+```mcfunction
+/moneyz:pay
+```
+
+Legacy job tags are mirrored/migrated where supported so older worlds can move to the modern Jobs engine.
+
+### Real estate
+
+Moneyz 2.0 has a native property engine for residential, commercial and hotel listings. Players can buy, sell, rent and check out according to the listing type and state.
+
+A property cannot be purchased/rented by another player while it is occupied. Rent intervals and prices are configured per listing.
+
+**No generic houses are preconfigured for a new world.** Property locations and values are map-specific, so the world owner creates them.
+
+### Hotels
+
+Hotels use the property/reservation systems for room-style temporary occupancy. Moneyz tracks active reservations and rejects conflicting/double bookings.
+
+### Products, bundles and pets
+
+The Product system supports configurable purchases beyond ordinary shop listings. Products can represent items, bundles, pets, entitlements or other registered delivery behavior. Failed delivery paths are designed to avoid silently consuming a player's Moneyz.
+
+### Daily rewards
+
+When enabled, players can claim a configurable daily Moneyz reward once per UTC date. The default configured reward is `25` Moneyz unless changed by the world owner.
+
+### Quests
+
+The Quest engine includes objectives for:
+
+- mining configured ores;
+- planting crops;
+- slaying hostile mobs;
+- slaughtering farm animals;
+- patrolling/covering a required area;
+- maintaining a Moneyz balance for a required duration.
+
+Quest rewards are defined in Moneyz's quest data. Hostile-mob quests should not be selected/used when the world difficulty prevents hostile mobs from existing (for example Peaceful).
+
+### Lucky Purchase and chance games
+
+The Feeling Lucky section can expose:
+
+- Lucky Purchase;
+- Test Your Luck;
+- 21 / Blackjack;
+- Dice / Craps;
+- Slots.
+
+Admins control whether Lucky Purchase and Chance Games are enabled, whether Lucky Purchase is once per day, the chance multiplier, and the configured win chance used by applicable games.
+
+## Admin guide
+
+The Moneyz Admin menu is the central configuration interface. Access requires Moneyz admin permission; `/moneyz:setup` grants the setup player the `moneyzAdmin` compatibility tag.
+
+Current admin areas include:
+
+- **Balance Manager** — add, set or remove Moneyz for online players.
+- **Properties / Tags** — inspect compatibility state and player tags.
+- **Shop Manager** — create/edit dynamic shops and listings.
+- **NPC Manager** — assign services and specific shops to NPCs.
+- **Job Manager** — manage job definitions and pay.
+- **Property / Hotel Manager** — define world-specific real estate.
+- **Exchange Manager** — configure ATM/resource exchanges.
+- **Product Manager** — configure products, bundles, pets and service-like purchases.
+- **Setup Wizard** — inspect world setup and jump to major configuration systems.
+- **Settings** — global feature switches and reward/chance settings.
+- **Transaction Ledger** — inspect recent transaction activity.
+- **Diagnostics** — runtime health information.
+
+### Feature settings
+
+Moneyz currently maintains compatibility settings for:
+
+| Setting | Default | Purpose |
+|---|---:|---|
+| `dailyReward` | `25` | Daily Moneyz reward |
+| `chanceX` | `2` | Chance-game multiplier |
+| `chanceWin` | `50` | Applicable chance-game win percentage |
+| `syncPlayers` | `true` | Sync feature flags to players |
+| `moneyzATM` | `true` | ATM availability |
+| `moneyzQuest` | `true` | Quest availability |
+| `moneyzSend` | `true` | Player transfers |
+| `moneyzShop` | `true` | Shop browser |
+| `moneyzDaily` | `true` | Daily rewards |
+| `moneyzLucky` | `true` | Lucky Purchase area |
+| `moneyzChance` | `true` | Chance games |
+| `oneLuckyPurchase` | `true` | Once-per-day Lucky Purchase behavior |
+
+When `syncPlayers` is enabled, feature flags are mirrored to player dynamic properties for compatibility and per-player UI behavior.
+
+### Transaction ledger
+
+Moneyz records recent economy activity for administration and diagnostics. The ledger is intentionally bounded (currently 150 records), so it should be treated as a recent operational ledger, **not an unlimited accounting database**.
+
+## Dynamic shops
+
+### Creating a shop
+
+Use **Moneyz Admin → Manage Shops**. A modern shop has an ID, display name, settings and listings.
+
+Use stable, simple IDs such as:
+
+```text
+general
+armory
+farmers_market
+mountainside_market
+```
+
+IDs are used by NPC bindings and APIs, so avoid changing them after other systems depend on them.
+
+### Listings
+
+Listings can define an item/block type ID, category, buy configuration, sell configuration and stock. This allows a block item such as `minecraft:stone` to be sold the same way as other inventory items; the engine operates on item stacks/type IDs rather than requiring separate legacy block functions.
+
+Prices should be designed around your world's scarcity, renewable resources, progression and intended Moneyz sinks/sources. Avoid a sell price that allows an easy crafting loop to generate unlimited profit unless that is intentional.
+
+### Stock
+
+Shops may use unlimited stock or tracked quantities. A tracked listing can sell out. Buying and selling update stock according to the listing configuration.
+
+## NPC services
+
+Moneyz 2.0 NPCs are service-driven. **NPC names are no longer the primary routing mechanism.** An NPC can store one or more Moneyz services and/or specific shop bindings.
+
+### Recommended: NPC Manager
+
+1. Spawn/place a Minecraft NPC.
+2. Open **Moneyz Admin → Manage NPC Services**.
+3. Select the NPC.
+4. Add the service(s) or shop(s) that NPC should expose.
+5. Interact with the NPC as a normal player.
+
+If the NPC has one Moneyz service, it opens directly. If it has multiple services, Moneyz displays a chooser.
+
+### Command setup
+
+Stand near an NPC and run:
+
+```mcfunction
+/moneyz:npc moneyz:atm
+```
+
+Bind a particular shop:
+
+```mcfunction
+/moneyz:npc_shop general
+```
+
+Discover IDs:
+
+```mcfunction
+/moneyz:services
+/moneyz:shops
+/moneyz:menus
+```
+
+Clear bindings:
+
+```mcfunction
+/moneyz:npc_shop_clear
+/moneyz:npc_clear
+```
+
+The NPC commands can also accept selectors where supported. Without one, Moneyz uses the nearest NPC for the player-oriented setup commands.
+
+### Built-in service IDs
+
+Common service IDs include:
+
+| Service ID | Purpose |
+|---|---|
+| `moneyz:menu` | Main Moneyz menu |
+| `moneyz:help` | In-game guide |
+| `moneyz:shops` | All exposed shops |
+| `moneyz:shop` | Specific shop service (normally supplied a shop ID) |
+| `moneyz:atm` | ATM / exchanges |
+| `moneyz:send` | Send Moneyz |
+| `moneyz:jobs` | Employment |
+| `moneyz:payroll` | Banker payroll |
+| `moneyz:realtor` | Real estate |
+| `moneyz:hotel` | Hotel services |
+| `moneyz:pets` | Pet products |
+| `moneyz:products` | Products/services |
+| `moneyz:daily_rewards` | Daily reward |
+| `moneyz:quests` | Quests |
+| `moneyz:lucky` | Feeling Lucky |
+| `moneyz:lucky_purchase` | Lucky Purchase |
+| `moneyz:blackjack` | 21 / Blackjack |
+| `moneyz:test_luck` | Test Your Luck |
+| `moneyz:craps` | Dice / Craps |
+| `moneyz:slots` | Slots |
+| `moneyz:admin` | Admin menu (permission checked) |
+
+Additional `moneyz:admin/...` services expose individual admin screens. Use `/moneyz:services` for the runtime-authoritative list.
+
+## Jobs and payroll
+
+Job definitions are stored by the modern Jobs engine. Definitions include an ID, name, pay, application requirement and optional legacy tags.
+
+Built-in compatibility pay values currently seed as:
+
+| Job | Pay |
+|---|---:|
+| Assistant | 2,000 |
+| Banker | 4,000 |
+| Builder | 2,000 |
+| Cop | 2,000 |
+| Delivery Person | 1,000 |
+| Farmer | 1,000 |
+| Fisher | 1,000 |
+| Hotel Owner | 1,000 |
+| Judge | 4,000 |
+| Lawyer | 3,000 |
+| Mayor | 4,000 |
+| Pastor | 3,000 |
+| Realtor | 3,000 |
+
+Admins can change job definitions, so these are defaults rather than a promise that every Moneyz world uses the same economy.
+
+## Real estate and hotels
+
+The property database starts empty by design. Admins create listings that fit the actual world's builds and locations.
+
+Property types supported by the core engine are:
+
+- `residential`
+- `commercial`
+- `hotel`
+
+Definitions can include purchase price, rent, rent interval and other metadata used by the UI/integrations. Ownership and tenancy are stored by Moneyz rather than relying solely on tags.
+
+## Rewards, quests and games
+
+Moneyz's reward service can grant Moneyz, experience, items and extension-defined reward types. The quest engine uses this infrastructure for modern rewards.
+
+Current quest families include hostile mob kills, farm animal kills, crop planting, ore mining, patrol distance/area and maintained-balance objectives. Quest definitions are data-driven in `scripts/quest/definitions.js`.
+
+## Commands
+
+Use the **full namespaced commands**. Other behavior packs can register aliases such as `help`, `give` or `reload`; an alias warning does not remove `/moneyz:help`, `/moneyz:give` or `/moneyz:reload`.
+
+### Player-facing
+
+```text
+/moneyz:menu
+/moneyz:balance [player]
+/moneyz:help
+/moneyz:open <service>
+/moneyz:services
+/moneyz:jobs
+/moneyz:job_apply
+/moneyz:job <jobId>
+/moneyz:job_quit
+/moneyz:pay
+/moneyz:realtor
+/moneyz:hotel
+/moneyz:pets
+/moneyz:products
+```
+
+### Administration / world creation
+
+```text
+/moneyz:setup
+/moneyz:admin
+/moneyz:give <player> <amount>
+/moneyz:take <player> <amount>
+/moneyz:set <player> <amount>
+/moneyz:reload
+/moneyz:health
+/moneyz:migrate
+/moneyz:transactions [count]
+/moneyz:npc <service> [npc]
+/moneyz:npc_shop <shopId> [npc]
+/moneyz:npc_shop_clear
+/moneyz:npc_clear
+/moneyz:shops
+/moneyz:menus
+/moneyz:api
+/moneyz:extensions
+/moneyz:validate
+```
+
+Permissions are enforced by the command registration and by sensitive services themselves.
+
+## Public API and integrations
+
+Moneyz 2.0 is designed as a platform other scripts can build on.
+
+### SDK
+
+The canonical SDK surface is exported from:
+
+```js
+scripts/api/public.js
+```
+
+It re-exports the Moneyz platform object from `core/api.js`.
+
+Current platform identifiers:
+
+```text
+Moneyz platform: 2.0.0-rc.1
+Public API:       2.6.0
+```
+
+Major SDK namespaces include:
+
+```text
+Moneyz.economy
+Moneyz.transactions
+Moneyz.accounts
+Moneyz.merchants
+Moneyz.players
+Moneyz.shops
+Moneyz.commerce
+Moneyz.quests
+Moneyz.rewards
+Moneyz.jobs
+Moneyz.properties
+Moneyz.products
+Moneyz.entitlements
+Moneyz.exchanges
+Moneyz.reservations
+Moneyz.services
+Moneyz.npcServices
+Moneyz.npcShops
+Moneyz.extensions
+Moneyz.events
+Moneyz.storage
+Moneyz.permissions
+Moneyz.policies
+Moneyz.audit
+Moneyz.metrics
+Moneyz.pricing
+Moneyz.fees
+Moneyz.notifications
+Moneyz.scheduler
+Moneyz.escrow
+Moneyz.invoices
+Moneyz.terminals
+Moneyz.components
+```
+
+Use `Moneyz.capabilities` rather than assuming a subsystem exists forever. `/moneyz:api` reports the runtime API version and enabled capability flags.
+
+### Same-pack/module integrations
+
+Code bundled into the same behavior-pack module graph can import the public module and use the SDK directly. Prefer the public module instead of importing Moneyz internals.
+
+```js
+import { Moneyz } from "./scripts/api/public.js";
+
+const balance = Moneyz.economy.getBalance(player);
+Moneyz.events.on("serviceOpened", event => {
+  // integration logic
+});
+```
+
+Adjust the relative path for where your module lives.
+
+### Separate behavior packs
+
+JavaScript module exports are not a general cross-behavior-pack module loader. Separate packs should use Moneyz's external integration surfaces rather than assuming they can `import` Moneyz's internal files.
+
+The primary ScriptEvent gateway is:
+
+```text
+moneyz:api/request
+```
+
+Requests use JSON. Example shape:
+
+```json
+{
+  "requestId": "my_pack_001",
+  "op": "economy.balance",
+  "player": "Steve"
+}
+```
+
+Moneyz emits a response ScriptEvent named:
+
+```text
+moneyz:api:response/<requestId>
+```
+
+The gateway currently exposes operations for health/capabilities-style discovery, economy, transaction counts, virtual accounts, jobs, entitlements, shops, commerce, products, properties, exchanges, reservations, quests and service discovery. See `scripts/api/gateway.js` for the runtime-authoritative operation list and response fields.
+
+> **Important:** player resolution and ScriptEvent source semantics depend on how the event is issued. Integrations should handle structured failures such as `player_not_found`, `target_not_found`, `unknown_operation`, `insufficient_funds`, and subsystem-specific errors instead of assuming success.
+
+### Service opening ScriptEvents
+
+Moneyz also recognizes integration events including:
+
+```text
+moneyz:service/open
+moneyz:menu/open
+moneyz:shop/open
+moneyz:job/apply
+moneyz:job/join
+moneyz:job/quit
+moneyz:reload
+moneyz:shop/reload
+moneyz:health
+moneyz:migrate
+moneyz:npc/assign
+```
+
+Use namespaced IDs for your own extensions and service registrations.
+
+### Extension architecture
+
+Moneyz includes extension registries for UI, shops, quests, rewards, currencies and related platform capabilities. Third-party integrations should prefer stable public registries and capability checks over reaching into GUI or storage internals.
+
+## Legacy compatibility and migration
+
+Moneyz 2.0 retains legacy content where practical so existing worlds are not forced into a one-step rewrite.
+
+Compatibility includes legacy dialogues/functions, legacy job tags, old NPC menu/shop bindings, and existing feature properties. Modern systems should be preferred for new content.
+
+Useful maintenance commands:
+
+```mcfunction
+/moneyz:migrate
+/moneyz:reload
+/moneyz:validate
+/moneyz:health
+```
+
+### Dialogue vs modern services
+
+Older Moneyz versions relied heavily on NPC dialogue commands such as `dialogue open ...` and generated functions. Those files remain useful for compatibility, but **new 2.0 worlds should prefer Moneyz Services, dynamic shops and NPC bindings**. This allows one NPC to expose multiple services and avoids manually maintaining commands for every item.
+
+## Troubleshooting
+
+### `/moneyz:setup` says the service is unavailable
+
+Current 2.0 builds implement `/moneyz:setup` directly through the setup engine; it should not depend on opening an admin service. Make sure an older Moneyz build is not still enabled/cached in the world.
+
+### A feature is missing from the main menu
+
+Check **Admin → Settings**. Moneyz can independently enable/disable Shops, ATM, Send, Quests, Daily Rewards, Lucky Purchase and Chance Games. With player syncing enabled, those settings are mirrored to player properties.
+
+### An NPC does nothing
+
+Use **Admin → Manage NPC Services** and verify the NPC has a valid service/shop. You can also clear and rebuild its Moneyz bindings with `/moneyz:npc_clear`.
+
+### A purchase fails
+
+Check:
+
+1. player Moneyz balance;
+2. listing buy/sell price and bundle amount;
+3. inventory capacity;
+4. tracked stock;
+5. shop/listing availability and permissions.
+
+### Command alias warnings
+
+Warnings such as `alias [help] already in use` mean another pack claimed a short alias. Use the full command (`/moneyz:help`, `/moneyz:reload`, `/moneyz:give`, etc.).
+
+### Diagnostics
 
 Run:
 
-`/function setup`
+```mcfunction
+/moneyz:health
+/moneyz:validate
+```
 
-> [!NOTE]
-> Setup creates the `Moneyz` scoreboard and initializes currently online players.
->
-> It also provides the items/resources required to begin configuring Moneyz.
+When reporting a problem, include the Moneyz version, Minecraft Bedrock version, reproduction steps, other enabled behavior packs, and relevant Content Log entries.
 
-If you need an NPC, you can summon one with:
+## Development and testing
 
-`/summon npc ~ ~ ~`
+Moneyz 2.0 has a separate developer GameTest build. The comprehensive internal suite directly exercises production APIs with GameTest `SimulatedPlayer` objects instead of trying to move player objects across behavior-pack boundaries.
 
-or use an NPC Spawn Egg.
+The current suite covers economy operations and atomicity, transactions, accounts, jobs/migration, entitlements, shops/commerce/stock, products/refunds, properties, hotels/reservations, exchanges, quests, services, setup behavior and stress cases.
 
-Moneyz also includes its own **Moneyz Menu**, which gives players access to enabled economy features without requiring every feature to be attached to an NPC.
+Run the full internal suite in the developer test build with:
 
----
+```mcfunction
+/gametest runset moneyz_internal
+```
 
-# Moneyz Currency
+The production pack does **not** require the GameTest dependency.
 
-Moneyz uses the scoreboard objective:
+## Legacy download / project links
 
-`Moneyz`
+- Public/legacy release page: https://mcpedl.com/moneyz-economy/
+- Source repository: https://github.com/DMedina559/minecraft
+- Historical item/price sheet: https://docs.google.com/spreadsheets/d/1TG4Ol5z_8U7mEJlSLx4I2LBmPVcJ0Aawu3_o_ac4xvU
 
-This remains the authoritative player balance.
+## Credits
 
-Because Moneyz uses a normal Minecraft scoreboard, balances can still be viewed or manipulated by commands when necessary:
+Moneyz Economy was created by **ZVortex11325 / DMedina559**.
 
-`/scoreboard players get <player> Moneyz`
-
-Moneyz itself uses its Script API economy service for normal transactions so purchases, rewards, transfers, games, and administrative changes can be validated and recorded consistently.
-
----
-
-# Moneyz Menu
-
-The Moneyz Menu is the main player interface.
-
-The current Moneyz interface uses Minecraft Bedrock's **Data Driven UI (DDUI)** system, allowing menus such as administration, shops, settings, games, and quests to behave more like persistent interfaces rather than chains of separate forms.
-
-Depending on which features are enabled, players can access:
-
-- Moneyz balance
-- Shops
-- ATM services
-- Send Moneyz
-- Daily Rewards
-- Daily Quests
-- Lucky Purchase
-- Chance Games
-- Help
-- Credits
-
-Authorized administrators additionally have access to the Moneyz Admin tools.
-
----
-
-# Moneyz Admin
-
-The Admin interface provides centralized management of the Moneyz system.
-
-Administrators can manage:
-
-- Player balances
-- Player tags
-- World and player properties
-- Shops
-- Moneyz settings
-- Transaction history
-- System diagnostics
-- Data migrations
-
-Balance changes performed through Moneyz are recorded by the transaction system.
-
-Moneyz also provides administrative custom commands.
-
-Examples include:
-
-`/moneyz:balance`
-
-`/moneyz:give`
-
-`/moneyz:take`
-
-`/moneyz:set`
-
-`/moneyz:reload`
-
-`/moneyz:health`
-
-`/moneyz:migrate`
-
-`/moneyz:transactions`
-
-> [!NOTE]
-> Administrative commands require the appropriate command permission level.
-
----
-
-# Feature Configuration
-
-Moneyz features can be enabled or disabled from the Settings interface.
-
-Current configurable features include:
-
-- ATM
-- Send Moneyz
-- Shops
-- Daily Rewards
-- Quests
-- Lucky Purchase
-- Chance Games
-
-Moneyz also supports synchronizing configured feature access to players.
-
-Older Moneyz versions used tags such as:
-
-- `moneyzATM`
-- `moneyzSend`
-- `moneyzShop`
-- `moneyzQuest`
-- `moneyzDaily`
-- `moneyzLucky`
-- `moneyzChance`
-
-Current versions migrate legacy configuration where possible and primarily use persistent Moneyz properties for feature state.
-
-The `moneyzAdmin` tag remains useful for identifying players who should have access to Moneyz administrative functionality where applicable.
-
----
-
-# Shops
-
-Moneyz provides built-in shops for buying and selling Minecraft items.
-
-Available shop categories include systems such as:
-
-- Armory
-- Crafter's Shop
-- Farmer's Market
-- Library
-- Pet Shop
-- Workshop
-- Custom Shops
-
-Purchases and sales are processed through Moneyz's commerce system.
-
-A purchase generally follows:
-
-1. Validate the item and price
-2. Validate the player's balance
-3. Withdraw Moneyz
-4. Deliver the item
-5. Record the transaction
-
-If delivery fails, Moneyz attempts to refund the transaction rather than simply consuming the player's Moneyz.
-
-Sales similarly validate the player's inventory before completing payment.
-
----
-
-# Custom Shops
-
-World Owners/Admins can create and manage custom shops from inside Moneyz.
-
-Custom shop entries can define information such as:
-
-- Item ID
-- Display name
-- Buy amount
-- Buy price
-- Sell amount
-- Sell price
-- Item data where required
-- Icon/resource information
-
-Current Moneyz versions use structured shop data internally instead of the older CSV-style custom shop representation.
-
-Existing legacy shop data can be migrated to the current format.
-
----
-
-# NPC Shops
-
-Moneyz continues to support Minecraft NPCs.
-
-NPCs are useful for roleplay worlds because NPC commands can execute in relation to the player interacting with the NPC using `@initiator`.
-
-For example:
-
-`dialogue open @s @initiator workshop_buy`
-
-or:
-
-`function petshop/pets/dog`
-
-This avoids relying on selectors such as `@p`, which can accidentally select another nearby player.
-
-## Creating an NPC Shop
-
-Summon an NPC:
-
-`/summon npc ~ ~ ~`
-
-Interact with the NPC and select **Edit Dialog**.
-
-Configure the NPC text, then use **Advanced Settings** to add a button.
-
-A button can open one of the included Moneyz dialogues:
-
-`dialogue open @s @initiator {dialogue}`
-
-or execute a specific Moneyz function.
-
-> [!TIP]
-> Dialogue-based shops are recommended where available because their menus can be updated by the pack without requiring every NPC button to be manually rewritten.
-
----
-
-# Available NPC Dialogues
-
-Moneyz includes dialogue configurations such as:
-
-`armory`  
-Armor, weapon, and tool shop.
-
-Supports:
-
-`armory_buy`
-
-`armory_sell`
-
----
-
-`atm`  
-Moneyz/resource exchange services.
-
----
-
-`banker`  
-Banking/worker-pay related services.
-
----
-
-`craftershop`  
-Crafter's Shop.
-
-Supports:
-
-`crafter_buy`
-
-`crafter_sell`
-
----
-
-`farmers_market`  
-Farmer's Market.
-
-Supports:
-
-`farmer_buy`
-
-`farmer_sell`
-
----
-
-`help`  
-Moneyz help and information.
-
----
-
-`hotel`  
-Hotel-related services.
-
----
-
-`jobs`  
-Employment/quest related services.
-
----
-
-`library`  
-Library Shop.
-
-Supports:
-
-`library_buy`
-
-`library_sell`
-
----
-
-`petshop`  
-Pet Shop.
-
-Supports:
-
-`petshop_buy`
-
-`petshop_sell`
-
----
-
-`realtor`  
-Real-estate related services.
-
----
-
-`universal`  
-Access to multiple Moneyz dialogues.
-
----
-
-`workshop`  
-Workshop.
-
-Supports:
-
-`workshop_buy`
-
-`workshop_sell`
-
----
-
-# Configuring Existing NPCs
-
-You can change a nearby NPC to a configured dialogue with:
-
-`/dialogue change @e[type=npc,r=5,c=1] {dialogue}`
-
-while standing near the NPC.
-
-Moneyz may also provide setup functions for quickly creating configured NPCs:
-
-`/function setup/{shop}`
-
-Admins can directly open a dialogue with:
-
-`/dialogue open @s @s {dialogue}`
-
----
-
-# Send Moneyz
-
-Players can transfer Moneyz directly to another online player.
-
-From the Moneyz Menu:
-
-1. Open **Send Moneyz**
-2. Select the recipient
-3. Enter the amount
-4. Submit the transfer
-
-Moneyz validates the transfer through the economy service rather than independently modifying two scoreboard values from the UI.
-
-Successful transfers are recorded in the transaction ledger.
-
----
-
-# Daily Rewards
-
-Players can claim a configurable daily Moneyz reward.
-
-The reward amount is controlled by the Moneyz configuration.
-
-After claiming a reward, Moneyz records the claim date so the player cannot claim it repeatedly during the same reward period.
-
-Legacy worlds may contain:
-
-`lastDailyReward`
-
-using a UTC `YYYY-MM-DD` date.
-
-Moneyz preserves/migrates existing state where appropriate.
-
-Administrators can configure the reward amount from the Moneyz Settings interface.
-
----
-
-# Quest System
-
-Moneyz includes **Quest Engine v2**, which manages quest selection, progression, persistence, rewards, and completion.
-
-Players can receive tasks such as:
-
-- Mine resources
-- Harvest crops
-- Slay hostile mobs
-- Slaughter farm animals
-- Maintain a Moneyz balance for a period of time
-- Patrol or remain within a specified location
-
-Quest progress is persisted and existing compatible quest progress from older Moneyz versions is migrated where possible.
-
-## Quest Rewards
-
-Quests can provide:
-
-- Moneyz while progressing
-- Moneyz on completion
-- Experience
-- Items
-
-Progress rewards and completion rewards are treated separately by the economy system.
-
-For example, a mining job may pay a small amount for each valid block plus a larger completion bonus.
-
-## Peaceful Difficulty
-
-Moneyz checks the world's current difficulty when generating quests.
-
-When the world is set to **Peaceful**, quests requiring hostile mobs are excluded from the available/random quest pool.
-
-Animal, mining, farming, patrol, and economy-based quests can still be selected normally.
-
-If a hostile-mob quest is already active when the world is changed to Peaceful, its progress is preserved rather than automatically deleted.
-
----
-
-# Quest Engine Integration
-
-Other Moneyz/MSV scripts can interact with the quest system through the Moneyz API.
-
-The quest API supports operations such as:
-
-- Getting the active quest
-- Getting available quests
-- Starting a quest
-- Abandoning a quest
-- Reading progress
-
-Moneyz also emits quest lifecycle events including:
-
-- `questStarted`
-- `questProgress`
-- `questCompleted`
-- `questAbandoned`
-
-This allows other behavior-pack systems to react to Moneyz quest activity without directly modifying Moneyz's internal properties.
-
----
-
-# Feeling Lucky
-
-The Lucky section contains two separate systems:
-
-- Lucky Purchase
-- Chance Games
-
----
-
-# Lucky Purchase
-
-Lucky Purchase allows a player to spend Moneyz for a randomized reward generated from the Moneyz loot configuration.
-
-By default, Lucky Purchase can be limited to once per day.
-
-After a limited purchase, Moneyz records the date of the player's last Lucky Purchase.
-
-Legacy worlds may contain:
-
-`lastLuckyPurchase`
-
-using UTC `YYYY-MM-DD` format.
-
-The daily limitation can be configured from the Moneyz Settings interface.
-
-Lucky Purchase uses transactional purchase logic: if the player is charged but Moneyz cannot successfully deliver the reward, Moneyz attempts to refund the purchase.
-
----
-
-# Chance Games
-
-Moneyz includes several games where players can stake Moneyz.
-
-Current games include:
-
-- Test Your Luck
-- 21 / Blackjack
-- Dice / Craps
-- Slots
-
-Games use Moneyz's centralized Game Economy service for stake validation, bets, payouts, pushes, and transaction recording.
-
-A player cannot intentionally start multiple overlapping Moneyz game sessions to place concurrent bets.
-
-> [!IMPORTANT]
-> Once a game has accepted and deducted a stake, leaving an active game may forfeit the stake. This prevents closing a game after seeing an unfavorable result from acting as an undo/refund exploit.
-
----
-
-# Test Your Luck
-
-Test Your Luck is the configurable probability-based Moneyz game.
-
-The administrator-configured **Win Chance** determines the percentage chance of winning.
-
-For example:
-
-`50`
-
-represents a 50% configured win chance.
-
-The game displays the generated roll/result so the configured probability has a clear meaning.
-
-This setting applies to **Test Your Luck** and does not secretly alter the rules of Blackjack, Craps, or Slots.
-
----
-
-# 21 / Blackjack
-
-21 now uses Blackjack-style hand logic rather than a generic random win check.
-
-Features include:
-
-- Player and dealer hands
-- Hit/stand gameplay
-- Aces valued as 11 or 1 as necessary
-- Dealer draw behavior
-- Busts
-- Natural Blackjack handling
-- Push/tie handling
-
-A push returns the player's stake.
-
-Blackjack outcomes are determined by the cards/game rules rather than the global Test Your Luck win percentage.
-
----
-
-# Dice / Craps
-
-The dice game uses pass-line style Craps rules.
-
-On the come-out roll:
-
-- 7 or 11 wins
-- 2, 3, or 12 loses
-- Other valid values establish the point
-
-After a point is established:
-
-- Rolling the point wins
-- Rolling 7 loses
-- Other rolls continue the round
-
-The outcome is determined by the dice rather than an additional hidden win-chance roll.
-
----
-
-# Slots
-
-Slots use weighted reel results and an explicit payout system.
-
-Different combinations have different results, with rarer symbols/combinations producing different payouts.
-
-The global Test Your Luck win percentage does not manipulate the slot reels.
-
----
-
-# Game Payout Multiplier
-
-Moneyz retains the configurable game payout multiplier used by applicable Moneyz games.
-
-This controls how winning stakes are converted into payouts.
-
-For example, with a multiplier of `2`, a qualifying 15 Moneyz stake can produce a 30 Moneyz payout according to the rules of the game.
-
-Configure game settings through the Moneyz Admin/Settings interface.
-
----
-
-# Transaction System
-
-Modern Moneyz includes a transaction ledger.
-
-Economy operations can record information including:
-
-- Transaction ID
-- Timestamp
-- Transaction type
-- Player/actor
-- Sender
-- Recipient
-- Amount
-- Balance before
-- Balance after
-- Additional metadata
-
-Examples of tracked transaction types include:
-
-- Player transfers
-- Shop purchases
-- Shop sales
-- Shop refunds
-- Admin adjustments
-- Daily rewards
-- Quest progress rewards
-- Quest completion rewards
-- Game bets
-- Game payouts
-- Lucky Purchases
-- Lucky Purchase refunds
-
-Administrators can inspect recent transaction activity from Moneyz.
-
-The in-world ledger is intentionally bounded rather than acting as an unlimited database.
-
----
-
-# Moneyz Platform API
-
-Moneyz now provides an internal/public integration layer for other scripts and behavior-pack systems.
-
-This allows projects such as MountainSide Villages and compatible addons to interact with Moneyz without depending directly on its storage implementation.
-
-Integration functionality includes areas such as:
-
-- Balance lookup
-- Deposits
-- Withdrawals
-- Transfers
-- Configuration
-- Shops
-- Quests
-- Transactions
-- Moneyz events
-
-The `Moneyz` scoreboard remains the underlying currency, but integrations should use the Moneyz API where possible.
-
-This allows the implementation to evolve without requiring every dependent system to be rewritten.
-
----
-
-# Moneyz Events
-
-Moneyz includes an internal event system for integrations.
-
-Events can include things such as:
-
-- Transactions
-- Balance changes
-- Shop changes
-- Quest started
-- Quest progress
-- Quest completed
-- Quest abandoned
-
-This is useful for integrating Moneyz with systems such as MountainSide Villages, Transfer UI, server-management tooling, and other behavior packs.
-
----
-
-# Script Events
-
-Moneyz also supports selected Script Event integration.
-
-Examples include administrative/integration operations such as reloading Moneyz or shop state.
-
-Financial mutation is intentionally more restricted than general Script Events so arbitrary command blocks or unrelated scripts cannot freely generate Moneyz without going through appropriate validation.
-
----
-
-# Moneyz Data & Migration
-
-Moneyz stores persistent configuration and state using Minecraft Bedrock dynamic properties.
-
-Modern Moneyz includes an explicit data/schema version so updates can migrate older Moneyz data instead of guessing which version created it.
-
-Examples of managed state include:
-
-- World configuration
-- Player configuration
-- Daily reward state
-- Lucky Purchase state
-- Quest state
-- Shop data
-- Transaction data
-- Moneyz schema/API information
-
-Legacy tags/properties and older custom-shop data are migrated where supported.
-
-> [!IMPORTANT]
-> Do not manually delete Moneyz properties from an existing world unless you understand what system owns them. They may contain migration or player progression information.
-
----
-
-# Diagnostics
-
-Moneyz provides diagnostics intended for World Owners/Admins and server operators.
-
-Use:
-
-`/moneyz:health`
-
-to inspect the current Moneyz installation.
-
-Diagnostics can include information such as:
-
-- Moneyz API version
-- Moneyz schema version
-- Scoreboard availability
-- Loaded players
-- Loaded shops
-- Transaction state
-- Configuration/synchronization state
-- Migration state
-
-This is particularly useful when troubleshooting dedicated servers or integrations.
-
----
-
-# Moneyz Item Infrastructure
-
-Modern Moneyz also contains infrastructure for persistent Moneyz-related items using ItemStack dynamic properties.
-
-This provides a foundation for systems such as:
-
-- Receipts
-- Vouchers
-- Gift cards
-- Tickets
-- Debit/payment cards
-- Invoices
-- Property or business documents
-
-These systems can associate persistent Moneyz metadata with an item without relying entirely on visible item lore.
-
-Not every infrastructure feature is necessarily exposed as standard gameplay in every Moneyz release.
-
----
-
-# Help
-
-Moneyz includes help documentation for players and World Owners/Admins.
-
-For NPC-based worlds, it is recommended to place a Help NPC somewhere accessible.
-
-To configure a nearby NPC:
-
-`/dialogue change @e[type=npc,r=5,c=1] help`
-
-Or configure an NPC button to run:
-
-`dialogue open @s @initiator help`
-
-The Help dialogue contains information for both players using Moneyz and administrators configuring shops/services.
-
----
-
-# Dialogue vs Function
-
-Dialogue commands are recommended for NPC shop menus where available.
-
-For example:
-
-`dialogue open @s @initiator workshop_buy`
-
-Dialogues allow the pack to maintain the menu contents without requiring the World Owner to manually configure a separate NPC command for every item.
-
-Function commands are still useful when a world creator specifically wants an NPC button to perform one individual Moneyz action.
-
-NPCs have a limited number of visible buttons, while dialogues can create multiple menu levels and allow one NPC to provide a much larger service.
-
-Existing NPCs can be updated with:
-
-`/dialogue change @e[type=npc,r=5,c=1] {dialogue}`
-
-while standing near the NPC.
-
----
-
-# Legacy Function Reference
-
-Legacy/function-based Moneyz content can be found under:
-
-`raw/functions`
-
-These functions remain useful for existing worlds, NPC configurations, command blocks, and compatibility.
-
-New Script API systems should generally use the Moneyz service/API architecture where appropriate.
-
----
-
-# Item & Price Reference
-
-A Google Sheets reference containing Moneyz items/prices is available here:
-
-https://docs.google.com/spreadsheets/d/1TG4Ol5z_8U7mEJlSLx4I2LBmPVcJ0Aawu3_o_ac4xvU
-
----
-
-# Credits
-
-Moneyz Economy was developed for Minecraft Bedrock Edition and is used by MountainSide Villages.
-
-Special thanks to **SoullessReaperYT** for their original custom-menu video and GUI template:
-
-https://www.youtube.com/watch?v=6sjZkGPCF5A
+The original project also credited **SoullessReaperYT** for a custom-menu video/template that helped earlier Moneyz UI development.
