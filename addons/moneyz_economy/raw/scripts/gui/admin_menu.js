@@ -1,6 +1,7 @@
 import { world, system } from "@minecraft/server";
 import { CustomForm, ObservableNumber, ObservableString } from "@minecraft/server-ui";
 import * as Economy from "../core/economy.js";
+import * as Treasury from "../core/treasury.js";
 import { recent, clear as clearTransactions } from "../core/transactions.js";
 import { formatHealth } from "../core/health.js";
 import { main } from "./moneyz_menu.js";
@@ -25,6 +26,7 @@ export function moneyzAdmin(player) {
     };
     form.header("§l§o§fManage Moneyz").divider()
       .button("Manage Balances",()=>navigate(()=>balanceManage(player)))
+      .button("Economy Treasury",()=>navigate(()=>treasuryManage(player)))
       .button("Manage Properties",()=>navigate(()=>propertiesMenu(player)))
       .button("Manage Tags",()=>navigate(()=>tagManage(player)))
       .button("Manage Shops",()=>navigate(()=>showShopEditorMenu(player)))
@@ -78,3 +80,19 @@ export function tagManage(admin){
       .button("Add Tag",()=>apply(true)).button("Remove Tag",()=>apply(false)).button("Back",()=>{ try { if (form.isShowing()) form.close(); } catch {} system.run(()=>moneyzAdmin(admin)); }).closeButton().show();
 }
 log("admin_menu.js loaded",LOG_LEVELS.DEBUG);
+
+export function treasuryManage(admin){
+ const amount=new ObservableString("0",{clientWritable:true}),status=new ObservableString("");
+ const refresh=()=>{const s=Treasury.stats();status.setData(`§lMode:§r §e${s.mode}\n§lLiquid Treasury:§r §g${s.balance} Moneyz\n§lResource Reserve Value:§r §b${s.reserveValue}\n§lTotal Backing:§r §a${s.totalBacking}\n§7Inflow ${s.inflow} • Outflow ${s.outflow} • Issued ${s.issued}`);};refresh();
+ const value=()=>Math.max(0,Math.round(Number(amount.getData())||0));
+ const form=new CustomForm(admin,"§l§1Economy Treasury");
+ const back=()=>{try{if(form.isShowing())form.close();}catch{}system.run(()=>moneyzAdmin(admin));};
+ form.label(status).textField("Amount",amount,{description:"Whole Moneyz amount"})
+ .button("Add Treasury Funds",()=>{Treasury.deposit(value(),{reason:"admin_deposit"});refresh();})
+ .button("Remove Treasury Funds",()=>{const r=Treasury.withdraw(value(),{reason:"admin_withdraw"});if(!r.ok)admin.sendMessage("§cTreasury does not have enough Moneyz.");refresh();})
+ .divider().button("Mode: Classic (Unlimited)",()=>{Treasury.setMode("classic");refresh();})
+ .button("Mode: Treasury",()=>{Treasury.setMode("treasury");refresh();})
+ .button("Mode: Reserve Economy",()=>{Treasury.setMode("reserve");refresh();})
+ .button("View Resource Reserves",()=>{admin.sendMessage(Treasury.listReserves().map(r=>`§f${r.itemId}: §e${r.count} §7(value ${r.value})`).join("\n")||"§7No resource reserves recorded.");})
+ .button("Back",back).closeButton().show().catch(e=>log(`Treasury UI: ${e}`,LOG_LEVELS.ERROR));
+}

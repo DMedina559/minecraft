@@ -165,9 +165,51 @@ Moneyz Economy v2.0 exposes a global Script API integration layer for other beha
 • §6Moneyz.commerce§r - Transaction execution, deposits, withdrawals, and refunds.
 • §6Moneyz.npcServices§r - NPC binding registry.
 • §6Moneyz.events§r - Event listeners for transactions, balance changes, and quest progression.
+• §6Moneyz.treasury§r - Treasury liquidity and resource reserves.
+• §6Moneyz.realEstate§r / §6Moneyz.reservations§r - Properties, hotels, access, and bookings.
+• §6Moneyz.audit§r / §6Moneyz.metrics§r - Audit history and platform observability.
+• §6Moneyz.pricing§r / §6Moneyz.fees§r - Shared price modifiers and fee providers.
+• §6Moneyz.merchants§r / §6Moneyz.accounts§r - Merchant and virtual-account infrastructure.
+• §6Moneyz.escrow§r / §6Moneyz.invoices§r - Higher-level payment building blocks.
+
+§lCross-Pack API 2.0:§r
+Read-only gateway operations now expose metrics, audit queries, public configuration, permissions, merchant/extension/currency discovery, pricing, and fee calculation in addition to Economy, Treasury, Shops, Jobs, Real Estate, Hotels, Reservations, Quests, and Services. Privileged changes remain permission-controlled instead of exposing an unrestricted remote admin API.
 
 §lUI Extensions:§r
-• Behavior packs can register custom menu options into the Moneyz Menu using §6Moneyz.ui.registerMenuItem()§r.`
+• Behavior packs can register custom menu options into the Moneyz Menu using §6Moneyz.ui.registerMenuItem()§r.`,
+
+    "§l§112. Treasury & Reserve Economy": `§l§9=== Treasury & Reserve Economy ===§r
+
+Moneyz 2.0 can run in three economy modes:
+• §lClassic:§r Legacy behavior. System liquidity is unlimited.
+• §lTreasury:§r System payouts require enough Moneyz in the world treasury. Player purchases, rent, hotel bookings, and game stakes add funds back to the treasury.
+• §lReserve Economy:§r Treasury rules plus physical ATM resource reserves. Deposited resources become reserve assets and resource withdrawals require available stock.
+
+§lWhen funds run low:§r
+Moneyz does not crash. A shop sale, job payment, reward, property sale, or other system payout is rejected safely before value is lost.
+
+§lAdmins:§r
+Open §6Moneyz Admin → Economy Treasury§r to view liquid funds, resource backing, total backing, inflow/outflow, select the economy mode, and add/remove treasury funds.
+
+§lPlayers:§r
+Player-to-player transfers do not use treasury liquidity because no Moneyz enters or leaves the player economy.`,
+
+    "§l§113. Real Estate Platform & Addon API": `§l§9=== Real Estate Platform ===§r
+
+Worlds start without arbitrary properties because every map is different. Admins or compatible addons register the properties and hotels that belong in that world.
+
+§lProperty features:§r
+• Residential, commercial, hotel, and custom metadata definitions.
+• Purchase, sale, rental, rent payments, ownership queries, and availability.
+• Owner-managed guest access with roles such as guest or manager.
+• Hotel reservations, availability checks, checkout, and expiration.
+
+§lAddon API:§r
+Other behavior packs can use §6Moneyz.realEstate§r / §6Moneyz.properties§r and §6Moneyz.reservations§r to register namespaced properties and hotels, query ownership, purchase/rent through Moneyz, and check property access.
+
+Gateway operations include §6realestate.list§r, §6realestate.get§r, §6realestate.register§r, §6realestate.purchase§r, §6realestate.sell§r, §6realestate.rent§r, §6realestate.access.*§r, §6hotels.register§r, §6hotels.list§r, and §6reservations.available§r.
+
+Property payments participate in Treasury mode automatically.`
 };
 
 export function openHelp(player) {
