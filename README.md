@@ -26,7 +26,7 @@ Come in and explore this charming role-play map, lovingly crafted to capture the
 
 ### [Moneyz Economy](addons/moneyz_economy):
 
-Moneyz Economy is a complete economy, shop, quest, rewards, and minigame behavior pack for Minecraft Bedrock Edition powered by the `@minecraft/server` Script API. It allows players to buy/sell items with live prices, send money, apply for jobs, complete quests, and play chance games. Moneyz Economy is also used in MountainSide Villages.
+Moneyz Economy v2.0 is a modern economy, shop, real estate, job, quest, rewards, and minigame behavior pack for Minecraft Bedrock Edition powered by the Bedrock Script API (`@minecraft/server` and `@minecraft/server-ui`). It features Shop Engine v3 with live pricing and dynamic stock, ATM resource exchanges, direct player transfers, worker payroll, house rentals and hotel room bookings, specialty products and pets, Quest Engine v2, daily login rewards, chance games, world treasury liquidity modes, service-driven NPC bindings, and a developer API for cross-pack integrations. Moneyz Economy is also used in MountainSide Villages.
 
 ### [Moneyz Trader](addons/moneyz_tader):
 
