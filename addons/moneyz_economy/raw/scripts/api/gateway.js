@@ -19,6 +19,7 @@ import * as Merchants from "../core/merchants.js";
 import * as Extensions from "./extensions.js";
 import * as Pricing from "../core/pricing.js";
 import * as Fees from "../core/fees.js";
+import * as Lucky from "../core/lucky.js";
 import * as Quests from "../quest/engine.js";
 import * as Services from "./services.js";
 import { capabilities, API_VERSION, PACK_PLATFORM_VERSION } from "../core/api.js";
@@ -83,6 +84,10 @@ export async function operation(event,data){
   case"shops.stock":{const x=Shops.getListing(data.shop,data.listing);return x?{ok:true,value:x.stock?.mode==="unlimited"?-1:Number(x.stock?.quantity??0)}:fail("unknown_listing");}
   case"commerce.buy":return player?await Commerce.buyListing(player,data.shop,data.listing,Number(data.quantity??1)):fail("player_not_found");
   case"commerce.sell":return player?await Commerce.sellListing(player,data.shop,data.listing,Number(data.quantity??1)):fail("player_not_found");
+  case"lucky.config":return {ok:true,config:Lucky.getConfig()};
+  case"lucky.eligible":{const rows=Lucky.eligibleProducts(data.options??{});return {ok:true,value:rows.length,products:rows};}
+  case"lucky.preview":return Lucky.preview(Number(data.count??10),data.options??{});
+  case"lucky.purchase":return player?await Lucky.purchase(player,data.options??{}):fail("player_not_found");
   case"products.upsert":{try{const p=Products.upsert(data.product??data);return {ok:true,value:p.price,id:p.id};}catch(e){return fail("product_upsert_failed",{message:String(e)});}}
   case"products.remove":return {ok:Products.remove(data.id)};
   case"products.purchase":return player?await Products.purchase(player,data.id,{source:"gateway"}):fail("player_not_found");

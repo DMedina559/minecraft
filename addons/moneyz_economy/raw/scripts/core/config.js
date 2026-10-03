@@ -6,7 +6,8 @@ export const DEFAULTS = Object.freeze({
     logLevel: "WARN", dailyReward: "25", chanceX: "2", chanceWin: "50",
     syncPlayers: "true", moneyzATM: "true", moneyzQuest: "true", moneyzSend: "true",
     oneLuckyPurchase: "true", moneyzShop: "true", moneyzDaily: "true",
-    moneyzLucky: "true", moneyzChance: "true"
+    moneyzLucky: "true", moneyzChance: "true",
+    luckyPurchasePrice: "150", luckyUseShopStock: "true", luckyShops: "", luckyCategories: "", luckyMinValue: "0", luckyMaxValue: "0"
 });
 
 export function ensureDefaults() {

@@ -104,8 +104,12 @@ Exchange valuable ores and materials for Moneyz (or convert Moneyz back into ite
     "§l§17. Lucky Purchases & Chance Games": `§l§9=== Lucky Purchases & Chance Games ===§r
 
 §lLucky Purchase:§r
-• Spend a fixed Moneyz fee for a daily randomized item draw from the Moneyz loot table.
-• Features refund protection if reward delivery fails.
+• Spend a configurable Moneyz fee for a randomized purchase drawn directly from the current Moneyz Shop catalog.
+• The Shop buy price is the reward value, so a Lucky Purchase may return an item worth less or more than the amount paid.
+• By default, only currently in-stock products are eligible and a successful Lucky Purchase decrements the exact same stock used by normal Shop purchases.
+• Admins can configure the price, live-stock behavior, eligible Shop IDs, and eligible categories in Moneyz Settings.
+• Updating a Shop item, price, category, bundle quantity, or stock automatically updates Lucky Purchase without maintaining a separate loot table.
+• Features refund and stock-restoration protection if reward delivery fails.
 
 §lChance Games:§r
 • §l21 / Blackjack:§r Full Blackjack rules with player/dealer hit, stand, bust, natural 21, and push/tie handling.
