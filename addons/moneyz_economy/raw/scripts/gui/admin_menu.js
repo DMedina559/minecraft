@@ -93,6 +93,21 @@ export function treasuryManage(admin){
  .divider().button("Mode: Classic (Unlimited)",()=>{Treasury.setMode("classic");refresh();})
  .button("Mode: Treasury",()=>{Treasury.setMode("treasury");refresh();})
  .button("Mode: Reserve Economy",()=>{Treasury.setMode("reserve");refresh();})
- .button("View Resource Reserves",()=>{admin.sendMessage(Treasury.listReserves().map(r=>`§f${r.itemId}: §e${r.count} §7(value ${r.value})`).join("\n")||"§7No resource reserves recorded.");})
+ .button("View Resource Reserves",()=>navigate(()=>resourceReserves(admin)))
  .button("Back",back).closeButton().show().catch(e=>log(`Treasury UI: ${e}`,LOG_LEVELS.ERROR));
+}
+
+export function resourceReserves(admin){
+ const reserves=Treasury.listReserves().filter(r=>r.count>0||r.value>0);
+ const form=new CustomForm(admin,"§l§1Resource Reserves");
+ const back=()=>{try{if(form.isShowing())form.close();}catch{}system.run(()=>treasuryManage(admin));};
+ form.header("§lReserve Assets");
+ if(!reserves.length) form.label("§7No resource reserves are currently recorded.");
+ else {
+   const totalCount=reserves.reduce((n,r)=>n+r.count,0), totalValue=reserves.reduce((n,r)=>n+r.value,0);
+   form.label(`§fTracked resources: §e${reserves.length}\n§fTotal units: §e${totalCount}\n§fReserve value: §b${totalValue} Moneyz`).divider();
+   for(const r of reserves) form.label(`§f${r.itemId}\n  §7Stock: §e${r.count} §8• §7Value: §b${r.value} Moneyz`);
+ }
+ form.button("Refresh",()=>{try{if(form.isShowing())form.close();}catch{}system.run(()=>resourceReserves(admin));})
+   .button("Back",back).closeButton().show().catch(e=>log(`Reserve UI: ${e}`,LOG_LEVELS.ERROR));
 }

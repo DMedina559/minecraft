@@ -36,8 +36,9 @@ async function play(player, stake, npc) {
     const point = firstTotal;
     let last = `Come-out roll: ${diceText(first)}\n§ePoint is ${point}.`;
     while (true) {
-        const r = await new ActionFormData().title("§l§6Dice Game - Craps").body(`${last}\n\nRoll ${point} before 7 to win.`).button("Roll Dice").show(player);
-        if (!r || r.canceled) return; // forfeits an already-placed bet
+        const r = await new ActionFormData().title("§l§6Dice Game - Craps").body(`${last}\n\nRoll ${point} before 7 to win.`).button("Roll Dice").button("Forfeit & Back").show(player);
+        if (!r || r.canceled) return; // closing forfeits an already-placed bet
+        if (r.selection === 1) { back(player, npc); return; }
         const dice = rollDice(), n = total(dice);
         if (n === point) return result(player, stake, "win", `Roll: ${diceText(dice)}\nPoint hit!`, npc);
         if (n === 7) return result(player, stake, "lose", `Roll: ${diceText(dice)}\nSeven out.`, npc);
