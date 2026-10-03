@@ -54,7 +54,7 @@ export async function operation(event,data){
   case"economy.withdraw":return player?{ok:Economy.withdraw(player,Number(data.amount),{type:"api_withdraw",source:"gateway"}),balance:Economy.getBalance(player)}:fail("player_not_found");
   case"economy.set":return player?{ok:Economy.setBalance(player,Number(data.amount),{type:"api_set",source:"gateway"}),balance:Economy.getBalance(player)}:fail("player_not_found");
   case"economy.transfer":{const to=findPlayer(data.to??data.target);if(!player)return fail("player_not_found");if(!to)return fail("target_not_found");const ok=Economy.transfer(player,to,Number(data.amount),{type:"api_transfer",source:"gateway"});return {ok,balance:Economy.getBalance(player),targetBalance:Economy.getBalance(to)};}
-  case"transactions.count":return {ok:true,count:Transactions.count()};
+  case"transactions.count":{const count=Transactions.count();return {ok:true,value:count,count};}
   case"accounts.create":{const a=Accounts.create(data.id,{name:data.name??data.id,type:data.type??"test"});return {ok:true,value:a.balance??0,id:a.id};}
   case"accounts.deposit":{const r=Accounts.deposit(data.id,Number(data.amount),{source:"gateway"});return {...r,value:Accounts.getBalance(data.id)};}
   case"accounts.withdraw":{const r=Accounts.withdraw(data.id,Number(data.amount),{source:"gateway"});return {...r,value:Accounts.getBalance(data.id)};}

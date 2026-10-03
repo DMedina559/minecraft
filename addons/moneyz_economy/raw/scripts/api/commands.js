@@ -14,6 +14,7 @@ import { Moneyz } from "../core/api.js";
 import * as Jobs from "../core/jobs.js";
 import * as Properties from "../core/properties.js";
 import { handleApiCommand } from "./gateway.js";
+import { setupWorld } from "../core/setup.js";
 const playerFrom=o=>o.sourceEntity instanceof Player?o.sourceEntity:undefined;
 const result=(ok,message)=>({status:ok?CustomCommandStatus.Success:CustomCommandStatus.Failure,message});
 export function registerCommands(registry){
@@ -43,7 +44,18 @@ export function registerCommands(registry){
  registry.registerCommand({name:"moneyz:hotel",description:"Open Hotel services",permissionLevel:CommandPermissionLevel.Any,cheatsRequired:false},origin=>{const p=playerFrom(origin);if(!p)return result(false,"Player only.");system.run(()=>Services.open("moneyz:hotel",p,{source:"command"}));return result(true,"Opening Hotel Services.");});
  registry.registerCommand({name:"moneyz:pets",description:"Open configured pet products",permissionLevel:CommandPermissionLevel.Any,cheatsRequired:false},origin=>{const p=playerFrom(origin);if(!p)return result(false,"Player only.");system.run(()=>Services.open("moneyz:pets",p,{source:"command"}));return result(true,"Opening Pet Shop.");});
  registry.registerCommand({name:"moneyz:products",description:"Open products and services",permissionLevel:CommandPermissionLevel.Any,cheatsRequired:false},origin=>{const p=playerFrom(origin);if(!p)return result(false,"Player only.");system.run(()=>Services.open("moneyz:products",p,{source:"command"}));return result(true,"Opening Products.");});
- registry.registerCommand({name:"moneyz:setup",description:"Open Moneyz setup wizard",permissionLevel:CommandPermissionLevel.GameDirectors,cheatsRequired:false},origin=>{const p=playerFrom(origin);if(!p)return result(false,"Player only.");system.run(()=>Services.open("moneyz:admin/setup",p,{source:"command"}));return result(true,"Opening Setup Wizard.");});
+ registry.registerCommand({name:"moneyz:setup",description:"Set up Moneyz for this world",permissionLevel:CommandPermissionLevel.GameDirectors,cheatsRequired:false},origin=>{
+  const p=playerFrom(origin);if(!p)return result(false,"Player only.");
+  system.run(()=>{
+   const r=setupWorld(p);
+   if(!r.ok){p.sendMessage(`§cMoneyz setup failed: ${r.reason}.`);return;}
+   p.sendMessage("§aMoneyz setup complete.");
+   p.sendMessage("§7Moneyz scoreboard initialized, online players added, and you are now a Moneyz admin.");
+   p.sendMessage("§7NPC spawn egg and Moneyz Menu item granted where supported.");
+   p.sendMessage("§7ATM and Send are enabled by default. Configure other features from /moneyz:admin.");
+  });
+  return result(true,"Moneyz setup queued.");
+ });
  registry.registerCommand({name:"moneyz:api",description:"Show Moneyz public API version and capabilities",permissionLevel:CommandPermissionLevel.GameDirectors,cheatsRequired:false},()=>result(true,`Moneyz API ${Moneyz.apiVersion}: ${Object.entries(Moneyz.capabilities).filter(([,v])=>v).map(([k])=>k).join(", ")}`));
  registry.registerCommand({name:"moneyz:extensions",description:"List registered Moneyz extensions",permissionLevel:CommandPermissionLevel.GameDirectors,cheatsRequired:false},()=>result(true,Moneyz.extensions.list().map(x=>`${x.id}@${x.version}`).join(", ")||"No third-party extensions registered."));
  registry.registerCommand({name:"moneyz:test_rpc",description:"Developer RPC transport for Moneyz integration tests",permissionLevel:CommandPermissionLevel.Any,cheatsRequired:true,mandatoryParameters:[{type:CustomCommandParamType.String,name:"payload"}]},(_origin,payload)=>{
