@@ -6,7 +6,10 @@ const safe=(fn,fallback)=>{try{return fn();}catch{return fallback;}};
 
 export function itemCatalog(query="",limit=500){const q=String(query).trim().toLowerCase();let rows=safe(()=>ItemTypes.getAll().map(x=>x.id),[]);if(q)rows=rows.filter(id=>id.toLowerCase().includes(q));return rows.sort().slice(0,Math.max(1,limit));}
 export function enchantmentCatalog(){return safe(()=>EnchantmentTypes.getAll().map(x=>({id:x.id,maxLevel:x.maxLevel??1})).sort((a,b)=>a.id.localeCompare(b.id)),[]);}
+export function supportsEnchantments(spec){try{return !!create({...spec,enchantments:undefined},{amount:1}).getComponent("minecraft:enchantable");}catch{return false;}}
+export function applicableEnchantments(spec){try{const stack=create({...spec,enchantments:undefined},{amount:1}),c=stack.getComponent("minecraft:enchantable");if(!c)return [];return enchantmentCatalog().filter(row=>{try{const type=EnchantmentTypes.get(row.id);return !!type&&c.canAddEnchantment({type,level:1});}catch{return false;}});}catch{return [];}}
 export function potionCatalog(){const effects=safe(()=>Potions.getAllEffectTypes().map(x=>x.id),[]),deliveries=safe(()=>Potions.getAllDeliveryTypes().map(x=>x.id),[]);return {effects:effects.sort(),deliveries:deliveries.sort()};}
+export function potionVariants(){const {effects,deliveries}=potionCatalog(),out=[];for(const effectId of effects)for(const deliveryId of deliveries){try{const effect=Potions.getEffectType(effectId),delivery=Potions.getDeliveryType(deliveryId);if(!effect||!delivery)continue;const stack=Potions.resolve(effect,delivery);out.push({effectId,deliveryId,typeId:stack.typeId,maxAmount:stack.maxAmount});}catch{}}return out;}
 
 export function capture(stack,{amount}={}){if(!stack?.typeId)return null;const spec={version:1,typeId:stack.typeId,amount:Math.max(1,Math.floor(Number(amount??stack.amount)||1))};
  const name=safe(()=>stack.nameTag,undefined);if(name)spec.nameTag=name;
