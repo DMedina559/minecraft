@@ -20,6 +20,8 @@ import * as Extensions from "./extensions.js";
 import * as Pricing from "../core/pricing.js";
 import * as Fees from "../core/fees.js";
 import * as Lucky from "../core/lucky.js";
+import * as ItemTemplates from "../core/item_templates.js";
+import * as Games from "../core/games.js";
 import * as Quests from "../quest/engine.js";
 import * as Services from "./services.js";
 import { capabilities, API_VERSION, PACK_PLATFORM_VERSION } from "../core/api.js";
@@ -137,6 +139,15 @@ export async function operation(event,data){
   case"reservations.book":return player?Reservations.book(player,data.propertyId??data.id,{nights:Number(data.nights??1),durationMs:data.durationMs,metadata:{source:"gateway"}}):fail("player_not_found");
   case"reservations.active":{if(!player)return fail("player_not_found");const a=Reservations.activeFor(player);return {ok:true,value:a.length,count:a.length};}
   case"reservations.checkout":return player?Reservations.checkout(player,data.id):fail("player_not_found");
+  case"catalog.items":{const rows=ItemTemplates.itemCatalog(data.query??"",Math.max(1,Math.min(500,Number(data.limit)||150)));return {ok:true,value:rows.length,items:rows};}
+  case"catalog.enchantments":{const rows=ItemTemplates.enchantmentCatalog();return {ok:true,value:rows.length,enchantments:rows};}
+  case"catalog.potions":{const p=ItemTemplates.potionCatalog();return {ok:true,value:p.effects.length,effects:p.effects,deliveries:p.deliveries};}
+  case"items.validate":return ItemTemplates.validate(data.template);
+  case"quests.definitions":{const rows=Quests.listDefinitions();return {ok:true,value:rows.length,quests:rows};}
+  case"quests.objective_types":{const rows=Quests.listObjectiveTypes();return {ok:true,value:rows.length,types:rows};}
+  case"quests.register":{try{const off=Quests.registerQuest(data.quest??data);return {ok:true,id:(data.quest??data).id,registered:true};}catch(e){return fail("quest_register_failed",{message:String(e)})}}
+  case"games.list":{const rows=Games.list(data.category?{category:data.category}:{}).map(x=>({id:x.id,name:x.name,category:x.category,enabled:x.enabled,metadata:x.metadata}));return {ok:true,value:rows.length,games:rows};}
+  case"games.play":return player?await Games.play(player,data.id,{source:"gateway"}):fail("player_not_found");
   case"quests.available":{if(!player)return fail("player_not_found");const a=Quests.getAvailable(player);return {ok:true,value:a.length,count:a.length};}
   case"quests.start":return player?Quests.startQuest(player,data.id):fail("player_not_found");
   case"quests.abandon":return player?{ok:Quests.abandonQuest(player,"gateway_test")}:fail("player_not_found");
