@@ -2,6 +2,10 @@ import { system, world } from "@minecraft/server";
 import { CustomForm, MessageBox, ObservableBoolean, ObservableString } from "@minecraft/server-ui";
 import { variables } from "@minecraft/server-admin";
 import { NAME,VERSION,PROVIDER_ID,PROTOCOL,CONSUMER_ID,CONFIG_SCHEMA_VERSION,CHUNK_SIZE,MAX_QUEUE,MAX_PER_TICK,REQUEST_TIMEOUT_TICKS,SYNC_DEBOUNCE_TICKS,EVENT_REFRESH_COOLDOWN_TICKS,WATCHDOG_SYNC_TICKS } from "./core/constants.js";
+import { ProviderRuntimeState } from "./core/state.js";
+import { createProviderStorage } from "./core/storage.js";
+import { ProviderRuntime } from "./core/runtime.js";
+import { reconcilePopulation, eventServerHint } from "./core/reconciliation.js";
 
 const chunks=new Map(), pending=new Map(), eventQueue=[];
 let seq=0, revision=0, apiSeen=false, apiStatus=null, syncing=false, syncQueued=false, syncDebounce=null, eventRefreshCooldown=false, lastSnapshotFingerprint="";
@@ -10,19 +14,15 @@ let phase="starting", hasSnapshot=false, enrichmentGeneration=0, enrichmentActiv
 let lastSync={servers:0,destinations:0,players:0,self:"",managedSelf:false,time:0,error:"",operation:"",httpStatus:0,responseStatus:"",rejected:0};
 const metrics={queued:0,processed:0,dropped:0,malformed:0,requests:0,responses:0,timeouts:0,unmatched:0,highWater:0};
 const clean=v=>`${v??""}`.trim();
+const runtimeState=new ProviderRuntimeState();
+const runtime=new ProviderRuntime(system);
 
 const CONFIG_PROPERTY="transferui:bsm_provider_config_v1";
+const storage=createProviderStorage(world,CONFIG_PROPERTY,CONFIG_SCHEMA_VERSION);
 let discoveredServersCache=[];
-function defaultProviderConfig(){return {schemaVersion:CONFIG_SCHEMA_VERSION,localServer:"",defaultInclude:true,servers:{}}}
-function loadProviderConfig(){
-  try{
-    const raw=world.getDynamicProperty(CONFIG_PROPERTY);
-    if(typeof raw!=="string"||!raw)return defaultProviderConfig();
-    const x=JSON.parse(raw);
-    return {schemaVersion:CONFIG_SCHEMA_VERSION,localServer:clean(x?.localServer),defaultInclude:x?.defaultInclude!==false,servers:x?.servers&&typeof x.servers==="object"?x.servers:{}};
-  }catch(e){console.warn(`[${NAME}] config load failed: ${e}`);return defaultProviderConfig()}
-}
-function saveProviderConfig(c){world.setDynamicProperty(CONFIG_PROPERTY,JSON.stringify(c))}
+function defaultProviderConfig(){return storage.defaults()}
+function loadProviderConfig(){return storage.load()}
+function saveProviderConfig(c){storage.save(c)}
 function policy(c,n){
   const x=c.servers?.[n]??{}, pn=Number(x.port), pr=Number(x.priority);
   return {included:typeof x.included==="boolean"?x.included:c.defaultInclude,displayName:clean(x.displayName),host:clean(x.host),port:Number.isInteger(pn)&&pn>0&&pn<=65535?pn:0,priority:Number.isFinite(pr)?pr:0,showMaintenance:x.showMaintenance!==false};
@@ -116,7 +116,7 @@ function call(operationId,args={},retry=0,responseProjection){
 }
 function register(){sendChunked("transferui:provider:register",{protocol:PROTOCOL,id:PROVIDER_ID,name:"Bedrock Server Manager",version:VERSION,capabilities:["destinations","destination-deltas","presence","presence-deltas","health","metadata","configure","actions"],configure:{label:"Configure BSM Provider",adminOnly:true}},`reg-${Date.now()}`)}
 function registerActions(){sendChunked("transferui:actions:register",{protocol:PROTOCOL,providerId:PROVIDER_ID,actions:[{id:"refresh",label:"Refresh from BSM",scope:"destination",adminOnly:false},{id:"configure",label:"Configure BSM Provider",scope:"destination",adminOnly:true},{id:"refresh-player",label:"Refresh Player State",scope:"player",adminOnly:false}]},`actions-${Date.now()}`)}
-function health(state="ready",message=""){sendChunked("transferui:provider:health",{protocol:PROTOCOL,providerId:PROVIDER_ID,state,message,time:Date.now(),metadata:{phase,hasSnapshot,bsmApiSeen:apiSeen,bsmApiState:apiStatus?.state??"unknown",bsmApiAuthenticated:apiStatus?.authenticated??false,bsmHttpReady:apiStatus?.httpReady??false,bsmHttpAuthenticated:apiStatus?.httpAuthenticated??false,bsmWebsocketState:apiStatus?.websocketState??apiStatus?.state??"unknown",ipcPending:pending.size,ipcQueue:eventQueue.length,ipcTimeouts:metrics.timeouts,bsmServers:lastSync.servers,publishedDestinations:lastSync.destinations,publishedPlayers:lastSync.players,rejectedServers:lastSync.rejected,localServer:lastSync.self,localServerManaged:!!(lastSync.self&&lastSync.managedSelf),selfServer:lastSync.self,lastSync:lastSync.time,lastSyncError:lastSync.error,lastOperation:lastSync.operation,lastHttpStatus:lastSync.httpStatus,responseStatus:lastSync.responseStatus}},`health-${Date.now()}`)}
+function health(state="ready",message=""){sendChunked("transferui:provider:health",{protocol:PROTOCOL,providerId:PROVIDER_ID,state,message,time:Date.now(),metadata:{phase,hasSnapshot,bsmApiSeen:apiSeen,bsmApiState:apiStatus?.state??"unknown",bsmApiAuthenticated:apiStatus?.authenticated??false,bsmHttpReady:apiStatus?.httpReady??false,bsmHttpAuthenticated:apiStatus?.httpAuthenticated??false,bsmWebsocketState:apiStatus?.websocketState??apiStatus?.state??"unknown",ipcPending:pending.size,ipcQueue:eventQueue.length,ipcTimeouts:metrics.timeouts,bsmServers:lastSync.servers,publishedDestinations:lastSync.destinations,publishedPlayers:lastSync.players,rejectedServers:lastSync.rejected,localServer:lastSync.self,localServerManaged:!!(lastSync.self&&lastSync.managedSelf),selfServer:lastSync.self,lastSync:lastSync.time,lastSyncError:lastSync.error,lastOperation:lastSync.operation,lastHttpStatus:lastSync.httpStatus,responseStatus:lastSync.responseStatus,snapshotGeneration:runtimeState.generation,reportedPopulation:runtimeState.population(),identifiedPlayers:runtimeState.players.size,populationMismatches:runtimeState.populationMismatches,lastProviderEvent:runtimeState.lastEvent,lastReconcile:runtimeState.lastReconcile}},`health-${Date.now()}`)}
 function normalizeServerPlayers(raw,destinationId,self){
   const out=[];
   for(const item of Array.isArray(raw)?raw:[]){
@@ -145,7 +145,7 @@ async function enrichPlayerState(candidates,destinations,self){
         if(!summary||typeof summary!=="object")throw Error("summary returned no object");
         const count=Number(summary.player_count);
         const ps=normalizeServerPlayers(summary.players,c.name,self);
-        if(Number.isFinite(count)&&count>=0)d.playerCount=Math.trunc(count); else if(Array.isArray(summary.players))d.playerCount=ps.length;
+        const rec=reconcilePopulation(d,summary,ps,"summary"); if(rec.mismatch)runtimeState.populationMismatches++;
         d.status=clean(summary.status)||d.status;
         d.maintenance=d.status.toUpperCase()!=="RUNNING";
         d.metadata={...(d.metadata??{}),version:summary.version??d.metadata?.version??"",playerStateSource:"summary"};
@@ -153,8 +153,7 @@ async function enrichPlayerState(candidates,destinations,self){
         players.push(...ps); resolved++;
       }catch(e){
         const ps=normalizeServerPlayers(c.server?.players,c.name,self); players.push(...ps);
-        d.playerCount=Number.isFinite(Number(c.server?.player_count))?Math.max(0,Math.trunc(Number(c.server.player_count))):ps.length;
-        d.metadata={...(d.metadata??{}),playerStateSource:"server-list-fallback"};
+        const rec=reconcilePopulation(d,c.server??{},ps,"server-list-fallback"); if(rec.mismatch)runtimeState.populationMismatches++;
         c.initial={...c.initial,...d,metadata:{...(c.initial?.metadata??{}),...(d.metadata??{})}};
         failed++; console.warn(`[${NAME}] player enrichment failed for ${c.name}: ${e?.message??e}; using server-list player state.`);
       }
@@ -187,11 +186,31 @@ function shouldRefreshForBsmEvent(event){
   // capable of changing the Transfer UI server/presence snapshot.
   return /server|player|start|stop|restart|online|offline|status|state|properties|config|delete|create|update|change/.test(lower);
 }
+async function refreshServer(name,reason="bsm-event"){
+  const current=runtimeState.destinations.get(name); if(!current||!apiStatus?.httpReady)return scheduleSync(reason);
+  try{
+    phase="reconciling-server";
+    const summary=await call("get_server_summary_api_server__server_name__summary_get",{path:{server_name:name}});
+    const players=normalizeServerPlayers(summary?.players,name,lastSync.self);
+    const destination={...current,metadata:{...(current.metadata??{})}};
+    const rec=reconcilePopulation(destination,summary,players,"summary"); if(rec.mismatch)runtimeState.populationMismatches++;
+    destination.status=clean(summary?.status)||destination.status; destination.maintenance=destination.status.toUpperCase()!=="RUNNING";
+    destination.metadata={...destination.metadata,version:summary?.version??destination.metadata?.version??"",reconcileReason:reason};
+    runtimeState.updateServer(destination,players,reason);
+    const rev=++revision;
+    sendChunked("transferui:destination:upsert",{protocol:PROTOCOL,providerId:PROVIDER_ID,revision:rev,destination},`target-dest-${rev}`);
+    sendChunked("transferui:presence:snapshot",{protocol:PROTOCOL,providerId:PROVIDER_ID,revision:rev,players:runtimeState.snapshot().players},`target-pres-${rev}`);
+    lastSnapshotFingerprint=""; phase="ready"; health("ready",`Reconciled ${name}: ${destination.playerCount} reported, ${players.length} identified.`);
+    console.log(`[${NAME}] targeted reconcile: server=${name}, population=${destination.playerCount}, identified=${players.length}, reason=${reason}.`);
+  }catch(e){console.warn(`[${NAME}] targeted reconcile failed for ${name}: ${e?.message??e}; scheduling full reconciliation.`);scheduleSync("targeted-fallback")}
+}
 function scheduleEventRefresh(event){
   if(!shouldRefreshForBsmEvent(event))return;
+  const names=discoveredServersCache.map(x=>clean(x?.name)).filter(Boolean), server=eventServerHint(event,names);
+  runtimeState.lastEvent={time:Date.now(),server,kind:"bsm-event",raw:clean(event?.raw??event?.message??event).slice(0,240)};
   if(eventRefreshCooldown)return;
   eventRefreshCooldown=true;
-  scheduleSync("bsm-event");
+  if(server)runtime.debounce(`server:${server}`,SYNC_DEBOUNCE_TICKS,()=>refreshServer(server,"websocket-event"));else scheduleSync("bsm-event");
   system.runTimeout(()=>{eventRefreshCooldown=false},EVENT_REFRESH_COOLDOWN_TICKS);
 }
 
@@ -233,6 +252,7 @@ async function sync(reason="unspecified"){
     for(let i=candidates.length-1;i>=0;i--)if(!allowedIds.has(candidates[i].name))candidates.splice(i,1);
     phase="enriching-players";
     const players=await enrichPlayerState(candidates,destinations,self);
+    const generation=runtimeState.beginGeneration(); runtimeState.replace(destinations,players,generation);
     lastSync={servers:servers.length,destinations:destinations.length,players:players.length,self,managedSelf:!!(self&&servers.some(x=>clean(x?.name)===self)),time:Date.now(),error:"",operation,httpStatus:200,responseStatus:clean(r.status),rejected};
     const fingerprint=JSON.stringify({
       destinations:destinations.map(d=>[d.id,d.hostname,d.port,d.status,d.playerCount,d.maintenance,d.metadata?.version,d.metadata?.portSource]),
@@ -253,11 +273,11 @@ async function sync(reason="unspecified"){
     sendChunked("transferui:presence:snapshot",{protocol:PROTOCOL,providerId:PROVIDER_ID,revision:rev,players},`pres-${rev}`);
     sendChunked("transferui:provider:transaction:commit",{protocol:PROTOCOL,providerId:PROVIDER_ID,transactionId:txn},`txn-commit-${rev}`);
     hasSnapshot=true;
-    const unresolved=candidates.filter(x=>x.needsResolve), generation=++enrichmentGeneration;
+    const unresolved=candidates.filter(x=>x.needsResolve), endpointGeneration=++enrichmentGeneration;
     phase=unresolved.length?"enriching-endpoints":"ready";
     health("ready",unresolved.length?`Published ${destinations.length} destination(s); resolving ${unresolved.length} endpoint(s) in background.`:`Published ${destinations.length} destination(s).`);
     console.log(`[${NAME}] initial snapshot published immediately: BSM=${servers.length}, published=${destinations.length}, unresolved=${unresolved.length}, fallback=19132.`);
-    if(unresolved.length)system.run(()=>enrichEndpoints(unresolved,generation));
+    if(unresolved.length)system.run(()=>enrichEndpoints(unresolved,endpointGeneration));
   }catch(e){
     const msg=`${e?.message??e}`; phase="error"; lastSync={...lastSync,time:Date.now(),error:msg,operation,httpStatus:Number(e?.status)||0};
     health(hasSnapshot?"degraded":"connecting",`Discovery failed; retaining ${lastSync.destinations} last-known destination(s). ${msg}`);
