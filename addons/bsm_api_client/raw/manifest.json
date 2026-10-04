@@ -1,0 +1,54 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Bedrock Server Manager API for Minecraft",
+    "description": "Full Bedrock Server Manager OpenAPI + WebSocket client for Minecraft addons",
+    "uuid": "e4efc60e-9fcd-4d72-9240-aea70dba735d",
+    "version": [
+      1,
+      0,
+      0
+    ],
+    "min_engine_version": [
+      1,
+      26,
+      52
+    ]
+  },
+  "modules": [
+    {
+      "type": "data",
+      "uuid": "0129102f-1d48-4daa-bbc0-837e49a7e884",
+      "version": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "type": "script",
+      "language": "javascript",
+      "uuid": "5c4bcd24-4134-4038-9ad3-69ac7a7e90c0",
+      "version": [
+        1,
+        0,
+        0
+      ],
+      "entry": "scripts/main.js"
+    }
+  ],
+  "dependencies": [
+    {
+      "module_name": "@minecraft/server",
+      "version": "2.10.0"
+    },
+    {
+      "module_name": "@minecraft/server-admin",
+      "version": "1.0.0-beta"
+    },
+    {
+      "module_name": "@minecraft/server-net",
+      "version": "1.0.0-beta"
+    }
+  ]
+}

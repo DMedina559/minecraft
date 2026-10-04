@@ -1,7 +1,7 @@
 {
   "format_version": 2,
   "header": {
-    "description": "Transfer UI v3.0.0 with Bedrock Server Manager support.\nRequires: beta-api experiment and dedicated server setup.\nBy: ZVortex11325\nVersion: 3.0.0",
+    "description": "Transfer UI 3.0.0 - server navigation with optional BSM API integration",
     "name": "Transfer UI",
     "uuid": "63439426-8efe-4f66-8c21-0be8a6cac032",
     "min_engine_version": [
@@ -17,7 +17,7 @@
   },
   "modules": [
     {
-      "description": "Central Transfer Hub behavior data",
+      "description": "Transfer UI behavior data",
       "type": "data",
       "uuid": "cb04f563-4ef4-4b48-bdfa-04b012e79680",
       "version": [
@@ -27,7 +27,7 @@
       ]
     },
     {
-      "description": "Central Transfer Hub DDUI scripts",
+      "description": "Transfer UI 3.0.0 scripts",
       "type": "script",
       "language": "javascript",
       "uuid": "21261991-a854-4f99-9720-f495978a06b7",
@@ -50,10 +50,6 @@
     },
     {
       "module_name": "@minecraft/server-admin",
-      "version": "1.0.0-beta"
-    },
-    {
-      "module_name": "@minecraft/server-net",
       "version": "1.0.0-beta"
     }
   ]
