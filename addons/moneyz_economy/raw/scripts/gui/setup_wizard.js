@@ -1,5 +1,5 @@
 import { world, system } from "@minecraft/server";
-import { CustomForm } from "@minecraft/server-ui";
+import { CustomForm } from "../ui/ddui.js";
 import * as Economy from "../core/economy.js";
 import * as Shops from "../repositories/shops.js";
 import * as Jobs from "../core/jobs.js";

@@ -1,5 +1,5 @@
 import { world, system } from "@minecraft/server";
-import { CustomForm, ObservableNumber, ObservableString } from "@minecraft/server-ui";
+import { CustomForm, ObservableNumber, ObservableString } from "../ui/ddui.js";
 import * as Economy from "../core/economy.js";
 import * as Treasury from "../core/treasury.js";
 import { recent, clear as clearTransactions } from "../core/transactions.js";
@@ -24,22 +24,24 @@ export function moneyzAdmin(player) {
         try { if (form.isShowing()) form.close(); } catch {}
         system.run(next);
     };
-    form.header("§l§o§fManage Moneyz").divider()
+    form.header("Balances & Economy").divider()
       .button("Manage Balances",()=>navigate(()=>balanceManage(player)))
       .button("Economy Treasury",()=>navigate(()=>treasuryManage(player)))
-      .button("Manage Properties",()=>navigate(()=>propertiesMenu(player)))
       .button("Manage Tags",()=>navigate(()=>tagManage(player)))
+      .divider().header("Shops & World Services")
       .button("Manage Shops",()=>navigate(()=>showShopEditorMenu(player)))
       .button("Manage NPC Services",()=>navigate(()=>npcManager(player)))
       .button("Manage Jobs",()=>navigate(()=>jobAdmin(player)))
       .button("Manage Properties / Hotels",()=>navigate(()=>propertyAdmin(player)))
       .button("Manage Exchanges",()=>navigate(()=>exchangeAdmin(player)))
       .button("Manage Products / Bundles",()=>navigate(()=>productAdmin(player)))
+      .divider().header("Setup & Maintenance")
+      .button("World / Player Properties",()=>navigate(()=>propertiesMenu(player)))
       .button("Setup Wizard",()=>navigate(()=>setupWizard(player)))
       .button("Settings",()=>navigate(()=>moneyzSettings(player)))
       .button("Recent Transactions",()=>navigate(()=>transactionView(player)))
       .button("Diagnostics",()=>navigate(()=>diagnosticsView(player)))
-      .button("Back",()=>navigate(()=>main(player))).closeButton();
+      .divider().button("Main Menu",()=>navigate(()=>main(player))).closeButton();
     form.show().catch(e=>log(`Admin UI: ${e}`,LOG_LEVELS.ERROR));
 }
 

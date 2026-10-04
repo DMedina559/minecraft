@@ -1,5 +1,5 @@
 import { system } from "@minecraft/server";
-import { CustomForm, ObservableNumber } from "@minecraft/server-ui";
+import { CustomForm, ObservableNumber } from "../ui/ddui.js";
 import * as Properties from "../core/properties.js";
 import * as Reservations from "../core/reservations.js";
 const nav=(f,fn)=>{try{if(f.isShowing())f.close();}catch{}system.run(fn)};

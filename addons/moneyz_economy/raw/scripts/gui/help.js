@@ -1,5 +1,5 @@
 import { system } from "@minecraft/server";
-import { CustomForm } from "@minecraft/server-ui";
+import { CustomForm } from "../ui/ddui.js";
 
 const nav = (f, fn) => {
     try {
@@ -30,7 +30,7 @@ const guideTopics = {
 
 The Moneyz Menu is your central hub for all economy operations:
 
-• §lShops Engine v3:§r Browse categories to buy and sell items with live prices and stock tracking.
+• §lShops Engine v3:§r Open a shop and select an item directly. Filter by category or search by name, ID, or category; use Apply Filters to update the catalog. Back to Items restores your filters and page.
 • §lATM Exchange:§r Trade resources (ores/ingots) for Moneyz or convert Moneyz into items.
 • §lSend Moneyz:§r Securely transfer Moneyz directly to any online player on the server.
 • §lJobs & Employment:§r View available jobs, apply for positions, quit, or run worker payroll.
@@ -38,7 +38,7 @@ The Moneyz Menu is your central hub for all economy operations:
 • §lProducts & Pet Shop:§r Purchase item bundles, pet products, entitlements, and special services.
 • §lQuests & Daily Rewards:§r Complete daily mining/farming/slaying quests and claim daily login bonuses.
 • §lFeeling Lucky & Games:§r Try Lucky Purchase for shop catalog rewards or play Blackjack, Craps, Slots, and Test Your Luck.
-• §lMoneyz Admin:§r Privileged administrative dashboard for world management (Admins only).`,
+• §lMoneyz Admin:§r Privileged dashboard grouped into Balances & Economy, Shops & World Services, and Setup & Maintenance (Admins only).`,
 
     "§l§13. Economy System Modes & Treasury Engine": `§l§9=== Economy Modes & Treasury Engine ===§r
 

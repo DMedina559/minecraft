@@ -25,6 +25,9 @@ export function main(player) {
 
     const buttons = [];
     const actions = [];
+    const sections = new Map();
+    const section = label => sections.set(buttons.length, label);
+    section("Shopping & Money");
 
     if (Config.bool("moneyzShop", true, player)) {
         buttons.push("§d§lShops\n§r§7[ Click to Shop ]");
@@ -32,7 +35,7 @@ export function main(player) {
     }
 
     if (Config.bool("moneyzATM", true, player)) {
-        buttons.push("§d§lATM\n§r§7[ Click to Exchange ]");
+        buttons.push("§d§lATM Exchange\n§r§7[ Trade resources and Moneyz ]");
         actions.push(() => openAtm(player));
     }
 
@@ -41,6 +44,7 @@ export function main(player) {
         actions.push(() => openSendMoney(player));
     }
 
+    section("Work & Properties");
     buttons.push("§d§lJobs & Employment\n§r§7[ Apply / Pay / Quit ]");
     actions.push(() => openJobs(player));
 
@@ -50,6 +54,7 @@ export function main(player) {
     buttons.push("§d§lHotel Services\n§r§7[ Rooms / Rentals ]");
     actions.push(() => openProperties(player,{type:"hotel"}));
 
+    section("Rewards & Games");
     if (Config.bool("moneyzQuest", true, player)) {
         buttons.push("§d§lQuest\n§r§7[ Click to View ]");
         actions.push(() => giveQuest(player));
@@ -65,6 +70,7 @@ export function main(player) {
         actions.push(() => luckyMenu(player));
     }
 
+    section("More & Administration");
     for (const item of uiExtensions.listMenuItems()) {
         try {
             if (item.visible && !item.visible(player)) continue;
@@ -87,7 +93,10 @@ export function main(player) {
     buttons.push("§c§lExit Menu");
     actions.push(() => {});
 
-    buttons.forEach(btn => form.button(btn));
+    buttons.forEach((btn, index) => {
+        if (sections.has(index)) form.header(sections.get(index));
+        form.button(btn);
+    });
 
     form.show(player).then(({ selection }) => {
         if (selection !== undefined && selection >= 0 && selection < actions.length) {
@@ -109,7 +118,7 @@ export function shops(player) {
         form.button(`§d§l${displayName}\n§r§7[ Click to Shop ]`);
     });
 
-    form.button("§c§lBack");
+    form.button("§c§lMain Menu");
 
     form.show(player).then(r => {
         if (r.canceled) return;

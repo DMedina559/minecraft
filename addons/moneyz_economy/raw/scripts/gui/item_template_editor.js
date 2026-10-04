@@ -1,5 +1,5 @@
 import { system } from "@minecraft/server";
-import { CustomForm, ObservableNumber, ObservableString } from "@minecraft/server-ui";
+import { CustomForm, ObservableNumber, ObservableString } from "../ui/ddui.js";
 import * as T from "../core/item_templates.js";
 const nav=(f,fn)=>{try{if(f.isShowing())f.close();}catch{}system.run(fn)};
 const pretty=s=>String(s??"").replace(/^minecraft:/,"").replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase());

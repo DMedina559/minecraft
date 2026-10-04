@@ -1,5 +1,5 @@
 import { system } from "@minecraft/server";
-import { CustomForm, ObservableNumber, ObservableString } from "@minecraft/server-ui";
+import { CustomForm, ObservableNumber, ObservableString } from "../ui/ddui.js";
 import * as Services from "../api/services.js";
 import * as NpcServices from "../api/npc_services.js";
 import * as Shops from "../repositories/shops.js";
@@ -10,7 +10,7 @@ const npcLabel=n=>n?.nameTag?.trim()||"Unnamed NPC";
 function nearby(player){return [...player.dimension.getEntities({type:"minecraft:npc",location:player.location,maxDistance:12})].sort((a,b)=>{const d=x=>(x.location.x-player.location.x)**2+(x.location.y-player.location.y)**2+(x.location.z-player.location.z)**2;return d(a)-d(b);});}
 export function npcManager(player){
  const npcs=nearby(player),form=new CustomForm(player,"§l§1NPC Manager");
- form.label(`§7Configure Moneyz services without NPC names, dialogue commands, or functions.\n§f${npcs.length} NPC(s) within 12 blocks.`);
+ form.label(`§7Choose a nearby NPC to manage its shops and services.\n§f${npcs.length} NPC(s) within 12 blocks.`);
  if(npcs.length) form.button("Select Nearby NPC",()=>nav(form,()=>selectNpc(player,npcs)));
  form.button("Back",()=>nav(form,()=>moneyzAdmin(player))).closeButton().show();
 }

@@ -1,5 +1,5 @@
 import { world, system } from "@minecraft/server";
-import { CustomForm } from "@minecraft/server-ui";
+import { CustomForm } from "./ui/ddui.js";
 import { customShop } from "./gui/custom_shop.js";
 import { openRewardsMenu } from "./gui/rewards_menu.js";
 import { giveQuest } from "./gui/quest_menu.js";

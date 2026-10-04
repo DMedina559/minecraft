@@ -1,4 +1,4 @@
-import { CustomForm, ObservableBoolean, ObservableNumber, ObservableString } from "@minecraft/server-ui";
+import { CustomForm, ObservableBoolean, ObservableNumber, ObservableString } from "./ddui.js";
 
 // DDUI-backed compatibility facade. It intentionally mirrors the small subset of
 // ActionFormData / ModalFormData used by Moneyz so every player-facing screen is
@@ -21,9 +21,10 @@ function closeQuietly(form) {
 }
 
 export class ActionFormData {
-    constructor() { this._title = "Moneyz"; this._body = ""; this._buttons = []; }
+    constructor() { this._title = "Moneyz"; this._body = ""; this._buttons = []; this._sections = new Map(); }
     title(value) { this._title = value; return this; }
     body(value) { this._body = value; return this; }
+    header(label) { this._sections.set(this._buttons.length, label); return this; }
     button(label, _iconPath) { this._buttons.push(label); return this; }
     show(player) {
         return new Promise((resolve, reject) => {
@@ -32,6 +33,7 @@ export class ActionFormData {
             if (this._body) form.label(this._body).divider();
             const finish = result => { if (settled) return; settled = true; resolve(result); };
             this._buttons.forEach((label, selection) => {
+                if (this._sections.has(selection)) form.header(this._sections.get(selection)).divider();
                 const parts = buttonParts(label);
                 form.button(parts.label, () => {
                     closeQuietly(form);

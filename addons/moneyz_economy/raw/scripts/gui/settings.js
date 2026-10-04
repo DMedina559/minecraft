@@ -1,10 +1,11 @@
 import { system } from "@minecraft/server";
-import { CustomForm, ObservableBoolean, ObservableNumber, ObservableString } from "@minecraft/server-ui";
+import { CustomForm, ObservableBoolean, ObservableNumber, ObservableString } from "../ui/ddui.js";
 import * as Config from "../core/config.js";
 import { setLogLevelFromWorldProperty } from "../logger.js";
 import { moneyzAdmin } from "./admin_menu.js";
 
 const FEATURES=["moneyzATM","moneyzQuest","moneyzSend","moneyzShop","moneyzDaily","moneyzLucky","moneyzChance"];
+const FEATURE_LABELS={moneyzATM:"ATM Exchange",moneyzQuest:"Quests",moneyzSend:"Send Moneyz",moneyzShop:"Shops",moneyzDaily:"Daily Rewards",moneyzLucky:"Lucky Purchase",moneyzChance:"Chance Games"};
 export function moneyzSettings(player){
     const sync=new ObservableBoolean(Config.bool("syncPlayers",true),{clientWritable:true});
     const once=new ObservableBoolean(Config.bool("oneLuckyPurchase",true),{clientWritable:true});
@@ -18,9 +19,10 @@ export function moneyzSettings(player){
     const luckyCategories=new ObservableString(String(Config.get("luckyCategories","")),{clientWritable:true});
     const featureObs=Object.fromEntries(FEATURES.map(k=>[k,new ObservableBoolean(Config.bool(k,true),{clientWritable:true})]));
     const form=new CustomForm(player,"§l§1Moneyz Settings").header("§lGlobal Configuration")
-      .toggle("Sync feature flags to players",sync).toggle("One Lucky Purchase per day",once).divider();
-    for(const k of FEATURES) form.toggle(k,featureObs[k]);
-    form.divider().textField("Daily Reward",daily).textField("Chance Multiplier",chanceX).textField("Test Your Luck Win Chance %",chanceWin)
+      .toggle("Sync enabled features to players",sync).toggle("One Lucky Purchase per day",once).divider();
+    form.header("Enabled Features");
+    for(const k of FEATURES) form.toggle(FEATURE_LABELS[k],featureObs[k]);
+    form.divider().header("Rewards & Games").textField("Daily Reward",daily).textField("Chance Multiplier",chanceX).textField("Test Your Luck Win Chance %",chanceWin)
       .textField("Custom Shop Name",shopName).divider().header("§lLucky Purchase").textField("Lucky Purchase Price",luckyPrice).toggle("Use live Shop stock",luckyStock).textField("Eligible Shop IDs (comma separated; blank = all)",luckyShops).textField("Eligible Categories (comma separated; blank = all)",luckyCategories).button("Save",()=>{
         Config.set("syncPlayers",sync.getData()); Config.set("oneLuckyPurchase",once.getData());
         for(const k of FEATURES) Config.set(k,featureObs[k].getData());
