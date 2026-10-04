@@ -115,11 +115,59 @@ function call(operationId,args={},retry=0,responseProjection){
     sendChunked("bsmapi:request",{operationId,args,responseProjection},id);
   });
 }
-function register(){sendChunked("transferui:provider:register",{protocol:PROTOCOL,id:PROVIDER_ID,name:"Bedrock Server Manager",version:VERSION,capabilities:["destinations","destination-deltas","presence","presence-deltas","health","metadata"]},`reg-${Date.now()}`)}
+function register(){sendChunked("transferui:provider:register",{protocol:PROTOCOL,id:PROVIDER_ID,name:"Bedrock Server Manager",version:VERSION,capabilities:["destinations","destination-deltas","presence","presence-deltas","health","metadata","configure"],configure:{label:"Configure BSM Provider",adminOnly:true}},`reg-${Date.now()}`)}
 function health(state="ready",message=""){sendChunked("transferui:provider:health",{protocol:PROTOCOL,providerId:PROVIDER_ID,state,message,time:Date.now(),metadata:{phase,hasSnapshot,bsmApiSeen:apiSeen,bsmApiState:apiStatus?.state??"unknown",bsmApiAuthenticated:apiStatus?.authenticated??false,bsmHttpReady:apiStatus?.httpReady??false,bsmHttpAuthenticated:apiStatus?.httpAuthenticated??false,bsmWebsocketState:apiStatus?.websocketState??apiStatus?.state??"unknown",ipcPending:pending.size,ipcQueue:eventQueue.length,ipcTimeouts:metrics.timeouts,bsmServers:lastSync.servers,publishedDestinations:lastSync.destinations,publishedPlayers:lastSync.players,rejectedServers:lastSync.rejected,localServer:lastSync.self,localServerManaged:!!(lastSync.self&&lastSync.managedSelf),selfServer:lastSync.self,lastSync:lastSync.time,lastSyncError:lastSync.error,lastOperation:lastSync.operation,lastHttpStatus:lastSync.httpStatus,responseStatus:lastSync.responseStatus}},`health-${Date.now()}`)}
+function normalizeServerPlayers(raw,destinationId,self){
+  const out=[];
+  for(const item of Array.isArray(raw)?raw:[]){
+    let name="",xuid="";
+    if(typeof item==="string")name=clean(item);
+    else if(item&&typeof item==="object"){
+      name=clean(item.name??item.gamertag??item.player_name??item.username);
+      xuid=clean(item.xuid??item.id??item.player_id);
+      // BSM may encode a player as { "Gamertag": "XUID" }.
+      if(!name&&!xuid){const e=Object.entries(item);if(e.length===1){name=clean(e[0][0]);xuid=clean(e[0][1])}}
+    }
+    if(!name&&!xuid)continue;
+    const id=xuid||`${destinationId}:${name}`;
+    out.push({id,xuid:xuid||undefined,name:name||"Unknown",destinationId,status:"online",metadata:{self:destinationId===self}});
+  }
+  return out;
+}
+async function enrichPlayerState(candidates,destinations,self){
+  const byId=new Map(destinations.map(d=>[d.id,d])), players=[];
+  const work=candidates.slice(); let resolved=0,failed=0;
+  async function worker(){
+    while(work.length){
+      const c=work.shift(),d=byId.get(c.name); if(!d)continue;
+      try{
+        const summary=await call("get_server_summary_api_server__server_name__summary_get",{path:{server_name:c.name}});
+        if(!summary||typeof summary!=="object")throw Error("summary returned no object");
+        const count=Number(summary.player_count);
+        const ps=normalizeServerPlayers(summary.players,c.name,self);
+        if(Number.isFinite(count)&&count>=0)d.playerCount=Math.trunc(count); else if(Array.isArray(summary.players))d.playerCount=ps.length;
+        d.status=clean(summary.status)||d.status;
+        d.maintenance=d.status.toUpperCase()!=="RUNNING";
+        d.metadata={...(d.metadata??{}),version:summary.version??d.metadata?.version??"",playerStateSource:"summary"};
+        c.initial={...c.initial,...d,metadata:{...(c.initial?.metadata??{}),...(d.metadata??{})}};
+        players.push(...ps); resolved++;
+      }catch(e){
+        const ps=normalizeServerPlayers(c.server?.players,c.name,self); players.push(...ps);
+        d.playerCount=Number.isFinite(Number(c.server?.player_count))?Math.max(0,Math.trunc(Number(c.server.player_count))):ps.length;
+        d.metadata={...(d.metadata??{}),playerStateSource:"server-list-fallback"};
+        c.initial={...c.initial,...d,metadata:{...(c.initial?.metadata??{}),...(d.metadata??{})}};
+        failed++; console.warn(`[${NAME}] player enrichment failed for ${c.name}: ${e?.message??e}; using server-list player state.`);
+      }
+    }
+  }
+  await Promise.all([worker(),worker()]);
+  console.log(`[${NAME}] player enrichment complete: resolved=${resolved}, fallback=${failed}, players=${players.length}.`);
+  return players;
+}
 function transferHost(){return clean(variables.get("transferuiBsmTransferHost")??"127.0.0.1")}
 function selfServer(){return clean(variables.get("transferuiBsmSelfServer")??"")}
 function requestApiStatus(){system.sendScriptEvent("bsmapi:control",JSON.stringify({action:"status"}))}
+// Transfer BSM explicitly owns its live BSM subscription. The API client itself starts with no topics.
 function requestApiSubscribe(){system.sendScriptEvent("bsmapi:control",JSON.stringify({action:"subscribe",topic:"*"}))}
 function scheduleSync(reason="unspecified"){
   if(syncing || enrichmentActive){syncQueued=true;return}
@@ -161,13 +209,12 @@ async function sync(reason="unspecified"){
     if(r.status!==undefined && !["success","ok"].includes(clean(r.status).toLowerCase()))throw Error(`${operation}: BSM returned status=${clean(r.status)||"unknown"}${r.message?`: ${r.message}`:""}`);
     if(!Object.prototype.hasOwnProperty.call(r,"servers"))throw Error(`${operation}: response did not contain servers`);
     if(r.servers!==null && !Array.isArray(r.servers))throw Error(`${operation}: servers was not an array`);
-    const servers=r.servers??[], players=[], destinations=[], candidates=[]; let rejected=0;
+    const servers=r.servers??[], destinations=[], candidates=[]; let rejected=0;
     discoveredServersCache=servers.slice();
     let self=loadProviderConfig().localServer||selfServer(); const host=transferHost();
     for(const s of servers){
       if(!s || typeof s!=="object"){rejected++;continue}
       const name=clean(s.name); if(!name){rejected++;continue}
-      for(const p of Array.isArray(s.players)?s.players:[])players.push({id:`${p?.xuid??p?.name??""}`,xuid:p?.xuid?`${p.xuid}`:undefined,name:p?.name??"Unknown",destinationId:name,status:"online",metadata:{self:name===self}});
       if(name===self)continue;
       let port=Number(s.port??s.server_port??s.properties?.["server-port"]??0);
       let transport=clean(s.transport??s.properties?.transport), portV6=Number(s.server_portv6??s.properties?.["server-portv6"]??0);
@@ -180,9 +227,12 @@ async function sync(reason="unspecified"){
     }
     const filtered=applyPolicy(destinations);
     destinations.splice(0,destinations.length,...filtered);
-    // Do not enrich excluded/local destinations.
+    // Do not enrich excluded/local destinations. Player state comes from the per-server
+    // summary endpoint so counts and presence share one authoritative snapshot.
     const allowedIds=new Set(destinations.map(d=>d.id));
     for(let i=candidates.length-1;i>=0;i--)if(!allowedIds.has(candidates[i].name))candidates.splice(i,1);
+    phase="enriching-players";
+    const players=await enrichPlayerState(candidates,destinations,self);
     lastSync={servers:servers.length,destinations:destinations.length,players:players.length,self,managedSelf:!!(self&&servers.some(x=>clean(x?.name)===self)),time:Date.now(),error:"",operation,httpStatus:200,responseStatus:clean(r.status),rejected};
     const fingerprint=JSON.stringify({
       destinations:destinations.map(d=>[d.id,d.hostname,d.port,d.status,d.playerCount,d.maintenance,d.metadata?.version,d.metadata?.portSource]),
@@ -220,7 +270,7 @@ async function enrichEndpoints(candidates,generation){
     const work=candidates.slice();
     async function worker(){
       while(work.length && generation===enrichmentGeneration){
-        const {server:s,name}=work.shift();
+        const {server:s,name,initial}=work.shift();
         try{
           console.log(`[${NAME}] endpoint IPC -> server=${name}, operation=get_properties_api_server__server_name__properties_get_get.`);
           const pr=await call("get_properties_api_server__server_name__properties_get_get",{path:{server_name:name}},0,"properties");
@@ -230,7 +280,7 @@ async function enrichEndpoints(candidates,generation){
           if(!Number.isInteger(port)||port<1||port>65535)throw Error(`invalid server-port: ${props["server-port"]}`);
           endpointCache.set(name,{port,portV6:Number.isInteger(portV6)?portV6:0,transport,time:Date.now()});
           if(generation!==enrichmentGeneration)return;
-          let destination={id:name,name,description:"Managed by Bedrock Server Manager",hostname:transferHost(),port,status:clean(s.status)||"Unknown",playerCount:Number(s.player_count)||0,maintenance:`${s.status??""}`.toUpperCase()!=="RUNNING",metadata:{version:s.version??"",serverManager:"bsm",portSource:"properties",endpointResolved:true,propertiesResolved:true,transport:transport||"",serverPortV6:Number.isInteger(portV6)?portV6:0}};
+          let destination={...initial,hostname:transferHost(),port,metadata:{...(initial?.metadata??{}),portSource:"properties",endpointResolved:true,propertiesResolved:true,transport:transport||"",serverPortV6:Number.isInteger(portV6)?portV6:0}};
           const applied=applyPolicy([destination]); if(!applied.length)continue; destination=applied[0];
           const rev=++revision;
           sendChunked("transferui:destination:upsert",{protocol:PROTOCOL,providerId:PROVIDER_ID,revision:rev,destination},`dest-upsert-${rev}`);
@@ -300,11 +350,29 @@ system.runTimeout(()=>{
 
 // ScriptEventCommandMessageAfterEventSignal is exposed on system.afterEvents.
 // Guard the subscription so an API-shape change can never prevent the provider from loading.
+const tuiConfigChunks=new Map();
+function decodeTransferUiEvent(message){
+ let outer;try{outer=JSON.parse(message||"{}")}catch{return null}
+ if(outer?.__tui!==1)return outer;
+ const id=String(outer.id??"");if(!id)return null;
+ let st=tuiConfigChunks.get(id);if(!st){st={total:Number(outer.total)||1,parts:[],tick:system.currentTick};tuiConfigChunks.set(id,st)}
+ st.parts[Number(outer.chunk)||0]=String(outer.data??"");
+ if(st.parts.filter(x=>x!==undefined).length<st.total)return null;
+ tuiConfigChunks.delete(id);
+ try{return JSON.parse(st.parts.join(""))}catch{return null}
+}
 const scriptEventSignal=system.afterEvents?.scriptEventReceive;
 if(scriptEventSignal?.subscribe){
   scriptEventSignal.subscribe(ev=>{
-    if(ev.id!=="transferui_bsm:admin")return;
-    const p=ev.sourceEntity;
+    if(ev.id!=="transferui_bsm:admin"&&ev.id!=="transferui:provider:configure")return;
+    let p=ev.sourceEntity;
+    if(ev.id==="transferui:provider:configure"){
+      const msg=decodeTransferUiEvent(ev.message);if(!msg)return
+      if(msg.providerId!==PROVIDER_ID)return;
+      p=world.getAllPlayers().find(x=>x.id===msg?.player?.id)||world.getAllPlayers().find(x=>x.name===msg?.player?.name);
+      console.info(`[${NAME}] configure request received: request=${msg.requestId??"none"}, player=${msg?.player?.name??"unknown"}, resolved=${p?.name??"none"}.`);
+      if(!p){console.warn(`[${NAME}] configure request ignored: requesting player is no longer online.`);return}
+    }
     if(!p||p.typeId!=="minecraft:player")return;
     system.run(()=>{try{adminMenu(p)}catch(e){console.warn(`[${NAME}] admin UI failed: ${e?.message??e}`)}});
   });
