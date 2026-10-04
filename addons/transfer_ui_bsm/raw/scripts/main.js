@@ -1,9 +1,8 @@
 import { system, world } from "@minecraft/server";
 import { CustomForm, MessageBox, ObservableBoolean, ObservableString } from "@minecraft/server-ui";
 import { variables } from "@minecraft/server-admin";
+import { NAME,VERSION,PROVIDER_ID,PROTOCOL,CONSUMER_ID,CONFIG_SCHEMA_VERSION,CHUNK_SIZE,MAX_QUEUE,MAX_PER_TICK,REQUEST_TIMEOUT_TICKS,SYNC_DEBOUNCE_TICKS,EVENT_REFRESH_COOLDOWN_TICKS,WATCHDOG_SYNC_TICKS } from "./core/constants.js";
 
-const NAME="Transfer UI BSM Provider", VERSION="1.0.0", PROVIDER_ID="bsm", PROTOCOL=1;
-const CHUNK_SIZE=1400, MAX_QUEUE=512, MAX_PER_TICK=8, REQUEST_TIMEOUT_TICKS=400, SYNC_DEBOUNCE_TICKS=20, EVENT_REFRESH_COOLDOWN_TICKS=200, WATCHDOG_SYNC_TICKS=1200;
 const chunks=new Map(), pending=new Map(), eventQueue=[];
 let seq=0, revision=0, apiSeen=false, apiStatus=null, syncing=false, syncQueued=false, syncDebounce=null, eventRefreshCooldown=false, lastSnapshotFingerprint="";
 const endpointCache=new Map();
@@ -14,13 +13,13 @@ const clean=v=>`${v??""}`.trim();
 
 const CONFIG_PROPERTY="transferui:bsm_provider_config_v1";
 let discoveredServersCache=[];
-function defaultProviderConfig(){return {localServer:"",defaultInclude:true,servers:{}}}
+function defaultProviderConfig(){return {schemaVersion:CONFIG_SCHEMA_VERSION,localServer:"",defaultInclude:true,servers:{}}}
 function loadProviderConfig(){
   try{
     const raw=world.getDynamicProperty(CONFIG_PROPERTY);
     if(typeof raw!=="string"||!raw)return defaultProviderConfig();
     const x=JSON.parse(raw);
-    return {localServer:clean(x?.localServer),defaultInclude:x?.defaultInclude!==false,servers:x?.servers&&typeof x.servers==="object"?x.servers:{}};
+    return {schemaVersion:CONFIG_SCHEMA_VERSION,localServer:clean(x?.localServer),defaultInclude:x?.defaultInclude!==false,servers:x?.servers&&typeof x.servers==="object"?x.servers:{}};
   }catch(e){console.warn(`[${NAME}] config load failed: ${e}`);return defaultProviderConfig()}
 }
 function saveProviderConfig(c){world.setDynamicProperty(CONFIG_PROPERTY,JSON.stringify(c))}
@@ -115,7 +114,8 @@ function call(operationId,args={},retry=0,responseProjection){
     sendChunked("bsmapi:request",{operationId,args,responseProjection},id);
   });
 }
-function register(){sendChunked("transferui:provider:register",{protocol:PROTOCOL,id:PROVIDER_ID,name:"Bedrock Server Manager",version:VERSION,capabilities:["destinations","destination-deltas","presence","presence-deltas","health","metadata","configure"],configure:{label:"Configure BSM Provider",adminOnly:true}},`reg-${Date.now()}`)}
+function register(){sendChunked("transferui:provider:register",{protocol:PROTOCOL,id:PROVIDER_ID,name:"Bedrock Server Manager",version:VERSION,capabilities:["destinations","destination-deltas","presence","presence-deltas","health","metadata","configure","actions"],configure:{label:"Configure BSM Provider",adminOnly:true}},`reg-${Date.now()}`)}
+function registerActions(){sendChunked("transferui:actions:register",{protocol:PROTOCOL,providerId:PROVIDER_ID,actions:[{id:"refresh",label:"Refresh from BSM",scope:"destination",adminOnly:false},{id:"configure",label:"Configure BSM Provider",scope:"destination",adminOnly:true},{id:"refresh-player",label:"Refresh Player State",scope:"player",adminOnly:false}]},`actions-${Date.now()}`)}
 function health(state="ready",message=""){sendChunked("transferui:provider:health",{protocol:PROTOCOL,providerId:PROVIDER_ID,state,message,time:Date.now(),metadata:{phase,hasSnapshot,bsmApiSeen:apiSeen,bsmApiState:apiStatus?.state??"unknown",bsmApiAuthenticated:apiStatus?.authenticated??false,bsmHttpReady:apiStatus?.httpReady??false,bsmHttpAuthenticated:apiStatus?.httpAuthenticated??false,bsmWebsocketState:apiStatus?.websocketState??apiStatus?.state??"unknown",ipcPending:pending.size,ipcQueue:eventQueue.length,ipcTimeouts:metrics.timeouts,bsmServers:lastSync.servers,publishedDestinations:lastSync.destinations,publishedPlayers:lastSync.players,rejectedServers:lastSync.rejected,localServer:lastSync.self,localServerManaged:!!(lastSync.self&&lastSync.managedSelf),selfServer:lastSync.self,lastSync:lastSync.time,lastSyncError:lastSync.error,lastOperation:lastSync.operation,lastHttpStatus:lastSync.httpStatus,responseStatus:lastSync.responseStatus}},`health-${Date.now()}`)}
 function normalizeServerPlayers(raw,destinationId,self){
   const out=[];
@@ -168,7 +168,7 @@ function transferHost(){return clean(variables.get("transferuiBsmTransferHost")?
 function selfServer(){return clean(variables.get("transferuiBsmSelfServer")??"")}
 function requestApiStatus(){system.sendScriptEvent("bsmapi:control",JSON.stringify({action:"status"}))}
 // Transfer BSM explicitly owns its live BSM subscription. The API client itself starts with no topics.
-function requestApiSubscribe(){system.sendScriptEvent("bsmapi:control",JSON.stringify({action:"subscribe",topic:"*"}))}
+function requestApiSubscribe(){system.sendScriptEvent("bsmapi:control",JSON.stringify({action:"subscribe",consumerId:CONSUMER_ID,topic:"*"}))}
 function scheduleSync(reason="unspecified"){
   if(syncing || enrichmentActive){syncQueued=true;return}
   if(syncDebounce!==null)return;
@@ -327,7 +327,7 @@ function handleEvent(ev){
       if(r.httpReady && (!previousHttpReady || !hasSnapshot))scheduleSync("http-ready");
     }
   } else if(ev.id==="transferui:status"){
-    const r=receive(ev.id,ev.message); if(r)register();
+    const r=receive(ev.id,ev.message); if(r){register();registerActions();}
   }
 }
 
@@ -343,7 +343,7 @@ system.runInterval(()=>{
 
 system.runTimeout(()=>{
   console.log(`[${NAME}] v${VERSION} loaded: BSM -> Transfer UI Provider API v${PROTOCOL}.`);
-  register();health("connecting","Waiting for BSM API for Minecraft");requestApiSubscribe();requestApiStatus();
+  register();registerActions();health("connecting","Waiting for BSM API for Minecraft");requestApiSubscribe();requestApiStatus();
   system.runInterval(()=>{if(!apiSeen)requestApiStatus();else if(apiStatus?.httpReady)scheduleSync("watchdog");else requestApiStatus()},WATCHDOG_SYNC_TICKS);
   system.runInterval(()=>{const state=!apiSeen?"connecting":lastSync.error?"degraded":hasSnapshot?"ready":"connecting";const msg=!apiSeen?"Waiting for BSM API for Minecraft":!apiStatus?.httpReady?"Waiting for authenticated BSM HTTP API":lastSync.error?`Discovery failed; retaining last-known state. ${lastSync.error}`:hasSnapshot?`Discovered ${lastSync.servers} BSM server(s); published ${lastSync.destinations}.`:"Waiting for first successful BSM server snapshot";health(state,msg)},200);
 },20);
@@ -364,8 +364,9 @@ function decodeTransferUiEvent(message){
 const scriptEventSignal=system.afterEvents?.scriptEventReceive;
 if(scriptEventSignal?.subscribe){
   scriptEventSignal.subscribe(ev=>{
-    if(ev.id!=="transferui_bsm:admin"&&ev.id!=="transferui:provider:configure")return;
+    if(ev.id!=="transferui_bsm:admin"&&ev.id!=="transferui:provider:configure"&&ev.id!=="transferui:action:invoke")return;
     let p=ev.sourceEntity;
+    if(ev.id==="transferui:action:invoke"){const msg=decodeTransferUiEvent(ev.message);if(!msg||msg.providerId!==PROVIDER_ID)return;p=world.getAllPlayers().find(x=>x.id===msg?.player?.id)||world.getAllPlayers().find(x=>x.name===msg?.player?.name);if(msg.actionId==="refresh"||msg.actionId==="refresh-player"){lastSnapshotFingerprint="";scheduleSync(`action-${msg.actionId}`);if(p)p.sendMessage("§aBSM refresh queued.");return}if(msg.actionId==="configure"){if(p)system.run(()=>adminMenu(p));return}return}
     if(ev.id==="transferui:provider:configure"){
       const msg=decodeTransferUiEvent(ev.message);if(!msg)return
       if(msg.providerId!==PROVIDER_ID)return;

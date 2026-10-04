@@ -1,0 +1,13 @@
+export const NAME="Transfer UI BSM Provider";
+export const VERSION="1.0.0";
+export const PROVIDER_ID="bsm";
+export const PROTOCOL=1;
+export const CONSUMER_ID="transfer-ui-bsm";
+export const CONFIG_SCHEMA_VERSION=1;
+export const CHUNK_SIZE=1400;
+export const MAX_QUEUE=512;
+export const MAX_PER_TICK=8;
+export const REQUEST_TIMEOUT_TICKS=400;
+export const SYNC_DEBOUNCE_TICKS=20;
+export const EVENT_REFRESH_COOLDOWN_TICKS=200;
+export const WATCHDOG_SYNC_TICKS=1200;
