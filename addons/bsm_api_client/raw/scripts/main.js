@@ -14,9 +14,30 @@ function baseUrl(){return clean(variables.get("bsmApiUrl")).replace(/\/+$/,'')}
 function wsUrl(){const x=clean(variables.get("bsmApiWsUrl"));if(x)return x;const b=baseUrl();return b?b.replace(/^https:/,"wss:").replace(/^http:/,"ws:")+"/ws":""}
 function username(){return secrets.get("bsmApiUsername")}
 function password(){return secrets.get("bsmApiPassword")}
-function emit(id,obj){const s=JSON.stringify(obj),size=1400,total=Math.max(1,Math.ceil(s.length/size));for(let i=0;i<total;i++)system.sendScriptEvent(id,JSON.stringify({chunk:i,total,data:s.slice(i*size,(i+1)*size)}))}
-function status(){emit("bsmapi:status",{version:VERSION,state:ws.state,authenticated:ws.authenticated,lastError:ws.lastError,baseUrl:baseUrl(),wsUrl:wsUrl(),operationCount:Object.keys(operations).length,modelCount:Object.keys(models).length})}
-async function authenticate(force=false){if(auth.token&&!force)return auth.token;if(auth.promise&&!force)return auth.promise;const b=baseUrl(),u=username(),p=password();if(!b)throw Error("Set bsmApiUrl in variables.json");if(!u||!p)throw Error("Set bsmApiUsername and bsmApiPassword in secrets.json");auth.promise=(async()=>{const r=new HttpRequest(`${b}/minecraft-bsm-api/auth/token`);r.method=HttpRequestMethod.Post;r.timeout=10;r.headers=[new HttpHeader("Accept","application/json"),new HttpHeader("X-BSM-API-Username",u),new HttpHeader("X-BSM-API-Password",p)];const res=await http.request(r);if(res.status<200||res.status>=300)throw Error(`Auth HTTP ${res.status}: ${res.body?.slice?.(0,200)??""}`);const d=JSON.parse(res.body||"{}");if(!d.access_token)throw Error("Authentication bridge returned no access_token");auth.token=d.access_token;return auth.token})().finally(()=>auth.promise=null);return auth.promise}
+function emit(id,obj){const s=JSON.stringify(obj),size=1400,total=Math.max(1,Math.ceil(s.length/size)),streamId=obj?.id??`${id}:${Date.now()}`;for(let i=0;i<total;i++)system.sendScriptEvent(id,JSON.stringify({id:streamId,chunk:i,total,data:s.slice(i*size,(i+1)*size)}))}
+function emitIpcResponse(obj){
+  const s=JSON.stringify(obj);
+  // Most IPC replies, especially projected properties, fit safely in one ScriptEvent.
+  // Sending them directly avoids correlation/reassembly races between independent packs.
+  if(s.length<=12000)system.sendScriptEvent("bsmapi:response:direct",s);
+  else emit("bsmapi:response",obj);
+}
+function status(){
+  const httpAuthenticated=!!auth.token;
+  emit("bsmapi:status",{
+    version:VERSION,
+    state:ws.state,
+    authenticated:ws.authenticated,
+    httpReady:httpAuthenticated,
+    httpAuthenticated,
+    websocketState:ws.state,
+    websocketAuthenticated:ws.authenticated,
+    ready:httpAuthenticated,
+    lastError:ws.lastError,
+    baseUrl:baseUrl(),wsUrl:wsUrl(),operationCount:Object.keys(operations).length,modelCount:Object.keys(models).length
+  });
+}
+async function authenticate(force=false){if(auth.token&&!force)return auth.token;if(auth.promise&&!force)return auth.promise;const b=baseUrl(),u=username(),p=password();if(!b)throw Error("Set bsmApiUrl in variables.json");if(!u||!p)throw Error("Set bsmApiUsername and bsmApiPassword in secrets.json");auth.promise=(async()=>{const attempts=[{path:"/minecraft-bsm-api/auth/token",uh:"X-BSM-API-Username",ph:"X-BSM-API-Password",name:"BSM API bridge"},{path:"/transfer-ui/auth/token",uh:"X-TransferUI-Username",ph:"X-TransferUI-Password",name:"legacy Transfer UI bridge"}];let last=null;for(const a of attempts){const r=new HttpRequest(`${b}${a.path}`);r.method=HttpRequestMethod.Post;r.timeout=10;r.headers=[new HttpHeader("Accept","application/json"),new HttpHeader(a.uh,u),new HttpHeader(a.ph,p)];const res=await http.request(r);if(res.status===404){last=res;continue}if(res.status<200||res.status>=300)throw Error(`${a.name} auth HTTP ${res.status}: ${res.body?.slice?.(0,200)??""}`);const d=JSON.parse(res.body||"{}");if(!d.access_token)throw Error(`${a.name} returned no access_token`);auth.token=d.access_token;auth.bridge=a.path;status();return auth.token}const detail=last?.body?.slice?.(0,200)??"";throw Error(`Authentication bridge not found (HTTP 404). Install and enable bsm_api_bridge.py in BSM, then restart the BSM web server.${detail?` BSM response: ${detail}`:""}`)})().finally(()=>auth.promise=null);return auth.promise}
 function encodeQuery(q={}){const a=[];for(const [k,v] of Object.entries(q)){if(v===undefined||v===null)continue;if(Array.isArray(v))for(const x of v)a.push(`${encodeURIComponent(k)}=${encodeURIComponent(x)}`);else a.push(`${encodeURIComponent(k)}=${encodeURIComponent(v)}`)}return a.length?"?"+a.join("&"):""}
 async function rawRequest(path,method="GET",body,query,headers={},retry=true,contentType="application/json"){const token=await authenticate();const r=new HttpRequest(`${baseUrl()}${path}${encodeQuery(query)}`);r.method=METHOD[`${method}`.toUpperCase()]??HttpRequestMethod.Get;r.timeout=15;const hs=[new HttpHeader("Accept","application/json"),new HttpHeader("Authorization",`Bearer ${token}`)];for(const [k,v] of Object.entries(headers||{}))hs.push(new HttpHeader(k,`${v}`));if(body!==undefined){if(contentType.includes("x-www-form-urlencoded")&&body&&typeof body==="object")r.body=Object.entries(body).map(([k,v])=>`${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join("&");else r.body=typeof body==="string"?body:JSON.stringify(body);hs.push(new HttpHeader("Content-Type",contentType))}r.headers=hs;const res=await http.request(r);if(res.status===401&&retry){auth.token="";await authenticate(true);return rawRequest(path,method,body,query,headers,false,contentType)}let data=res.body;try{data=JSON.parse(res.body||"null")}catch{}if(res.status<200||res.status>=300){const e=Error(`BSM HTTP ${res.status}`);e.status=res.status;e.data=data;throw e}return data}
 function buildPath(t,params={}){return t.replace(/\{([^}]+)\}/g,(_,k)=>{if(params[k]===undefined)throw Error(`Missing path parameter: ${k}`);return encodeURIComponent(params[k])})}
@@ -31,12 +52,74 @@ function responseSchema(op,status,contentType="application/json"){const r=op.res
 export async function call(operationId,args={}){const op=operations[operationId];if(!op)throw Error(`Unknown BSM operationId: ${operationId}`);const pathParams={...(args.path||{})},query={...(args.query||{})};for(const p of op.parameters||[]){const v=args[p.name]!==undefined?args[p.name]:(p.in==="path"?pathParams[p.name]:query[p.name]);if(p.required&&v===undefined)throw Error(`${operationId}: missing required ${p.in} parameter ${p.name}`);if(v!==undefined){const pe=validateSchema(v,p.schema,`${p.in}.${p.name}`,[]);if(pe.length)throw Error(`${operationId}: ${pe.join("; ")}`);if(p.in==="path")pathParams[p.name]=v;else if(p.in==="query")query[p.name]=v}}
  const req=selectRequest(op,args);if(args.body!==undefined&&req.schema){const errors=validateSchema(args.body,req.schema,"body",[]);if(errors.length)throw Error(`${operationId}: invalid request model: ${errors.join("; ")}`)}else if(op.request?.required)throw Error(`${operationId}: request body is required`);
  const data=await rawRequest(buildPath(op.path,pathParams),op.method,args.body,query,args.headers,undefined,req.contentType);if(args.validateResponse!==false){const rs=responseSchema(op,200);if(rs){const errors=validateSchema(data,rs,"response",[]);if(errors.length){const e=Error(`${operationId}: response model validation failed: ${errors.join("; ")}`);e.modelErrors=errors;throw e}}}return data}
-export const BsmApi={operations,models,call,request:rawRequest,validateModel,createModel,status:()=>({state:ws.state,authenticated:ws.authenticated,lastError:ws.lastError,baseUrl:baseUrl(),wsUrl:wsUrl(),operationCount:Object.keys(operations).length,modelCount:Object.keys(models).length})};
+export const BsmApi={operations,models,call,request:rawRequest,validateModel,createModel,status:()=>({state:ws.state,authenticated:ws.authenticated,httpReady:!!auth.token,httpAuthenticated:!!auth.token,websocketState:ws.state,websocketAuthenticated:ws.authenticated,ready:!!auth.token,lastError:ws.lastError,baseUrl:baseUrl(),wsUrl:wsUrl(),operationCount:Object.keys(operations).length,modelCount:Object.keys(models).length})};
 function wsSend(o){try{if(ws.client?.isOpen){ws.client.send(JSON.stringify(o));return true}}catch(e){ws.lastError=`${e}`}return false}
 function subscribe(topic){if(!topic)return;ws.topics.add(topic);if(ws.authenticated)wsSend({action:"subscribe",topic})}
 function reconnectLater(){if(ws.reconnect!==null)return;const d=[20,40,100,200,600][Math.min(ws.retries++,4)];ws.reconnect=system.runTimeout(()=>{ws.reconnect=null;connectWs().catch(()=>{})},d)}
-async function connectWs(force=false){try{if(ws.client?.isOpen&&!force)return true;if(ws.client?.isOpen)try{ws.client.close()}catch{}const token=await authenticate(force),url=wsUrl();if(!url)throw Error("BSM WebSocket URL unavailable");ws.state="connecting";ws.authenticated=false;status();const c=await websocket.connect(url);ws.client=c;c.afterEvents.message.subscribe(ev=>{let m=ev.message;try{const x=JSON.parse(m);if((x?.type==="authenticated"||x?.status==="authenticated"||x?.authenticated===true)&&!ws.authenticated){ws.authenticated=true;ws.state="live";ws.retries=0;for(const t of ws.topics)wsSend({action:"subscribe",topic:t});status()}}catch{}emit("bsmapi:event",{raw:m})});c.afterEvents.close.subscribe(ev=>{if(ws.client===c)ws.client=null;ws.state="disconnected";ws.authenticated=false;ws.lastError=`BSM closed WebSocket${ev?.reason!==undefined?` (reason ${ev.reason})`:""}`;status();reconnectLater()});ws.state="authenticating";status();c.send(JSON.stringify({action:"authenticate",token}));system.runTimeout(()=>{if(ws.client===c&&c.isOpen&&!ws.authenticated){ws.authenticated=true;ws.state="live";for(const t of ws.topics)wsSend({action:"subscribe",topic:t});status()}},10);return true}catch(e){ws.state="error";ws.authenticated=false;ws.lastError=`${e?.message??e}`;status();reconnectLater();return false}}
+async function connectWs(force=false){try{if(ws.client?.isOpen&&!force)return true;if(ws.client?.isOpen)try{ws.client.close()}catch{}const token=await authenticate(force),url=wsUrl();if(!url)throw Error("BSM WebSocket URL unavailable");ws.state="connecting";ws.authenticated=false;status();const c=await websocket.connect(url);ws.client=c;c.afterEvents.message.subscribe(ev=>{let m=ev.message;try{const x=JSON.parse(m);if((x?.type==="authenticated"||x?.status==="authenticated"||x?.authenticated===true)&&!ws.authenticated){ws.authenticated=true;ws.state="live";ws.retries=0;for(const t of ws.topics)wsSend({action:"subscribe",topic:t});status()}}catch{}emit("bsmapi:event",{raw:m})});c.afterEvents.close.subscribe(ev=>{if(ws.client===c)ws.client=null;ws.state="disconnected";ws.authenticated=false;ws.lastError=`BSM closed WebSocket${ev?.reason!==undefined?` (reason ${ev.reason})`:""}`;status();reconnectLater()});ws.state="authenticating";status();c.send(JSON.stringify({action:"authenticate",token}));system.runTimeout(()=>{if(ws.client===c&&c.isOpen&&!ws.authenticated){ws.authenticated=true;ws.state="live";for(const t of ws.topics)wsSend({action:"subscribe",topic:t});status()}},10);return true}catch(e){ws.state="error";ws.authenticated=false;ws.lastError=`${e?.message??e}`;status();const m=ws.lastError.toLowerCase();if(!m.includes("authentication bridge not found")&&!m.includes("set bsmapi")&&!m.includes("incorrect username or password")&&!m.includes("auth http 401"))reconnectLater();return false}}
 function disconnectWs(){if(ws.reconnect!==null){system.clearRun(ws.reconnect);ws.reconnect=null}try{ws.client?.close()}catch{}ws.client=null;ws.state="disconnected";ws.authenticated=false;status()}
 function receiveChunk(ev){let p;try{p=JSON.parse(ev.message)}catch{return null};const id=p.id;if(!id)return null;let x=pendingChunks.get(id);if(!x){x={parts:new Array(p.total),time:Date.now()};pendingChunks.set(id,x)}x.parts[p.chunk]=p.data;if(x.parts.filter(v=>v!==undefined).length!==p.total)return null;pendingChunks.delete(id);try{return {id,payload:JSON.parse(x.parts.join(""))}}catch(e){return {id,error:`Invalid request JSON: ${e}`}}}
-system.afterEvents.scriptEventReceive.subscribe(ev=>{if(ev.id==="bsmapi:request"){const got=receiveChunk(ev);if(!got)return;const {id,payload,error}=got;if(error)return emit("bsmapi:response",{id,ok:false,error});(async()=>{try{let data;if(payload.operationId)data=await call(payload.operationId,payload.args||{});else data=await rawRequest(payload.path,payload.method,payload.body,payload.query,payload.headers,undefined,payload.contentType);emit("bsmapi:response",{id,ok:true,data})}catch(e){emit("bsmapi:response",{id,ok:false,error:`${e?.message??e}`,status:e?.status,data:e?.data})}})()}else if(ev.id==="bsmapi:control"){let p;try{p=JSON.parse(ev.message)}catch{return};if(p.action==="reconnect")connectWs(true);else if(p.action==="disconnect")disconnectWs();else if(p.action==="subscribe")subscribe(p.topic);else if(p.action==="status")status();else if(p.action==="operations")emit("bsmapi:operations",{operations})}});
-system.runTimeout(()=>{console.log(`[${NAME}] v${VERSION} loaded with ${Object.keys(operations).length} OpenAPI operations and ${Object.keys(models).length} models.`);connectWs().catch(()=>{});system.runInterval(()=>{if(!ws.client?.isOpen)connectWs().catch(()=>{})},1200);status()},20);
+// Keep ScriptEvent callbacks tiny. HTTP/OpenAPI work is dispatched from the tick queue so
+// Bedrock cannot interrupt a long async request while we are inside scriptEventReceive.
+const ipcQueue=[];
+const IPC_QUEUE_MAX=1024, IPC_PER_TICK=8;
+const ipcMetrics={queued:0,processed:0,dropped:0,errors:0,highWater:0,requests:0,responses:0};
+const IPC_HTTP_CONCURRENCY=2; let ipcHttpActive=0; const ipcHttpWaiters=[];
+function acquireIpcHttp(){return new Promise(resolve=>{if(ipcHttpActive<IPC_HTTP_CONCURRENCY){ipcHttpActive++;resolve()}else ipcHttpWaiters.push(resolve)})}
+function releaseIpcHttp(){const next=ipcHttpWaiters.shift();if(next)next();else ipcHttpActive=Math.max(0,ipcHttpActive-1)}
+async function handleIpc(ev){
+  if(ev.id==="bsmapi:request"){
+    const got=receiveChunk(ev); if(!got)return;
+    const {id,payload,error}=got;
+    if(error){ipcMetrics.responses++;emitIpcResponse({id,ok:false,error});return}
+    ipcMetrics.requests++;
+    let slot=false;
+    try{
+      await acquireIpcHttp(); slot=true;
+      const started=Date.now();
+      console.log(`[${NAME}] IPC -> id=${id} op=${payload.operationId??"raw"} active=${ipcHttpActive}/${IPC_HTTP_CONCURRENCY}`);
+      let data;
+      if(payload.operationId)data=await call(payload.operationId,payload.args||{});
+      else data=await rawRequest(payload.path,payload.method,payload.body,payload.query,payload.headers,undefined,payload.contentType);
+      console.log(`[${NAME}] IPC <- id=${id} op=${payload.operationId??"raw"} ok=true ms=${Date.now()-started}`);
+      // IPC projection is transport-only: the public API client still returns the complete
+      // OpenAPI response. Callers may request a smaller response over ScriptEvent IPC so
+      // large fields such as server.properties raw_content do not flood the event bus.
+      if(payload.responseProjection==="properties" && data && typeof data==="object") {
+        data={status:data.status,message:data.message??null,properties:data.properties??{}};
+      }
+      ipcMetrics.responses++;emitIpcResponse({id,ok:true,data});
+    }catch(e){
+      console.warn(`[${NAME}] IPC <- id=${id} op=${payload.operationId??"raw"} ok=false error=${e?.message??e}`);
+      ipcMetrics.responses++;emitIpcResponse({id,ok:false,error:`${e?.message??e}`,status:e?.status,data:e?.data});
+    }finally{if(slot)releaseIpcHttp()}
+  }else if(ev.id==="bsmapi:control"){
+    let p;try{p=JSON.parse(ev.message)}catch{return}
+    if(p.action==="reconnect")connectWs(true);
+    else if(p.action==="disconnect")disconnectWs();
+    else if(p.action==="subscribe")subscribe(p.topic);
+    else if(p.action==="status")status();
+    else if(p.action==="operations")emit("bsmapi:operations",{operations});
+  }
+}
+system.afterEvents.scriptEventReceive.subscribe(ev=>{
+  if(ev.id!=="bsmapi:request"&&ev.id!=="bsmapi:control")return;
+  if(ipcQueue.length>=IPC_QUEUE_MAX){ipcMetrics.dropped++;return}
+  ipcQueue.push({id:ev.id,message:ev.message});ipcMetrics.queued++;ipcMetrics.highWater=Math.max(ipcMetrics.highWater,ipcQueue.length);
+});
+system.runInterval(()=>{
+  let n=0;
+  while(ipcQueue.length&&n++<IPC_PER_TICK){
+    const ev=ipcQueue.shift();
+    system.run(()=>handleIpc(ev).catch(e=>{ipcMetrics.errors++;console.warn(`[${NAME}] IPC handler error: ${e?.message??e}`)}));
+    ipcMetrics.processed++;
+  }
+  const now=Date.now();for(const [id,x] of pendingChunks)if(now-x.time>30000)pendingChunks.delete(id);
+},1);
+system.runTimeout(()=>{
+  console.log(`[${NAME}] v${VERSION} loaded with ${Object.keys(operations).length} OpenAPI operations and ${Object.keys(models).length} models.`);
+  status();
+  // Authenticate/connect immediately. Do not wait for the one-minute maintenance interval.
+  connectWs().catch(()=>{});
+  system.runInterval(()=>{if(ws.topics.size&&!ws.client?.isOpen)connectWs().catch(()=>{})},1200);
+},20);

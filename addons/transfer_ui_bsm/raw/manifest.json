@@ -1,38 +1,36 @@
 {
   "format_version": 2,
   "header": {
-    "description": "Transfer UI 3.0.0 - focused server transfers, navigation, and generic provider API",
-    "name": "Transfer UI",
-    "uuid": "63439426-8efe-4f66-8c21-0be8a6cac032",
+    "name": "Transfer UI BSM Provider",
+    "description": "Connects Transfer UI to BSM API for Minecraft through the generic Transfer UI Provider API.",
+    "uuid": "a8f747c8-c74e-4f2c-a94a-37e503c91410",
+    "version": [
+      1,
+      0,
+      0
+    ],
     "min_engine_version": [
       1,
       26,
       52
-    ],
-    "version": [
-      3,
-      0,
-      0
     ]
   },
   "modules": [
     {
-      "description": "Transfer UI behavior data",
       "type": "data",
-      "uuid": "cb04f563-4ef4-4b48-bdfa-04b012e79680",
+      "uuid": "2b78b041-daca-4d32-9715-ec225219a2ef",
       "version": [
-        3,
+        1,
         0,
         0
       ]
     },
     {
-      "description": "Transfer UI 3.0.0 scripts",
       "type": "script",
       "language": "javascript",
-      "uuid": "21261991-a854-4f99-9720-f495978a06b7",
+      "uuid": "f74e2670-84c4-4d66-b784-31d1cf10cba5",
       "version": [
-        3,
+        1,
         0,
         0
       ],
@@ -45,12 +43,12 @@
       "version": "2.10.0"
     },
     {
-      "module_name": "@minecraft/server-ui",
-      "version": "2.2.0"
-    },
-    {
       "module_name": "@minecraft/server-admin",
       "version": "1.0.0-beta"
+    },
+    {
+      "module_name": "@minecraft/server-ui",
+      "version": "2.2.0"
     }
   ]
 }
