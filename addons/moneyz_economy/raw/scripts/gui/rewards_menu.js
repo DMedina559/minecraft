@@ -1,3 +1,4 @@
+import * as Feedback from "../core/feedback.js";
 import { world } from "@minecraft/server";
 import { ActionFormData } from "../ui/forms.js";
 import { getCurrentUTCDate } from "../utilities.js";
@@ -25,7 +26,7 @@ export function openRewardsMenu(player, isNpcInteraction) {
         bodyText += "§cDaily Rewards are currently unavailable.";
     }
 
-    const form = new ActionFormData()
+    const form = new ActionFormData().shortcut({type:"service",id:"moneyz:daily_rewards",label:"Daily Rewards"})
         .title("§l§1Daily Rewards")
         .body(bodyText);
 
@@ -54,17 +55,17 @@ async function dailyRewardLogic(player, rewardValue) {
             const updateResult = Economy.deposit(player, rewardValue, { type: "daily_reward", source: "daily_reward" });
             if (updateResult) {
                 player.setDynamicProperty("lastDailyReward", currentDate);
-                try { player.playSound("random.levelup"); } catch {}
-                player.sendMessage(`§aYou have claimed your daily rewards! §f${rewardValue} Moneyz`);
+                try { Feedback.celebrate(player); } catch {}
+                Feedback.message(player,`§aYou have claimed your daily rewards! §f${rewardValue} Moneyz`);
             } else {
-                player.sendMessage("§cAn error occurred while claiming your daily reward. Please try again later.");
+                Feedback.message(player,"§cAn error occurred while claiming your daily reward. Please try again later.");
             }
         } catch (error) {
             log(`Error during daily reward for ${player.nameTag}: ${error}`, LOG_LEVELS.ERROR);
-            player.sendMessage("§cAn unexpected error occurred while claiming your daily reward.");
+            Feedback.message(player,"§cAn unexpected error occurred while claiming your daily reward.");
         }
     } else {
-        player.sendMessage("§cYou have already claimed your daily rewards. Come back tomorrow!");
+        Feedback.message(player,"§cYou have already claimed your daily rewards. Come back tomorrow!");
     }
 }
 

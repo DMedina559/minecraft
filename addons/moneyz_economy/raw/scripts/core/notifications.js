@@ -1,1 +1,5 @@
-const send=(p,msg,sound)=>{try{p.sendMessage(msg);if(sound)p.playSound(sound)}catch{}};export const success=(p,m)=>send(p,`§a${m}`,"random.levelup");export const error=(p,m)=>send(p,`§c${m}`,"note.bass");export const info=(p,m)=>send(p,`§f${m}`);export const money=(p,a)=>send(p,`${a>=0?"§a+":"§c"}${Math.round(a)} §gMoneyz`,a>=0?"random.orb":"note.bass");
+import * as Feedback from "./feedback.js";
+export function success(p,m){Feedback.message(p,`§a${m}`,"success");}
+export function error(p,m){Feedback.message(p,`§c${m}`,"error");}
+export function info(p,m){Feedback.message(p,`§f${m}`);}
+export function money(p,a){Feedback.message(p,`${a>=0?"§a+":"§c"}${Math.round(a)} §gMoneyz`,a>=0?"received":"success");}

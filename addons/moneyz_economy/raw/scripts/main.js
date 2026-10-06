@@ -1,3 +1,4 @@
+import { initializePets } from "./core/pets.js";
 import { system, world } from "@minecraft/server";
 import { log, LOG_LEVELS } from "./logger.js";
 import { registerCommands } from "./api/commands.js";
@@ -15,7 +16,7 @@ import * as Entitlements from "./core/entitlements.js";
 import * as Reservations from "./core/reservations.js";
 import * as Properties from "./core/properties.js";
 system.beforeEvents.startup.subscribe(event=>{try{initializeComponents(event);registerCommands(event.customCommandRegistry);}catch(e){log(`Custom command registration failed: ${e}`,LOG_LEVELS.ERROR);}});
-system.run(()=>{runMigrations();migrateCustomShop();migrateCustomShopV3(getLegacyCustomItems(),Config.get("customShop","Custom Shop"));initializeQuestEngine();});
+system.run(()=>{runMigrations();initializePets();migrateCustomShop();migrateCustomShopV3(getLegacyCustomItems(),Config.get("customShop","Custom Shop"));initializeQuestEngine();});
 initializeScriptEvents();
 world.afterEvents.playerSpawn.subscribe(({player,initialSpawn})=>{
  if(!initialSpawn||!player)return;

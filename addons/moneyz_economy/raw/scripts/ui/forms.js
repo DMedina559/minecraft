@@ -1,3 +1,4 @@
+import { contextualPromise } from "./navigation.js";
 import { CustomForm, ObservableBoolean, ObservableNumber, ObservableString } from "./ddui.js";
 
 // DDUI-backed compatibility facade. It intentionally mirrors the small subset of
@@ -22,32 +23,38 @@ function closeQuietly(form) {
 
 export class ActionFormData {
     constructor() { this._title = "Moneyz"; this._body = ""; this._buttons = []; this._sections = new Map(); }
+    npcContext(enabled=true) { this._npcInteract=enabled; return this; }
+    shortcut(route) { this._route=route; return this; }
     title(value) { this._title = value; return this; }
     body(value) { this._body = value; return this; }
     header(label) { this._sections.set(this._buttons.length, label); return this; }
     button(label, _iconPath) { this._buttons.push(label); return this; }
     show(player) {
-        return new Promise((resolve, reject) => {
+        return contextualPromise(new Promise((resolve, reject) => {
             let settled = false;
             const form = new CustomForm(player, this._title);
+            if(this._route)form.shortcut(this._route);
+            if(this._npcInteract!==undefined)form.npcContext(this._npcInteract);
             if (this._body) form.label(this._body).divider();
             const finish = result => { if (settled) return; settled = true; resolve(result); };
             this._buttons.forEach((label, selection) => {
                 if (this._sections.has(selection)) form.header(this._sections.get(selection)).divider();
                 const parts = buttonParts(label);
-                form.button(parts.label, () => {
+                form.button(label, () => {
                     closeQuietly(form);
                     finish({ canceled: false, selection });
                 }, parts.tooltip ? { tooltip: parts.tooltip } : undefined);
             });
             form.closeButton();
-            form.show().then(() => finish({ canceled: true, selection: undefined })).catch(reject);
-        });
+            form.show().then(result => finish({ canceled: true, navigated:result?.navigated===true||result?.permissionDenied===true, selection: undefined })).catch(reject);
+        }));
     }
 }
 
 export class ModalFormData {
     constructor() { this._title = "Moneyz"; this._controls = []; this._submit = "Submit"; }
+    npcContext(enabled=true) { this._npcInteract=enabled; return this; }
+    shortcut(route) { this._route=route; return this; }
     title(value) { this._title = value; return this; }
     submitButton(value) { this._submit = value; return this; }
     dropdown(label, options, defaultValue = 0) {
@@ -60,9 +67,11 @@ export class ModalFormData {
         this._controls.push({ type: "toggle", label, defaultValue }); return this;
     }
     show(player) {
-        return new Promise((resolve, reject) => {
+        return contextualPromise(new Promise((resolve, reject) => {
             let settled = false;
             const form = new CustomForm(player, this._title);
+            if(this._route)form.shortcut(this._route);
+            if(this._npcInteract!==undefined)form.npcContext(this._npcInteract);
             const values = [];
             for (const control of this._controls) {
                 if (control.type === "dropdown") {
@@ -85,7 +94,7 @@ export class ModalFormData {
                 closeQuietly(form);
                 finish({ canceled: false, formValues });
             }).closeButton();
-            form.show().then(() => finish({ canceled: true, formValues: undefined })).catch(reject);
-        });
+            form.show().then(result => finish({ canceled: true, navigated:result?.navigated===true||result?.permissionDenied===true, formValues: undefined })).catch(reject);
+        }));
     }
 }

@@ -1,3 +1,5 @@
+import { defer } from "../ui/navigation.js";
+import * as Feedback from "../core/feedback.js";
 import { system } from "@minecraft/server";
 import { ActionFormData, ModalFormData } from "../ui/forms.js";
 import { getRandomInt } from "../utilities.js";
@@ -9,22 +11,22 @@ import * as Config from "../core/config.js";
 const rollDice = () => [getRandomInt(1, 6), getRandomInt(1, 6)];
 const total = dice => dice[0] + dice[1];
 const diceText = dice => `${dice[0]} + ${dice[1]} = ${total(dice)}`;
-const back = (player, npc) => { if (!npc) system.run(() => chanceMenu(player)); };
+const back = (player, npc) => { if (!npc) defer(() => chanceMenu(player)); };
 
 async function result(player, stake, outcome, detail, npc) {
     const multiplier = Math.max(1, Config.number("chanceX", 2));
     let summary;
     if (outcome === "win") {
         const payout = Math.round(stake * multiplier);
-        GameEconomy.payout(player, payout, "dice", { outcome: detail });
-        summary = `§aYou win! §e+${payout} Moneyz`;
-        try { player.playSound("random.levelup"); } catch {}
+        const paid=GameEconomy.payout(player, payout, "dice", { outcome: detail });
+        summary = !paid?"§cWin payout failed. Please contact an admin.":`§aYou win! §e+${payout} Moneyz`;
+        if(paid)Feedback.celebrate(player);else Feedback.error(player);
     } else {
         summary = `§cYou lose ${stake} Moneyz.`;
-        try { player.playSound("note.bass"); } catch {}
+        try { Feedback.error(player); } catch {}
     }
-    const r = await new ActionFormData().title("§l§6Dice Game - Craps").body(`${detail}\n\n${summary}`).button("Play Again").button("Back").show(player);
-    if (r && !r.canceled && r.selection === 0) system.run(() => startCrapsGame(player, npc));
+    const r = await new ActionFormData().npcContext(npc).title("§l§6Dice Game - Craps").body(`${detail}\n\n${summary}`).button("Play Again").button("Back").show(player);
+    if (r && !r.canceled && r.selection === 0) defer(() => startCrapsGame(player, npc));
     else if (r && !r.canceled) back(player, npc);
 }
 
@@ -36,7 +38,7 @@ async function play(player, stake, npc) {
     const point = firstTotal;
     let last = `Come-out roll: ${diceText(first)}\n§ePoint is ${point}.`;
     while (true) {
-        const r = await new ActionFormData().title("§l§6Dice Game - Craps").body(`${last}\n\nRoll ${point} before 7 to win.`).button("Roll Dice").button("Forfeit & Back").show(player);
+        const r = await new ActionFormData().npcContext(npc).title("§l§6Dice Game - Craps").body(`${last}\n\nRoll ${point} before 7 to win.`).button("Roll Dice").button("Forfeit & Back").show(player);
         if (!r || r.canceled) return; // closing forfeits an already-placed bet
         if (r.selection === 1) { back(player, npc); return; }
         const dice = rollDice(), n = total(dice);
@@ -47,20 +49,21 @@ async function play(player, stake, npc) {
 }
 
 export async function startCrapsGame(player, isNpcInteraction = false) {
-    if (!GameEconomy.beginSession(player, "dice")) return player.sendMessage("§cFinish your current Moneyz game first.");
+    if (!GameEconomy.beginSession(player, "dice")) return Feedback.message(player,"§cFinish your current Moneyz game first.");
     try {
-        const response = await new ModalFormData().title("§l§6Dice Game (Craps)").textField("Stake", "Whole Moneyz amount").show(player);
+        const response = await new ModalFormData().npcContext(isNpcInteraction).title("§l§6Dice Game (Craps)").textField("Stake", "Whole Moneyz amount").show(player);
+        if(response?.navigated)return;
         if (!response || response.canceled) return back(player, isNpcInteraction);
         const check = GameEconomy.validateStake(player, response.formValues?.[0]);
         if (!check.ok) {
-            player.sendMessage(check.reason === "insufficient" ? "§cYou don't have enough Moneyz." : "§cEnter a valid positive whole-number stake.");
+            Feedback.message(player,check.reason === "insufficient" ? "§cYou don't have enough Moneyz." : "§cEnter a valid positive whole-number stake.");
             return back(player, isNpcInteraction);
         }
-        if (!GameEconomy.placeBet(player, check.stake, "dice")) return player.sendMessage("§cYour bet could not be placed.");
+        if (!GameEconomy.placeBet(player, check.stake, "dice")) return Feedback.message(player,"§cYour bet could not be placed.");
         await play(player, check.stake, isNpcInteraction);
     } catch (error) {
         log(`Craps failed for ${player?.nameTag}: ${error}`, LOG_LEVELS.ERROR);
-        player?.sendMessage("§cThe dice game encountered an error.");
+        Feedback.message(player,"§cThe dice game encountered an error.");
     } finally { GameEconomy.endSession(player); }
 }
 

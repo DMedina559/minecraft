@@ -1,3 +1,4 @@
+import * as Feedback from "./feedback.js";
 import { world } from "@minecraft/server";
 import * as Storage from "./storage.js";
 import * as Economy from "./economy.js";
@@ -15,11 +16,29 @@ export const get=id=>load().find(x=>x.id===clean(id))??null;
 export function upsert(def){const a=load(),id=clean(def.id||def.name);if(!id)throw new Error("Product id required");const i=a.findIndex(x=>x.id===id),old=i>=0?a[i]:{};const p={...old,...def,id,name:String(def.name??old.name??id),type:def.type??old.type??"item",price:Math.max(0,Math.round(Number(def.price??old.price??0))),enabled:def.enabled??old.enabled??true};if(i>=0)a[i]=p;else a.push(p);save(a);emit("productChanged",{product:p});return p;}
 export function remove(id){const a=load(),n=a.filter(x=>x.id!==clean(id));if(n.length===a.length)return false;save(n);return true;}
 export function registerProvider(type,provider){type=clean(type);if(!type||typeof provider?.deliver!=="function")throw new Error("Product provider requires type and deliver()");providers.set(type,provider);return()=>providers.delete(type);}
-export async function deliver(player,p,context={}){if(p.type==="item")return (p.itemTemplate?await Inventory.giveTemplate(player,p.itemTemplate,p.amount??p.itemTemplate.amount??1):await Inventory.give(player,p.itemId,p.amount??1,p.data??0))?{ok:true}:{ok:false,reason:"delivery_failed"};if(p.type==="bundle"){for(const item of p.contents??[]){if(item.type&&item.type!=="item")return {ok:false,reason:"unsupported_bundle_entry"};const ok=item.itemTemplate?await Inventory.giveTemplate(player,item.itemTemplate,item.amount??item.itemTemplate.amount??1):await Inventory.give(player,item.itemId??item.id,item.amount??1,item.data??0);if(!ok)return {ok:false,reason:"bundle_delivery_failed"};}return {ok:true};}
- if(p.type==="pet"||p.type==="entity"){try{const loc=player.location,e=player.dimension.spawnEntity(p.entityId,{x:loc.x+1,y:loc.y,z:loc.z+1});for(const tag of p.tags??[])e.addTag(tag);if(p.nameTag)e.nameTag=p.nameTag;return {ok:true,entity:e};}catch{return {ok:false,reason:"spawn_failed"};}}
+async function _audio_deliver(player,p,context={}){if(p.type==="item")return (p.itemTemplate?await Inventory.giveTemplate(player,p.itemTemplate,p.amount??p.itemTemplate.amount??1):await Inventory.give(player,p.itemId,p.amount??1,p.data??0))?{ok:true}:{ok:false,reason:"delivery_failed"};if(p.type==="bundle"){for(const item of p.contents??[]){if(item.type&&item.type!=="item")return {ok:false,reason:"unsupported_bundle_entry"};const ok=item.itemTemplate?await Inventory.giveTemplate(player,item.itemTemplate,item.amount??item.itemTemplate.amount??1):await Inventory.give(player,item.itemId??item.id,item.amount??1,item.data??0);if(!ok)return {ok:false,reason:"bundle_delivery_failed"};}return {ok:true};}
+ if(p.type==="pet"||p.type==="entity"){
+  let entity;try{
+   const loc=player.location;entity=player.dimension.spawnEntity(p.entityId,{x:loc.x+1,y:loc.y,z:loc.z+1});
+   if(p.type==="pet"&&p.autoTame!==false){
+    const tame=entity.getComponent("minecraft:tameable"),mount=entity.getComponent("minecraft:tamemount");
+    const ok=tame?.tame?tame.tame(player):mount?.tameToPlayer?mount.tameToPlayer(true,player):false;
+    if(!ok)throw new Error("taming_failed");
+   }
+   for(const tag of p.tags??[])entity.addTag(tag);if(p.nameTag)entity.nameTag=p.nameTag;
+   return {ok:true,entity};
+  }catch(error){try{entity?.remove();}catch{}return {ok:false,reason:error.message==="taming_failed"?"taming_failed":"spawn_failed"};}
+ }
+
  if(p.type==="entitlement")return Entitlements.grant(player,p.entitlementId,{durationMs:p.durationMs,legacyTag:p.legacyTag,metadata:{productId:p.id}});
  if(p.type==="reservation")return Reservations.book(player,p.propertyId,{nights:p.nights??1,metadata:{productId:p.id}});
  if(p.type==="xp"){try{player.addExperience(Math.max(1,Math.floor(Number(p.xp)||1)));return {ok:true};}catch{return {ok:false,reason:"xp_delivery_failed"};}}
  if(p.type==="legacy_structure"){try{const pos=String(p.structurePosition??"~ ~ ~");await player.runCommand(`structure load ${p.structureName} ${pos}`);return {ok:true};}catch{return {ok:false,reason:"structure_delivery_failed"};}}
  const provider=providers.get(clean(p.type));if(provider)return await provider.deliver(player,p,context);return {ok:false,reason:"unknown_product_type"};}
-export async function purchase(player,id,context={}){const p=get(id);if(!p||p.enabled===false)return {ok:false,reason:"unknown_product"};if(!Economy.withdraw(player,p.price,{type:"product_purchase",productId:p.id,productType:p.type,source:context.source??"products"}))return {ok:false,reason:"insufficient_funds"};const r=await deliver(player,p,context);if(!r?.ok){Economy.deposit(player,p.price,{type:"product_refund",productId:p.id,reason:r?.reason});return r??{ok:false,reason:"delivery_failed"};}emit("productPurchased",{player,product:p,result:r,context});return {ok:true,product:p,...r};}
+async function _audio_purchase(player,id,context={}){const p=get(id);if(!p||p.enabled===false)return {ok:false,reason:"unknown_product"};if(!Economy.withdraw(player,p.price,{type:"product_purchase",productId:p.id,productType:p.type,source:context.source??"products"}))return {ok:false,reason:"insufficient_funds"};const r=await deliver(player,p,context);if(!r?.ok){if(!Economy.deposit(player,p.price,{type:"product_refund",productId:p.id,reason:r?.reason}))return {ok:false,reason:"refund_failed",deliveryReason:r?.reason};return r??{ok:false,reason:"delivery_failed"};}emit("productPurchased",{player,product:p,result:r,context});return {ok:true,product:p,...r};}
+
+// Audio outcome wrappers preserve all original return values.
+export function purchase(...args){return Feedback.run(args[0],()=>_audio_purchase(...args),{});}
+export function deliver(...args){return Feedback.run(args[0],()=>_audio_deliver(...args),{});}
+
+export function registerPet(def){if(!def?.id?.includes(":"))throw new Error("Pet ID must be namespaced");if(!def.entityId?.includes(":"))throw new Error("Pet entity ID required");if(!Number.isFinite(Number(def.price))||Number(def.price)<0)throw new Error("Nonnegative pet price required");return upsert({...def,type:"pet",autoTame:true});}

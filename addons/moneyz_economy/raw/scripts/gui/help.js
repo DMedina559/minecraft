@@ -1,3 +1,5 @@
+import { withRoute } from "../ui/navigation.js";
+import { defer, contextualPromise } from "../ui/navigation.js";
 import { system } from "@minecraft/server";
 import { CustomForm } from "../ui/ddui.js";
 
@@ -5,7 +7,7 @@ const nav = (f, fn) => {
     try {
         if (f.isShowing()) f.close();
     } catch {}
-    system.run(fn);
+    defer(()=>withRoute(f._route,fn));
 };
 
 const guideTopics = {
@@ -259,15 +261,16 @@ Moneyz Economy v2.0 provides a powerful platform for external behavior pack inte
 };
 
 export function openHelp(player) {
-    const form = new CustomForm(player, "§l§1Moneyz Economy Guide");
+    const form = new CustomForm(player, "§l§1Moneyz Economy Guide").shortcut({type:"service",id:"moneyz:help",label:"Help",args:{}});
     form.header("Moneyz Economy v2.0 Comprehensive Guide");
     form.label("§7Select a topic below to view step-by-step instructions, commands, and feature guides.");
 
-    for (const title of Object.keys(guideTopics)) {
-        form.button(title, () => nav(form, () => helpPage(player, title)));
+    for (const [i,title] of Object.keys(guideTopics).entries()) {
+        const caption=title.replace(/^§l§1\d+\. /, "").split(" & ")[0];
+        form.button(`${i+1}. ${caption}`, () => nav(form, () => helpPage(player, title)),{tooltip:title});
     }
 
-    form.button("Back", () => nav(form, () => import("./moneyz_menu.js").then(m => m.main(player))));
+    form.button("Main Menu", () => nav(form, () => contextualPromise(import("./moneyz_menu.js")).then(m => m.main(player))));
     form.closeButton().show();
 }
 

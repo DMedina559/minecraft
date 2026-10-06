@@ -1,4 +1,5 @@
-import { system, world } from "@minecraft/server";
+import * as Feedback from "../core/feedback.js";
+import { system, world, ScriptEventSource } from "@minecraft/server";
 import * as Economy from "../core/economy.js";
 import * as Jobs from "../core/jobs.js";
 import * as Entitlements from "../core/entitlements.js";
@@ -56,7 +57,7 @@ function numericValue(r){for(const k of ["value","balance","targetBalance","coun
 function writeMailbox(requestId,result){const id=cleanId(requestId);if(!id)return;const r=normalize(result),o=mailbox();if(!o)return;try{o.setScore(`${id}:status`,r.ok===true?1:-1);o.setScore(`${id}:value`,numericValue(r));}catch(error){log(`API mailbox write failed: ${error}`,LOG_LEVELS.DEBUG);}}
 function reply(requestId,result){if(!requestId)return;const id=cleanId(requestId);if(!id)return;const r=normalize(result);writeMailbox(id,r);let text;try{text=JSON.stringify(r);}catch{text=JSON.stringify({ok:false,reason:"response_not_serializable"});}if(text.length>1900)text=JSON.stringify({ok:false,reason:"response_too_large"});try{system.sendScriptEvent(`${PREFIX}response/${id}`,text);}catch(error){log(`API gateway response failed: ${error}`,LOG_LEVELS.DEBUG);}}
 
-export async function operation(event,data){
+async function _audio_operation(event,data){
  const op=String(data.op??data.action??"").trim().toLowerCase(),player=target(event,data);
  switch(op){
   case"ping":return {ok:true,value:1,api:"moneyz",apiVersion:API_VERSION,version:PACK_PLATFORM_VERSION};
@@ -75,6 +76,12 @@ export async function operation(event,data){
   case"jobs.join":return player?Jobs.join(player,data.job??data.id,{source:"gateway"}):fail("player_not_found");
   case"jobs.leave":case"jobs.quit":return player?Jobs.leave(player,{source:"gateway"}):fail("player_not_found");
   case"jobs.current":{if(!player)return fail("player_not_found");const job=Jobs.current(player);return {ok:true,value:job?.pay??0,job:job?{id:job.id,name:job.name,pay:job.pay}:null,hasApplication:Jobs.hasApplication(player)};}
+  case"jobs.register":case"jobs.upsert":{
+   const source=actor(event);if(source?!Permissions.has(source,"moneyz.admin"):(event.sourceEntity||event.sourceType!==undefined&&event.sourceType!==ScriptEventSource.Server))return fail("permission_denied");
+   const def=data.job;if(!def||typeof def.id!=="string"||!def.id.includes(":"))return fail("namespaced_job_required");
+   if(!Number.isFinite(Number(def.pay))||Number(def.pay)<0||!Number.isFinite(Number(def.payInterval??0))||Number(def.payInterval??0)<0)return fail("invalid_job_pay");
+   try{const job=Jobs.upsert(def);return {ok:true,id:job.id,job};}catch(error){return fail("job_register_failed",{message:String(error)});}
+  }
   case"jobs.get":{const j=Jobs.get(data.id);return j?{ok:true,value:j.pay??0,job:j}:fail("unknown_job");}
   case"entitlements.has":return player?{ok:true,value:Entitlements.has(player,data.id)?1:0,has:Entitlements.has(player,data.id)}:fail("player_not_found");
   case"entitlements.grant":return player?Entitlements.grant(player,data.id,{durationMs:data.durationMs,expiresAt:data.expiresAt,metadata:data.metadata,legacyTag:data.legacyTag}):fail("player_not_found");
@@ -90,6 +97,8 @@ export async function operation(event,data){
   case"lucky.eligible":{const rows=Lucky.eligibleProducts(data.options??{});return {ok:true,value:rows.length,products:rows};}
   case"lucky.preview":return Lucky.preview(Number(data.count??10),data.options??{});
   case"lucky.purchase":return player?await Lucky.purchase(player,data.options??{}):fail("player_not_found");
+  case"pets.list":{const pets=Products.list({type:"pet"}).filter(p=>p.autoTame!==false);return {ok:true,count:pets.length,pets:pets.slice(Math.max(0,Number(data.offset)||0),Math.max(0,Number(data.offset)||0)+Math.max(1,Math.min(10,Number(data.limit)||5))).map(({id,name,entityId,price})=>({id,name,entityId,price}))};}
+  case"pets.register":{const source=actor(event);if(source?!Permissions.has(source,"moneyz.admin"):(event.sourceEntity||event.sourceType!==undefined&&event.sourceType!==ScriptEventSource.Server))return fail("permission_denied");try{const pet=Products.registerPet(data.pet??data.product);return {ok:true,id:pet.id};}catch(error){return fail("pet_register_failed",{message:String(error)});}}
   case"products.upsert":{try{const p=Products.upsert(data.product??data);return {ok:true,value:p.price,id:p.id};}catch(e){return fail("product_upsert_failed",{message:String(e)});}}
   case"products.remove":return {ok:Products.remove(data.id)};
   case"products.purchase":return player?await Products.purchase(player,data.id,{source:"gateway"}):fail("player_not_found");
@@ -111,19 +120,19 @@ export async function operation(event,data){
   case"currencies.list":{const rows=Extensions.currencies.list();return {ok:true,value:rows.length,currencies:rows};}
   case"pricing.calculate":{const value=Pricing.calculate(Number(data.base??data.price??0),data.context??{});return {ok:true,value,price:value};}
   case"fees.calculate":{const rows=Fees.calculate(data.context??data);return {ok:true,value:rows.reduce((n,x)=>n+Number(x.amount||0),0),fees:rows};}
-  case"realestate.list":{const rows=Properties.list({type:data.type,available:data.available});return {ok:true,value:rows.length,properties:rows};}
-  case"realestate.get":{const p=Properties.get(data.id);return p?{ok:true,property:p}:fail("unknown_property");}
+  case"realestate.list":{const rows=Properties.list(data);return {ok:true,value:rows.length,properties:rows};}
+  case"realestate.get":{const p=Properties.get(data.id,data);return p?{ok:true,property:p}:fail("unknown_property");}
   case"realestate.register":case"hotels.register":{try{const p=op==="hotels.register"?Properties.registerHotel(data.property??data):Properties.registerProperty(data.property??data);return {ok:true,id:p.id,property:p};}catch(e){return fail("property_register_failed",{message:String(e)})}}
   case"realestate.unregister":return {ok:Properties.unregisterProperty(data.id)};
   case"realestate.owner":{const owner=Properties.getOwner(data.id);return {ok:Boolean(Properties.get(data.id)),owner};}
-  case"realestate.ownedby":{if(!player)return fail("player_not_found");const rows=Properties.ownedBy(player);return {ok:true,value:rows.length,properties:rows};}
+  case"realestate.ownedby":{if(!player)return fail("player_not_found");const rows=Properties.ownedBy(player,data);return {ok:true,value:rows.length,properties:rows};}
   case"realestate.purchase":return player?Properties.buy(player,data.id):fail("player_not_found");
   case"realestate.sell":return player?Properties.sell(player,data.id,{rate:Number(data.rate??1)}):fail("player_not_found");
   case"realestate.rent":return player?Properties.rent(player,data.id):fail("player_not_found");
   case"realestate.access.check":return player?{ok:true,has:Properties.hasAccess(player,data.id),value:Properties.hasAccess(player,data.id)?1:0}:fail("player_not_found");
   case"realestate.access.grant":{if(!player)return fail("player_not_found");const guest=findPlayer(data.guest??data.target);return guest?Properties.grantAccess(player,data.id,guest,data.role):fail("target_not_found");}
   case"realestate.access.revoke":{if(!player)return fail("player_not_found");const guest=findPlayer(data.guest??data.target);return guest?Properties.revokeAccess(player,data.id,guest):fail("target_not_found");}
-  case"hotels.list":{const rows=Properties.listHotels();return {ok:true,value:rows.length,hotels:rows};}
+  case"hotels.list":{const rows=Properties.listHotels(data);return {ok:true,value:rows.length,hotels:rows};}
   case"reservations.available":return {ok:true,available:Reservations.isAvailable(data.propertyId??data.id),value:Reservations.isAvailable(data.propertyId??data.id)?1:0};
   case"properties.upsert":{try{const p=Properties.upsert(data.property??data);return {ok:true,value:p.price,id:p.id};}catch(e){return fail("property_upsert_failed",{message:String(e)});}}
   case"properties.remove":return {ok:Properties.remove(data.id)};
@@ -131,13 +140,13 @@ export async function operation(event,data){
   case"properties.sell":return player?Properties.sell(player,data.id,{rate:Number(data.rate??1)}):fail("player_not_found");
   case"properties.rent":return player?Properties.rent(player,data.id):fail("player_not_found");
   case"properties.checkout":return player?Properties.checkout(player,data.id):fail("player_not_found");
-  case"properties.status":{if(!player)return fail("player_not_found");const s=Properties.status(player);return {ok:true,value:s.owned.length+s.rented.length,owned:s.owned.length,rented:s.rented.length};}
+  case"properties.status":{if(!player)return fail("player_not_found");const s=Properties.status(player,data);return {ok:true,value:s.owned.length+s.rented.length,owned:s.owned.length,rented:s.rented.length};}
   case"exchanges.get":{const x=Exchanges.get(data.id);return x?{ok:true,value:x.moneyz,exchange:x}:fail("unknown_exchange");}
   case"exchanges.upsert":{try{const x=Exchanges.upsert(data.exchange??data);return {ok:true,value:x.moneyz,id:x.id};}catch(e){return fail("exchange_upsert_failed",{message:String(e)});}}
   case"exchanges.remove":return {ok:Exchanges.remove(data.id)};
   case"exchanges.execute":return player?await Exchanges.execute(player,data.id,data.direction,Number(data.bundles??1)):fail("player_not_found");
   case"reservations.book":return player?Reservations.book(player,data.propertyId??data.id,{nights:Number(data.nights??1),durationMs:data.durationMs,metadata:{source:"gateway"}}):fail("player_not_found");
-  case"reservations.active":{if(!player)return fail("player_not_found");const a=Reservations.activeFor(player);return {ok:true,value:a.length,count:a.length};}
+  case"reservations.active":{if(!player)return fail("player_not_found");const a=Reservations.activeFor(player,data);return {ok:true,value:a.length,count:a.length};}
   case"reservations.checkout":return player?Reservations.checkout(player,data.id):fail("player_not_found");
   case"catalog.items":{const rows=ItemTemplates.itemCatalog(data.query??"",Math.max(1,Math.min(500,Number(data.limit)||150)));return {ok:true,value:rows.length,items:rows};}
   case"catalog.enchantments":{const rows=ItemTemplates.enchantmentCatalog();return {ok:true,value:rows.length,enchantments:rows};}
@@ -145,7 +154,7 @@ export async function operation(event,data){
   case"items.validate":return ItemTemplates.validate(data.template);
   case"quests.definitions":{const rows=Quests.listDefinitions();return {ok:true,value:rows.length,quests:rows};}
   case"quests.objective_types":{const rows=Quests.listObjectiveTypes();return {ok:true,value:rows.length,types:rows};}
-  case"quests.register":{try{const off=Quests.registerQuest(data.quest??data);return {ok:true,id:(data.quest??data).id,registered:true};}catch(e){return fail("quest_register_failed",{message:String(e)})}}
+  case"quests.register":{const source=actor(event);if(source?!Permissions.has(source,"moneyz.admin"):(event.sourceEntity||event.sourceType!==undefined&&event.sourceType!==ScriptEventSource.Server))return fail("permission_denied");try{const off=Quests.registerQuest(data.quest??data);return {ok:true,id:(data.quest??data).id,registered:true};}catch(e){return fail("quest_register_failed",{message:String(e)})}}
   case"games.list":{const rows=Games.list(data.category?{category:data.category}:{}).map(x=>({id:x.id,name:x.name,category:x.category,enabled:x.enabled,metadata:x.metadata}));return {ok:true,value:rows.length,games:rows};}
   case"games.play":return player?await Games.play(player,data.id,{source:"gateway"}):fail("player_not_found");
   case"quests.available":{if(!player)return fail("player_not_found");const a=Quests.getAvailable(player);return {ok:true,value:a.length,count:a.length};}
@@ -170,4 +179,9 @@ export function handleApiCommand(data, sourcePlayer = undefined){
   catch(error){result=fail("exception",{message:String(error)});log(`API command gateway ${data?.op??data?.action??"?"} failed: ${error}`,LOG_LEVELS.ERROR);}
   reply(requestId,result);
  });
+}
+
+export async function operation(event,data){
+ try{const value=await _audio_operation(event,data);return Feedback.result(target(event,data),value,{errorOnly:true});}
+ catch(error){Feedback.error(target(event,data));throw error;}
 }

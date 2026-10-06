@@ -37,4 +37,18 @@ export function providerFor(id){return shopExtensions.providers().find(p=>p.getS
 export function exportShop(id){const s=getShop(id);return s?JSON.stringify(s):null;}
 export function importShop(raw,{overwrite=false}={}){const obj=typeof raw==="string"?JSON.parse(raw):raw;if(!obj?.id)throw new Error("Shop import requires id");if(getShop(obj.id)&&!overwrite)throw new Error("Shop exists");return saveShop(obj.id,obj);}
 
-export function migrateLegacyCustomShop(items,name="Custom Shop"){if(!Array.isArray(items)||!items.length)return false;const id="custom_shop";if(getShop(id)?.listings?.length)return false;const shop={schemaVersion:3,id,name,enabled:true,settings:{allowBuy:true,allowSell:true},listings:items.map((x,i)=>listingFromLegacy({id:x.id,name:x.name,buyAmount:x.buyAmount,buyCost:x.buyCost,buyData:x.buyData,sellAmount:x.sellAmount,sellCost:x.sellCost,sellData:x.sellData},"general",i))};saveShop(id,shop);return true;}
+export function migrateLegacyCustomShop(items,name="Custom Shop"){
+ if(!Array.isArray(items)||!items.length)return false;
+ const id="custom_shop",stored=world.getDynamicProperty(SHOP_DATA_PREFIX+id);
+ if(typeof stored==="string")try{if(JSON.parse(stored)?.__deleted)return false;}catch{}
+ const existing=getShop(id),shop=existing?clone(existing):{schemaVersion:3,id,name,enabled:true,settings:{allowBuy:true,allowSell:true},listings:[]};
+ const done=new Set(shop.legacyCustomMigration??[]);let changed=false;
+ for(const [i,x] of items.entries()){
+  const listing=listingFromLegacy({id:x.id,name:x.name,buyAmount:x.buyAmount,buyCost:x.buyCost,buyData:x.buyData,sellAmount:x.sellAmount,sellCost:x.sellCost,sellData:x.sellData},"general",i);
+  if(done.has(listing.id))continue;
+  if(!shop.listings.some(row=>row.id===listing.id))shop.listings.push(listing);
+  done.add(listing.id);changed=true;
+ }
+ if(!changed)return false;
+ shop.legacyCustomMigration=[...done];saveShop(id,shop);return true;
+}

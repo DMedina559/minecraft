@@ -10,24 +10,24 @@ import * as Economy from "../core/economy.js";
 export function luckyMenu(player) {
     if (!player) return;
 
-    const form = new ActionFormData();
+    const form = new ActionFormData().shortcut({type:"service",id:"moneyz:lucky",label:"Games & Lucky Purchase"});
     form.title("§l§1Feeling Lucky?");
     form.body(`§l§o§fWelcome §g${player.nameTag}§f!\nTest your Luck\nChoose an Option Below\n§fMoneyz Balance: §g${Economy.getBalance(player)}`);
 
     const buttons = [];
     const actions = [];
 
-    if (player.getDynamicProperty("moneyzLucky") === "true") {
+    if (Config.bool("moneyzLucky",true,player)) {
         buttons.push("§d§lLucky Purchase\n§r§7[ Click to Shop ]");
         actions.push(() => luckyPurchase(player));
     }
 
-    if (player.getDynamicProperty("moneyzChance") === "true") {
+    if (Config.bool("moneyzChance",true,player)) {
         buttons.push("§d§lChance Games\n§r§7[ Click to Play ]");
         actions.push(() => chanceMenu(player));
     }
 
-    buttons.push("§c§lBack");
+    buttons.push("§c§lMain Menu");
     actions.push(() => main(player));
 
     buttons.forEach(button => form.button(button));

@@ -1,3 +1,5 @@
+import { defer } from "../ui/navigation.js";
+import * as Feedback from "../core/feedback.js";
 import { system } from "@minecraft/server";
 import { ActionFormData, ModalFormData } from "../ui/forms.js";
 import * as GameEconomy from "../services/game_economy.js";
@@ -21,7 +23,7 @@ const handText = hand => `${hand.join(", ")} (${handValue(hand)})`;
 const isNatural = hand => hand.length === 2 && handValue(hand) === 21;
 
 function returnToMenu(player, isNpcInteraction) {
-    if (!isNpcInteraction) system.run(() => chanceMenu(player));
+    if (!isNpcInteraction) defer(() => chanceMenu(player));
 }
 
 async function finish(player, stake, playerHand, dealerHand, outcome, isNpcInteraction) {
@@ -29,18 +31,19 @@ async function finish(player, stake, playerHand, dealerHand, outcome, isNpcInter
     let result;
     if (outcome === "win" || outcome === "blackjack") {
         const payout = Math.round(stake * multiplier);
-        GameEconomy.payout(player, payout, "21", { outcome });
-        result = `§a${outcome === "blackjack" ? "Blackjack!" : "You win!"} §e+${payout} Moneyz`;
-        try { player.playSound("random.levelup"); } catch {}
+        const paid=GameEconomy.payout(player, payout, "21", { outcome });
+        result = !paid?"§cWin payout failed. Please contact an admin.":`§a${outcome === "blackjack" ? "Blackjack!" : "You win!"} §e+${payout} Moneyz`;
+        if(paid)Feedback.celebrate(player);else Feedback.error(player);
     } else if (outcome === "push") {
-        GameEconomy.push(player, stake, "21", { outcome });
-        result = "§ePush. Your stake was returned.";
+        const returned=GameEconomy.push(player, stake, "21", { outcome });
+        result = returned?"§ePush. Your stake was returned.":"§cStake return failed. Please contact an admin.";
+        if(!returned)Feedback.error(player);
     } else {
         result = `§cYou lose ${stake} Moneyz.`;
-        try { player.playSound("note.bass"); } catch {}
+        try { Feedback.error(player); } catch {}
     }
 
-    await new ActionFormData()
+    await new ActionFormData().npcContext(isNpcInteraction)
         .title("§l§621 Game")
         .body(`§lYour hand§r\n${handText(playerHand)}\n\n§lDealer hand§r\n${handText(dealerHand)}\n\n${result}`)
         .button("Play Again")
@@ -48,7 +51,7 @@ async function finish(player, stake, playerHand, dealerHand, outcome, isNpcInter
         .show(player)
         .then(r => {
             if (!r || r.canceled) return;
-            if (r.selection === 0) system.run(() => start21Game(player, isNpcInteraction));
+            if (r.selection === 0) defer(() => start21Game(player, isNpcInteraction));
             else returnToMenu(player, isNpcInteraction);
         });
 }
@@ -63,7 +66,7 @@ async function playRound(player, stake, isNpcInteraction) {
     }
 
     while (handValue(playerHand) < 21) {
-        const response = await new ActionFormData()
+        const response = await new ActionFormData().npcContext(isNpcInteraction)
             .title("§l§621 Game")
             .body(`§lYour hand§r\n${handText(playerHand)}\n\n§lDealer shows§r\n${dealerHand[0]}`)
             .button("Hit")
@@ -86,25 +89,26 @@ async function playRound(player, stake, isNpcInteraction) {
 
 export async function start21Game(player, isNpcInteraction = false) {
     if (!GameEconomy.beginSession(player, "21")) {
-        player.sendMessage("§cFinish your current Moneyz game first.");
+        Feedback.message(player,"§cFinish your current Moneyz game first.");
         return;
     }
     try {
-        const response = await new ModalFormData().title("§l§621 Game").textField("Stake", "Whole Moneyz amount").show(player);
+        const response = await new ModalFormData().npcContext(isNpcInteraction).title("§l§621 Game").textField("Stake", "Whole Moneyz amount").show(player);
+        if(response?.navigated)return;
         if (!response || response.canceled) return returnToMenu(player, isNpcInteraction);
         const check = GameEconomy.validateStake(player, response.formValues?.[0]);
         if (!check.ok) {
-            player.sendMessage(check.reason === "insufficient" ? "§cYou don't have enough Moneyz." : "§cEnter a valid positive whole-number stake.");
+            Feedback.message(player,check.reason === "insufficient" ? "§cYou don't have enough Moneyz." : "§cEnter a valid positive whole-number stake.");
             return returnToMenu(player, isNpcInteraction);
         }
         if (!GameEconomy.placeBet(player, check.stake, "21")) {
-            player.sendMessage("§cYour bet could not be placed.");
+            Feedback.message(player,"§cYour bet could not be placed.");
             return;
         }
         await playRound(player, check.stake, isNpcInteraction);
     } catch (error) {
         log(`21 game failed for ${player?.nameTag}: ${error}`, LOG_LEVELS.ERROR);
-        player?.sendMessage("§cThe 21 game encountered an error.");
+        Feedback.message(player,"§cThe 21 game encountered an error.");
     } finally {
         GameEconomy.endSession(player);
     }

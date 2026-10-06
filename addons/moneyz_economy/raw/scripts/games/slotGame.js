@@ -1,3 +1,5 @@
+import { defer } from "../ui/navigation.js";
+import * as Feedback from "../core/feedback.js";
 import { system } from "@minecraft/server";
 import { ActionFormData, ModalFormData } from "../ui/forms.js";
 import { getRandomInt } from "../utilities.js";
@@ -17,7 +19,7 @@ function symbol() {
     return SYMBOLS[0].name;
 }
 const spin = () => [symbol(), symbol(), symbol()];
-const back = (player, npc) => { if (!npc) system.run(() => chanceMenu(player)); };
+const back = (player, npc) => { if (!npc) defer(() => chanceMenu(player)); };
 
 function payoutFor(reels, stake, base) {
     const [a,b,c] = reels;
@@ -32,31 +34,32 @@ function payoutFor(reels, stake, base) {
 }
 
 export async function startSlotsGame(player, isNpcInteraction = false) {
-    if (!GameEconomy.beginSession(player, "slots")) return player.sendMessage("§cFinish your current Moneyz game first.");
+    if (!GameEconomy.beginSession(player, "slots")) return Feedback.message(player,"§cFinish your current Moneyz game first.");
     try {
-        const response = await new ModalFormData().title("§l§6Slot Machine").textField("Stake", "Whole Moneyz amount").show(player);
+        const response = await new ModalFormData().npcContext(isNpcInteraction).title("§l§6Slot Machine").textField("Stake", "Whole Moneyz amount").show(player);
+        if(response?.navigated)return;
         if (!response || response.canceled) return back(player, isNpcInteraction);
         const check = GameEconomy.validateStake(player, response.formValues?.[0]);
         if (!check.ok) {
-            player.sendMessage(check.reason === "insufficient" ? "§cYou don't have enough Moneyz." : "§cEnter a valid positive whole-number stake.");
+            Feedback.message(player,check.reason === "insufficient" ? "§cYou don't have enough Moneyz." : "§cEnter a valid positive whole-number stake.");
             return back(player, isNpcInteraction);
         }
-        if (!GameEconomy.placeBet(player, check.stake, "slots")) return player.sendMessage("§cYour bet could not be placed.");
+        if (!GameEconomy.placeBet(player, check.stake, "slots")) return Feedback.message(player,"§cYour bet could not be placed.");
 
         const reels = spin();
         const base = Math.max(1, Config.number("chanceX", 2));
         const win = payoutFor(reels, check.stake, base);
-        if (win.amount > 0) GameEconomy.payout(player, win.amount, "slots", { reels, result: win.label });
-        try { player.playSound(win.amount > 0 ? "random.levelup" : "note.bass"); } catch {}
+        const paid=win.amount<=0||GameEconomy.payout(player, win.amount, "slots", { reels, result: win.label });
+        try { win.amount>0&&paid?Feedback.celebrate(player):Feedback.error(player); } catch {}
 
-        const r = await new ActionFormData().title("§l§6Slot Machine")
-            .body(`§l[ ${reels.join(" | ")} ]§r\n\n${win.amount > 0 ? `§a${win.label}!\n§e+${win.amount} Moneyz` : `§cNo match. You lose ${check.stake} Moneyz.`}`)
+        const r = await new ActionFormData().npcContext(isNpcInteraction).title("§l§6Slot Machine")
+            .body(`§l[ ${reels.join(" | ")} ]§r\n\n${!paid?"§cWin payout failed. Please contact an admin.":win.amount > 0 ? `§a${win.label}!\n§e+${win.amount} Moneyz` : `§cNo match. You lose ${check.stake} Moneyz.`}`)
             .button("Spin Again").button("Back").show(player);
-        if (r && !r.canceled && r.selection === 0) system.run(() => startSlotsGame(player, isNpcInteraction));
+        if (r && !r.canceled && r.selection === 0) defer(() => startSlotsGame(player, isNpcInteraction));
         else if (r && !r.canceled) back(player, isNpcInteraction);
     } catch (error) {
         log(`Slots failed for ${player?.nameTag}: ${error}`, LOG_LEVELS.ERROR);
-        player?.sendMessage("§cThe slot machine encountered an error.");
+        Feedback.message(player,"§cThe slot machine encountered an error.");
     } finally { GameEconomy.endSession(player); }
 }
 

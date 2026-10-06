@@ -1,3 +1,4 @@
+import * as Feedback from "./feedback.js";
 import * as GameEconomy from "../services/game_economy.js";
 import { emit } from "./events.js";
 const registry=new Map();
@@ -7,5 +8,7 @@ export function register(def){const id=assertId(def?.id);if(registry.has(id))thr
 export function unregister(id){id=clean(id);if(id.startsWith("moneyz:"))return false;const old=registry.get(id),ok=registry.delete(id);if(ok)emit("gameUnregistered",{game:old});return ok;}
 export const get=id=>registry.get(clean(id))??null;
 export function list({category,enabled=true}={}){return [...registry.values()].filter(x=>(!category||x.category===category)&&(enabled===undefined||x.enabled===enabled));}
-export async function play(player,id,context={}){const game=get(id);if(!game||game.enabled===false)return {ok:false,reason:"unknown_game"};try{const result=await game.play(player,{...context,gameId:game.id,economy:GameEconomy});emit("gamePlayed",{player,game,result,context});return result??{ok:true};}catch(error){emit("gameError",{player,game,error:String(error)});return {ok:false,reason:"game_error",message:String(error)};}}
+async function _audio_play(player,id,context={}){const game=get(id);if(!game||game.enabled===false)return {ok:false,reason:"unknown_game"};try{const result=await game.play(player,{...context,gameId:game.id,economy:GameEconomy});emit("gamePlayed",{player,game,result,context});return result??{ok:true};}catch(error){emit("gameError",{player,game,error:String(error)});return {ok:false,reason:"game_error",message:String(error)};}}
 export const economy=Object.freeze({validateStake:GameEconomy.validateStake,beginSession:GameEconomy.beginSession,endSession:GameEconomy.endSession,isPlaying:GameEconomy.isPlaying,placeBet:GameEconomy.placeBet,payout:GameEconomy.payout,push:GameEconomy.push});
+
+export function play(...args){return Feedback.run(args[0],()=>_audio_play(...args),{errorOnly:true});}

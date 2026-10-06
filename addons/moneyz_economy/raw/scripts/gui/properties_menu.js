@@ -1,3 +1,4 @@
+import * as Feedback from "../core/feedback.js";
 import { world } from "@minecraft/server";
 import { ActionFormData, ModalFormData } from "../ui/forms.js";
 import { moneyzAdmin } from "./admin_menu.js";
@@ -33,7 +34,8 @@ function playerPropertiesMenu(player) {
         .title("§l§1View Player Dynamic Properties")
         .dropdown("§oChoose a Player", playerNames)
         .show(player)
-        .then(({ formValues, canceled }) => {
+        .then(({ formValues, canceled, navigated }) => {
+            if(navigated)return;
             if (canceled || !formValues) {
                 propertiesMenu(player);
                 return;
@@ -43,7 +45,7 @@ function playerPropertiesMenu(player) {
             const selectedPlayer = players[dropdownIndex];
 
             if (!selectedPlayer?.isValid) {
-                player.sendMessage("§cSelected player is no longer available.");
+                Feedback.message(player,"§cSelected player is no longer available.");
                 propertiesMenu(player);
                 return;
             }
@@ -55,7 +57,7 @@ function playerPropertiesMenu(player) {
 
 function viewPlayerProperties(player, selectedPlayer) {
     if (!selectedPlayer?.isValid) {
-        player.sendMessage("§cSelected player is no longer available.");
+        Feedback.message(player,"§cSelected player is no longer available.");
         playerPropertiesMenu(player);
         return;
     }
@@ -91,7 +93,7 @@ function viewPlayerProperties(player, selectedPlayer) {
 
 function modifyPlayerProperties(player, selectedPlayer) {
     if (!selectedPlayer?.isValid) {
-        player.sendMessage("§cSelected player is no longer available.");
+        Feedback.message(player,"§cSelected player is no longer available.");
         playerPropertiesMenu(player);
         return;
     }
@@ -105,7 +107,8 @@ function modifyPlayerProperties(player, selectedPlayer) {
         .textField("§fEnter Property Key (required for new):", "§oProperty Key")
         .textField("§fEnter Property Value (leave empty to remove):", "§oProperty Value")
         .show(player)
-        .then(({ formValues, canceled }) => {
+        .then(({ formValues, canceled, navigated }) => {
+            if(navigated)return;
             if (canceled || !formValues) {
                 playerPropertiesMenu(player);
                 return;
@@ -117,13 +120,13 @@ function modifyPlayerProperties(player, selectedPlayer) {
 
             if (selectedOption === options.length - 1) {
                 if (!keyStr || !keyStr.startsWith("player_")) {
-                    player.sendMessage("§cA key must be provided and start with 'player_'!");
+                    Feedback.message(player,"§cA key must be provided and start with 'player_'!");
                     modifyPlayerProperties(player, selectedPlayer);
                     return;
                 }
 
                 selectedPlayer.setDynamicProperty(keyStr, valStr);
-                player.sendMessage(`§aDynamic property ${keyStr} has been set to ${valStr} for ${selectedPlayer.nameTag}.`);
+                Feedback.message(player,`§aDynamic property ${keyStr} has been set to ${valStr} for ${selectedPlayer.nameTag}.`);
                 modifyPlayerProperties(player, selectedPlayer);
                 return;
             }
@@ -131,14 +134,14 @@ function modifyPlayerProperties(player, selectedPlayer) {
             const selectedProperty = playerPropertyIds[selectedOption];
 
             if (valStr === "") {
-                player.sendMessage("§cProperty Cleared!");
+                Feedback.message(player,"§cProperty Cleared!");
                 selectedPlayer.setDynamicProperty(selectedProperty, null);
                 modifyPlayerProperties(player, selectedPlayer);
                 return;
             }
 
             selectedPlayer.setDynamicProperty(selectedProperty, valStr);
-            player.sendMessage(`§aDynamic property ${selectedProperty} has been set to ${valStr} for ${selectedPlayer.nameTag}.`);
+            Feedback.message(player,`§aDynamic property ${selectedProperty} has been set to ${valStr} for ${selectedPlayer.nameTag}.`);
             viewPlayerProperties(player, selectedPlayer);
         })
         .catch(() => playerPropertiesMenu(player));
@@ -179,20 +182,20 @@ function shopItemPropertiesMenu(player) {
 
             if (selectedOption === options.length - 1) {
                 if (!propertyName || !propertyName.startsWith("shopItem_")) {
-                    player.sendMessage("§cProperty name must start with 'shopItem_'.");
+                    Feedback.message(player,"§cProperty name must start with 'shopItem_'.");
                     return;
                 }
                 world.setDynamicProperty(propertyName, newValue);
-                player.sendMessage(`§aNew property '${propertyName}' has been created.`);
+                Feedback.message(player,`§aNew property '${propertyName}' has been created.`);
                 shopItemPropertiesMenu(player);
             } else if (selectedOption >= 0 && selectedOption < worldProperties.length) {
                 const existingProperty = worldProperties[selectedOption];
                 world.setDynamicProperty(existingProperty, newValue);
-                player.sendMessage(`§aProperty '${existingProperty}' has been updated.`);
+                Feedback.message(player,`§aProperty '${existingProperty}' has been updated.`);
                 shopItemPropertiesMenu(player);
             }
         })
-        .catch(() => player.sendMessage("§cAn error occurred while managing shop items."));
+        .catch(() => Feedback.message(player,"§cAn error occurred while managing shop items."));
 }
 
 function worldPropertiesMenu(player) {
@@ -233,7 +236,8 @@ function modifyWorldProperties(player) {
         .textField("§fEnter Property Key (required for new):", "§oProperty Key")
         .textField("§fEnter Property Value (leave empty to remove):", "§oProperty Value")
         .show(player)
-        .then(({ formValues, canceled }) => {
+        .then(({ formValues, canceled, navigated }) => {
+            if(navigated)return;
             if (canceled || !formValues) {
                 worldPropertiesMenu(player);
                 return;
@@ -245,11 +249,11 @@ function modifyWorldProperties(player) {
 
             if (selectedOption === options.length - 1) {
                 if (!keyStr) {
-                    player.sendMessage("§cA key must be provided!");
+                    Feedback.message(player,"§cA key must be provided!");
                     return;
                 }
                 world.setDynamicProperty(keyStr, valStr);
-                player.sendMessage(`§aWorld property ${keyStr} has been set to ${valStr}.`);
+                Feedback.message(player,`§aWorld property ${keyStr} has been set to ${valStr}.`);
                 modifyWorldProperties(player);
                 return;
             }
@@ -257,14 +261,14 @@ function modifyWorldProperties(player) {
             const selectedProperty = worldPropertyIds[selectedOption];
 
             if (valStr === "") {
-                player.sendMessage("§cProperty Cleared!");
+                Feedback.message(player,"§cProperty Cleared!");
                 world.setDynamicProperty(selectedProperty, null);
                 modifyWorldProperties(player);
                 return;
             }
 
             world.setDynamicProperty(selectedProperty, valStr);
-            player.sendMessage(`§aWorld property ${selectedProperty} has been set to ${valStr}.`);
+            Feedback.message(player,`§aWorld property ${selectedProperty} has been set to ${valStr}.`);
             worldPropertiesMenu(player);
         })
         .catch(() => worldPropertiesMenu(player));
@@ -272,7 +276,7 @@ function modifyWorldProperties(player) {
 
 function clearAllWorldProperties(player) {
     world.clearDynamicProperties();
-    player.sendMessage("§aAll dynamic properties have been cleared successfully!");
+    Feedback.message(player,"§aAll dynamic properties have been cleared successfully!");
     worldPropertiesMenu(player);
 }
 

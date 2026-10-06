@@ -1,3 +1,5 @@
+import { defer } from "../ui/navigation.js";
+import * as Feedback from "../core/feedback.js";
 import { system } from "@minecraft/server";
 import { CustomForm, ObservableBoolean, ObservableNumber, ObservableString } from "../ui/ddui.js";
 import * as Config from "../core/config.js";
@@ -18,16 +20,16 @@ export function moneyzSettings(player){
     const luckyShops=new ObservableString(String(Config.get("luckyShops","")),{clientWritable:true});
     const luckyCategories=new ObservableString(String(Config.get("luckyCategories","")),{clientWritable:true});
     const featureObs=Object.fromEntries(FEATURES.map(k=>[k,new ObservableBoolean(Config.bool(k,true),{clientWritable:true})]));
-    const form=new CustomForm(player,"§l§1Moneyz Settings").header("§lGlobal Configuration")
+    const form=new CustomForm(player,"§l§1Moneyz Settings").shortcut({type:"service",id:"moneyz:admin/settings",label:"Settings",args:{}}).header("§lGlobal Configuration")
       .toggle("Sync enabled features to players",sync).toggle("One Lucky Purchase per day",once).divider();
     form.header("Enabled Features");
     for(const k of FEATURES) form.toggle(FEATURE_LABELS[k],featureObs[k]);
     form.divider().header("Rewards & Games").textField("Daily Reward",daily).textField("Chance Multiplier",chanceX).textField("Test Your Luck Win Chance %",chanceWin)
-      .textField("Custom Shop Name",shopName).divider().header("§lLucky Purchase").textField("Lucky Purchase Price",luckyPrice).toggle("Use live Shop stock",luckyStock).textField("Eligible Shop IDs (comma separated; blank = all)",luckyShops).textField("Eligible Categories (comma separated; blank = all)",luckyCategories).button("Save",()=>{
+      .textField("Custom Shop Name",shopName).divider().header("§lLucky Purchase").textField("Lucky Purchase Price",luckyPrice).toggle("Use live Shop stock",luckyStock).textField("Eligible Shop IDs",luckyShops,{description:"Comma separated. Blank includes all shops."}).textField("Eligible Categories",luckyCategories,{description:"Comma separated. Blank includes all categories."}).button("Save",()=>{
         Config.set("syncPlayers",sync.getData()); Config.set("oneLuckyPurchase",once.getData());
         for(const k of FEATURES) Config.set(k,featureObs[k].getData());
         Config.set("dailyReward",Number(daily.getData())||0); Config.set("chanceX",Number(chanceX.getData())||1); Config.set("chanceWin",Number(chanceWin.getData())||0);
-        Config.set("customShop",shopName.getData().trim()||"Custom Shop"); Config.set("luckyPurchasePrice",Math.max(0,Number(luckyPrice.getData())||0)); Config.set("luckyUseShopStock",luckyStock.getData()); Config.set("luckyShops",luckyShops.getData().trim()); Config.set("luckyCategories",luckyCategories.getData().trim()); setLogLevelFromWorldProperty(); player.sendMessage("§aMoneyz settings saved.");
-      }).button("Back",()=>{ try { if (form.isShowing()) form.close(); } catch {} system.run(()=>moneyzAdmin(player)); }).closeButton();
+        Config.set("customShop",shopName.getData().trim()||"Custom Shop"); Config.set("luckyPurchasePrice",Math.max(0,Number(luckyPrice.getData())||0)); Config.set("luckyUseShopStock",luckyStock.getData()); Config.set("luckyShops",luckyShops.getData().trim()); Config.set("luckyCategories",luckyCategories.getData().trim()); setLogLevelFromWorldProperty(); Feedback.message(player,"§aMoneyz settings saved.");
+      }).button("Back",()=>{ try { if (form.isShowing()) form.close(); } catch {} defer(()=>moneyzAdmin(player)); }).closeButton();
     form.show();
 }
