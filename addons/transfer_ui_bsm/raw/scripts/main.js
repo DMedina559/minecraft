@@ -1,9 +1,9 @@
 import { resolveEndpoint } from "./core/endpoints.js";
-import { ChunkReceiver, sendJson } from "./core/ipc.js";
+import { ChunkReceiver, sendJson, senderStatus } from "./core/ipc.js";
 import { system, world, PlayerPermissionLevel } from "@minecraft/server";
 import { CustomForm, MessageBox, ObservableBoolean, ObservableString } from "@minecraft/server-ui";
 import { variables } from "@minecraft/server-admin";
-import { NAME,VERSION,PROVIDER_ID,PROTOCOL,CONSUMER_ID,CONFIG_SCHEMA_VERSION,CHUNK_SIZE,MAX_QUEUE,MAX_PER_TICK,REQUEST_TIMEOUT_TICKS,SYNC_DEBOUNCE_TICKS,WATCHDOG_SYNC_TICKS } from "./core/constants.js";
+import { NAME,VERSION,PROVIDER_ID,PROTOCOL,CONSUMER_ID,CONFIG_SCHEMA_VERSION,MAX_QUEUE,MAX_PER_TICK,REQUEST_TIMEOUT_TICKS,SYNC_DEBOUNCE_TICKS,WATCHDOG_SYNC_TICKS } from "./core/constants.js";
 import { ProviderRuntimeState } from "./core/state.js";
 import { createProviderStorage } from "./core/storage.js";
 import { ProviderRuntime } from "./core/runtime.js";
@@ -27,7 +27,7 @@ const storage=createProviderStorage(world,CONFIG_PROPERTY,CONFIG_SCHEMA_VERSION)
 let discoveredServersCache=[];
 function defaultProviderConfig(){return storage.defaults()}
 function loadProviderConfig(){return storage.load()}
-function saveProviderConfig(c,player){if(!isAdmin(player))throw Error("Operator permission required");storage.save(c)}
+function saveProviderConfig(c,player,expectedRevision=c.revision??0){if(!isAdmin(player))throw Error("Operator permission required");try{return storage.save(c,expectedRevision)}catch(e){player.sendMessage(`§c${e.message}`);throw e}}
 function policy(c,n){
   const x=c.servers?.[n]??{}, pn=Number(x.port), pr=Number(x.priority);
   return {included:typeof x.included==="boolean"?x.included:c.defaultInclude,displayName:clean(x.displayName),host:clean(x.host),port:Number.isInteger(pn)&&pn>0&&pn<=65535?pn:0,priority:Number.isFinite(pr)?pr:0,showMaintenance:x.showMaintenance!==false,addressFamily:x.addressFamily==="ipv6"?"ipv6":"ipv4",transport:["bedrock","nethernet"].includes(x.transport)?x.transport:"",netherNetId:clean(x.netherNetId)};
@@ -62,22 +62,22 @@ function adminMenu(player){
  .label(`Discovered: ${names.length}\nIncluded: ${included}\nThis server: ${c.localServer||"Not set"}\nNew servers: ${c.defaultInclude?"Include":"Exclude"}`).divider()
  .button("Set This Server",()=>navigate(f,()=>localMenu(player))).button("Include / Exclude Servers",()=>navigate(f,()=>includeMenu(player)))
  .button("Per-Server Overrides",()=>navigate(f,()=>overrideMenu(player)))
- .button(`New Servers: ${c.defaultInclude?"Included":"Excluded"}`,()=>navigate(f,()=>{const x=loadProviderConfig();x.defaultInclude=!x.defaultInclude;saveProviderConfig(x,player);lastSnapshotFingerprint="";scheduleSync("config-default-policy");adminMenu(player)}))
+ .button(`New Servers: ${c.defaultInclude?"Included":"Excluded"}`,()=>navigate(f,()=>{const x=loadProviderConfig();x.defaultInclude=!x.defaultInclude;saveProviderConfig(x,player,c.revision??0);lastSnapshotFingerprint="";scheduleSync("config-default-policy");adminMenu(player)}))
  .button("Refresh API Contract",()=>defer(()=>call("refresh_contract").then(()=>player.sendMessage("§aAPI contract refreshed.")).catch(e=>player.sendMessage(`§c${e.message}`)))).button("Apply & Republish",()=>defer(()=>{lastSnapshotFingerprint="";scheduleSync("config-apply");player.sendMessage("§aBSM provider republish queued.")}))
  .button("Reset Settings",()=>navigate(f,()=>resetMenu(player))); return showDDUI(f);
 }
 function localMenu(player){
  if(!isAdmin(player))return;
  const {c,names}=cfgSummary(); const f=new CustomForm(player,"THIS SERVER").closeButton().label("Selected server is automatically excluded from transfer destinations.").divider()
- .button(`None / Not managed${!c.localServer?" §a(Current)":""}`,()=>navigate(f,()=>{const x=loadProviderConfig();x.localServer="";saveProviderConfig(x,player);lastSnapshotFingerprint="";scheduleSync("config-local");localMenu(player)}));
- names.forEach(n=>f.button(`${n}${c.localServer===n?" §a(Current)":""}`,()=>navigate(f,()=>{const x=loadProviderConfig();x.localServer=n;setPolicy(x,n,{included:false});saveProviderConfig(x,player);lastSnapshotFingerprint="";scheduleSync("config-local");localMenu(player)})));
+ .button(`None / Not managed${!c.localServer?" §a(Current)":""}`,()=>navigate(f,()=>{const x=loadProviderConfig();x.localServer="";saveProviderConfig(x,player,c.revision??0);lastSnapshotFingerprint="";scheduleSync("config-local");localMenu(player)}));
+ names.forEach(n=>f.button(`${n}${c.localServer===n?" §a(Current)":""}`,()=>navigate(f,()=>{const x=loadProviderConfig();x.localServer=n;setPolicy(x,n,{included:false});saveProviderConfig(x,player,c.revision??0);lastSnapshotFingerprint="";scheduleSync("config-local");localMenu(player)})));
  f.divider().button("Back",()=>navigate(f,()=>adminMenu(player))); return showDDUI(f);
 }
 function includeMenu(player){
  if(!isAdmin(player))return;
  const {c,names}=cfgSummary(),v=new Map(); const f=new CustomForm(player,"INCLUDED SERVERS").closeButton().label("This Server is always excluded.").divider();
  names.forEach(n=>{const o=new ObservableBoolean(local(c,n)?false:policy(c,n).included,{clientWritable:true});v.set(n,o);f.toggle(`${n}${local(c,n)?" (This Server)":""}`,o)});
- f.divider().button("Save",()=>navigate(f,()=>{const x=loadProviderConfig();names.forEach(n=>setPolicy(x,n,{included:local(x,n)?false:!!v.get(n).getData()}));saveProviderConfig(x,player);lastSnapshotFingerprint="";scheduleSync("config-includes");includeMenu(player)}))
+ f.divider().button("Save",()=>navigate(f,()=>{const x=loadProviderConfig();names.forEach(n=>setPolicy(x,n,{included:local(x,n)?false:!!v.get(n).getData()}));saveProviderConfig(x,player,c.revision??0);lastSnapshotFingerprint="";scheduleSync("config-includes");includeMenu(player)}))
  .button("Back",()=>navigate(f,()=>adminMenu(player))); return showDDUI(f);
 }
 function overrideMenu(player){
@@ -90,13 +90,13 @@ function editOverride(player,n){
  if(!isAdmin(player))return;
  const c=loadProviderConfig(),p=policy(c,n),inc=new ObservableBoolean(local(c,n)?false:p.included,{clientWritable:true}),dn=new ObservableString(p.displayName,{clientWritable:true}),host=new ObservableString(p.host,{clientWritable:true}),port=new ObservableString(p.port?String(p.port):"",{clientWritable:true}),pri=new ObservableString(String(p.priority),{clientWritable:true}),maint=new ObservableBoolean(p.showMaintenance,{clientWritable:true}),ipv6=new ObservableBoolean(p.addressFamily==="ipv6",{clientWritable:true}),net=new ObservableBoolean(p.transport==="nethernet",{clientWritable:true}),nid=new ObservableString(p.netherNetId,{clientWritable:true});
  const f=new CustomForm(player,`OVERRIDE: ${n}`).closeButton().toggle("Included",inc).textField("Display name",dn,{description:"Blank uses BSM name."}).textField("Hostname / IP",host,{description:"Blank uses provider host."}).textField("Port",port,{description:"Blank uses discovered port."}).textField("Priority",pri,{description:"Higher sorts first."}).toggle("Use IPv6 port",ipv6).toggle("Use NetherNet",net).textField("NetherNet ID",nid).toggle("Show while in maintenance",maint).divider()
- .button("Save",()=>navigate(f,()=>{const x=loadProviderConfig(),t=clean(port.getData()),pn=t?Number(t):0;if(t&&(!Number.isInteger(pn)||pn<1||pn>65535)){player.sendMessage("§cPort must be 1-65535 or blank.");return}setPolicy(x,n,{included:local(x,n)?false:!!inc.getData(),displayName:clean(dn.getData()),host:clean(host.getData()),port:pn,priority:Number(pri.getData())||0,showMaintenance:!!maint.getData(),addressFamily:ipv6.getData()?"ipv6":"ipv4",transport:net.getData()?"nethernet":"bedrock",netherNetId:clean(nid.getData())});saveProviderConfig(x,player);lastSnapshotFingerprint="";scheduleSync("config-override");overrideMenu(player)}))
+ .button("Save",()=>navigate(f,()=>{const x=loadProviderConfig(),t=clean(port.getData()),pn=t?Number(t):0;if(t&&(!Number.isInteger(pn)||pn<1||pn>65535)){player.sendMessage("§cPort must be 1-65535 or blank.");return}setPolicy(x,n,{included:local(x,n)?false:!!inc.getData(),displayName:clean(dn.getData()),host:clean(host.getData()),port:pn,priority:Number(pri.getData())||0,showMaintenance:!!maint.getData(),addressFamily:ipv6.getData()?"ipv6":"ipv4",transport:net.getData()?"nethernet":"bedrock",netherNetId:clean(nid.getData())});saveProviderConfig(x,player,c.revision??0);lastSnapshotFingerprint="";scheduleSync("config-override");overrideMenu(player)}))
  .button("Back",()=>navigate(f,()=>overrideMenu(player)));return showDDUI(f);
 }
 function resetMenu(player){
  if(!isAdmin(player))return;
- const b=new MessageBox(player,"RESET SETTINGS").body("Reset local-server selection and every BSM provider override?").button1("Reset").button2("Cancel");
- b.show().then(r=>{if(r.selection===1)defer(()=>{saveProviderConfig(defaultProviderConfig(),player);lastSnapshotFingerprint="";scheduleSync("config-reset");adminMenu(player)})}).catch(e=>console.warn(`[${NAME}] DDUI reset failed: ${e?.message??e}`));
+ const c=loadProviderConfig(),b=new MessageBox(player,"RESET SETTINGS").body("Reset local-server selection and every BSM provider override?").button1("Reset").button2("Cancel");
+ b.show().then(r=>{if(r.selection===1)defer(()=>{saveProviderConfig(defaultProviderConfig(),player,c.revision??0);lastSnapshotFingerprint="";scheduleSync("config-reset");adminMenu(player)})}).catch(e=>console.warn(`[${NAME}] DDUI reset failed: ${e?.message??e}`));
 }
 
 function receive(id,msg){try{return ipcReceiver.receive(id,msg)}catch(e){metrics.malformed++;return null}}
@@ -115,8 +115,8 @@ function call(operationId,args={},retry=0,responseProjection){
   });
 }
 function register(){sendChunked("transferui:provider:register",{protocol:PROTOCOL,id:PROVIDER_ID,sessionId:providerSession,name:"Bedrock Server Manager",version:VERSION,capabilities:["destinations","destination-deltas","presence","presence-deltas","health","metadata","configure","actions"],configure:{label:"Configure BSM Provider",adminOnly:true}},`reg-${Date.now()}`)}
-function registerActions(){sendChunked("transferui:actions:register",{protocol:PROTOCOL,providerId:PROVIDER_ID,actions:[{id:"refresh",label:"Refresh from BSM",scope:"destination",adminOnly:false},{id:"start-join",label:"Start Server & Join",scope:"destination",adminOnly:true},{id:"configure",label:"Configure BSM Provider",scope:"destination",adminOnly:true},{id:"refresh-player",label:"Refresh Player State",scope:"player",adminOnly:false}]},`actions-${Date.now()}`)}
-function health(state="ready",message=""){sendChunked("transferui:provider:health",{protocol:PROTOCOL,providerId:PROVIDER_ID,state,message,time:Date.now(),metadata:{phase,hasSnapshot,unresolvedEndpoints:[...runtimeState.destinations.values()].filter(d=>!d.metadata?.endpointResolved).length,ipcDropped:metrics.dropped,contract:apiStatus?.contract??null,subscriptions:apiStatus?.subscriptions??[],bsmApiSeen:apiSeen,bsmApiState:apiStatus?.state??"unknown",bsmApiAuthenticated:apiStatus?.authenticated??false,bsmHttpReady:apiStatus?.httpReady??false,bsmHttpAuthenticated:apiStatus?.httpAuthenticated??false,bsmWebsocketState:apiStatus?.websocketState??apiStatus?.state??"unknown",ipcPending:pending.size,ipcQueue:eventQueue.length,ipcTimeouts:metrics.timeouts,bsmServers:lastSync.servers,publishedDestinations:lastSync.destinations,publishedPlayers:lastSync.players,rejectedServers:lastSync.rejected,localServer:lastSync.self,localServerManaged:!!(lastSync.self&&lastSync.managedSelf),selfServer:lastSync.self,lastSync:lastSync.time,lastSyncError:lastSync.error,lastOperation:lastSync.operation,lastHttpStatus:lastSync.httpStatus,responseStatus:lastSync.responseStatus,snapshotGeneration:runtimeState.generation,reportedPopulation:runtimeState.population(),identifiedPlayers:runtimeState.players.size,populationMismatches:runtimeState.populationMismatches,lastProviderEvent:runtimeState.lastEvent,lastReconcile:runtimeState.lastReconcile}},`health-${Date.now()}`)}
+function registerActions(){sendChunked("transferui:actions:register",{protocol:PROTOCOL,providerId:PROVIDER_ID,actions:[{id:"refresh",label:"Refresh from BSM",scope:"destination",adminOnly:false},{id:"configure",label:"Configure BSM Provider",scope:"destination",adminOnly:true},{id:"refresh-player",label:"Refresh Player State",scope:"player",adminOnly:false}]},`actions-${Date.now()}`)}
+function health(state="ready",message=""){if(!apiSeen)state="connecting";else if(!apiStatus?.httpReady||lastSync.error||(hasSnapshot&&Date.now()-lastSync.time>120000))state=hasSnapshot?"degraded":"connecting";else if(!hasSnapshot)state="connecting";sendChunked("transferui:provider:health",{protocol:PROTOCOL,providerId:PROVIDER_ID,state,message,time:Date.now(),metadata:{phase,hasSnapshot,snapshotAgeMs:lastSync.time?Date.now()-lastSync.time:null,transportReady:!!apiStatus?.httpReady,liveUpdates:!!apiStatus?.websocketAuthenticated,unresolvedEndpoints:[...runtimeState.destinations.values()].filter(d=>!d.metadata?.endpointResolved).length,ipcDropped:metrics.dropped,outgoing:senderStatus(system),contract:apiStatus?.contract??null,subscriptions:apiStatus?.subscriptions??[],bsmApiSeen:apiSeen,bsmApiState:apiStatus?.state??"unknown",bsmApiAuthenticated:apiStatus?.authenticated??false,bsmHttpReady:apiStatus?.httpReady??false,bsmHttpAuthenticated:apiStatus?.httpAuthenticated??false,bsmWebsocketState:apiStatus?.websocketState??apiStatus?.state??"unknown",ipcPending:pending.size,ipcQueue:eventQueue.length,ipcTimeouts:metrics.timeouts,bsmServers:lastSync.servers,publishedDestinations:lastSync.destinations,publishedPlayers:lastSync.players,rejectedServers:lastSync.rejected,localServer:lastSync.self,localServerManaged:!!(lastSync.self&&lastSync.managedSelf),selfServer:lastSync.self,lastSync:lastSync.time,lastSyncError:lastSync.error,lastOperation:lastSync.operation,lastHttpStatus:lastSync.httpStatus,responseStatus:lastSync.responseStatus,snapshotGeneration:runtimeState.generation,reportedPopulation:runtimeState.population(),identifiedPlayers:runtimeState.players.size,populationMismatches:runtimeState.populationMismatches,lastProviderEvent:runtimeState.lastEvent,lastReconcile:runtimeState.lastReconcile}},`health-${Date.now()}`)}
 function normalizeServerPlayers(raw,destinationId,self){
   const out=[];
   for(const item of Array.isArray(raw)?raw:[]){
@@ -167,7 +167,13 @@ function transferHost(){return clean(variables.get("transferuiBsmTransferHost")?
 function selfServer(){return clean(variables.get("transferuiBsmSelfServer")??"")}
 function requestApiStatus(){system.sendScriptEvent("bsmapi:control",JSON.stringify({action:"status"}))}
 // Transfer BSM explicitly owns its live BSM subscription. The API client itself starts with no topics.
-function requestApiSubscribe(){system.sendScriptEvent("bsmapi:control",JSON.stringify({action:"subscribe",consumerId:CONSUMER_ID,topic:"*"}))}
+const GLOBAL_TOPICS=["event:after_server_install", "event:after_server_update", "event:after_delete_server_data", "event:after_server_start", "event:after_server_stop", "event:after_server_status_change", "event:after_server_players_change", "event:after_properties_change", "event:after_set_server_setting"];
+let ownedTopics=new Set();
+function requestApiSubscribe(){
+ const desired=new Set([...GLOBAL_TOPICS,...discoveredServersCache.map(s=>`resource-monitor:${s.name}`)]);
+ for(const topic of ownedTopics)if(!desired.has(topic))system.sendScriptEvent("bsmapi:control",JSON.stringify({action:"unsubscribe",consumerId:CONSUMER_ID,topic}));
+ for(const topic of desired)if(!ownedTopics.has(topic))system.sendScriptEvent("bsmapi:control",JSON.stringify({action:"subscribe",consumerId:CONSUMER_ID,topic}));ownedTopics=desired;
+}
 function scheduleSync(reason="unspecified"){
   if(syncing || enrichmentActive){syncQueued=true;return}
   if(syncDebounce!==null)return;
@@ -191,10 +197,11 @@ async function refreshServer(name,reason="bsm-event"){
     const rec=reconcilePopulation(destination,summary,players,"summary"); if(rec.mismatch)runtimeState.populationMismatches++;
     destination.status=clean(summary?.status)||destination.status; destination.maintenance=destination.status.toUpperCase()!=="RUNNING";
     destination.metadata={...destination.metadata,version:summary?.version??destination.metadata?.version??"",reconcileReason:reason};
-    if(!applyPolicy([destination]).length)return scheduleSync("destination-policy-changed");runtimeState.updateServer(destination,players,reason);
+    if(!applyPolicy([destination]).length)return scheduleSync("destination-policy-changed");const delta=runtimeState.updateServer(destination,players,reason);
     const rev=++revision;
     sendChunked("transferui:destination:upsert",{protocol:PROTOCOL,providerId:PROVIDER_ID,revision:rev,destination},`target-dest-${rev}`);
-    sendChunked("transferui:presence:snapshot",{protocol:PROTOCOL,providerId:PROVIDER_ID,revision:rev,players:runtimeState.snapshot().players},`target-pres-${rev}`);
+    if(delta.removed.length){const r=++revision;sendChunked("transferui:presence:remove",{protocol:PROTOCOL,providerId:PROVIDER_ID,revision:r,ids:delta.removed},`target-remove-${r}`)}
+    if(delta.upserted.length){const r=++revision;sendChunked("transferui:presence:upsert",{protocol:PROTOCOL,providerId:PROVIDER_ID,revision:r,players:delta.upserted},`target-upsert-${r}`)}
     lastSnapshotFingerprint=""; phase="ready"; health("ready",`Reconciled ${name}: ${destination.playerCount} reported, ${players.length} identified.`);
     console.log(`[${NAME}] targeted reconcile: server=${name}, population=${destination.playerCount}, identified=${players.length}, reason=${reason}.`);
   }catch(e){console.warn(`[${NAME}] targeted reconcile failed for ${name}: ${e?.message??e}; scheduling full reconciliation.`);scheduleSync("targeted-fallback")}
@@ -223,7 +230,7 @@ async function sync(reason="unspecified"){
     if(!Object.prototype.hasOwnProperty.call(r,"servers"))throw Error(`${operation}: response did not contain servers`);
     if(r.servers!==null && !Array.isArray(r.servers))throw Error(`${operation}: servers was not an array`);
     const servers=r.servers??[], destinations=[], candidates=[]; let rejected=0;
-    discoveredServersCache=servers.slice();
+    discoveredServersCache=servers.slice();requestApiSubscribe();
     let self=loadProviderConfig().localServer||selfServer(); const host=transferHost();
     for(const s of servers){
       if(!s || typeof s!=="object"){rejected++;continue}
@@ -337,7 +344,7 @@ function handleEvent(ev){
     if(first)console.log(`[${NAME}] BSM API detected: v${r.version??"?"}, state=${r.state??"unknown"}, httpReady=${!!r.httpReady}.`);
     if(first||previousState!==r.state||previousHttpReady!==!!r.httpReady){
       if(!first)console.log(`[${NAME}] BSM API state: ${previousState??"unknown"} -> ${r.state??"unknown"} (httpReady=${!!r.httpReady}, wsAuthenticated=${!!r.websocketAuthenticated}).`);
-      requestApiSubscribe();
+      if(!r.subscriptionConsumers?.[CONSUMER_ID])ownedTopics=new Set();requestApiSubscribe();
       // Server discovery needs authenticated HTTP only; WebSocket is optional live-update transport.
       if(r.httpReady && (!previousHttpReady || !hasSnapshot || (r.state==="live" && previousState!=="live")))scheduleSync("http-ready");
     }
@@ -374,7 +381,7 @@ if(scriptEventSignal?.subscribe){
   scriptEventSignal.subscribe(ev=>{
     if(ev.id!=="transferui_bsm:admin"&&ev.id!=="transferui:provider:configure"&&ev.id!=="transferui:action:invoke")return;
     let p=ev.sourceEntity;
-    if(ev.id==="transferui:action:invoke"){const msg=decodeTransferUiEvent(ev.message);if(!msg||msg.providerId!==PROVIDER_ID)return;p=world.getAllPlayers().find(x=>x.id===msg?.player?.id)||world.getAllPlayers().find(x=>x.name===msg?.player?.name);if(msg.actionId==="start-join"){if(isAdmin(p))system.run(()=>startAndJoin(p,msg.target?.id).catch(e=>p.sendMessage(`§cStart and join failed: ${e.message}`)));return}if(msg.actionId==="refresh"||msg.actionId==="refresh-player"){lastSnapshotFingerprint="";scheduleSync(`action-${msg.actionId}`);if(p)p.sendMessage("§aBSM refresh queued.");return}if(msg.actionId==="configure"){if(isAdmin(p))system.run(()=>adminMenu(p));return}return}
+    if(ev.id==="transferui:action:invoke"){const msg=decodeTransferUiEvent(ev.message);if(!msg||msg.providerId!==PROVIDER_ID)return;p=world.getAllPlayers().find(x=>x.id===msg?.player?.id)||world.getAllPlayers().find(x=>x.name===msg?.player?.name);if(msg.actionId==="refresh"||msg.actionId==="refresh-player"){lastSnapshotFingerprint="";scheduleSync(`action-${msg.actionId}`);if(p)p.sendMessage("§aBSM refresh queued.");return}if(msg.actionId==="configure"){if(isAdmin(p))system.run(()=>adminMenu(p));return}return}
     if(ev.id==="transferui:provider:configure"){
       const msg=decodeTransferUiEvent(ev.message);if(!msg)return
       if(msg.providerId!==PROVIDER_ID)return;
@@ -387,26 +394,4 @@ if(scriptEventSignal?.subscribe){
   });
 }else{
   console.warn(`[${NAME}] scriptEventReceive unavailable; provider admin command UI disabled, provider sync remains active.`);
-}
-
-const startJoinPending=new Set();
-function waitTicks(ticks){return new Promise(resolve=>system.runTimeout(resolve,ticks))}
-async function startAndJoin(player,name){
-  if(!isAdmin(player)||!discoveredServersCache.some(s=>s.name===name)||!applyPolicy([runtimeState.destinations.get(name)] .filter(Boolean)).length)throw Error("Server is not an included destination");
-  const key=player.id+":"+name;if(startJoinPending.has(key))return;startJoinPending.add(key);
-  try{
-    player.sendMessage(`§eStarting ${name}; waiting for readiness...`);
-    const current=runtimeState.destinations.get(name);
-    if(current?.status?.toUpperCase()!=="RUNNING")await call("start_server",{path:{server_name:name}});
-    for(let i=0;i<30;i++){
-      await waitTicks(40);if(!isAdmin(player)||!world.getAllPlayers().some(p=>p.id===player.id))throw Error("Player is no longer online with operator permission");
-      const summary=await call("get_server_summary",{path:{server_name:name}});
-      if(clean(summary?.status).toUpperCase()!=="RUNNING")continue;
-      await refreshServer(name,"start-and-join");
-      const destination=runtimeState.destinations.get(name);
-      if(!destination?.metadata?.endpointResolved)throw Error("Resolve the transfer endpoint before joining");
-      sendChunked("transferui:control",{action:"transfer",player:player.id,destinationId:`provider:${PROVIDER_ID}:${name}`},`start-join-${++seq}`);return;
-    }
-    throw Error("Server readiness timed out");
-  }finally{startJoinPending.delete(key)}
 }

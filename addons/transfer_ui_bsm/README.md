@@ -29,12 +29,14 @@ Unresolved endpoints remain visible with diagnostic information, but cannot tran
 
 ## Runtime and actions
 
-Server list and summary operations supply authoritative status/population. Targeted websocket reconciliation is serialized per server and results from obsolete generations are discarded. Endpoint enrichment updates the same state used by subsequent player updates.
+Server list and summary operations supply authoritative status/population. The provider subscribes to the backend’s exact server/player/properties/settings event topics and per-server resource-monitor topics, rather than `*`. Server discovery adds/removes per-server subscriptions as needed. Targeted websocket reconciliation is serialized per server and results from obsolete generations are discarded. Targeted player updates publish presence upserts/removals instead of a full network presence snapshot. Endpoint enrichment updates the same state used by subsequent player updates.
 
 Snapshots publish destinations and presence together with acknowledgement/retry handling. Provider registration responds to missing-provider status rather than registering again on every status event.
 
-Destination actions include **Refresh from BSM**, **Configure BSM Provider**, and operator-only **Start Server & Join**. Start-and-join waits for a running summary, reconciles state, and submits a normal Transfer UI transfer request. Confirmation, policies, and endpoint checks still apply. Readiness polling makes up to 30 attempts with 40 ticks between attempts, plus HTTP request time.
+Destination actions include **Refresh from BSM**, **Configure BSM Provider**, and **Refresh Player State** on player details. The provider only discovers transfer destinations and player presence. Server lifecycle operations belong to BSM; start-and-join has been removed.
 
-**Refresh API Contract** fetches the live BSM OpenAPI catalog through the client. Provider details show HTTP/WebSocket readiness, contract information, unresolved endpoints, dropped messages, reconciliation state, and the last error.
+**Refresh API Contract** fetches the live BSM OpenAPI catalog through the client. Settings saves validate their shape, enforce a 30,000 UTF-8 byte budget, and reject edits from stale forms. Corrupt or unsupported persisted settings produce an error rather than silently replacing user choices.
+
+Health is derived from authenticated HTTP readiness, successful snapshot age, and reconciliation errors. Websocket readiness is tracked separately; HTTP polling can keep the provider healthy without live websocket updates. Provider details show HTTP/WebSocket readiness, contract information, unresolved endpoints, dropped messages, reconciliation state, and the last error.
 
 Tests are included in `../transfer_ui/tests/` and run together with the client tests; see the Transfer UI README for the command.

@@ -38,6 +38,8 @@ Discovery reads authenticated `/openapi.json`, including plugin operations prese
 
 ## Transport and diagnostics
 
+Chunked output is paced at four frames per tick with a bounded ordered queue. Frames are sized after JSON escaping and UTF-8 encoding; Unicode text stays within the 2,048-byte frame budget. Outgoing depth, queued bytes, overloads, and send errors appear in status.
+
 Chunk receivers bound message/chunk sizes and incomplete stream counts, reject malformed or conflicting frames, and expire abandoned streams. Replies up to 1,400 characters use `bsmapi:response:direct`; larger replies use chunked `bsmapi:response`.
 
 IPC HTTP requests use two active slots and at most 64 waiters. Waiting requests expire after 400 ticks; overflow receives an explicit error. Incoming tick-queue overload receives a 429 response when the request ID is available. Status includes active/waiting HTTP requests and queue metrics.

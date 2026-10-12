@@ -4,21 +4,27 @@ Transfer UI 3.0 provides in-game server navigation and transfers, with an option
 
 ## Features
 
-- Nested folders, destinations, information pages, announcements, draft publishing, backups, and an audit log.
+- Nested folders, destinations, information pages, announcements, validated drafts, publish previews, backups, and an audit log.
 - Favorites, recent destinations, a home server, and player confirmation preferences accessible from the main menu.
 - Paginated destination, player, relationship, group, and search screens.
 - Search by name/tag, region, and game mode; filter availability/capacity; sort by name, population, or network order.
 - Live provider destination details with population, observation age, provider health, and endpoint diagnostics.
 - Hostname/IP and explicit NetherNet transfers; optional manual connection entry.
-- Generic providers for destinations, presence, relationships, groups, policies, and actions.
+- Generic providers for destinations, presence, relationships, groups, policies, and actions. Provider destinations are grouped into their own navigation folders.
+- Move items between folders and edit their sort order.
+- One active transfer per player, with policy progress, cancellation, and disconnect cleanup.
 
 ## Installation
 
 Use the pack in `raw/`, whose manifest lists the required engine and module versions. Enable the Beta APIs world experiment. `@minecraft/server-admin` is required for transfers. Ensure the host supports the manifest's Script API versions, including CustomForm and observable UI values.
 
-Join with a compass to open the menu. Operators can open **Admin Navigation** to edit destinations and settings. Edits remain in the draft until **Publish Draft**. BSM-specific configuration belongs to the separate `transfer_ui_bsm` pack; Transfer UI needs no BSM entries in `variables.json`.
+Join with a compass to open the menu. Operators can open **Admin Navigation** to edit destinations and settings. Edits remain in the draft until **Publish Draft**. The publish preview lists added, changed, and removed items plus settings/announcement changes. Draft and provider settings use revisions: a stale form must be reopened before saving. Moving a folder excludes itself and its descendants from parent choices. BSM-specific configuration belongs to the separate `transfer_ui_bsm` pack; Transfer UI needs no BSM entries in `variables.json`.
 
 ## Transfer rules
+
+Transfer UI and its BSM provider do not start, stop, or restart servers. The BSM provider contributes destinations and presence; server management belongs to BSM.
+
+Use **Cancel Transfer** while policy checks are pending, or submit `{ "action": "cancel-transfer", "player": "<player-id>" }` on `transferui:control`. Closing the progress form or leaving cancels pending work. Cancellation stops pre-dispatch work; a transfer already dispatched cannot be recalled. Repeated requests do not open overlapping confirmations.
 
 Every dispatch checks the current destination, requirements, maintenance, capacity, and endpoint availability again after policies finish. Removed destinations and unresolved endpoints cannot be used. Manual connections are explicit requests and still pass through transfer policies.
 
@@ -36,7 +42,11 @@ Destination records accept `order` (ascending), requirements, hostname/port or a
 
 Snapshots can be grouped with `transferui:provider:transaction:begin` and `...:commit`. After committing, Transfer UI emits `transferui:provider:transaction:result` with `providerId`, `transactionId`, and `ok`. Revisions become authoritative at commit; abandoned transactions do not consume them.
 
-Chunked JSON frames contain `{__tui:1,id,chunk,total,data}`. Each independently installable pack includes the same bounded transport implementation: 1,400 characters per data chunk, at most 256 chunks/262,144 message characters, 128 incomplete streams, and a 30-second expiry. Out-of-order chunks and identical duplicates are supported; conflicting duplicates and changing stream shapes are rejected. ScriptEvents are a cooperative addon bus, not isolation from other installed scripts.
+Configuration saves reject duplicate/reserved IDs, missing parents, folder cycles, invalid ports, malformed requirements, and oversized data. Draft and published snapshots have a 30,000 UTF-8 byte budget. Backups restore as a new published revision.
+
+Each provider gets a virtual folder `provider:<providerId>:__root`. Provider folders may be published as destination records with `type: "folder"`; default destination parents are the provider root. `__root` is reserved. Destination selection excludes folders.
+
+Chunked JSON frames contain `{__tui:1,id,chunk,total,data}`. Each independently installable pack includes the same bounded transport implementation: at most 1,400 characters per data chunk, reduced when needed to keep each JSON-encoded frame within 2,048 UTF-8 bytes, at most 256 chunks/262,144 message characters, 128 incomplete streams, and a 30-second expiry. Out-of-order chunks and identical duplicates are supported; conflicting duplicates and changing stream shapes are rejected. Chunked outgoing messages use an ordered queue: four frames per tick, at most 2,048 queued frames and 4 MiB, with explicit overload errors. Outgoing queue depth and errors are exposed in diagnostics. ScriptEvents are a cooperative addon bus, not isolation from other installed scripts.
 
 ## Development
 
