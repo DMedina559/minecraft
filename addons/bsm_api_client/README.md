@@ -2,7 +2,7 @@
 
 Reusable Bedrock scripting client for Bedrock Server Manager.
 
-Generated against the supplied official BSM OpenAPI **4.0.0b5 / current dev**. The pack exposes **85 HTTP operations** plus the native BSM WebSocket through a cross-addon ScriptEvent bus.
+Generated against the canonical BSM OpenAPI from backend **dev**. The pack exposes **85 HTTP operations** plus the native BSM WebSocket through a cross-addon ScriptEvent bus.
 
 ## BDS requirements
 Enable Beta APIs and add `@minecraft/server-net` to `config/default/permissions.json`.
@@ -22,11 +22,11 @@ The complete operation catalog is included as `raw/scripts/core/contract.js`.
 
 ## OpenAPI model support
 
-This build is generated from the supplied official BSM OpenAPI 4.0.0b5 / current dev contract. It includes **85 operations** and **94 component schemas**. Request bodies and parameters are validated against their OpenAPI schemas before transmission, and JSON responses are validated against documented response schemas. The public client exposes `operations`, `models`, `call(operationId, args)`, `validateModel(name, value)`, and `createModel(name, value)`.
+This build is generated from the backend-owned canonical OpenAPI export. It includes **85 operations** and **104 component schemas**. Request bodies and parameters are validated against their OpenAPI schemas before transmission, and JSON responses are validated against documented response schemas. The public client exposes `operations`, `models`, `call(operationId, args)`, `validateModel(name, value)`, and `createModel(name, value)`.
 
 Transfer UI consumes BSM through operation IDs over ScriptEvent IPC; it does not construct native BSM HTTP routes itself.
 
-Regenerate the catalog with `python addons/bsm_api_client/tools/generate_contract.py /path/to/backend-openapi.json`. Operation IDs follow the current backend; old path-derived IDs are no longer accepted.
+Regenerate the catalog with `python scripts/generate_bsm_contract.py /path/to/backend-openapi.json`. Export with `python -m bedrock_server_manager.web.contract --output /tmp/backend-openapi.json`. Use `python scripts/generate_bsm_contract.py /tmp/backend-openapi.json --check` to verify the catalog. Operation IDs follow the current backend; old path-derived IDs are no longer accepted.
 
 Run mocked transport tests with `node --experimental-vm-modules --test addons/bsm_api_client/tests/client.test.mjs`. These tests do not require a running Bedrock server.
 

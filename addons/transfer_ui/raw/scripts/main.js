@@ -230,7 +230,7 @@ function addNodeButton(form, p, n, parent) {
   const open = () => later(() => n.type === "folder" ? showFolder(p, n.id) : nodeDetail(p, n, parent));
   if (n.type === "server" && n.providerMeta) {
     const status = n.providerMeta?.status ?? "UNKNOWN",
-      count = n.providerMeta?.players !== undefined ? `${n.providerMeta.players} player(s)` : "Players unknown",
+      count = n.providerMeta?.players != null ? `${n.providerMeta.players} player(s)` : "Players unknown",
       detail = n.description ? `\n§7${n.description.slice(0,96)}` : "";
     form.header(`§f§l${n.name}`).label(`§b${status} §8• §f${count}${detail}`).button(`Open ${n.name}`, open);
     return

@@ -573,7 +573,7 @@ async function enrichPlayerState(candidates, destinations, self) {
         });
         if (!summary || typeof summary !== "object") throw Error("summary returned no object");
         const count = Number(summary.player_count);
-        const ps = normalizeServerPlayers(summary.players, c.name, self);
+        const ps = normalizeServerPlayers(summary.players_available === false ? [] : summary.players, c.name, self);
         const rec = reconcilePopulation(d, summary, ps, "summary");
         if (rec.mismatch) runtimeState.populationMismatches++;
         d.status = clean(summary.status) || d.status;
@@ -594,7 +594,7 @@ async function enrichPlayerState(candidates, destinations, self) {
         players.push(...ps);
         resolved++;
       } catch (e) {
-        const ps = normalizeServerPlayers(c.server?.players, c.name, self);
+        const ps = normalizeServerPlayers(c.server?.players_available === false ? [] : c.server?.players, c.name, self);
         players.push(...ps);
         const rec = reconcilePopulation(d, c.server ?? {}, ps, "server-list-fallback");
         if (rec.mismatch) runtimeState.populationMismatches++;
@@ -693,7 +693,7 @@ async function refreshServer(name, reason = "bsm-event") {
         }
       });
       if (generation !== runtimeState.generation || syncing || enrichmentActive) return scheduleSync("obsolete-targeted");
-      const players = normalizeServerPlayers(summary?.players, name, lastSync.self);
+      const players = normalizeServerPlayers(summary?.players_available === false ? [] : summary?.players, name, lastSync.self);
       const destination = {
         ...current,
         metadata: {

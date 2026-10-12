@@ -67,3 +67,29 @@ test('schema validation checks dictionary values, patterns and unresolved refere
  c.api.models.Broken={$ref:'#/components/schemas/Absent'};
  assert.match(c.api.validateModel('Broken',{})[0],/unknown schema reference/);
 });
+
+
+test('partial outcomes remain results and unavailable failures retain their envelope', async()=>{
+ const c=await client();
+ c.setResponse({status:200,body:JSON.stringify({status:'partial',message:'Some logs unavailable',details:{total_entries_in_logs:1,unique_players_submitted_for_saving:1,actually_saved_or_updated_in_db:1,scan_errors:[{server:'test',error:{code:'file_error',message:'Log unavailable',details:{}}}]}})});
+ const result=await c.api.call('scan_players');
+ assert.equal(result.status,'partial');assert.equal(result.details.scan_errors[0].error.code,'file_error');
+ c.setResponse({status:503,body:JSON.stringify({error:{code:'unavailable',message:'Storage unavailable',details:{resource:'storage'}}})});
+ await assert.rejects(c.api.call('list_servers'),e=>e.status===503&&e.code==='unavailable'&&e.details.resource==='storage'&&e.message==='Storage unavailable');
+});
+
+test('committed failures warn before retrying and preserve operation results',async()=>{
+ const c=await client(), result={committed:true,action:'update_account',resource:'account'};
+ c.setResponse({status:500,body:JSON.stringify({error:{code:'operation_incomplete',message:'Operation incomplete',details:{result}}})});
+ await assert.rejects(c.api.call('get_account'),e=>e.committed===true&&e.operationResult.resource==='account'&&e.message.includes('change was saved'));
+ assert.equal(c.requests.filter(r=>r.url.endsWith('/api/account')).length,1);
+});
+
+test('unavailable population is unknown and a later successful summary restores it',async()=>{
+ const context=vm.createContext({Date,Number});const m=new vm.SourceTextModule(await readFile(new URL('../../transfer_ui_bsm/raw/scripts/core/reconciliation.js',import.meta.url),'utf8'),{context});await m.link(()=>{});await m.evaluate();
+ const destination={playerCount:2};
+ m.namespace.reconcilePopulation(destination,{player_count:0,players_available:false},[]);
+ assert.equal(destination.playerCount,null);assert.equal(destination.metadata.playersAvailable,false);
+ m.namespace.reconcilePopulation(destination,{player_count:0,players_available:true},[]);
+ assert.equal(destination.playerCount,0);assert.equal(destination.metadata.playersAvailable,true);
+});

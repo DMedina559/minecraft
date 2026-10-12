@@ -61,7 +61,7 @@ const auth = {
 };
 const contractStatus = {
   source: "bundled",
-  version: "4.0.0b5",
+  version: "contract",
   lastRefresh: 0,
   lastError: "",
   missing: [],
@@ -212,9 +212,15 @@ async function rawRequest(path, method = "GET", body, query, headers = {}, retry
     data = JSON.parse(res.body || "null")
   } catch {}
   if (res.status < 200 || res.status >= 300) {
-    const e = Error(`BSM HTTP ${res.status}`);
+    const failure = data?.error;
+    const e = Error(failure?.message || `BSM HTTP ${res.status}`);
     e.status = res.status;
     e.data = data;
+    e.code = failure?.code ?? null;
+    e.details = failure?.details ?? null;
+    e.operationResult = e.details?.result ?? null;
+    e.committed = e.operationResult?.committed === true;
+    if (e.committed) e.message += " The change was saved, but follow-up work failed. Refresh before trying again.";
     throw e
   }
   return detailed ? {
@@ -740,7 +746,9 @@ async function handleIpc(ev) {
         ok: false,
         error: `${e?.message??e}`,
         status: e?.status,
-        data: e?.data
+        data: e?.data,
+        code: e?.code,
+        details: e?.details
       });
     } finally {
       if (slot) requestQueue.release(slot)
