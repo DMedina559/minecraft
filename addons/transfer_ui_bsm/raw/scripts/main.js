@@ -1,14 +1,14 @@
 import { system, world } from "@minecraft/server";
 import { CustomForm, MessageBox, ObservableBoolean, ObservableString } from "@minecraft/server-ui";
 import { variables } from "@minecraft/server-admin";
-import { NAME,VERSION,PROVIDER_ID,PROTOCOL,CONSUMER_ID,CONFIG_SCHEMA_VERSION,CHUNK_SIZE,MAX_QUEUE,MAX_PER_TICK,REQUEST_TIMEOUT_TICKS,SYNC_DEBOUNCE_TICKS,EVENT_REFRESH_COOLDOWN_TICKS,WATCHDOG_SYNC_TICKS } from "./core/constants.js";
+import { NAME,VERSION,PROVIDER_ID,PROTOCOL,CONSUMER_ID,CONFIG_SCHEMA_VERSION,CHUNK_SIZE,MAX_QUEUE,MAX_PER_TICK,REQUEST_TIMEOUT_TICKS,SYNC_DEBOUNCE_TICKS,WATCHDOG_SYNC_TICKS } from "./core/constants.js";
 import { ProviderRuntimeState } from "./core/state.js";
 import { createProviderStorage } from "./core/storage.js";
 import { ProviderRuntime } from "./core/runtime.js";
 import { reconcilePopulation, eventServerHint } from "./core/reconciliation.js";
 
 const chunks=new Map(), pending=new Map(), eventQueue=[];
-let seq=0, revision=0, apiSeen=false, apiStatus=null, syncing=false, syncQueued=false, syncDebounce=null, eventRefreshCooldown=false, lastSnapshotFingerprint="";
+let seq=0, revision=0, apiSeen=false, apiStatus=null, syncing=false, syncQueued=false, syncDebounce=null, lastSnapshotFingerprint="";
 const endpointCache=new Map();
 let phase="starting", hasSnapshot=false, enrichmentGeneration=0, enrichmentActive=0;
 let lastSync={servers:0,destinations:0,players:0,self:"",managedSelf:false,time:0,error:"",operation:"",httpStatus:0,responseStatus:"",rejected:0};
@@ -141,7 +141,7 @@ async function enrichPlayerState(candidates,destinations,self){
     while(work.length){
       const c=work.shift(),d=byId.get(c.name); if(!d)continue;
       try{
-        const summary=await call("get_server_summary_api_server__server_name__summary_get",{path:{server_name:c.name}});
+        const summary=await call("get_server_summary",{path:{server_name:c.name}});
         if(!summary||typeof summary!=="object")throw Error("summary returned no object");
         const count=Number(summary.player_count);
         const ps=normalizeServerPlayers(summary.players,c.name,self);
@@ -174,23 +174,16 @@ function scheduleSync(reason="unspecified"){
   syncDebounce=system.runTimeout(()=>{syncDebounce=null;sync(reason)},SYNC_DEBOUNCE_TICKS);
 }
 function shouldRefreshForBsmEvent(event){
-  const raw=clean(event?.raw??event?.message??event);
-  if(!raw)return false;
-  const lower=raw.toLowerCase();
-  // Authentication acknowledgements and transport keepalives are not data changes.
-  if(lower.includes('"type":"authenticated"')||lower.includes('"action":"authenticated"')||
-     lower.includes('"type":"ping"')||lower.includes('"type":"pong"')||
-     lower.includes('"type":"heartbeat"')||lower.includes('"action":"ping"')||
-     lower.includes('"action":"pong"')||lower.includes('"action":"heartbeat"'))return false;
-  // BSM event schemas can vary by version. Only refresh for messages that look
-  // capable of changing the Transfer UI server/presence snapshot.
-  return /server|player|start|stop|restart|online|offline|status|state|properties|config|delete|create|update|change/.test(lower);
+  let message;try{message=JSON.parse(event?.raw??event?.message??"{}")}catch{return false}
+  if(message.type==="task_update")return ["completed","failed","cancelled"].includes(message.data?.status);
+  if(message.type==="resource_update")return message.topic?.startsWith("resource-monitor:")===true;
+  return message.topic?.startsWith("event:")===true&&/server|player|properties|config|allowlist|permission|ban/.test(message.topic);
 }
 async function refreshServer(name,reason="bsm-event"){
   const current=runtimeState.destinations.get(name); if(!current||!apiStatus?.httpReady)return scheduleSync(reason);
   try{
     phase="reconciling-server";
-    const summary=await call("get_server_summary_api_server__server_name__summary_get",{path:{server_name:name}});
+    const summary=await call("get_server_summary",{path:{server_name:name}});
     const players=normalizeServerPlayers(summary?.players,name,lastSync.self);
     const destination={...current,metadata:{...(current.metadata??{})}};
     const rec=reconcilePopulation(destination,summary,players,"summary"); if(rec.mismatch)runtimeState.populationMismatches++;
@@ -208,10 +201,7 @@ function scheduleEventRefresh(event){
   if(!shouldRefreshForBsmEvent(event))return;
   const names=discoveredServersCache.map(x=>clean(x?.name)).filter(Boolean), server=eventServerHint(event,names);
   runtimeState.lastEvent={time:Date.now(),server,kind:"bsm-event",raw:clean(event?.raw??event?.message??event).slice(0,240)};
-  if(eventRefreshCooldown)return;
-  eventRefreshCooldown=true;
   if(server)runtime.debounce(`server:${server}`,SYNC_DEBOUNCE_TICKS,()=>refreshServer(server,"websocket-event"));else scheduleSync("bsm-event");
-  system.runTimeout(()=>{eventRefreshCooldown=false},EVENT_REFRESH_COOLDOWN_TICKS);
 }
 
 async function sync(reason="unspecified"){
@@ -219,7 +209,7 @@ async function sync(reason="unspecified"){
   if(!apiSeen){phase="waiting-for-bsm-api";health("connecting","Waiting for BSM API for Minecraft");requestApiStatus();return}
   if(!apiStatus?.httpReady){phase="waiting-for-bsm-http";health(hasSnapshot?"degraded":"connecting","Waiting for authenticated BSM HTTP API...");return}
   syncing=true; phase="discovering"; health(hasSnapshot?"ready":"connecting","Discovering BSM servers...");
-  const operation="get_servers_list_api_servers_get";
+  const operation="list_servers";
   console.log(`[${NAME}] discovery starting: reason=${reason}, operation=${operation}, httpReady=${!!apiStatus?.httpReady}, wsState=${apiStatus?.websocketState??apiStatus?.state??"unknown"}, wsAuthenticated=${!!apiStatus?.websocketAuthenticated}.`);
   try{
     const r=await call(operation);
@@ -292,8 +282,8 @@ async function enrichEndpoints(candidates,generation){
       while(work.length && generation===enrichmentGeneration){
         const {server:s,name,initial}=work.shift();
         try{
-          console.log(`[${NAME}] endpoint IPC -> server=${name}, operation=get_properties_api_server__server_name__properties_get_get.`);
-          const pr=await call("get_properties_api_server__server_name__properties_get_get",{path:{server_name:name}},0,"properties");
+          console.log(`[${NAME}] endpoint IPC -> server=${name}, operation=get_properties.`);
+          const pr=await call("get_properties",{path:{server_name:name}},0,"properties");
           const props=pr?.properties;
           if(!props || typeof props!=="object")throw Error("properties/get returned no properties object");
           const port=Number(props["server-port"]??0), portV6=Number(props["server-portv6"]??0), transport=clean(props.transport);
@@ -320,7 +310,7 @@ function settleResponse(r){
   metrics.responses++; const q=pending.get(r.id);
   if(!q){metrics.unmatched++;return}
   system.clearRun(q.timeout); pending.delete(r.id);
-  r.ok?q.resolve(r.data):q.reject(Error(r.error||`BSM API request failed: ${q.operationId}`));
+  if(r.ok)q.resolve(r.data);else{const error=Error(r.error||`BSM API request failed: ${q.operationId}`);error.status=r.status;error.data=r.data;q.reject(error)}
 }
 function handleEvent(ev){
   if(ev.id==="bsmapi:response:direct"){
@@ -344,7 +334,7 @@ function handleEvent(ev){
       if(!first)console.log(`[${NAME}] BSM API state: ${previousState??"unknown"} -> ${r.state??"unknown"} (httpReady=${!!r.httpReady}, wsAuthenticated=${!!r.websocketAuthenticated}).`);
       requestApiSubscribe();
       // Server discovery needs authenticated HTTP only; WebSocket is optional live-update transport.
-      if(r.httpReady && (!previousHttpReady || !hasSnapshot))scheduleSync("http-ready");
+      if(r.httpReady && (!previousHttpReady || !hasSnapshot || (r.state==="live" && previousState!=="live")))scheduleSync("http-ready");
     }
   } else if(ev.id==="transferui:status"){
     const r=receive(ev.id,ev.message); if(r){register();registerActions();}

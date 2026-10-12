@@ -1,6 +1,6 @@
 # Transfer UI BSM Provider
 
-Optional adapter between **Transfer UI 3.0.0** and **BSM API for Minecraft 1.0.0**.
+Optional adapter between **Transfer UI 3.0.0** and **BSM API for Minecraft 1.1.0**.
 
 It uses only the public ScriptEvent APIs of both addons. Transfer UI has no BSM-specific code and BSM API has no Transfer UI-specific code.
 

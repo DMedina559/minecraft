@@ -1,5 +1,5 @@
 export const NAME="Transfer UI BSM Provider";
-export const VERSION="1.0.0";
+export const VERSION="1.1.0";
 export const PROVIDER_ID="bsm";
 export const PROTOCOL=1;
 export const CONSUMER_ID="transfer-ui-bsm";
