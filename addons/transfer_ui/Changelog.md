@@ -1,6 +1,11 @@
 # Transfer UI - Changelog
 
 ## Unreleased
+- Reject incomplete/mismatched snapshot transactions and retry failed publications.
+- Enforce absolute IPC deadlines and consumer-scoped queued cancellation.
+- Preflight publish/restore payloads and roll back failed storage writes.
+- Inherit folder restrictions across navigation, search, favorites, and transfer dispatch.
+- Format runtime modules and add deterministic, verified pack builds to CI.
 - Remove start-and-join from the BSM provider; server lifecycle belongs to BSM.
 - Validate configurations, detect stale admin edits, preview publishes, and add move/reorder tools.
 - Add provider folders, transfer progress/cancellation, disconnect cleanup, and clear unavailable destinations.

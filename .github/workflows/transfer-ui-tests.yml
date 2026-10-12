@@ -1,17 +1,22 @@
 name: Transfer UI addon tests
 on:
+  workflow_dispatch:
   push:
     paths:
       - 'addons/transfer_ui/**'
       - 'addons/transfer_ui_bsm/**'
       - 'addons/bsm_api_client/**'
       - '.github/workflows/transfer-ui-tests.yml'
+      - 'scripts/build_transfer_packs.py'
+      - 'scripts/tests/**'
   pull_request:
     paths:
       - 'addons/transfer_ui/**'
       - 'addons/transfer_ui_bsm/**'
       - 'addons/bsm_api_client/**'
       - '.github/workflows/transfer-ui-tests.yml'
+      - 'scripts/build_transfer_packs.py'
+      - 'scripts/tests/**'
 permissions:
   contents: read
 jobs:
@@ -26,3 +31,18 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: node --experimental-vm-modules --test addons/transfer_ui/tests/*.test.mjs addons/bsm_api_client/tests/client.test.mjs
+  packs:
+    runs-on: ubuntu-latest
+    needs: tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m unittest discover -s scripts/tests -v
+      - run: python scripts/build_transfer_packs.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: transfer-ui-packs
+          path: dist/transfer-ui/
+          if-no-files-found: error

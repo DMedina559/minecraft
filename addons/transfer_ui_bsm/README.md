@@ -29,9 +29,11 @@ Unresolved endpoints remain visible with diagnostic information, but cannot tran
 
 ## Runtime and actions
 
+IPC requests carry absolute deadlines and a consumer identity. Timed-out requests cancel queued work so an outdated refresh cannot start later.
+
 Server list and summary operations supply authoritative status/population. The provider subscribes to the backend’s exact server/player/properties/settings event topics and per-server resource-monitor topics, rather than `*`. Server discovery adds/removes per-server subscriptions as needed. Targeted websocket reconciliation is serialized per server and results from obsolete generations are discarded. Targeted player updates publish presence upserts/removals instead of a full network presence snapshot. Endpoint enrichment updates the same state used by subsequent player updates.
 
-Snapshots publish destinations and presence together with acknowledgement/retry handling. Provider registration responds to missing-provider status rather than registering again on every status event.
+Snapshots declare both required parts and tag them with a transaction ID. Incomplete/invalid publications are rejected atomically and retried; the provider records success only after acknowledgement. Provider registration responds to missing-provider status rather than registering again on every status event.
 
 Destination actions include **Refresh from BSM**, **Configure BSM Provider**, and **Refresh Player State** on player details. The provider only discovers transfer destinations and player presence. Server lifecycle operations belong to BSM; start-and-join has been removed.
 

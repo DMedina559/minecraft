@@ -26,6 +26,8 @@ Transfer UI and its BSM provider do not start, stop, or restart servers. The BSM
 
 Use **Cancel Transfer** while policy checks are pending, or submit `{ "action": "cancel-transfer", "player": "<player-id>" }` on `transferui:control`. Closing the progress form or leaving cancels pending work. Cancellation stops pre-dispatch work; a transfer already dispatched cannot be recalled. Repeated requests do not open overlapping confirmations.
 
+Folder requirements are inherited by every descendant. Navigation, search, favorites, and transfer dispatch enforce the complete parent chain. Missing parents or cycles fail closed.
+
 Every dispatch checks the current destination, requirements, maintenance, capacity, and endpoint availability again after policies finish. Removed destinations and unresolved endpoints cannot be used. Manual connections are explicit requests and still pass through transfer policies.
 
 Policy timeout behavior is configurable in **Hub Settings**. The default is **deny**. Choosing allow permits transfers when policies do not respond, but an already received denial remains binding. Policy redirects pass through the same destination checks.
@@ -40,9 +42,9 @@ Use namespaced destination IDs when targeting a specific provider: `provider:<pr
 
 Destination records accept `order` (ascending), requirements, hostname/port or a NetherNet target, capacity, metadata, and health. Metadata `endpointResolved: false` disables transfers while a provider resolves an endpoint.
 
-Snapshots can be grouped with `transferui:provider:transaction:begin` and `...:commit`. After committing, Transfer UI emits `transferui:provider:transaction:result` with `providerId`, `transactionId`, and `ok`. Revisions become authoritative at commit; abandoned transactions do not consume them.
+Snapshots can be grouped with `transferui:provider:transaction:begin` and `...:commit`. Begin declares `parts: ["destinations", "presence"]` (the default); a one-part transaction must declare that part explicitly. Every staged snapshot and commit includes the same `transactionId`. All required parts must arrive and validate before any live state changes. Transfer UI emits `transferui:provider:transaction:result` with `providerId`, `transactionId`, and `ok`; rejection/expiry includes an error. Revisions become authoritative at commit; failed/abandoned transactions do not consume them. The BSM provider retries rejected or unacknowledged publications.
 
-Configuration saves reject duplicate/reserved IDs, missing parents, folder cycles, invalid ports, malformed requirements, and oversized data. Draft and published snapshots have a 30,000 UTF-8 byte budget. Backups restore as a new published revision.
+Configuration saves reject duplicate/reserved IDs, missing parents, folder cycles, invalid ports, malformed requirements, and oversized data. Draft and published snapshots have a 30,000 UTF-8 byte budget. Backups restore as a new published revision. Publish/restore preflight both the final published and incremented draft payloads before writing. If a storage write throws, the previous published/draft/backup properties are restored; an audit-log failure is reported separately from a successful publication.
 
 Each provider gets a virtual folder `provider:<providerId>:__root`. Provider folders may be published as destination records with `type: "folder"`; default destination parents are the provider root. `__root` is reserved. Destination selection excludes folders.
 
@@ -59,3 +61,16 @@ node --experimental-vm-modules --test addons/transfer_ui/tests/*.test.mjs addons
 ```
 
 These tests use simulated Bedrock APIs and HTTP/WebSocket transports. Verify actual CustomForm behavior, permissions, and remote transfers on a compatible Bedrock server before release.
+
+## Build and acceptance testing
+
+Build the three current packs and a combined `.mcaddon` from their manifests:
+
+```sh
+python scripts/build_transfer_packs.py
+python -m unittest discover -s scripts/tests -v
+```
+
+Output is in `dist/transfer-ui/`: three versioned `.mcpack` files, `transfer_ui_bsm_bundle.mcaddon`, SHA-256 checksums, setup examples, READMEs, and the separate BSM authentication plugin. Zip entries use fixed timestamps, permissions, and ordering; every archive entry is verified against source. The existing 1.1.0 archive remains historical. GitHub Actions builds and uploads `transfer-ui-packs` after the addon tests pass; it does not publish a release or merge the branch.
+
+Before merging/releasing, install the generated packs on a compatible Bedrock server with Beta APIs enabled. Use two different destination ports and verify manual/configured transfers, confirmation, cancellation, inherited folder restrictions, player join/leave updates, BSM disconnect/recovery, publish/restore, and world-restart persistence. Check NetherNet separately if enabled. These in-game checks require a running server and cannot be replaced by the simulated tests.

@@ -6,9 +6,9 @@ import {fileURLToPath} from 'node:url';
 
 async function network(){
   const root=fileURLToPath(new URL('../../../',import.meta.url));
-  const tasks=new Map(),receivers=[],loaders=[],events=[],observers=[],forms=[],transfers=[],requests=[],properties=new Map(),messages=[],logs=[],sockets=[];let tick=0,seq=0,online=true,modalHook=null;
+  const tasks=new Map(),receivers=[],loaders=[],events=[],observers=[],forms=[],transfers=[],requests=[],properties=new Map(),messages=[],logs=[],sockets=[];let tick=0,seq=0,online=true,modalHook=null,dropHook=null,writeHook=null;
   const player={id:'player-1',name:'Alex',typeId:'minecraft:player',playerPermissionLevel:0,dimension:{id:'minecraft:overworld'},hasTag:()=>false,getTags:()=>[],sendMessage(message){messages.push(message);if(process.env.DEBUG)console.log(message)},getDynamicProperty:k=>properties.get('p:'+k),setDynamicProperty:(k,v)=>properties.set('p:'+k,v)};
-  const world={getAllPlayers:()=>online?[player]:[],getDynamicProperty:k=>properties.get(k),setDynamicProperty:(k,v)=>properties.set(k,v),scoreboard:{getObjective:()=>null},beforeEvents:{itemUse:{subscribe(){}}},afterEvents:{worldLoad:{subscribe(fn){loaders.push(fn)}}}};
+  const world={getAllPlayers:()=>online?[player]:[],getDynamicProperty:k=>properties.get(k),setDynamicProperty:(k,v)=>{writeHook?.(k,v);if(v===undefined)properties.delete(k);else properties.set(k,v)},scoreboard:{getObjective:()=>null},beforeEvents:{itemUse:{subscribe(){}}},afterEvents:{worldLoad:{subscribe(fn){loaders.push(fn)}}}};
   class Observable{constructor(value){this.value=value}getData(){return this.value}setData(value){this.value=value}}
   class Form{
     constructor(player,title){this.player=player;this.titleText=title;this.buttons=[];this.labels=[];this.fields=[];this.showing=false;forms.push(this)}
@@ -34,10 +34,10 @@ async function network(){
     const mod=await load(root+`addons/${addon}/raw/scripts/main.js`);await mod.evaluate();modulesByPack.push(mods);return mod;
   }
   const client=await loadPack('bsm_api_client');await loadPack('transfer_ui');await loadPack('transfer_ui_bsm');loaders.forEach(fn=>fn());
-  async function step(count=1){for(let i=0;i<count;i++){tick++;const queued=events.splice(0);for(const ev of queued){receivers.forEach(fn=>fn(ev));observers.forEach(fn=>fn(ev));}for(const [id,t] of [...tasks])if(t.at<=tick){if(t.interval)t.at=tick+t.interval;else tasks.delete(id);t.fn()}await new Promise(resolve=>setImmediate(resolve));}}
+  async function step(count=1){for(let i=0;i<count;i++){tick++;const queued=events.splice(0);for(const ev of queued){if(dropHook?.(ev))continue;receivers.forEach(fn=>fn(ev));observers.forEach(fn=>fn(ev));}for(const [id,t] of [...tasks])if(t.at<=tick){if(t.interval)t.at=tick+t.interval;else tasks.delete(id);t.fn()}await new Promise(resolve=>setImmediate(resolve));}}
   function send(id,payload){system.sendScriptEvent(id,JSON.stringify(payload))}
   function chunk(id,payload,stream='test'){const text=JSON.stringify(payload),total=Math.ceil(text.length/1400);for(let i=0;i<total;i++)send(id,{__tui:1,id:stream,chunk:i,total,data:text.slice(i*1400,(i+1)*1400)})}
-  return {client,step,send,chunk,events,messages,logs,sockets,setOnline:value=>online=value,setModal:fn=>modalHook=fn,onEvent:fn=>observers.push(fn),forms,player,transfers,requests,properties,modulesByPack,setResponse:fn=>responseHook=fn};
+  return {now:()=>tick*50,setDrop:fn=>dropHook=fn,setWrite:fn=>writeHook=fn,client,step,send,chunk,events,messages,logs,sockets,setOnline:value=>online=value,setModal:fn=>modalHook=fn,onEvent:fn=>observers.push(fn),forms,player,transfers,requests,properties,modulesByPack,setResponse:fn=>responseHook=fn};
 }
 
 test('packs discover servers, settle IPC and stop registration feedback',async()=>{
@@ -163,4 +163,67 @@ test('provider configuration rejects stale saves while retaining the newer setti
 });
 test('API self-test loads its extracted provider helpers',async()=>{
  const n=await network();await n.step(150);n.player.playerPermissionLevel=2;n.send('transferui:control',{action:'open',player:n.player.id});await n.step(5);n.forms.at(-1).buttons.find(b=>b.label==='Admin Navigation').fn();await n.step(5);n.forms.at(-1).buttons.find(b=>b.label==='API Diagnostics & Self-Test').fn();await n.step(5);n.forms.at(-1).buttons.find(b=>b.label==='Run Self-Test').fn();await n.step(5);assert.match(n.forms.at(-1).titleText,/PASS/);
+});
+
+async function captureSnapshot(n,id){
+ let result;const streams=new Map();n.onEvent(ev=>{if(ev.id!=='transferui:snapshot')return;const f=JSON.parse(ev.message),state=streams.get(f.id)??{parts:[],received:0};if(state.parts[f.chunk]===undefined){state.received++;state.parts[f.chunk]=f.data}streams.set(f.id,state);if(state.received===f.total)result=JSON.parse(state.parts.join(''))});n.send('transferui:control',{action:'snapshot',requestId:id});await n.step(30);return result;
+}
+test('dropped transaction part is rejected without changing presence, then retry repairs it',async()=>{
+ const n=await network();await n.step(150);let name='Alice';
+ n.setResponse(req=>req.url.endsWith('/summary')?{status:200,body:JSON.stringify({name:'survival',version:'test',status:'RUNNING',player_count:1,players:[{name,xuid:name}]})}:null);
+ n.chunk('bsmapi:event',{raw:JSON.stringify({topic:'event:after_server_players_change',data:{server_name:'survival'}})},'alice');await n.step(80);assert.equal((await captureSnapshot(n,'before')).presence[0].name,'Alice');
+ name='Bob';const acknowledgements=[];n.onEvent(ev=>{if(ev.id==='transferui:provider:transaction:result'){const f=JSON.parse(ev.message);if(f.total===1)acknowledgements.push(JSON.parse(f.data))}});
+ n.setDrop(ev=>ev.id==='transferui:presence:snapshot');n.chunk('transferui:action:invoke',{providerId:'bsm',actionId:'refresh',player:{id:n.player.id}},'refresh');await n.step(80);
+ assert.ok(acknowledgements.some(x=>x.ok===false));assert.equal((await captureSnapshot(n,'failed')).presence[0].name,'Alice');
+ n.setDrop(null);await n.step(150);assert.equal((await captureSnapshot(n,'repaired')).presence[0].name,'Bob');assert.ok(acknowledgements.some(x=>x.ok===true));
+});
+test('transaction IDs reject delayed parts from a different publication',async()=>{
+ const n=await network();await n.step(150);const results=[];n.onEvent(ev=>{if(ev.id==='transferui:provider:transaction:result'){const f=JSON.parse(ev.message);if(f.total===1)results.push(JSON.parse(f.data))}});
+ n.chunk('transferui:provider:transaction:begin',{providerId:'bsm',transactionId:'current',parts:['presence']},'begin');n.chunk('transferui:presence:snapshot',{providerId:'bsm',transactionId:'old',revision:100,players:[{id:'late',name:'Late'}]},'late');n.chunk('transferui:provider:transaction:commit',{providerId:'bsm',transactionId:'current'},'commit');await n.step(20);assert.ok(results.some(x=>x.transactionId==='current'&&!x.ok));assert.ok(!(await captureSnapshot(n,'late-snapshot')).presence.some(x=>x.id==='late'));
+});
+test('expired modifying HTTP request never dispatches after a waiting slot is released',async()=>{
+ const n=await network();await n.step(150);const releases=[];
+ n.setResponse(req=>req.url.endsWith('/summary')?new Promise(resolve=>releases.push(resolve)):null);
+ for(let i=0;i<2;i++)n.chunk('bsmapi:request',{operationId:'get_server_summary',args:{path:{server_name:'survival'}}},`blocking-${i}`);await n.step(10);
+ n.chunk('bsmapi:request',{path:'/must-not-execute',method:'DELETE',deadline:0},'already-expired');
+ n.chunk('bsmapi:request',{path:'/must-not-execute',method:'DELETE',deadline:10000},'expires-while-waiting');await n.step(230);
+ n.setResponse(()=>null);for(const release of releases)release({status:200,body:JSON.stringify({name:'survival',version:'test',status:'RUNNING',players:[]})});await n.step(20);assert.ok(!n.requests.some(r=>r.url.endsWith('/must-not-execute')));
+});
+test('queued cancellation is scoped to the requesting consumer',async()=>{
+ const n=await network();await n.step(150);const releases=[];n.setResponse(req=>req.url.endsWith('/summary')?new Promise(resolve=>releases.push(resolve)):null);
+ for(let i=0;i<2;i++)n.chunk('bsmapi:request',{operationId:'get_server_summary',args:{path:{server_name:'survival'}}},`occupy-${i}`);await n.step(10);
+ n.chunk('bsmapi:request',{path:'/cancelled',method:'DELETE',consumerId:'owner'},'cancel-me');n.send('bsmapi:control',{action:'cancel-request',consumerId:'owner',requestId:'cancel-me'});await n.step(10);
+ n.chunk('bsmapi:request',{path:'/allowed',method:'POST',consumerId:'other'},'other-request');n.send('bsmapi:control',{action:'cancel-request',consumerId:'wrong-owner',requestId:'other-request'});await n.step(10);
+ n.setResponse(()=>null);for(const release of releases)release({status:200,body:JSON.stringify({name:'survival',version:'test',status:'RUNNING',players:[]})});await n.step(20);assert.ok(!n.requests.some(r=>r.url.endsWith('/cancelled')));assert.ok(n.requests.some(r=>r.url.endsWith('/allowed')));
+});
+test('publish size preflight and storage rollback leave all snapshots unchanged on failure',async()=>{
+ const n=await network();await n.step(150);n.player.playerPermissionLevel=2;
+ const storage=n.modulesByPack[1][Object.keys(n.modulesByPack[1]).find(k=>k.endsWith('/core/storage.js'))].namespace;
+ const original=[...n.properties];let draft=storage.getDraft();draft.draftRevision=9;draft.settings.subtitle='';draft.settings.subtitle='x'.repeat(30000-Buffer.byteLength(JSON.stringify(storage.normalize(draft))));n.properties.set('transferhub:draft',JSON.stringify(draft));
+ const before=[...n.properties];assert.throws(()=>storage.publishDraft(draft,n.player,'publish',1,9),/30,000/);assert.deepEqual([...n.properties],before);
+ n.properties.clear();for(const [key,value] of original)n.properties.set(key,value);draft=storage.getDraft();draft.settings.title='Changed';let failed=false;n.setWrite((key)=>{if(key==='transferhub:draft'&&!failed){failed=true;throw Error('Injected write failure')}});
+ assert.throws(()=>storage.publishDraft(draft,n.player,'publish',1,0),/previous configuration restored/);assert.equal(storage.getPublished().settings.title,'§b§lServer Network');assert.equal(storage.getDraft().settings.title,'§b§lServer Network');assert.equal(n.properties.has('transferhub:backup'),false);
+});
+test('folder restrictions apply to search, favorites and transfer dispatch',async()=>{
+ const n=await network();await n.step(150);
+ n.properties.set('transferhub:data',JSON.stringify({version:4,revision:1,settings:{confirmTransfers:false},nodes:[{id:'private',type:'folder',name:'Private',parentId:null,requirements:{adminOnly:true}},{id:'child',type:'server',name:'Hidden Child',parentId:'private',hostname:'example.test',port:19132}]}));n.properties.set('p:transferhub:favorites',JSON.stringify(['child']));
+ n.send('transferui:control',{action:'transfer',player:n.player.id,destinationId:'child'});await n.step(10);assert.equal(n.transfers.length,0);
+ n.send('transferui:control',{action:'open',player:n.player.id});await n.step(5);n.forms.at(-1).buttons.find(b=>b.label==='Favorites').fn();await n.step(5);assert.ok(!n.forms.at(-1).buttons.some(b=>b.label.includes('Hidden Child')));
+ n.send('transferui:control',{action:'open',player:n.player.id});await n.step(5);n.forms.at(-1).buttons.find(b=>b.label==='Search').fn();await n.step(5);n.forms.at(-1).buttons.find(b=>b.label==='Search').fn();await n.step(5);assert.ok(!n.forms.at(-1).buttons.some(b=>b.label.includes('Hidden Child')));
+ n.player.playerPermissionLevel=2;n.send('transferui:control',{action:'transfer',player:n.player.id,destinationId:'child'});await n.step(10);assert.equal(n.transfers.length,1);
+});
+
+test('deadline is checked again after authentication before a modifying dispatch',async()=>{
+ const n=await network();await n.step(150);let authenticate;
+ n.setResponse(req=>req.url.endsWith('/auth/token')?new Promise(resolve=>authenticate=resolve):req.url.endsWith('/force-refresh')?{status:401,body:'{}'}:null);
+ const refresh=n.client.namespace.BsmApi.request('/force-refresh').catch(()=>{});await n.step(5);assert.ok(authenticate);
+ n.chunk('bsmapi:request',{path:'/expired-during-auth',method:'DELETE',deadline:n.now()+200},'auth-deadline');await n.step(10);
+ n.setResponse(()=>null);authenticate({status:200,body:'{"access_token":"jwt"}'});await n.step(20);
+ assert.ok(!n.requests.some(r=>r.url.endsWith('/expired-during-auth')));
+});
+test('incomplete transaction does not consume revision needed by its repaired retry',async()=>{
+ const n=await network();await n.step(150);const results=[];n.onEvent(ev=>{if(ev.id==='transferui:provider:transaction:result'){const frame=JSON.parse(ev.message);if(frame.total===1)results.push(JSON.parse(frame.data))}});
+ n.chunk('transferui:provider:transaction:begin',{providerId:'bsm',transactionId:'broken'},'broken-begin');n.chunk('transferui:destination:snapshot',{providerId:'bsm',transactionId:'broken',revision:100,destinations:[]},'broken-dest');n.chunk('transferui:provider:transaction:commit',{providerId:'bsm',transactionId:'broken'},'broken-commit');await n.step(15);
+ n.chunk('transferui:provider:transaction:begin',{providerId:'bsm',transactionId:'fixed'},'fixed-begin');n.chunk('transferui:destination:snapshot',{providerId:'bsm',transactionId:'fixed',revision:100,destinations:[]},'fixed-dest');n.chunk('transferui:presence:snapshot',{providerId:'bsm',transactionId:'fixed',revision:100,players:[]},'fixed-pres');n.chunk('transferui:provider:transaction:commit',{providerId:'bsm',transactionId:'fixed'},'fixed-commit');await n.step(15);
+ assert.ok(results.some(r=>r.transactionId==='broken'&&!r.ok));assert.ok(results.some(r=>r.transactionId==='fixed'&&r.ok));
 });

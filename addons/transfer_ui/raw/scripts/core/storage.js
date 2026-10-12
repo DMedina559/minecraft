@@ -1,22 +1,254 @@
-import { wireBytes } from "./ipc.js";
-import { assertConfiguration } from "./configuration.js";
-import { world, PlayerPermissionLevel } from "@minecraft/server";
-const DATA_KEY="transferhub:data", BACKUP_KEY="transferhub:backup", DRAFT_KEY="transferhub:draft", AUDIT_KEY="transferhub:audit";
-const FAV_KEY="transferhub:favorites", PREF_KEY="transferhub:prefs", HISTORY_KEY="transferhub:history";
-const DATA_VERSION=4, MAX_NODES=180, MAX_AUDIT=80;
-const DEF={version:DATA_VERSION,revision:1,settings:{title:"§b§lServer Network",subtitle:"Choose a destination.",policyTimeout:"deny",openerItem:"minecraft:compass",showDirectConnect:false,confirmTransfers:true,maxRecent:8},nodes:[{id:"main",type:"folder",parentId:null,name:"Main Servers",description:"Official network destinations",order:0,enabled:true}],announcements:[]};
-const clone=v=>JSON.parse(JSON.stringify(v));
-const parse=(v,f)=>{try{return typeof v==="string"?JSON.parse(v):f}catch{return f}};
-const clean=s=>`${s??""}`.trim();
-const idFrom=s=>clean(s).toLowerCase().replace(/§./g,"").replace(/[^a-z0-9_-]+/g,"-").replace(/^-+|-+$/g,"").slice(0,32)||`node-${Date.now()}`;
-const unique=(items,want)=>{let x=want,n=2;const u=new Set(items.map(v=>v.id));while(u.has(x))x=`${want}-${n++}`;return x};
-function normalize(raw){const d=raw&&typeof raw==="object"&&!Array.isArray(raw)?clone(raw):clone(DEF);if(Array.isArray(d.categories)||Array.isArray(d.servers)){const nodes=[];for(const c of d.categories??[])nodes.push({id:c.id,type:"folder",parentId:null,name:c.name,description:c.description??"",order:c.order??0,enabled:true});for(const s of d.servers??[])nodes.push({...s,type:"server",parentId:s.categoryId??"main",tags:s.tags??[],region:s.region??"",gameMode:s.gameMode??"",recommended:!!s.recommended,maintenance:!!s.maintenance,requirements:s.requirements??{}});d.nodes=nodes;delete d.categories;delete d.servers}d.version=DATA_VERSION;d.revision=Number(d.revision)||1;d.settings={...DEF.settings,...(d.settings??{})};d.nodes=Array.isArray(d.nodes)?d.nodes:clone(DEF.nodes);d.announcements=Array.isArray(d.announcements)?d.announcements:[];for(const n of d.nodes){n.id=n.id||unique(d.nodes,idFrom(n.name));n.type=["folder","server","info"].includes(n.type)?n.type:"info";n.parentId=n.parentId??null;n.name=n.name||"Untitled";n.description=n.description??"";n.order=Number(n.order)||0;n.enabled=n.enabled!==false;if(n.type==="server"){n.tags=Array.isArray(n.tags)?n.tags:[];n.requirements=n.requirements&&typeof n.requirements==="object"?n.requirements:{};n.cooldownSeconds=Math.max(0,Number(n.cooldownSeconds)||0)}}return d}
-function getPublished(){return normalize(parse(world.getDynamicProperty(DATA_KEY),clone(DEF)))}
-function savePublished(d,actor="system",action="publish",expectedRevision=getPublished().revision){if(getPublished().revision!==expectedRevision)throw Error("Published configuration changed. Reopen the preview.");assertConfiguration(d);if(typeof actor!=="string"&&actor?.playerPermissionLevel!==PlayerPermissionLevel.Operator)throw Error("Operator permission required");const next=normalize(d),text=JSON.stringify(next);if(wireBytes(text)>30000)throw Error("Configuration exceeds 30,000 UTF-8 bytes.");const old=world.getDynamicProperty(DATA_KEY);if(typeof old==="string")world.setDynamicProperty(BACKUP_KEY,old);world.setDynamicProperty(DATA_KEY,text);audit(actor,action,`revision ${next.revision}`)}
-function getDraft(){const v=world.getDynamicProperty(DRAFT_KEY);return typeof v==="string"?normalize(parse(v,getPublished())):clone(getPublished())}
-function saveDraft(d,actor,expectedRevision=d.draftRevision??0){const current=getDraft();if((current.draftRevision??0)!==expectedRevision)throw Error("Draft changed while this form was open. Reopen it before saving.");assertConfiguration(d);if(actor?.playerPermissionLevel!==PlayerPermissionLevel.Operator)throw Error("Operator permission required");const next=normalize(clone(d));next.draftRevision=(current.draftRevision??0)+1;const t=JSON.stringify(next);if(wireBytes(t)>30000)throw Error("Draft exceeds 30,000 UTF-8 bytes.");world.setDynamicProperty(DRAFT_KEY,t);return next}
-function audit(actor,action,detail=""){let a=parse(world.getDynamicProperty(AUDIT_KEY),[]);if(!Array.isArray(a))a=[];a.unshift({time:new Date().toISOString(),actor:typeof actor==="string"?actor:actor?.name??"system",action,detail});a=a.slice(0,MAX_AUDIT);while(a.length&&wireBytes(JSON.stringify(a))>30000)a.pop();world.setDynamicProperty(AUDIT_KEY,JSON.stringify(a))}
-function pjson(p,key,f){return parse(p.getDynamicProperty(key),clone(f))}function pset(p,key,v){p.setDynamicProperty(key,JSON.stringify(v))}
-const favs=p=>pjson(p,FAV_KEY,[]);const prefs=p=>({...{home:null,confirmMode:"default"},...pjson(p,PREF_KEY,{})});const hist=p=>pjson(p,HISTORY_KEY,[]);
+import {
+  wireBytes
+} from "./ipc.js";
+import {
+  assertConfiguration
+} from "./configuration.js";
+import {
+  world,
+  PlayerPermissionLevel
+} from "@minecraft/server";
+const DATA_KEY = "transferhub:data",
+  BACKUP_KEY = "transferhub:backup",
+  DRAFT_KEY = "transferhub:draft",
+  AUDIT_KEY = "transferhub:audit";
+const FAV_KEY = "transferhub:favorites",
+  PREF_KEY = "transferhub:prefs",
+  HISTORY_KEY = "transferhub:history";
+const DATA_VERSION = 4,
+  MAX_NODES = 180,
+  MAX_AUDIT = 80;
+const DEF = {
+  version: DATA_VERSION,
+  revision: 1,
+  settings: {
+    title: "§b§lServer Network",
+    subtitle: "Choose a destination.",
+    policyTimeout: "deny",
+    openerItem: "minecraft:compass",
+    showDirectConnect: false,
+    confirmTransfers: true,
+    maxRecent: 8
+  },
+  nodes: [{
+    id: "main",
+    type: "folder",
+    parentId: null,
+    name: "Main Servers",
+    description: "Official network destinations",
+    order: 0,
+    enabled: true
+  }],
+  announcements: []
+};
+const clone = v => JSON.parse(JSON.stringify(v));
+const parse = (v, f) => {
+  try {
+    return typeof v === "string" ? JSON.parse(v) : f
+  } catch {
+    return f
+  }
+};
+const clean = s => `${s??""}`.trim();
+const idFrom = s => clean(s).toLowerCase().replace(/§./g, "").replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 32) || `node-${Date.now()}`;
+const unique = (items, want) => {
+  let x = want,
+    n = 2;
+  const u = new Set(items.map(v => v.id));
+  while (u.has(x)) x = `${want}-${n++}`;
+  return x
+};
 
-export { FAV_KEY, PREF_KEY, HISTORY_KEY, DATA_KEY, BACKUP_KEY, DRAFT_KEY, AUDIT_KEY, DATA_VERSION, MAX_NODES, DEF, clone, parse, clean, idFrom, unique, normalize, getPublished, savePublished, getDraft, saveDraft, audit, pjson, pset, favs, prefs, hist };
+function normalize(raw) {
+  const d = raw && typeof raw === "object" && !Array.isArray(raw) ? clone(raw) : clone(DEF);
+  if (Array.isArray(d.categories) || Array.isArray(d.servers)) {
+    const nodes = [];
+    for (const c of d.categories ?? []) nodes.push({
+      id: c.id,
+      type: "folder",
+      parentId: null,
+      name: c.name,
+      description: c.description ?? "",
+      order: c.order ?? 0,
+      enabled: true
+    });
+    for (const s of d.servers ?? []) nodes.push({
+      ...s,
+      type: "server",
+      parentId: s.categoryId ?? "main",
+      tags: s.tags ?? [],
+      region: s.region ?? "",
+      gameMode: s.gameMode ?? "",
+      recommended: !!s.recommended,
+      maintenance: !!s.maintenance,
+      requirements: s.requirements ?? {}
+    });
+    d.nodes = nodes;
+    delete d.categories;
+    delete d.servers
+  }
+  d.version = DATA_VERSION;
+  d.revision = Number(d.revision) || 1;
+  d.settings = {
+    ...DEF.settings,
+    ...(d.settings ?? {})
+  };
+  d.nodes = Array.isArray(d.nodes) ? d.nodes : clone(DEF.nodes);
+  d.announcements = Array.isArray(d.announcements) ? d.announcements : [];
+  for (const n of d.nodes) {
+    n.id = n.id || unique(d.nodes, idFrom(n.name));
+    n.type = ["folder", "server", "info"].includes(n.type) ? n.type : "info";
+    n.parentId = n.parentId ?? null;
+    n.name = n.name || "Untitled";
+    n.description = n.description ?? "";
+    n.order = Number(n.order) || 0;
+    n.enabled = n.enabled !== false;
+    if (n.type === "server") {
+      n.tags = Array.isArray(n.tags) ? n.tags : [];
+      n.requirements = n.requirements && typeof n.requirements === "object" ? n.requirements : {};
+      n.cooldownSeconds = Math.max(0, Number(n.cooldownSeconds) || 0)
+    }
+  }
+  return d
+}
+
+function getPublished() {
+  return normalize(parse(world.getDynamicProperty(DATA_KEY), clone(DEF)))
+}
+
+function savePublished(d, actor = "system", action = "publish", expectedRevision = getPublished().revision) {
+  if (getPublished().revision !== expectedRevision) throw Error("Published configuration changed. Reopen the preview.");
+  assertConfiguration(d);
+  if (typeof actor !== "string" && actor?.playerPermissionLevel !== PlayerPermissionLevel.Operator) throw Error("Operator permission required");
+  const next = normalize(d),
+    text = JSON.stringify(next);
+  if (wireBytes(text) > 30000) throw Error("Configuration exceeds 30,000 UTF-8 bytes.");
+  const old = world.getDynamicProperty(DATA_KEY);
+  if (typeof old === "string") world.setDynamicProperty(BACKUP_KEY, old);
+  world.setDynamicProperty(DATA_KEY, text);
+  audit(actor, action, `revision ${next.revision}`)
+}
+
+function getDraft() {
+  const v = world.getDynamicProperty(DRAFT_KEY);
+  return typeof v === "string" ? normalize(parse(v, getPublished())) : clone(getPublished())
+}
+
+function saveDraft(d, actor, expectedRevision = d.draftRevision ?? 0) {
+  const current = getDraft();
+  if ((current.draftRevision ?? 0) !== expectedRevision) throw Error("Draft changed while this form was open. Reopen it before saving.");
+  assertConfiguration(d);
+  if (actor?.playerPermissionLevel !== PlayerPermissionLevel.Operator) throw Error("Operator permission required");
+  const next = normalize(clone(d));
+  next.draftRevision = (current.draftRevision ?? 0) + 1;
+  const t = JSON.stringify(next);
+  if (wireBytes(t) > 30000) throw Error("Draft exceeds 30,000 UTF-8 bytes.");
+  world.setDynamicProperty(DRAFT_KEY, t);
+  return next
+}
+
+function publishDraft(d, actor, action = "publish", expectedPublished = getPublished().revision, expectedDraft = d.draftRevision ?? 0) {
+  if (actor?.playerPermissionLevel !== PlayerPermissionLevel.Operator) throw Error("Operator permission required");
+  if (getPublished().revision !== expectedPublished || (getDraft().draftRevision ?? 0) !== expectedDraft) throw Error("Configuration changed. Reopen the preview.");
+  assertConfiguration(d);
+  const published = normalize({
+      ...d,
+      revision: expectedPublished + 1
+    }),
+    draft = normalize({
+      ...published,
+      draftRevision: expectedDraft + 1
+    });
+  assertConfiguration(published);
+  assertConfiguration(draft);
+  const publishedText = JSON.stringify(published),
+    draftText = JSON.stringify(draft);
+  if (wireBytes(publishedText) > 30000 || wireBytes(draftText) > 30000) throw Error("Published configuration and draft must each fit within 30,000 UTF-8 bytes.");
+  const updates = [
+      [BACKUP_KEY, world.getDynamicProperty(DATA_KEY)],
+      [DATA_KEY, publishedText],
+      [DRAFT_KEY, draftText]
+    ],
+    old = updates.map(([key]) => [key, world.getDynamicProperty(key)]);
+  try {
+    for (const [key, value] of updates) world.setDynamicProperty(key, value)
+  } catch (error) {
+    const failures = [];
+    for (const [key, value] of old.reverse()) {
+      try {
+        world.setDynamicProperty(key, value)
+      } catch (e) {
+        failures.push(`${key}: ${e.message}`)
+      }
+    }
+    if (failures.length) throw Error(`Publish failed (${error.message}); rollback failed (${failures.join("; ")}). Restore the saved world backup.`);
+    throw Error(`Publish failed; previous configuration restored: ${error.message}`);
+  }
+  try {
+    audit(actor, action, `revision ${published.revision}`)
+  } catch (error) {
+    console.warn(`[Transfer UI] Configuration published; audit save failed: ${error.message}`)
+  }
+  return published;
+}
+
+function audit(actor, action, detail = "") {
+  let a = parse(world.getDynamicProperty(AUDIT_KEY), []);
+  if (!Array.isArray(a)) a = [];
+  a.unshift({
+    time: new Date().toISOString(),
+    actor: typeof actor === "string" ? actor : actor?.name ?? "system",
+    action,
+    detail
+  });
+  a = a.slice(0, MAX_AUDIT);
+  while (a.length && wireBytes(JSON.stringify(a)) > 30000) a.pop();
+  world.setDynamicProperty(AUDIT_KEY, JSON.stringify(a))
+}
+
+function pjson(p, key, f) {
+  return parse(p.getDynamicProperty(key), clone(f))
+}
+
+function pset(p, key, v) {
+  p.setDynamicProperty(key, JSON.stringify(v))
+}
+const favs = p => pjson(p, FAV_KEY, []);
+const prefs = p => ({
+  ...{
+    home: null,
+    confirmMode: "default"
+  },
+  ...pjson(p, PREF_KEY, {})
+});
+const hist = p => pjson(p, HISTORY_KEY, []);
+
+export {
+  FAV_KEY,
+  PREF_KEY,
+  HISTORY_KEY,
+  DATA_KEY,
+  BACKUP_KEY,
+  DRAFT_KEY,
+  AUDIT_KEY,
+  DATA_VERSION,
+  MAX_NODES,
+  DEF,
+  clone,
+  parse,
+  clean,
+  idFrom,
+  unique,
+  normalize,
+  getPublished,
+  savePublished,
+  publishDraft,
+  getDraft,
+  saveDraft,
+  audit,
+  pjson,
+  pset,
+  favs,
+  prefs,
+  hist
+};

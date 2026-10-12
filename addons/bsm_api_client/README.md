@@ -45,3 +45,9 @@ Chunk receivers bound message/chunk sizes and incomplete stream counts, reject m
 IPC HTTP requests use two active slots and at most 64 waiters. Waiting requests expire after 400 ticks; overflow receives an explicit error. Incoming tick-queue overload receives a 429 response when the request ID is available. Status includes active/waiting HTTP requests and queue metrics.
 
 Use a BSM account with permissions appropriate for the installed addons. Operator-only Minecraft provider actions are checked locally, while BSM enforces that account's HTTP permissions. Other installed scripts can observe or emit ScriptEvents; this bus is not a security boundary between addons.
+
+## IPC deadlines and cancellation
+
+Requests may include a `consumerId` and an absolute Unix-millisecond `deadline` in the payload. The client checks the deadline before acquiring a slot, after authentication, immediately before each HTTP dispatch/retry, and when processing the response. Requests without a deadline receive a 20-second budget from receipt for compatibility; consumers should supply the absolute deadline so time spent assembling/queuing messages is included.
+
+Cancel a queued request with `{ "action": "cancel-request", "consumerId": "your-addon", "requestId": "request-stream-id" }` on `bsmapi:control`. Consumer/request IDs must match. Cancellation arriving before request assembly is remembered temporarily. Once HTTP has been dispatched, cancellation cannot undo the operation: a late/expired result explicitly says the operation may have completed. Do not blindly retry a modifying request after an uncertain dispatch result.
