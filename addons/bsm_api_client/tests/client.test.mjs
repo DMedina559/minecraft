@@ -58,3 +58,12 @@ test('WebSocket requires the real backend authentication acknowledgement',async(
   socket.closed({reason:'old connection'});
   assert.equal(c.api.BsmApi.status().state,'authenticating');
 });
+
+test('schema validation checks dictionary values, patterns and unresolved references',async()=>{
+ const c=await client();
+ assert.ok(c.api.validateModel('StartServerResponse',{server_name:'invalid name',outcome:'started',message:'Started'}).some(error=>error.includes('pattern')));
+ c.api.models.Dictionary={type:'object',additionalProperties:{type:'string'}};
+ assert.ok(c.api.validateModel('Dictionary',{port:19132}).length);
+ c.api.models.Broken={$ref:'#/components/schemas/Absent'};
+ assert.match(c.api.validateModel('Broken',{})[0],/unknown schema reference/);
+});

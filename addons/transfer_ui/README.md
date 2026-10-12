@@ -1,41 +1,51 @@
 # Transfer UI
 
-The Transfer UI Behavior Pack allows players to transfer to other Minecraft Bedrock servers using an in-game menu. Players can access the transfer menu by using a compass and input the desired server IP address and port. Upon confirmation, they are seamlessly transferred to the specified server.
+Transfer UI 3.0 provides in-game server navigation and transfers, with an optional generic Provider API. The compass opens the network menu. Transfer UI contains no BSM-specific HTTP or server-management code.
 
 ## Features
-- Players interact with a compass to open the transfer menu.
-- Simple and user-friendly interface for entering server IP and port.
-- Potential support for NetherNet transfers.
 
-### Ideal for PlayStation/Xbox:
-- `Minecraft Bedrock` for `Playstation` and `Xbox` are able to join custom servers that are on the same LAN. 
-This means if you're able to run a run another minecraft world on another device such as a phone or pc, your console can join a world with this pack installed and you can join any custom server you wish as long as you have the server `IP` and `PORT`.
+- Nested folders, destinations, information pages, announcements, draft publishing, backups, and an audit log.
+- Favorites, recent destinations, a home server, and player confirmation preferences accessible from the main menu.
+- Paginated destination, player, relationship, group, and search screens.
+- Search by name/tag, region, and game mode; filter availability/capacity; sort by name, population, or network order.
+- Live provider destination details with population, observation age, provider health, and endpoint diagnostics.
+- Hostname/IP and explicit NetherNet transfers; optional manual connection entry.
+- Generic providers for destinations, presence, relationships, groups, policies, and actions.
 
-## Requirements:
+## Installation
 
-### - Beta API Experiment:
+Use the pack in `raw/`, whose manifest lists the required engine and module versions. Enable the Beta APIs world experiment. `@minecraft/server-admin` is required for transfers. Ensure the host supports the manifest's Script API versions, including CustomForm and observable UI values.
 
-The behavior pack requires a world with the `Beta APIs` experiment to be enabled.
-This experiment is required for the `@minecraft/server-admin` module on the dedicated server.
+Join with a compass to open the menu. Operators can open **Admin Navigation** to edit destinations and settings. Edits remain in the draft until **Publish Draft**. BSM-specific configuration belongs to the separate `transfer_ui_bsm` pack; Transfer UI needs no BSM entries in `variables.json`.
 
-## Instructions:
+## Transfer rules
 
-### Step 1: Create/Load a World
-- Use the Minecraft Client to create the world (or import an already made world).
-- Enable the `Beta APIs` experiment in the world settings.
-- Add the Transfer UI Behavior Pack to the world.
+Every dispatch checks the current destination, requirements, maintenance, capacity, and endpoint availability again after policies finish. Removed destinations and unresolved endpoints cannot be used. Manual connections are explicit requests and still pass through transfer policies.
 
-### Step 2: Run the world
+Policy timeout behavior is configurable in **Hub Settings**. The default is **deny**. Choosing allow permits transfers when policies do not respond, but an already received denial remains binding. Policy redirects pass through the same destination checks.
 
-- Start the world and ensure everything loads correctly by checking the creator or server logs.
-You should see this message `[Scripting] Transfer UI loaded!` and no errors related to `@minecraft/server-admin`
+Providers that become stale or report degraded/connecting health retain their visible last-known state, but their destinations are unavailable for transfer until healthy again. History records dispatched transfers, not failed attempts; dispatch does not prove the remote server accepted the player.
 
-Join the server and obtain a `Compass` item. If everything is installed correctly you should be able to use item to open the menu.
-  
-Now you should be able to use a compass item to open the Transfer UI. Here you can enter the server IP and Port you wish to join.
+## Provider API
 
-## References:
+Protocol `1`, API `1.0.0` remain unchanged. Register using `transferui:provider:register` with an ID, capabilities, and optional `sessionId`. A new session resets old state and revision counters. Re-registration within the same session preserves health.
 
-### `@minecraft/server-admin`:
+Use namespaced destination IDs when targeting a specific provider: `provider:<providerId>:<destinationId>`. Player/group join actions resolve destinations within their source provider.
 
-https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server-admin/minecraft-server-admin?view=minecraft-bedrock-experimental#transferplayer
+Destination records accept `order` (ascending), requirements, hostname/port or a NetherNet target, capacity, metadata, and health. Metadata `endpointResolved: false` disables transfers while a provider resolves an endpoint.
+
+Snapshots can be grouped with `transferui:provider:transaction:begin` and `...:commit`. After committing, Transfer UI emits `transferui:provider:transaction:result` with `providerId`, `transactionId`, and `ok`. Revisions become authoritative at commit; abandoned transactions do not consume them.
+
+Chunked JSON frames contain `{__tui:1,id,chunk,total,data}`. Each independently installable pack includes the same bounded transport implementation: 1,400 characters per data chunk, at most 256 chunks/262,144 message characters, 128 incomplete streams, and a 30-second expiry. Out-of-order chunks and identical duplicates are supported; conflicting duplicates and changing stream shapes are rejected. ScriptEvents are a cooperative addon bus, not isolation from other installed scripts.
+
+## Development
+
+Runtime code is separated into storage, transfer dispatch, provider protocol, catalog helpers, and UI entry points.
+
+Run the transport and cross-pack runtime tests, plus the BSM client tests:
+
+```sh
+node --experimental-vm-modules --test addons/transfer_ui/tests/*.test.mjs addons/bsm_api_client/tests/client.test.mjs
+```
+
+These tests use simulated Bedrock APIs and HTTP/WebSocket transports. Verify actual CustomForm behavior, permissions, and remote transfers on a compatible Bedrock server before release.

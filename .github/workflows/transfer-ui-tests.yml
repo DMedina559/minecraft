@@ -1,0 +1,28 @@
+name: Transfer UI addon tests
+on:
+  push:
+    paths:
+      - 'addons/transfer_ui/**'
+      - 'addons/transfer_ui_bsm/**'
+      - 'addons/bsm_api_client/**'
+      - '.github/workflows/transfer-ui-tests.yml'
+  pull_request:
+    paths:
+      - 'addons/transfer_ui/**'
+      - 'addons/transfer_ui_bsm/**'
+      - 'addons/bsm_api_client/**'
+      - '.github/workflows/transfer-ui-tests.yml'
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: node --experimental-vm-modules --test addons/transfer_ui/tests/*.test.mjs addons/bsm_api_client/tests/client.test.mjs

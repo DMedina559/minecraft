@@ -1,3 +1,4 @@
 {
-  "bsmApiUrl": "http://127.0.0.1:11325"
+  "bsmApiUrl": "http://127.0.0.1:11325",
+  "bsmApiDiscoverContract": false
 }
