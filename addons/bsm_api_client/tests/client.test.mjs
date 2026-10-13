@@ -93,3 +93,19 @@ test('unavailable population is unknown and a later successful summary restores 
  m.namespace.reconcilePopulation(destination,{player_count:0,players_available:true},[]);
  assert.equal(destination.playerCount,0);assert.equal(destination.metadata.playersAvailable,true);
 });
+
+
+test('event diagnostics and graceful shutdown use current generated contracts',async()=>{
+ const c=await client();
+ assert.equal(c.api.operations.get_web_runtime.path,'/api/runtime');
+ assert.equal(c.api.operations.list_application_events.path,'/api/events');
+ c.setResponse({status:200,body:JSON.stringify({accepting:true,emitted:0,suppressed:0,failed_listeners:0,subscriptions:0,active:[],recent:[]})});
+ await c.api.call('get_event_activity',{query:{owner:'plugin:example',correlation_id:'operation-1',limit:5}});
+ assert.match(c.requests.at(-1).url,/owner=plugin%3Aexample/);
+ c.setResponse({status:202,body:JSON.stringify({status:'accepted',instance_id:'instance',pid:123,phase:'stopping',shutdown_requested:true,shutdown_reason:'administrator'})});
+ const receipt=await c.api.call('shutdown_web_runtime',{body:{}});
+ assert.equal(receipt.status,'accepted');
+ assert.equal(receipt.task_id,undefined);
+ assert.equal(c.requests.at(-1).body,'{}');
+ await assert.rejects(c.api.call('shutdown_web_runtime'),/body is required/);
+});
