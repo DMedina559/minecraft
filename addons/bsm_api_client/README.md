@@ -2,7 +2,7 @@
 
 Reusable Bedrock scripting client for Bedrock Server Manager.
 
-Generated against the canonical BSM OpenAPI from backend **dev**. The pack exposes **85 HTTP operations** plus the native BSM WebSocket through a cross-addon ScriptEvent bus.
+Generated against the canonical BSM OpenAPI from backend **dev**. The pack exposes **96 HTTP operations** plus the native BSM WebSocket through a cross-addon ScriptEvent bus.
 
 ## BDS requirements
 Enable Beta APIs and add `@minecraft/server-net` to `config/default/permissions.json`.
@@ -22,7 +22,7 @@ The complete operation catalog is included as `raw/scripts/core/contract.js`.
 
 ## OpenAPI model support
 
-This build is generated from the backend-owned canonical OpenAPI export. It includes **85 operations** and **104 component schemas**. Request bodies and parameters are validated against their OpenAPI schemas before transmission, and JSON responses are validated against documented response schemas. The public client exposes `operations`, `models`, `call(operationId, args)`, `validateModel(name, value)`, and `createModel(name, value)`.
+This build is generated from the backend-owned canonical OpenAPI export. It includes **96 operations** and **149 component schemas**. Request bodies and parameters are validated against their OpenAPI schemas before transmission, and JSON responses are validated against documented response schemas. The public client exposes `operations`, `models`, `call(operationId, args)`, `validateModel(name, value)`, and `createModel(name, value)`.
 
 Transfer UI consumes BSM through operation IDs over ScriptEvent IPC; it does not construct native BSM HTTP routes itself.
 
@@ -62,3 +62,12 @@ WebSocket envelopes retain `event_id` and `correlation_id`. Custom HTTP event
 triggers must name a declared custom event; built-in/private events are not
 external emission targets. Regenerate using the canonical backend exporter and
 `scripts/generate_bsm_contract.py` before rebuilding behavior packs.
+
+
+## Backend diagnostics
+
+Administrator accounts can call `get_application_diagnostics`, `get_subsystem_diagnostics` (with `path: {subsystem: "runtime"}`), `get_diagnostic_history`, `get_diagnostic_runs`, `get_diagnostic_trace`, `get_diagnostic_report`, and `compare_diagnostic_snapshots` through the existing operation-ID interface.
+
+History and trace accept `query: {limit: 50, cursor: "…"}`; continue only with a cursor returned by the backend. History also supports subsystem, instance, owner, outcome, code, operation, and correlation filters. A trace may have unavailable event/task/history sources; inspect the availability flags independently. Snapshot comparison sends `body: {before, after}`; counter deltas depend on matching instance IDs.
+
+These are on-demand metadata operations, not Transfer UI lifecycle responsibilities. Null readings and unresolved plugin statuses remain unchanged; do not infer zero or Loaded. The backend enforces administrator access. Report responses can be larger than a typical ScriptEvent reply and use the existing bounded chunked IPC transport; failed or oversized responses must not be treated as complete reports.

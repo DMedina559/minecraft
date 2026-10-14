@@ -109,3 +109,23 @@ test('event diagnostics and graceful shutdown use current generated contracts',a
  assert.equal(c.requests.at(-1).body,'{}');
  await assert.rejects(c.api.call('shutdown_web_runtime'),/body is required/);
 });
+
+test('diagnostic contracts validate filtered history, partial traces and comparison inputs', async()=>{
+ const c=await client();
+ for(const name of ['get_application_diagnostics','get_subsystem_diagnostics','get_diagnostic_history','get_diagnostic_runs','get_diagnostic_trace','get_diagnostic_report','compare_diagnostic_snapshots'])assert.ok(c.api.operations[name],name);
+ assert.ok(c.api.models.CompareDiagnosticSnapshotsRequest);
+ c.setResponse({status:200,body:JSON.stringify({records:[],available:false,truncated:false,next_cursor:null})});
+ const history=await c.api.call('get_diagnostic_history',{query:{limit:2,outcome:'failed',cursor:'next'}});
+ assert.equal(history.available,false);
+ assert.match(c.requests.at(-1).url,/\/api\/diagnostics\/history\?/);
+ assert.match(c.requests.at(-1).url,/cursor=next/);
+ const count=c.requests.length;
+ await assert.rejects(c.api.call('get_diagnostic_history',{query:{limit:0}}),/minimum/);
+ await assert.rejects(c.api.call('compare_diagnostic_snapshots',{body:{before:{},after:{}}}),/invalid request model/);
+ assert.equal(c.requests.length,count);
+ c.setResponse({status:200,body:JSON.stringify({correlation_id:'trace',events:null,events_available:false,tasks:[],tasks_available:true,history:{records:[],available:false,truncated:false},truncated:true,issues:[]})});
+ const trace=await c.api.call('get_diagnostic_trace',{path:{correlation_id:'trace'},query:{limit:2}});
+ assert.equal(trace.events_available,false);
+ assert.equal(trace.tasks_available,true);
+ assert.equal(trace.truncated,true);
+});
