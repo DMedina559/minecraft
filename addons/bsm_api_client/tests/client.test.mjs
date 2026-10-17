@@ -129,3 +129,22 @@ test('diagnostic contracts validate filtered history, partial traces and compari
  assert.equal(trace.tasks_available,true);
  assert.equal(trace.truncated,true);
 });
+
+
+test('health validates process identity and preserves degraded observations', async()=>{
+ const c=await client();
+ for(const [instance_id,ready] of [['runtime-1',true],[null,false]]){
+  const health={pid:123,instance_id,version:'4.0.0b8',ready,lifecycle:ready?'ready':'stopping',health:ready?'healthy':'degraded',checks:{lifecycle:{healthy:ready,message:'Lifecycle check'}},checked_at:1};
+  c.setResponse({status:200,body:JSON.stringify(health)});
+  const result=await c.api.call('get_application_health');
+  assert.deepEqual(JSON.parse(JSON.stringify(result)),health);
+  assert.equal(c.requests.at(-1).url,'http://bsm/api/health');
+  assert.ok(c.requests.at(-1).headers.some(h=>h.name==='Authorization'&&h.value==='Bearer jwt'));
+  assert.ok(!c.requests.at(-1).headers.some(h=>h.name==='X-BSM-Readiness-Token'));
+  for(const field of ['pid','version']){
+   const invalid={...health};delete invalid[field];
+   c.setResponse({status:200,body:JSON.stringify(invalid)});
+   await assert.rejects(c.api.call('get_application_health'),/validation failed/);
+  }
+ }
+});
