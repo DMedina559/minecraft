@@ -2,6 +2,7 @@ name: Transfer UI addon tests
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     paths:
       - 'addons/transfer_ui/**'
       - 'addons/transfer_ui_bsm/**'
@@ -21,17 +22,18 @@ on:
       - 'scripts/tests/**'
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: [22, 24]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node }}
+          node-version: '22'
       - run: node --experimental-vm-modules --test addons/transfer_ui/tests/*.test.mjs addons/bsm_api_client/tests/client.test.mjs
   packs:
     runs-on: ubuntu-latest
@@ -40,7 +42,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.14'
       - uses: actions/checkout@v4
         with:
           repository: DMedina559/bedrock-server-manager
