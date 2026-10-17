@@ -1,4 +1,4 @@
-name: Transfer UI addon tests
+name: Build Lint Test
 on:
   workflow_dispatch:
   push:
@@ -7,7 +7,7 @@ on:
       - 'addons/transfer_ui/**'
       - 'addons/transfer_ui_bsm/**'
       - 'addons/bsm_api_client/**'
-      - '.github/workflows/transfer-ui-tests.yml'
+      - '.github/workflows/build-test.yml'
       - 'scripts/build_transfer_packs.py'
       - 'scripts/generate_bsm_contract.py'
       - 'scripts/tests/**'
@@ -16,7 +16,7 @@ on:
       - 'addons/transfer_ui/**'
       - 'addons/transfer_ui_bsm/**'
       - 'addons/bsm_api_client/**'
-      - '.github/workflows/transfer-ui-tests.yml'
+      - '.github/workflows/build-test.yml'
       - 'scripts/build_transfer_packs.py'
       - 'scripts/generate_bsm_contract.py'
       - 'scripts/tests/**'
@@ -27,19 +27,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  tests:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --experimental-vm-modules --test addons/transfer_ui/tests/*.test.mjs addons/bsm_api_client/tests/client.test.mjs
-  packs:
-    runs-on: ubuntu-latest
-    needs: tests
-    steps:
-      - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.14'
@@ -47,14 +41,19 @@ jobs:
         with:
           repository: DMedina559/bedrock-server-manager
           ref: dev
-          path: backend-contract
-      - run: python -m pip install ./backend-contract
-      - name: Verify canonical backend contract
+          path: backend
+      - name: Install dependencies
+        run: python -m pip install -e ./backend
+      - name: Build package
+        run: python scripts/build_transfer_packs.py
+      - name: Lint and type checks
         run: |
           python -m bedrock_server_manager.web.contract --output "$RUNNER_TEMP/backend-openapi.json"
           python scripts/generate_bsm_contract.py "$RUNNER_TEMP/backend-openapi.json" --check
-      - run: python -m unittest discover -s scripts/tests -v
-      - run: python scripts/build_transfer_packs.py
+      - name: Run tests
+        run: |
+          node --experimental-vm-modules --test addons/transfer_ui/tests/*.test.mjs addons/bsm_api_client/tests/client.test.mjs
+          python -m unittest discover -s scripts/tests -v
       - uses: actions/upload-artifact@v4
         with:
           name: transfer-ui-packs
