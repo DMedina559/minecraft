@@ -16,6 +16,7 @@ class MinecraftBsmApiPlugin(PluginBase):
     version = "1.1.0"
     description = "Secret-safe authentication bridge for BSM API for Minecraft."
     author = "dmedina559"
+    permissions = []
 
     @app_event("on_load")
     async def on_load(self, **kwargs: Any):

@@ -148,3 +148,18 @@ test('health validates process identity and preserves degraded observations', as
   }
  }
 });
+
+
+test('plugin metadata preserves runtime status and declared permission scopes',async()=>{
+ const c=await client();
+ const data={status:'success',plugins:{demo:{enabled:true,status:'ERROR',permissions:['path:servers','custom:future'],has_settings:true,has_global_settings:true,has_server_settings:true}}};
+ c.setResponse({status:200,body:JSON.stringify(data)});
+ const result=await c.api.call('list_plugins');
+ assert.equal(c.requests.at(-1).url,'http://bsm/api/plugins');
+ assert.equal(result.plugins.demo.enabled,true);
+ assert.equal(result.plugins.demo.status,'ERROR');
+ assert.deepEqual(Array.from(result.plugins.demo.permissions),['path:servers','custom:future']);
+ assert.equal(result.plugins.demo.has_server_settings,true);
+ assert.equal(c.api.validateModel('PluginInfo',{enabled:false,status:'DISABLED'}).length,0);
+ assert.ok(c.api.validateModel('PluginInfo',{enabled:true,permissions:[123]}).length);
+});

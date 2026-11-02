@@ -2,7 +2,7 @@
 
 Reusable Bedrock scripting client for Bedrock Server Manager.
 
-Generated against the canonical BSM OpenAPI from backend **dev**. The pack exposes **96 HTTP operations** plus the native BSM WebSocket through a cross-addon ScriptEvent bus.
+Generated against the canonical BSM OpenAPI from backend **dev**. The pack exposes **166 HTTP operations** plus the native BSM WebSocket through a cross-addon ScriptEvent bus.
 
 ## BDS requirements
 Enable Beta APIs and add `@minecraft/server-net` to `config/default/permissions.json`.
@@ -22,7 +22,7 @@ The complete operation catalog is included as `raw/scripts/core/contract.js`.
 
 ## OpenAPI model support
 
-This build is generated from the backend-owned canonical OpenAPI export. It includes **96 operations** and **149 component schemas**. Request bodies and parameters are validated against their OpenAPI schemas before transmission, and JSON responses are validated against documented response schemas. The public client exposes `operations`, `models`, `call(operationId, args)`, `validateModel(name, value)`, and `createModel(name, value)`.
+This build is generated from the backend-owned canonical OpenAPI export. It includes **166 operations** and **221 component schemas**. Request bodies and parameters are validated against their OpenAPI schemas before transmission, and JSON responses are validated against documented response schemas. The public client exposes `operations`, `models`, `call(operationId, args)`, `validateModel(name, value)`, and `createModel(name, value)`.
 
 Transfer UI consumes BSM through operation IDs over ScriptEvent IPC; it does not construct native BSM HTTP routes itself.
 
@@ -71,3 +71,19 @@ Administrator accounts can call `get_application_diagnostics`, `get_subsystem_di
 History and trace accept `query: {limit: 50, cursor: "…"}`; continue only with a cursor returned by the backend. History also supports subsystem, instance, owner, outcome, code, operation, and correlation filters. A trace may have unavailable event/task/history sources; inspect the availability flags independently. Snapshot comparison sends `body: {before, after}`; counter deltas depend on matching instance IDs.
 
 These are on-demand metadata operations, not Transfer UI lifecycle responsibilities. Null readings and unresolved plugin statuses remain unchanged; do not infer zero or Loaded. The backend enforces administrator access. Report responses can be larger than a typical ScriptEvent reply and use the existing bounded chunked IPC transport; failed or oversized responses must not be treated as complete reports.
+
+
+## Plugin runtime metadata
+
+`call("list_plugins")` returns configured `enabled` state separately from runtime
+`status` (`LOADED`, `DISABLED`, `ERROR`, `UNLOADED`, or `UNKNOWN`). An enabled plugin
+may have failed to load. Each plugin also reports its declared `permissions` and
+`has_settings`, `has_global_settings`, and `has_server_settings` flags. Permission
+names are backend-defined strings; retain unfamiliar names. These plugin
+capabilities describe backend API and filesystem access, separately from the
+HTTP permissions of the account used by this Minecraft client.
+
+The authentication bridge declares an empty plugin capability list because it
+does not call scoped plugin APIs or access host storage through the plugin API.
+The bundled plugin permission metadata targets backend `feat/plugin-permissions`;
+regenerate against backend `dev` once that feature is merged.
