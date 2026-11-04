@@ -9,7 +9,7 @@ from typing import Any
 from fastapi import APIRouter, Header, HTTPException, Request, status
 from bedrock_server_manager import PluginBase, app_event
 from bedrock_server_manager.utils import authenticate_user, create_access_token
-from bedrock_server_manager.web.schemas.auth import TokenResponse
+from bedrock_server_manager.models import TokenResponse
 
 
 class MinecraftBsmApiPlugin(PluginBase):
@@ -51,7 +51,7 @@ class MinecraftBsmApiPlugin(PluginBase):
                 app_context=app_context,
                 expires_delta=datetime.timedelta(hours=24),
             )
-            return {"access_token": jwt, "token_type": "bearer"}
+            return TokenResponse(access_token=jwt, token_type="bearer")
 
         self.router = router
         self.logger.info("BSM API for Minecraft authentication bridge loaded.")
