@@ -163,3 +163,16 @@ test('plugin metadata preserves runtime status and declared permission scopes',a
  assert.equal(c.api.validateModel('PluginInfo',{enabled:false,status:'DISABLED'}).length,0);
  assert.ok(c.api.validateModel('PluginInfo',{enabled:true,permissions:[123]}).length);
 });
+
+test('backup creation uses snapshots while legacy list and restore remain available', async()=>{
+ const c=await client();
+ assert.equal(c.api.operations.create_backup,undefined);
+ assert.equal(c.api.models.BackupActionPayload,undefined);
+ assert.ok(c.api.operations.list_server_backups);
+ assert.ok(c.api.operations.restore_backup);
+ c.setResponse({status:202,body:JSON.stringify({status:'accepted',task_id:'backup-task',message:'Backup operation accepted.'})});
+ const result=await c.api.call('create_server_snapshot',{path:{server_name:'my server'},body:{mode:'world'}});
+ assert.equal(result.task_id,'backup-task');
+ assert.equal(c.requests.at(-1).url,'http://bsm/api/server/my%20server/backups');
+ assert.deepEqual(JSON.parse(c.requests.at(-1).body),{mode:'world'});
+});
