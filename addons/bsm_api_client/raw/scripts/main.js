@@ -659,6 +659,8 @@ export async function refreshContract(guard = () => {}) {
           path,
           summary: operation.summary ?? "",
           tags: operation.tags ?? [],
+          security: operation.security ?? schema.security ?? [],
+          access: operation["x-bsm-access"] ?? null,
           parameters: [...(item.parameters ?? []), ...(operation.parameters ?? [])],
           request: {
             required: !!operation.requestBody?.required,

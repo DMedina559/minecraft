@@ -163,3 +163,15 @@ test('plugin metadata preserves runtime status and declared permission scopes',a
  assert.equal(c.api.validateModel('PluginInfo',{enabled:false,status:'DISABLED'}).length,0);
  assert.ok(c.api.validateModel('PluginInfo',{enabled:true,permissions:[123]}).length);
 });
+
+ test('bundled and live contracts retain standardized access metadata', async()=>{
+ const c=await client();
+ const logs=c.api.operations.get_log_history;
+ assert.deepEqual(Array.from(logs.access.credential_alternatives, x=>x.permissions[0]), ['servers:logs','application:logs']);
+ assert.ok(logs.security.some(x=>x.OAuth2PasswordBearer?.includes('servers:logs')));
+ const access={classification:'permission',required_permissions:['servers:logs'],resource_scope:'server'};
+ c.setResponse({status:200,body:JSON.stringify({security:[{bearer:[]}],paths:{'/custom':{get:{operationId:'custom',responses:{200:{}},'x-bsm-access':access}}},components:{schemas:{}}})});
+ await c.api.refreshContract();
+ assert.equal(JSON.stringify(c.api.operations.custom.access),JSON.stringify(access));
+ assert.equal(JSON.stringify(c.api.operations.custom.security),JSON.stringify([{bearer:[]}]));
+ });
