@@ -34,6 +34,8 @@ def generate(schema):
                 "path": path,
                 "summary": operation.get("summary", ""),
                 "tags": operation.get("tags", []),
+                "security": operation.get("security", schema.get("security", [])),
+                "access": operation.get("x-bsm-access"),
                 "parameters": item.get("parameters", [])
                 + operation.get("parameters", []),
                 "request": {
@@ -54,14 +56,23 @@ def generate(schema):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("source", type=Path, help="JSON exported by bedrock_server_manager.web.contract")
-    parser.add_argument("--check", action="store_true", help="Fail if the bundled catalog differs")
+    parser.add_argument(
+        "source", type=Path, help="JSON exported by bedrock_server_manager.web.contract"
+    )
+    parser.add_argument(
+        "--check", action="store_true", help="Fail if the bundled catalog differs"
+    )
     args = parser.parse_args()
-    output = Path(__file__).resolve().parents[1] / "addons/bsm_api_client/raw/scripts/core/contract.js"
+    output = (
+        Path(__file__).resolve().parents[1]
+        / "addons/bsm_api_client/raw/scripts/core/contract.js"
+    )
     value = generate(json.loads(args.source.read_text(encoding="utf-8")))
     if args.check:
         if output.read_text(encoding="utf-8") != value:
-            raise SystemExit("Minecraft contract drift. Run scripts/generate_bsm_contract.py with the backend export.")
+            raise SystemExit(
+                "Minecraft contract drift. Run scripts/generate_bsm_contract.py with the backend export."
+            )
     else:
         output.write_text(value, encoding="utf-8")
 
