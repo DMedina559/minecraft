@@ -1,19 +1,17 @@
-"""Authentication bridge for BSM API for Minecraft.
-Only exchanges BDS SecretString-backed credentials for a BSM JWT.
-All normal API calls go directly to BSM's official HTTP API.
-"""
+"""Exchange BDS SecretString headers using BSM's standard tracked login flow."""
 
-from __future__ import annotations
-import datetime
 from typing import Any
-from fastapi import APIRouter, Header, HTTPException, Request, status
+
 from bedrock_server_manager import PluginBase, app_event
-from bedrock_server_manager.utils import authenticate_user, create_access_token
-from bedrock_server_manager.models import TokenResponse
+from bedrock_server_manager.web.access_metadata import describe_access
+from bedrock_server_manager.web.routers.auth import api_login_for_access_token
+from bedrock_server_manager.web.schemas import TokenResponse
+from fastapi import APIRouter, Header, Request, Response
+from fastapi.security import OAuth2PasswordRequestForm
 
 
 class MinecraftBsmApiPlugin(PluginBase):
-    version = "1.1.0"
+    version = "1.2.0"
     description = "Secret-safe authentication bridge for BSM API for Minecraft."
     author = "dmedina559"
     permissions = []
@@ -27,31 +25,28 @@ class MinecraftBsmApiPlugin(PluginBase):
             response_model=TokenResponse,
             operation_id="minecraft_bsm_authenticate",
         )
+        @describe_access("public", authentication="none", additional_checks=[])
         async def token(
             request: Request,
+            response: Response,
             x_bsm_api_username: str = Header(...),
             x_bsm_api_password: str = Header(...),
+            x_bsm_api_otp: str = Header("", max_length=128),
         ):
-            app_context = getattr(request.app.state, "app_context", None)
-            if app_context is None:
-                raise HTTPException(
-                    status_code=503, detail="BSM AppContext unavailable"
-                )
-            username = await authenticate_user(
-                app_context, x_bsm_api_username, x_bsm_api_password
+            # Reuse throttling, MFA checks, auth revisions and session tracking.
+            # Calling create_access_token directly would bypass the login policy.
+            return await api_login_for_access_token(
+                request=request,
+                response=response,
+                form_data=OAuth2PasswordRequestForm(
+                    username=x_bsm_api_username, password=x_bsm_api_password
+                ),
+                remember_me=False,
+                remember_device=False,
+                trusted_device_token=None,
+                otp=x_bsm_api_otp,
+                app_context=request.app.state.app_context,
             )
-            if not username:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Incorrect username or password",
-                    headers={"WWW-Authenticate": "Bearer"},
-                )
-            jwt = await create_access_token(
-                data={"sub": username},
-                app_context=app_context,
-                expires_delta=datetime.timedelta(hours=24),
-            )
-            return TokenResponse(access_token=jwt, token_type="bearer")
 
         self.router = router
         self.logger.info("BSM API for Minecraft authentication bridge loaded.")

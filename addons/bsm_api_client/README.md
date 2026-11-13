@@ -2,7 +2,7 @@
 
 Reusable Bedrock scripting client for Bedrock Server Manager.
 
-Generated against the canonical BSM OpenAPI from backend **chore/centralize-models**. The pack exposes **166 HTTP operations** plus the native BSM WebSocket through a cross-addon ScriptEvent bus.
+Generated against the canonical BSM OpenAPI from backend **dev**. The pack exposes **165 HTTP operations** plus the native BSM WebSocket through a cross-addon ScriptEvent bus.
 
 ## BDS requirements
 Enable Beta APIs and add `@minecraft/server-net` to `config/default/permissions.json`.
@@ -22,7 +22,7 @@ The complete operation catalog is included as `raw/scripts/core/contract.js`.
 
 ## OpenAPI model support
 
-This build is generated from the backend-owned canonical OpenAPI export. It includes **166 operations** and **236 component schemas**. Request bodies and parameters are validated against their OpenAPI schemas before transmission, and JSON responses are validated against documented response schemas. The public client exposes `operations`, `models`, `call(operationId, args)`, `validateModel(name, value)`, and `createModel(name, value)`.
+This build is generated from the backend-owned canonical OpenAPI export. It includes **165 operations** and **235 component schemas**. Request bodies and parameters are validated against their OpenAPI schemas before transmission, and JSON responses are validated against documented response schemas. The public client exposes `operations`, `models`, `call(operationId, args)`, `validateModel(name, value)`, and `createModel(name, value)`.
 
 Transfer UI consumes BSM through operation IDs over ScriptEvent IPC; it does not construct native BSM HTTP routes itself.
 
@@ -87,3 +87,9 @@ The authentication bridge declares an empty plugin capability list because it
 does not call scoped plugin APIs or access host storage through the plugin API.
 The bundled plugin permission metadata targets backend `feat/plugin-permissions`;
 regenerate against backend `dev` once that feature is merged.
+
+## Standardized access metadata
+
+Bundled and discovered operations preserve `security` alternatives and `access` (`x-bsm-access`). Server logs require `servers:logs`; application logs require `application:logs`. Capability metadata is advisory; the backend enforces current credentials, server assignments, and contextual checks.
+
+The authentication bridge delegates to the standard backend login flow, including throttling, MFA and tracked sessions. MFA-enabled accounts must provide a current one-use code in `X-BSM-API-OTP` when authenticating; a missing factor is rejected by BSM. It does not mint an untracked token or bypass account security.
