@@ -1,0 +1,16 @@
+name: Auto Labeler
+
+on:
+  issues:
+    types: [opened, edited]
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
+
+jobs:
+  label:
+    uses: DMedina559/.github/.github/workflows/reusable-auto-labeler.yml@main
